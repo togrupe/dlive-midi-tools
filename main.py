@@ -1,5 +1,4 @@
 # coding=utf-8
-# This is a test script that triggers a midi command
 import os
 import time
 import mido

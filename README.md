@@ -3,7 +3,7 @@ Description: Python and midi/tcp based tool to prepare channel lists for Allen &
 
 Input file: Excel sheet, Please edit the columns: Name, Color and Phantom
 
-![Excel](excel.jpg)
+![Excel](excel.png)
 
 An example excel file named: **dLiveChannelList.xls** can be found in the root folder. 
 

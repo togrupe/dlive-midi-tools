@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
     root.title('Allen & Heath dLive Channel List Manager')
 
-    root.geometry('320x60')
+    root.geometry('480x60')
 
     root.config(bg='grey')
 
@@ -139,9 +139,9 @@ if __name__ == '__main__':
         read_document(file)
 
 
-    button_1 = Button(root, text='Open', command=browse_files)
+    button_1 = Button(root, text='Open Excel Sheet and Trigger Writing Process', command=browse_files)
 
-    button_1.place(x=10, y=0)
+    button_1.place(x=100, y=0)
 
     root.resizable(False, False)
 

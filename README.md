@@ -8,7 +8,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 ## Input file
 Excel sheet, please edit the columns: Name, Color and Phantom
 
-![Excel](excel.png = 250x)
+![Excel](excel.png)
 
 An example excel file named: **dLiveChannelList.xls** can be found in the root folder. 
 

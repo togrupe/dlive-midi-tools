@@ -1,6 +1,6 @@
 # dlive-midi-tools
-##Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems.
+## Description
+Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one step be written into the dlive system via midi/tcp. 
 
 ## Input file
 Excel sheet, please edit the columns: Name, Color and Phantom

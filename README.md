@@ -8,7 +8,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 ## Input file
 Excel sheet, please edit the columns: Name, Color and Phantom
 
-![Excel](excel.png)
+![Excel](excel.png = 250x)
 
 An example excel file named: **dLiveChannelList.xls** can be found in the root folder. 
 
@@ -35,4 +35,3 @@ The default mixrack ip address is: 192.168.1.70. This IP-Address is preconfigure
 Afterwards a GUI opens automatically. Click the Button "Open Excel Sheet and Trigger Writing Process" to select the your custom excel sheet. The channel renaming, coloring and set of the phantom values starts automatically.
 
 Have fun!
-

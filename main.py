@@ -114,11 +114,17 @@ def read_document(filename):
 
     time.sleep(2)
 
+    print("Open connection to dlive...")
     output = connect(dliveConstants.ip, dliveConstants.port)
+    print("Connection successful.")
+    
+    time.sleep(1)
 
+    print("Start Processing...")
     trigger_channel_renaming("Naming the channels...", output, names)
     trigger_coloring("Coloring the channels...", output, colors)
     trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
+    print("Processing done")
 
     output.close()
 

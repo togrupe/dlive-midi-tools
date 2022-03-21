@@ -30,7 +30,7 @@ pip install -r dependencies.txt
 
 python3 main.py 
 
-Afterwards a GUI opens automatically. Click the Browse Button to select the before adjusted excel sheet. The Channel renaming, coloring and set of the phantom values starts automatically.
+Afterwards a GUI opens automatically. Click the Button "Open Excel Sheet and Trigger Writing Process" to select the your custom adjusted excel sheet. The Channel renaming, coloring and set of the phantom values starts automatically.
 
 Have fun!
 

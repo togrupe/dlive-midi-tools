@@ -1,15 +1,13 @@
 # coding=utf-8
-import os
-import time
-import mido
 import re
+import time
+from tkinter import filedialog, Button, Tk
 
-from tkinter import filedialog, END, Listbox, Button, Tk
+import mido
+import pandas as pd
+from mido.sockets import connect
 
 import dliveConstants
-import pandas as pd
-
-from mido.sockets import connect
 
 
 def trigger_channel_renaming(message, output, names):
@@ -19,13 +17,13 @@ def trigger_channel_renaming(message, output, names):
 
     for name in names:
 
-        foo = re.findall('.?', name)
+        characters = re.findall('.?', name)
 
         payload = []
 
-        for x in foo:
-            if len(str(x)) != 0:
-                payload.append(ord(x))
+        for character in characters:
+            if len(str(character)) != 0:
+                payload.append(ord(character))
 
         prefix = [0x00, 0x03, index]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
@@ -82,14 +80,14 @@ def phantom_channel(output, channel, phantom):
     else:
         res = dliveConstants.phantom_power_off
 
-    payloadArray = [0x00, 0x0C, channel, res]
+    payload_array = [0x00, 0x0C, channel, res]
 
-    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payloadArray + dliveConstants.sysexhdrend)
+    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     output.send(message)
     time.sleep(.1)
 
 
-def trigger_phantoming(message, output, phantoms):
+def trigger_phantom_power(message, output, phantoms):
     print(message)
     index = 0
     for phantom in phantoms:
@@ -120,7 +118,7 @@ def read_document(filename):
 
     trigger_channel_renaming("Naming the channels...", output, names)
     trigger_coloring("Coloring the channels...", output, colors)
-    trigger_phantoming("Set phantom power to the channels...", output, phantoms)
+    trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
 
     output.close()
 
@@ -138,18 +136,13 @@ if __name__ == '__main__':
     def browse_files():
         file = filedialog.askopenfilename()
 
-        # readDocument("dLiveChannelList.xls")
         read_document(file)
 
 
     button_1 = Button(root, text='Open', command=browse_files)
-
-    # button_1.config(width=10, height=4)
 
     button_1.place(x=10, y=0)
 
     root.resizable(False, False)
 
     root.mainloop()
-
-    root.ex

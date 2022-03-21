@@ -22,7 +22,13 @@ The Midi Channel setting on dlive under Utils/Shows -> Control -> Midi has to be
 The default mixrack ip address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to change it, you can edit the field "ip" in the file: dliveConstants.py.   
 
 ## Usage
-Run the script with the following command: python3 main.py 
+1. Before you run the script, please run the follwing command to download the required python modules.
+
+pip install -r dependencies.txt
+
+2. Run the script with the following command: 
+
+python3 main.py 
 
 Afterwards a GUI opens automatically. Click the Browse Button to select the before adjusted excel sheet. The Channel renaming, coloring and set of the phantom values starts automatically.
 

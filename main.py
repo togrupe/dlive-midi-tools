@@ -10,6 +10,8 @@ from mido.sockets import connect
 import dliveConstants
 
 
+version = "1.1.0"
+
 def trigger_channel_renaming(message, output, names):
     print(message)
 
@@ -184,7 +186,7 @@ def allstates():
 
 
 if __name__ == '__main__':
-    root.title('Allen & Heath dLive Channel List Manager')
+    root.title('Allen & Heath dLive Channel List Manager, Version: ' + version)
 
     var = Label(root, text="Choose which column you want to write from the given Excel sheet.")
     var.pack(side=TOP)

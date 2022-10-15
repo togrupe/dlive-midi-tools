@@ -34,11 +34,11 @@ The default mixrack ip address is: 192.168.1.70. This IP-Address is preconfigure
 
 Afterwards the following GUI opens automatically. 
 
-![GUI](gui.png)
+![Gui](gui.png)
 
-Select the Columns you want to write, then click the Button "Open Excel Sheet and Trigger Writing Process" to select the your custom excel sheet. 
-The selected action starts automatically.
+Select the Columns you want to write, then click the Button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. 
+The selected action(s) start automatically.
 
-If you find an issue, please let me know.
+If you find any issue, please let me know.
 
 Have fun!

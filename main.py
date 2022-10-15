@@ -186,9 +186,9 @@ def allstates():
 if __name__ == '__main__':
     root.title('Allen & Heath dLive Channel List Manager')
 
-    var = Label(root, text="Choose which column you want to write from the given Excel sheet")
+    var = Label(root, text="Choose which column you want to write from the given Excel sheet.")
     var.pack(side=TOP)
-    root.geometry('800x120')
+    root.geometry('600x120')
 
     root.resizable(False, False)
 

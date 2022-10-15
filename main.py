@@ -1,7 +1,8 @@
 # coding=utf-8
 import re
 import time
-from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label
+from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label, \
+    Entry, BOTTOM
 
 import mido
 import pandas as pd
@@ -9,10 +10,10 @@ from mido.sockets import connect
 
 import dliveConstants
 
-
-version = "1.1.0"
+version = "1.2.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
+
 
 def trigger_channel_renaming(message, output, names):
     print(message)
@@ -118,8 +119,9 @@ def read_document(filename, naming, coloring, phantoming):
 
     time.sleep(2)
     if is_network_communication_allowed:
-        print("Open connection to dlive...")
-        output = connect(dliveConstants.ip, dliveConstants.port)
+        mixrack_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
+        print("Open connection to dlive on ip: " + mixrack_ip + ":" + str(dliveConstants.port) + " ...")
+        output = connect(mixrack_ip, dliveConstants.port)
         print("Connection successful.")
 
     time.sleep(1)
@@ -184,26 +186,46 @@ class Checkbar(Frame):
 
 
 root = Tk()
-lng = Checkbar(root, ['Names', 'Colors', '48V Phantom Power'])
-
+ip_frame = Frame(root)
+columns = Checkbar(root, ['Names', 'Colors', '48V Phantom Power'])
+ip_byte0 = Entry(ip_frame, width=3)
+ip_byte1 = Entry(ip_frame, width=3)
+ip_byte2 = Entry(ip_frame, width=3)
+ip_byte3 = Entry(ip_frame, width=3)
+mixrack_ip = ""
 
 def allstates():
-    return list(lng.state())
+    return list(columns.state())
 
 
 if __name__ == '__main__':
-    root.title('Allen & Heath dLive Channel List Manager, Version: ' + version)
-
-    var = Label(root, text="Choose from the given Excel sheet which column you want to write.")
-    var.pack(side=TOP)
-    root.geometry('600x120')
-
+    root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
+    root.geometry('700x200')
     root.resizable(False, False)
+    Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
 
-    lng.pack(side=TOP, fill=X)
-    lng.config(relief=GROOVE, bd=2)
+    columns.pack(side=TOP, fill=X)
+    columns.config(relief=GROOVE, bd=2)
+    Label(ip_frame, text="-->     ").grid(row=0, column=0)
+    Label(ip_frame, text="Mixrack IP Address:").grid(row=0, column=1)
+    ip_byte0.grid(row=0, column=2)
+    Label(ip_frame, text=".").grid(row=0, column=3)
+    ip_byte1.grid(row=0, column=4)
+    Label(ip_frame, text=".").grid(row=0, column=5)
+    ip_byte2.grid(row=0, column=6)
+    Label(ip_frame, text=".").grid(row=0, column=7)
+    ip_byte3.grid(row=0, column=8)
 
-    Button(root, text='Open Excel Sheet and Trigger Writing Process', command=browse_files).pack(side=LEFT)
-    Button(root, text='Quit', command=root.quit).pack(side=RIGHT)
-   
+    ip = dliveConstants.ip.split(".")
+
+    ip_byte0.insert(10, ip.__getitem__(0))
+    ip_byte1.insert(11, ip.__getitem__(1))
+    ip_byte2.insert(12, ip.__getitem__(2))
+    ip_byte3.insert(13, ip.__getitem__(3))
+
+    ip_frame.pack(side=RIGHT)
+
+    Button(root, text='Open Excel sheet and trigger writing process', command=browse_files).pack(side=LEFT)
+    Button(root, text='Quit', width=15, command=root.quit).pack(side=BOTTOM)
+
     root.mainloop()

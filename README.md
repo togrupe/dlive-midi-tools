@@ -1,6 +1,6 @@
 # dlive-midi-tools
 ## Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one step be written into the dlive system via midi/tcp. 
+Python and Midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one step be written into the dlive system via midi/tcp. 
 - Channel Name
 - Channel Color
 - Phantom Power
@@ -32,6 +32,13 @@ The default mixrack ip address is: 192.168.1.70. This IP-Address is preconfigure
 
 `python3 main.py`
 
-Afterwards a GUI opens automatically. Click the Button "Open Excel Sheet and Trigger Writing Process" to select the your custom excel sheet. The channel renaming, coloring and set of the phantom values starts automatically.
+Afterwards the following GUI opens automatically. 
+
+![GUI](gui.png)
+
+Select the Columns you want to write, then click the Button "Open Excel Sheet and Trigger Writing Process" to select the your custom excel sheet. 
+The selected action starts automatically.
+
+If you find an issue, please let me know.
 
 Have fun!

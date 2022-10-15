@@ -97,7 +97,7 @@ def trigger_phantom_power(message, output, phantoms):
     time.sleep(1)
 
 
-def read_document(filename, naming, coloring, phantom):
+def read_document(filename, naming, coloring, phantoming):
     df = pd.read_excel(filename)
 
     names = []
@@ -122,15 +122,15 @@ def read_document(filename, naming, coloring, phantom):
 
     print("Start Processing...")
     if naming:
-        print("1. naming")
+        print("1. Writing the following channel names...")
         print(names)
         # trigger_channel_renaming("Naming the channels...", output, names)
     if coloring:
-        print("2. coloring")
+        print("2. Writing the following colors...")
         print(colors)
         # trigger_coloring("Coloring the channels...", output, colors)
-    if phantom:
-        print("3. phantom")
+    if phantoming:
+        print("3. Writing the following phantom power values...")
         print(phantoms)
         # trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
     print("Processing done")
@@ -192,13 +192,10 @@ if __name__ == '__main__':
 
     root.resizable(False, False)
 
-    root.config(background='grey')
-
-    lng.grid(row=0, sticky=W)
     lng.pack(side=TOP, fill=X)
     lng.config(relief=GROOVE, bd=2)
 
     Button(root, text='Open Excel Sheet and Trigger Writing Process', command=browse_files).pack(side=LEFT)
     Button(root, text='Quit', command=root.quit).pack(side=RIGHT)
-    #Button(root, text='Peek', command=allstates).pack(side=RIGHT)
+   
     root.mainloop()

@@ -24,7 +24,7 @@ The default dlive mixrack ip address is: 192.168.1.70. This IP-Address is precon
 ## Usage
 1. Recommendation: Please backup your current show file, just to be on the safe side if something goes wrong.
 
-2. Before you run the script, please run the following command to download the required python modules.
+2. Before you run the script, please run the following command to download the required python modules using `pip`. Please make sure `pip` is installed."
 
 `pip install -r dependencies.txt`
 

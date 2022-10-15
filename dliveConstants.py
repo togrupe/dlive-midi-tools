@@ -12,8 +12,12 @@ lcd_color_white = 0x07
 phantom_power_off = 0x00
 phantom_power_on = 0x7F
 
+# Sysex header definitions
 sysexhdrstart = [0xF0, 0x00, 0x00, 0x1A, 0x50, 0x10, 0x01, 0x00]
 sysexhdrend = [0xF7]
+
+#if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
+allow_network_communication = True
 
 # mixrack ip and port for midi/tcp
 ip = '192.168.1.70'

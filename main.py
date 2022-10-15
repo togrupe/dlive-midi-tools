@@ -12,6 +12,8 @@ import dliveConstants
 
 version = "1.1.0"
 
+is_network_communication_allowed = dliveConstants.allow_network_communication
+
 def trigger_channel_renaming(message, output, names):
     print(message)
 
@@ -115,10 +117,10 @@ def read_document(filename, naming, coloring, phantoming):
         phantoms.append(phantom)
 
     time.sleep(2)
-
-    print("Open connection to dlive...")
-    output = connect(dliveConstants.ip, dliveConstants.port)
-    print("Connection successful.")
+    if is_network_communication_allowed:
+        print("Open connection to dlive...")
+        output = connect(dliveConstants.ip, dliveConstants.port)
+        print("Connection successful.")
 
     time.sleep(1)
 
@@ -126,18 +128,22 @@ def read_document(filename, naming, coloring, phantoming):
     if naming:
         print("1. Writing the following channel names...")
         print(names)
-        trigger_channel_renaming("Naming the channels...", output, names)
+        if is_network_communication_allowed:
+            trigger_channel_renaming("Naming the channels...", output, names)
     if coloring:
         print("2. Writing the following colors...")
         print(colors)
-        trigger_coloring("Coloring the channels...", output, colors)
+        if is_network_communication_allowed:
+            trigger_coloring("Coloring the channels...", output, colors)
     if phantoming:
         print("3. Writing the following phantom power values...")
         print(phantoms)
-        trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
+        if is_network_communication_allowed:
+            trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
     print("Processing done")
 
-    output.close()
+    if is_network_communication_allowed:
+        output.close()
 
 
 def browse_files():

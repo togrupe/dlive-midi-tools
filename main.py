@@ -11,7 +11,7 @@ from mido.sockets import connect
 import dliveConstants
 from ChannelListEntry import ChannelListEntry
 
-version = "1.2.4"
+version = "1.3.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 

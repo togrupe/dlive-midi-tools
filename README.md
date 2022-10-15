@@ -39,6 +39,6 @@ Afterwards the following GUI opens automatically.
 Select the Columns you want to write, then click the Button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. 
 The selected action(s) start automatically.
 
-If you find any issue, please let me know.
+If you find any issues, please let me know.
 
 Have fun!

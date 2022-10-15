@@ -13,7 +13,7 @@ Excel sheet, please edit the columns: Name, Color and Phantom
 An example excel file named: **dLiveChannelList.xls** can be found in the root folder. 
 
 The following colors are allowed:
-blue, red, light blue, magenta, green, yellow, black, white
+blue, red, light blue, purple, green, yellow, black, white
 
 ## Settings on the dlive console
 The Midi Channel setting on dlive under Utils/Shows -> Control -> Midi has to be: 1 to 5

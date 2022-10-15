@@ -1,7 +1,7 @@
 # coding=utf-8
 import re
 import time
-from tkinter import filedialog, Button, Tk
+from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label
 
 import mido
 import pandas as pd
@@ -43,7 +43,7 @@ def color_channel(output, channel, color):
         colour = dliveConstants.lcd_color_red
     elif color == "light blue":
         colour = dliveConstants.lcd_color_ltblue
-    elif color == 'magenta':
+    elif color == 'purple':
         colour = dliveConstants.lcd_color_purple
     elif color == 'green':
         colour = dliveConstants.lcd_color_green
@@ -97,7 +97,7 @@ def trigger_phantom_power(message, output, phantoms):
     time.sleep(1)
 
 
-def read_document(filename):
+def read_document(filename, naming, coloring, phantom):
     df = pd.read_excel(filename)
 
     names = []
@@ -115,40 +115,90 @@ def read_document(filename):
     time.sleep(2)
 
     print("Open connection to dlive...")
-    output = connect(dliveConstants.ip, dliveConstants.port)
+    # output = connect(dliveConstants.ip, dliveConstants.port)
     print("Connection successful.")
-    
+
     time.sleep(1)
 
     print("Start Processing...")
-    trigger_channel_renaming("Naming the channels...", output, names)
-    trigger_coloring("Coloring the channels...", output, colors)
-    trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
+    if naming:
+        print("1. naming")
+        print(names)
+        # trigger_channel_renaming("Naming the channels...", output, names)
+    if coloring:
+        print("2. coloring")
+        print(colors)
+        # trigger_coloring("Coloring the channels...", output, colors)
+    if phantom:
+        print("3. phantom")
+        print(phantoms)
+        # trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
     print("Processing done")
 
-    output.close()
+    # output.close()
+
+
+def browse_files():
+    file = filedialog.askopenfilename()
+
+    states = allstates()
+
+    if states.__getitem__(0):
+        cb_naming = True
+    else:
+        cb_naming = False
+
+    if states.__getitem__(1):
+        cb_coloring = True
+    else:
+        cb_coloring = False
+
+    if states.__getitem__(2):
+        cb_phantom = True
+    else:
+        cb_phantom = False
+
+    read_document(file, cb_naming, cb_coloring, cb_phantom)
+
+
+class Checkbar(Frame):
+    def __init__(self, parent=None, picks=[], side=LEFT, anchor=W):
+        Frame.__init__(self, parent)
+        self.vars = []
+        for pick in picks:
+            var = IntVar()
+            chk = Checkbutton(self, text=pick, variable=var)
+            chk.pack(side=side, anchor=anchor, expand=YES)
+            self.vars.append(var)
+
+    def state(self):
+        return map((lambda var: var.get()), self.vars)
+
+
+root = Tk()
+lng = Checkbar(root, ['Names', 'Colors', '48V Phantom Power'])
+
+
+def allstates():
+    return list(lng.state())
 
 
 if __name__ == '__main__':
-    root = Tk()
-
     root.title('Allen & Heath dLive Channel List Manager')
 
-    root.geometry('480x60')
-
-    root.config(bg='grey')
-
-
-    def browse_files():
-        file = filedialog.askopenfilename()
-
-        read_document(file)
-
-
-    button_1 = Button(root, text='Open Excel Sheet and Trigger Writing Process', command=browse_files)
-
-    button_1.place(x=100, y=0)
+    var = Label(root, text="Choose which column you want to write from the given Excel sheet")
+    var.pack(side=TOP)
+    root.geometry('800x120')
 
     root.resizable(False, False)
 
+    root.config(background='grey')
+
+    lng.grid(row=0, sticky=W)
+    lng.pack(side=TOP, fill=X)
+    lng.config(relief=GROOVE, bd=2)
+
+    Button(root, text='Open Excel Sheet and Trigger Writing Process', command=browse_files).pack(side=LEFT)
+    Button(root, text='Quit', command=root.quit).pack(side=RIGHT)
+    #Button(root, text='Peek', command=allstates).pack(side=RIGHT)
     root.mainloop()

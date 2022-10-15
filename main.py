@@ -200,7 +200,7 @@ def allstates():
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
-    root.geometry('700x200')
+    root.geometry('600x200')
     root.resizable(False, False)
     Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
 

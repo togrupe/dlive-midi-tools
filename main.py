@@ -117,7 +117,7 @@ def read_document(filename, naming, coloring, phantoming):
     time.sleep(2)
 
     print("Open connection to dlive...")
-    # output = connect(dliveConstants.ip, dliveConstants.port)
+    output = connect(dliveConstants.ip, dliveConstants.port)
     print("Connection successful.")
 
     time.sleep(1)
@@ -126,18 +126,18 @@ def read_document(filename, naming, coloring, phantoming):
     if naming:
         print("1. Writing the following channel names...")
         print(names)
-        # trigger_channel_renaming("Naming the channels...", output, names)
+        trigger_channel_renaming("Naming the channels...", output, names)
     if coloring:
         print("2. Writing the following colors...")
         print(colors)
-        # trigger_coloring("Coloring the channels...", output, colors)
+        trigger_coloring("Coloring the channels...", output, colors)
     if phantoming:
         print("3. Writing the following phantom power values...")
         print(phantoms)
-        # trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
+        trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
     print("Processing done")
 
-    # output.close()
+    output.close()
 
 
 def browse_files():

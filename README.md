@@ -10,7 +10,8 @@ Excel sheet, please edit the columns: Name, Color and Phantom
 
 ![Excel](excel.png)
 
-An example excel file named: **dLiveChannelList.xls** can be found in the root folder. 
+An example Excel file named: **dLiveChannelList.xls** can be found in the root folder. 
+By default the channels 1-48 are available in the sheet. If you need more, you can add up to 128 channels.
 
 The following colors are allowed:
 blue, red, light blue, purple, green, yellow, black, white

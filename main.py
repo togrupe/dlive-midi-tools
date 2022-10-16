@@ -10,7 +10,7 @@ from mido.sockets import connect
 
 import dliveConstants
 
-version = "1.2.0"
+version = "1.2.1"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 

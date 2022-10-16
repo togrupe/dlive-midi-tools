@@ -13,7 +13,7 @@ Excel sheet, please edit the columns: Name, Color and Phantom
 An example Excel file named: **dLiveChannelList.xls** can be found in the root folder. 
 By default the channels 1-128 are available in the sheet. If you need less, 
 just delete the channels you don't want to process. Please make sure that you have 
-no gaps in channel column. 
+no gaps in channel column. Empty lines in between are currently not supported.
 
 Please make sure that you save your changes in the (*.xls) format. 
 
@@ -31,7 +31,9 @@ Please make sure that your ethernet or Wi-Fi interface has an ip address in the 
  
 
 ## Usage
-Prerequisites: Python >= 3.8
+Prerequisites: 
+* Python >= 3.8
+* dlive firmware: >= 1.90
 
 1. Recommendation: Please backup your current show file, just to be on the safe side if something goes wrong.
 

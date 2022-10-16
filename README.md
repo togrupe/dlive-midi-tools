@@ -28,7 +28,8 @@ blue, red, light blue, purple, green, yellow, black, white
 ## Settings on the dlive console
 The Midi Channel setting on dlive under `Utils/Shows -> Control -> Midi` has to be: `12 to 16`, which is default.
 
-If you want to change the preconfigured Midi port, you can set the field: `midi_channel_number` according to your dlive settings. 
+If you want to change the preconfigured Midi port, you can set the field: `midi_channel_number` 
+in the file: dliveConstants.py according to your dlive settings. 
 
 ## Default ip and port
 The default dlive mixrack ip address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 

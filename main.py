@@ -116,7 +116,7 @@ def trigger_phantom_power(message, output, phantoms):
     time.sleep(1)
 
 
-def read_document(filename, naming, coloring, phantoming):
+def read_document(filename, check_box_states):
     df = pd.read_excel(filename)
 
     names = []
@@ -142,17 +142,32 @@ def read_document(filename, naming, coloring, phantoming):
 
     time.sleep(1)
 
+    if check_box_states.__getitem__(0):
+        naming = True
+    else:
+        naming = False
+
+    if check_box_states.__getitem__(1):
+        coloring = True
+    else:
+        coloring = False
+
+    if check_box_states.__getitem__(2):
+        phantoming = True
+    else:
+        phantoming = False
+
     print("Start Processing...")
     if naming:
-        print("1. Writing the following channel names...")
+        print("Writing the following channel names...")
         print("Input Array: " + str(names))
         trigger_channel_renaming("Naming the channels...", output, names)
     if coloring:
-        print("2. Writing the following colors...")
+        print("Writing the following colors...")
         print("Input Array: " + str(colors))
         trigger_coloring("Coloring the channels...", output, colors)
     if phantoming:
-        print("3. Writing the following phantom power values...")
+        print("Writing the following phantom power values...")
         print("Input Array: " + str(phantoms))
         trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
     print("Processing done")
@@ -162,26 +177,8 @@ def read_document(filename, naming, coloring, phantoming):
 
 
 def browse_files():
-    file = filedialog.askopenfilename()
 
-    states = allstates()
-
-    if states.__getitem__(0):
-        cb_naming = True
-    else:
-        cb_naming = False
-
-    if states.__getitem__(1):
-        cb_coloring = True
-    else:
-        cb_coloring = False
-
-    if states.__getitem__(2):
-        cb_phantom = True
-    else:
-        cb_phantom = False
-
-    read_document(file, cb_naming, cb_coloring, cb_phantom)
+    read_document(filedialog.askopenfilename(), get_checkbox_states())
 
 
 class Checkbar(Frame):
@@ -208,7 +205,7 @@ ip_byte3 = Entry(ip_frame, width=3)
 mixrack_ip = ""
 
 
-def allstates():
+def get_checkbox_states():
     return list(columns.state())
 
 

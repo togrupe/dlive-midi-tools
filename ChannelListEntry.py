@@ -16,3 +16,6 @@ class ChannelListEntry:
 
     def get_phantom(self):
         return self.phantom
+
+    def get_channel_dlive(self):
+        return self.channel-1

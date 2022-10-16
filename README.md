@@ -11,7 +11,11 @@ Excel sheet, please edit the columns: Name, Color and Phantom
 ![Excel](excel.png)
 
 An example Excel file named: **dLiveChannelList.xls** can be found in the root folder. 
-By default the channels 1-48 are available in the sheet. If you need more, you can add up to 128 channels.
+By default the channels 1-128 are available in the sheet. If you need less, 
+just delete the channels you don't want to process. Please make sure that you have 
+no gaps in channel column. 
+
+Please make sure that you save your changes in the (*.xls) format. 
 
 The following colors are allowed:
 blue, red, light blue, purple, green, yellow, black, white
@@ -20,12 +24,15 @@ blue, red, light blue, purple, green, yellow, black, white
 The Midi Channel setting on dlive under Utils/Shows -> Control -> Midi has to be: 1 to 5
 
 ## Default ip and port
-The default dlive mixrack ip address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to change it, you can edit the field "ip" in the file: dliveConstants.py.   
+The default dlive mixrack ip address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
+change it, you can edit the field "ip" in the file: dliveConstants.py or during runtime within the GUI.  
 
-Please make sure that your ethernet interface has an ip address in the same subnet. e.g. 192.168.1.10
+Please make sure that your ethernet or Wi-Fi interface has an ip address in the same subnet. e.g. 192.168.1.10
  
 
 ## Usage
+Prerequisites: Python >= 3.8
+
 1. Recommendation: Please backup your current show file, just to be on the safe side if something goes wrong.
 
 2. Before you run the script, please run the following command to download the required python modules using `pip`. Please make sure `pip` is installed.
@@ -36,7 +43,7 @@ Please make sure that your ethernet interface has an ip address in the same subn
 
 `python3 main.py`
 
-Afterwards the following GUI opens automatically. 
+Afterwards the following GUI should appear. 
 
 ![Gui](gui.png)
 

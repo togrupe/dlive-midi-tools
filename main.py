@@ -11,7 +11,7 @@ from mido.sockets import connect
 import dliveConstants
 from ChannelListEntry import ChannelListEntry
 
-version = "1.2.3"
+version = "1.2.4"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -38,7 +38,8 @@ def trigger_channel_renaming(message, output, names):
             if len(str(character)) != 0:
                 payload.append(ord(character))
 
-        prefix = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_channel_name, item.get_channel()]
+        prefix = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_channel_name,
+                  item.get_channel_dlive()]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
             output.send(message)
@@ -81,7 +82,7 @@ def color_channel(output, channel, color):
 def trigger_coloring(message, output, colors):
     print(message)
     for item in colors:
-        color_channel(output, item.get_channel(), item.get_color())
+        color_channel(output, item.get_channel_dlive(), item.get_color())
 
     print("Wait 1 seconds")
     time.sleep(1)
@@ -108,7 +109,7 @@ def phantom_channel(output, channel, phantom):
 def trigger_phantom_power(message, output, phantoms):
     print(message)
     for item in phantoms:
-        phantom_channel(output, item.get_channel(), item.get_phantom())
+        phantom_channel(output, item.get_channel_dlive(), item.get_phantom())
 
     time.sleep(1)
 

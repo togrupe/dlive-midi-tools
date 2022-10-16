@@ -22,7 +22,13 @@ def trigger_channel_renaming(message, output, names):
 
     for name in names:
 
-        characters = re.findall('.?', name)
+        # Trim name if length of name > 6
+        if len(str(name)) > 6:
+            trimmed_name = name[0:6]
+        else:
+            trimmed_name = name
+
+        characters = re.findall('.?', trimmed_name)
 
         payload = []
 
@@ -32,7 +38,8 @@ def trigger_channel_renaming(message, output, names):
 
         prefix = [0x00, 0x03, index]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
-        output.send(message)
+        if is_network_communication_allowed:
+            output.send(message)
         time.sleep(.1)
         index = index + 1
 
@@ -42,27 +49,30 @@ def trigger_channel_renaming(message, output, names):
 
 def color_channel(output, channel, color):
     colour = dliveConstants.lcd_color_black
-    if color == "blue":
+
+    lower_color = str(color).lower()
+    if lower_color == "blue":
         colour = dliveConstants.lcd_color_blue
-    elif color == "red":
+    elif lower_color == "red":
         colour = dliveConstants.lcd_color_red
-    elif color == "light blue":
+    elif lower_color == "light blue":
         colour = dliveConstants.lcd_color_ltblue
-    elif color == 'purple':
+    elif lower_color == 'purple':
         colour = dliveConstants.lcd_color_purple
-    elif color == 'green':
+    elif lower_color == 'green':
         colour = dliveConstants.lcd_color_green
-    elif color == 'yellow':
+    elif lower_color == 'yellow':
         colour = dliveConstants.lcd_color_yellow
-    elif color == 'black':
+    elif lower_color == 'black':
         colour = dliveConstants.lcd_color_black
-    elif color == 'white':
+    elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
 
     payload_array = [0x00, 0x06, channel, colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
-    output.send(message)
+    if is_network_communication_allowed:
+        output.send(message)
     time.sleep(.1)
 
 
@@ -78,9 +88,10 @@ def trigger_coloring(message, output, colors):
 
 
 def phantom_channel(output, channel, phantom):
-    if phantom == "yes":
+    lower_phantom = str(phantom).lower()
+    if lower_phantom == "yes":
         res = dliveConstants.phantom_power_on
-    elif phantom == "no":
+    elif lower_phantom == "no":
         res = dliveConstants.phantom_power_off
     else:
         res = dliveConstants.phantom_power_off
@@ -88,7 +99,8 @@ def phantom_channel(output, channel, phantom):
     payload_array = [0x00, 0x0C, channel, res]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
-    output.send(message)
+    if is_network_communication_allowed:
+        output.send(message)
     time.sleep(.1)
 
 
@@ -123,25 +135,24 @@ def read_document(filename, naming, coloring, phantoming):
         print("Open connection to dlive on ip: " + mixrack_ip + ":" + str(dliveConstants.port) + " ...")
         output = connect(mixrack_ip, dliveConstants.port)
         print("Connection successful.")
+    else:
+        output = None
 
     time.sleep(1)
 
     print("Start Processing...")
     if naming:
         print("1. Writing the following channel names...")
-        print(names)
-        if is_network_communication_allowed:
-            trigger_channel_renaming("Naming the channels...", output, names)
+        print("Input Array: " + str(names))
+        trigger_channel_renaming("Naming the channels...", output, names)
     if coloring:
         print("2. Writing the following colors...")
-        print(colors)
-        if is_network_communication_allowed:
-            trigger_coloring("Coloring the channels...", output, colors)
+        print("Input Array: " + str(colors))
+        trigger_coloring("Coloring the channels...", output, colors)
     if phantoming:
         print("3. Writing the following phantom power values...")
-        print(phantoms)
-        if is_network_communication_allowed:
-            trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
+        print("Input Array: " + str(phantoms))
+        trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
     print("Processing done")
 
     if is_network_communication_allowed:
@@ -193,6 +204,7 @@ ip_byte1 = Entry(ip_frame, width=3)
 ip_byte2 = Entry(ip_frame, width=3)
 ip_byte3 = Entry(ip_frame, width=3)
 mixrack_ip = ""
+
 
 def allstates():
     return list(columns.state())

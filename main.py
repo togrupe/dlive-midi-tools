@@ -38,7 +38,7 @@ def trigger_channel_renaming(message, output, names):
             if len(str(character)) != 0:
                 payload.append(ord(character))
 
-        prefix = [0x00, 0x03, item.get_channel()]
+        prefix = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_channel_name, item.get_channel()]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
             output.send(message)
@@ -69,7 +69,8 @@ def color_channel(output, channel, color):
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
 
-    payload_array = [0x00, 0x06, channel, colour]
+    payload_array = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_channel_colour, channel,
+                     colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
@@ -95,7 +96,8 @@ def phantom_channel(output, channel, phantom):
     else:
         res = dliveConstants.phantom_power_off
 
-    payload_array = [0x00, 0x0C, channel, res]
+    payload_array = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_socket_preamp_48V, channel,
+                     res]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:

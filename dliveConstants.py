@@ -32,5 +32,5 @@ allow_network_communication = True
 ip = '192.168.1.70'
 port = 51325
 
-# MIDI channel number - MIDI channel 1 to 12 = 0 to B
-midi_channel_number = 0x00
+# MIDI channel number - MIDI channel 1 to 12
+midi_channel_number = 12

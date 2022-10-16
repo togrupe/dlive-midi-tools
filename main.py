@@ -38,7 +38,7 @@ def trigger_channel_renaming(message, output, names):
             if len(str(character)) != 0:
                 payload.append(ord(character))
 
-        prefix = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_channel_name,
+        prefix = [midi_port, dliveConstants.sysex_message_set_channel_name,
                   item.get_channel_dlive()]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
@@ -70,7 +70,7 @@ def color_channel(output, channel, color):
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
 
-    payload_array = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_channel_colour, channel,
+    payload_array = [midi_port, dliveConstants.sysex_message_set_channel_colour, channel,
                      colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -97,7 +97,7 @@ def phantom_channel(output, channel, phantom):
     else:
         res = dliveConstants.phantom_power_off
 
-    payload_array = [dliveConstants.midi_channel_number, dliveConstants.sysex_message_set_socket_preamp_48V, channel,
+    payload_array = [midi_port, dliveConstants.sysex_message_set_socket_preamp_48V, channel,
                      res]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -212,6 +212,7 @@ ip_byte1 = Entry(ip_frame, width=3)
 ip_byte2 = Entry(ip_frame, width=3)
 ip_byte3 = Entry(ip_frame, width=3)
 mixrack_ip = ""
+midi_port = dliveConstants.midi_channel_number - 1
 
 
 def get_checkbox_states():

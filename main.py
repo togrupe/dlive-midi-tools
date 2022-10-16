@@ -10,7 +10,7 @@ from mido.sockets import connect
 
 import dliveConstants
 
-version = "1.2.1"
+version = "1.2.2"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -24,10 +24,12 @@ def trigger_channel_renaming(message, output, names):
 
         # Trim name if length of name > 6
         if len(str(name)) > 6:
-            trimmed_name = name[0:6]
+            trimmed_name = str(name)[0:6]
+            print("Channel name will be trimmed to 6 characters, before: " + str(name) + " after: " + str(trimmed_name))
         else:
-            trimmed_name = name
+            trimmed_name = str(name)
 
+        print("processing channel name: " + str(trimmed_name))
         characters = re.findall('.?', trimmed_name)
 
         payload = []

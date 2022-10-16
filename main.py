@@ -9,8 +9,9 @@ import pandas as pd
 from mido.sockets import connect
 
 import dliveConstants
+from ChannelListEntry import ChannelListEntry
 
-version = "1.2.2"
+version = "1.2.3"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -18,18 +19,17 @@ is_network_communication_allowed = dliveConstants.allow_network_communication
 def trigger_channel_renaming(message, output, names):
     print(message)
 
-    index = 0
-
-    for name in names:
+    for item in names:
 
         # Trim name if length of name > 6
-        if len(str(name)) > 6:
-            trimmed_name = str(name)[0:6]
-            print("Channel name will be trimmed to 6 characters, before: " + str(name) + " after: " + str(trimmed_name))
+        if len(str(item.get_name())) > 6:
+            trimmed_name = str(item.get_name())[0:6]
+            print("Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
+                trimmed_name))
         else:
-            trimmed_name = str(name)
+            trimmed_name = str(item.get_name())
 
-        print("processing channel name: " + str(trimmed_name))
+        # print("processing channel name: " + str(trimmed_name))
         characters = re.findall('.?', trimmed_name)
 
         payload = []
@@ -38,12 +38,11 @@ def trigger_channel_renaming(message, output, names):
             if len(str(character)) != 0:
                 payload.append(ord(character))
 
-        prefix = [0x00, 0x03, index]
+        prefix = [0x00, 0x03, item.get_channel()]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
             output.send(message)
         time.sleep(.1)
-        index = index + 1
 
     print("Wait 1 seconds")
     time.sleep(1)
@@ -80,10 +79,8 @@ def color_channel(output, channel, color):
 
 def trigger_coloring(message, output, colors):
     print(message)
-    index = 0
-    for color in colors:
-        color_channel(output, index, color)
-        index = index + 1
+    for item in colors:
+        color_channel(output, item.get_channel(), item.get_color())
 
     print("Wait 1 seconds")
     time.sleep(1)
@@ -108,10 +105,8 @@ def phantom_channel(output, channel, phantom):
 
 def trigger_phantom_power(message, output, phantoms):
     print(message)
-    index = 0
-    for phantom in phantoms:
-        phantom_channel(output, index, phantom)
-        index = index + 1
+    for item in phantoms:
+        phantom_channel(output, item.get_channel(), item.get_phantom())
 
     time.sleep(1)
 
@@ -119,9 +114,13 @@ def trigger_phantom_power(message, output, phantoms):
 def read_document(filename, check_box_states):
     df = pd.read_excel(filename)
 
+    channels = []
+    for channel in df['Channel']:
+        channels.append(channel)
+
     names = []
     for name in df['Name']:
-        names.append(name)
+        names.append(str(name))
 
     colors = []
     for color in df['Color']:
@@ -130,6 +129,14 @@ def read_document(filename, check_box_states):
     phantoms = []
     for phantom in df['Phantom']:
         phantoms.append(phantom)
+
+    channel_list_entries = []
+    index = 0
+    for channel in channels:
+        cle = ChannelListEntry(channel, names.__getitem__(index), colors.__getitem__(index),
+                               phantoms.__getitem__(index))
+        channel_list_entries.append(cle)
+        index = index + 1
 
     time.sleep(2)
     if is_network_communication_allowed:
@@ -161,15 +168,15 @@ def read_document(filename, check_box_states):
     if naming:
         print("Writing the following channel names...")
         print("Input Array: " + str(names))
-        trigger_channel_renaming("Naming the channels...", output, names)
+        trigger_channel_renaming("Naming the channels...", output, channel_list_entries)
     if coloring:
         print("Writing the following colors...")
         print("Input Array: " + str(colors))
-        trigger_coloring("Coloring the channels...", output, colors)
+        trigger_coloring("Coloring the channels...", output, channel_list_entries)
     if phantoming:
         print("Writing the following phantom power values...")
         print("Input Array: " + str(phantoms))
-        trigger_phantom_power("Set phantom power to the channels...", output, phantoms)
+        trigger_phantom_power("Set phantom power to the channels...", output, channel_list_entries)
     print("Processing done")
 
     if is_network_communication_allowed:
@@ -177,7 +184,6 @@ def read_document(filename, check_box_states):
 
 
 def browse_files():
-
     read_document(filedialog.askopenfilename(), get_checkbox_states())
 
 

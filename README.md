@@ -26,14 +26,13 @@ The following colors are allowed:
 blue, red, light blue, purple, green, yellow, black, white
 
 ## Settings on the dlive console
-The Midi Channel setting on dlive under `Utils/Shows -> Control -> Midi` has to be: `12 to 16`, which is default.
+The Midi Channel setting on dlive under `Utils/Shows -> Control -> Midi` should be be set to : `12 to 16`, which is default.
 
-If you want to change the preconfigured Midi port, you can set the field: `midi_channel_number` 
-in the file: dliveConstants.py according to your dlive settings. 
+If you want to change the preconfigured Midi port, you can change it in the Graphical User Interface according to your dlive settings. 
 
 ## Default ip and port
 The default dlive mixrack ip address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
-change it, you can edit the field `ip` in the file: dliveConstants.py or during runtime within the GUI.  
+change it, you can edit the field `ip` in the file: dliveConstants.py or during runtime within the Graphical User Interface.  
 
 Please make sure that your ethernet or Wi-Fi interface has an ip address in the same subnet. e.g. 192.168.1.10
  
@@ -53,11 +52,17 @@ Prerequisites:
 
 `python3 main.py`
 
-Afterwards the following GUI should appear. 
+Afterwards the following window appears. 
 
 ![Gui](gui.png)
 
-Select the columns you want to write, then click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+1. Check the Mixrack IP and Midi Port.
+
+2. Select the columns you want to write, 
+
+3. then click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+
+4. If something goes wrong, please check the console.
 
 If you find any issues, please let me know.
 

@@ -2,7 +2,7 @@
 import re
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label, \
-    Entry, BOTTOM, StringVar, OptionMenu, CENTER
+    Entry, BOTTOM, StringVar, OptionMenu
 
 import mido
 import pandas as pd
@@ -218,9 +218,9 @@ root = Tk()
 config_frame = Frame(root)
 ip_frame = Frame(config_frame)
 Label(config_frame, text="       ").grid(row=0, column=0)
-ip_frame.grid(row=1, column=0)
+ip_frame.grid(row=1, column=0, sticky="W")
 midi_port_frame = Frame(config_frame)
-midi_port_frame.grid(row=2, column=0)
+midi_port_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Names', 'Colors', '48V Phantom Power'])
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 
     columns.pack(side=TOP, fill=X)
     columns.config(relief=GROOVE, bd=2)
-    Label(ip_frame, text="Mixrack IP Address:", width=30).pack(side=LEFT)
+    Label(ip_frame, text="Mixrack IP Address:", width=25).pack(side=LEFT)
 
     ip_byte0.grid(row=0, column=0)
     Label(ip_field, text=".").grid(row=0, column=1)
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 
     var_midi_port.set("12 to 16")  # default value
 
-    Label(midi_port_frame, text="Mixrack Midi Port:", width=30).pack(side=LEFT)
+    Label(midi_port_frame, text="   Mixrack Midi Port:", width=25).pack(side=LEFT)
 
     dropdown_midi_port = OptionMenu(midi_port_frame, var_midi_port, "1 to 5", "2 to 6", "3 to 7", "4 to 8", "5 to 9",
                                     "6 to 10", "7 to 11",

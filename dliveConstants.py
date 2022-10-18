@@ -31,6 +31,3 @@ allow_network_communication = True
 # dlive Mixrack ip and port for midi/tcp
 ip = '192.168.1.70'
 port = 51325
-
-# MIDI channel number - MIDI channel 1 to 12
-midi_channel_number = 12

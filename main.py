@@ -2,7 +2,7 @@
 import re
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label, \
-    Entry, BOTTOM
+    Entry, BOTTOM, StringVar, OptionMenu
 
 import mido
 import pandas as pd
@@ -11,7 +11,7 @@ from mido.sockets import connect
 import dliveConstants
 from ChannelListEntry import ChannelListEntry
 
-version = "1.3.0"
+version = "1.4.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -38,7 +38,7 @@ def trigger_channel_renaming(message, output, names):
             if len(str(character)) != 0:
                 payload.append(ord(character))
 
-        prefix = [midi_port, dliveConstants.sysex_message_set_channel_name,
+        prefix = [root.midi_port, dliveConstants.sysex_message_set_channel_name,
                   item.get_channel_dlive()]
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
@@ -70,7 +70,7 @@ def color_channel(output, channel, color):
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
 
-    payload_array = [midi_port, dliveConstants.sysex_message_set_channel_colour, channel,
+    payload_array = [root.midi_port, dliveConstants.sysex_message_set_channel_colour, channel,
                      colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -97,7 +97,7 @@ def phantom_channel(output, channel, phantom):
     else:
         res = dliveConstants.phantom_power_off
 
-    payload_array = [midi_port, dliveConstants.sysex_message_set_socket_preamp_48V, channel,
+    payload_array = [root.midi_port, dliveConstants.sysex_message_set_socket_preamp_48V, channel,
                      res]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -142,6 +142,7 @@ def read_document(filename, check_box_states):
         index = index + 1
 
     time.sleep(2)
+
     if is_network_communication_allowed:
         mixrack_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
         print("Open connection to dlive on ip: " + mixrack_ip + ":" + str(dliveConstants.port) + " ...")
@@ -149,6 +150,8 @@ def read_document(filename, check_box_states):
         print("Connection successful.")
     else:
         output = None
+
+    root.midi_port = determine_technical_midi_port(var_midi_port.get())
 
     time.sleep(1)
 
@@ -186,6 +189,24 @@ def read_document(filename, check_box_states):
         output.close()
 
 
+def determine_technical_midi_port(selected_midi_port_as_string):
+    switcher = {
+        "1 to 5": 0,
+        "2 to 6": 1,
+        "3 to 7": 2,
+        "4 to 8": 3,
+        "5 to 9": 4,
+        "6 to 10": 5,
+        "7 to 11": 6,
+        "8 to 12": 7,
+        "9 to 13": 8,
+        "10 to 14": 9,
+        "11 to 15": 10,
+        "12 to 16": 11
+    }
+    return switcher.get(selected_midi_port_as_string, "Invalid port")
+
+
 def browse_files():
     read_document(filedialog.askopenfilename(), get_checkbox_states())
 
@@ -212,7 +233,8 @@ ip_byte1 = Entry(ip_frame, width=3)
 ip_byte2 = Entry(ip_frame, width=3)
 ip_byte3 = Entry(ip_frame, width=3)
 mixrack_ip = ""
-midi_port = dliveConstants.midi_channel_number - 1
+midi_port = None
+var_midi_port = StringVar(root)
 
 
 def get_checkbox_states():
@@ -236,6 +258,14 @@ if __name__ == '__main__':
     ip_byte2.grid(row=0, column=6)
     Label(ip_frame, text=".").grid(row=0, column=7)
     ip_byte3.grid(row=0, column=8)
+
+    var_midi_port.set("12 to 16")  # default value
+
+    Label(ip_frame, text="Midi Port:").grid(row=1, column=1)
+
+    w = OptionMenu(ip_frame, var_midi_port, "1 to 5", "2 to 6", "3 to 7", "4 to 8", "5 to 9", "6 to 10", "7 to 11",
+                   "8 to 12", "9 to 13", "10 to 14", "11 to 15", "12 to 16")
+    w.grid(row=1, column=2)
 
     ip = dliveConstants.ip.split(".")
 

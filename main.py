@@ -240,7 +240,7 @@ def get_checkbox_states():
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
-    root.geometry('600x200')
+    root.geometry('600x250')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
@@ -260,7 +260,7 @@ if __name__ == '__main__':
 
     var_midi_port.set("12 to 16")  # default value
 
-    Label(midi_port_frame, text=" Mixrack Midi Port:", width=30).pack(side=LEFT)
+    Label(midi_port_frame, text="Mixrack Midi Port:", width=30).pack(side=LEFT)
 
     dropdown_midi_port = OptionMenu(midi_port_frame, var_midi_port, "1 to 5", "2 to 6", "3 to 7", "4 to 8", "5 to 9",
                                     "6 to 10", "7 to 11",
@@ -274,7 +274,11 @@ if __name__ == '__main__':
     ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
     ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
-    Button(root, text='Open Excel sheet and trigger writing process', command=browse_files).pack(side=LEFT)
-    Button(root, text='Quit', command=root.quit).pack(side=BOTTOM)
+    bottom_frame = Frame(root)
+
+    Button(bottom_frame, text='Open Excel sheet and trigger writing process', command=browse_files).grid(row=0)
+    Label(bottom_frame, text=" ", width=30).grid(row=1)
+    Button(bottom_frame, text='Quit', command=root.quit).grid(row=2)
+    bottom_frame.pack(side=BOTTOM)
 
     root.mainloop()

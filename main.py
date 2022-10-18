@@ -2,7 +2,7 @@
 import re
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label, \
-    Entry, BOTTOM, StringVar, OptionMenu
+    Entry, BOTTOM, StringVar, OptionMenu, CENTER
 
 import mido
 import pandas as pd
@@ -155,34 +155,23 @@ def read_document(filename, check_box_states):
 
     time.sleep(1)
 
-    if check_box_states.__getitem__(0):
-        naming = True
-    else:
-        naming = False
-
-    if check_box_states.__getitem__(1):
-        coloring = True
-    else:
-        coloring = False
-
-    if check_box_states.__getitem__(2):
-        phantoming = True
-    else:
-        phantoming = False
-
     print("Start Processing...")
-    if naming:
+
+    if check_box_states.__getitem__(0):  # Names
         print("Writing the following channel names...")
         print("Input Array: " + str(names))
         trigger_channel_renaming("Naming the channels...", output, channel_list_entries)
-    if coloring:
+
+    if check_box_states.__getitem__(1):  # Colors
         print("Writing the following colors...")
         print("Input Array: " + str(colors))
         trigger_coloring("Coloring the channels...", output, channel_list_entries)
-    if phantoming:
+
+    if check_box_states.__getitem__(2):  # Phantom power
         print("Writing the following phantom power values...")
         print("Input Array: " + str(phantoms))
         trigger_phantom_power("Set phantom power to the channels...", output, channel_list_entries)
+
     print("Processing done")
 
     if is_network_communication_allowed:
@@ -226,12 +215,20 @@ class Checkbar(Frame):
 
 
 root = Tk()
-ip_frame = Frame(root)
+config_frame = Frame(root)
+ip_frame = Frame(config_frame)
+Label(config_frame, text="       ").grid(row=0, column=0)
+ip_frame.grid(row=1, column=0)
+midi_port_frame = Frame(config_frame)
+midi_port_frame.grid(row=2, column=0)
+config_frame.pack(side=TOP)
+
 columns = Checkbar(root, ['Names', 'Colors', '48V Phantom Power'])
-ip_byte0 = Entry(ip_frame, width=3)
-ip_byte1 = Entry(ip_frame, width=3)
-ip_byte2 = Entry(ip_frame, width=3)
-ip_byte3 = Entry(ip_frame, width=3)
+ip_field = Frame(ip_frame)
+ip_byte0 = Entry(ip_field, width=3)
+ip_byte1 = Entry(ip_field, width=3)
+ip_byte2 = Entry(ip_field, width=3)
+ip_byte3 = Entry(ip_field, width=3)
 mixrack_ip = ""
 midi_port = None
 var_midi_port = StringVar(root)
@@ -245,38 +242,39 @@ if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
     root.geometry('600x200')
     root.resizable(False, False)
+    Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
 
     columns.pack(side=TOP, fill=X)
     columns.config(relief=GROOVE, bd=2)
-    Label(ip_frame, text="-->     ").grid(row=0, column=0)
-    Label(ip_frame, text="Mixrack IP Address:").grid(row=0, column=1)
-    ip_byte0.grid(row=0, column=2)
-    Label(ip_frame, text=".").grid(row=0, column=3)
-    ip_byte1.grid(row=0, column=4)
-    Label(ip_frame, text=".").grid(row=0, column=5)
-    ip_byte2.grid(row=0, column=6)
-    Label(ip_frame, text=".").grid(row=0, column=7)
-    ip_byte3.grid(row=0, column=8)
+    Label(ip_frame, text="Mixrack IP Address:", width=30).pack(side=LEFT)
+
+    ip_byte0.grid(row=0, column=0)
+    Label(ip_field, text=".").grid(row=0, column=1)
+    ip_byte1.grid(row=0, column=2)
+    Label(ip_field, text=".").grid(row=0, column=3)
+    ip_byte2.grid(row=0, column=4)
+    Label(ip_field, text=".").grid(row=0, column=5)
+    ip_byte3.grid(row=0, column=6)
+    ip_field.pack(side=RIGHT)
 
     var_midi_port.set("12 to 16")  # default value
 
-    Label(ip_frame, text="Midi Port:").grid(row=1, column=1)
+    Label(midi_port_frame, text=" Mixrack Midi Port:", width=30).pack(side=LEFT)
 
-    w = OptionMenu(ip_frame, var_midi_port, "1 to 5", "2 to 6", "3 to 7", "4 to 8", "5 to 9", "6 to 10", "7 to 11",
-                   "8 to 12", "9 to 13", "10 to 14", "11 to 15", "12 to 16")
-    w.grid(row=1, column=2)
+    dropdown_midi_port = OptionMenu(midi_port_frame, var_midi_port, "1 to 5", "2 to 6", "3 to 7", "4 to 8", "5 to 9",
+                                    "6 to 10", "7 to 11",
+                                    "8 to 12", "9 to 13", "10 to 14", "11 to 15", "12 to 16")
+    dropdown_midi_port.pack(side=RIGHT)
 
-    ip = dliveConstants.ip.split(".")
+    ip_from_config_file = dliveConstants.ip.split(".")
 
-    ip_byte0.insert(10, ip.__getitem__(0))
-    ip_byte1.insert(11, ip.__getitem__(1))
-    ip_byte2.insert(12, ip.__getitem__(2))
-    ip_byte3.insert(13, ip.__getitem__(3))
-
-    ip_frame.pack(side=RIGHT)
+    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
+    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
+    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
+    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
     Button(root, text='Open Excel sheet and trigger writing process', command=browse_files).pack(side=LEFT)
-    Button(root, text='Quit', width=15, command=root.quit).pack(side=BOTTOM)
+    Button(root, text='Quit', command=root.quit).pack(side=BOTTOM)
 
     root.mainloop()

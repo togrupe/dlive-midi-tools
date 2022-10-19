@@ -151,6 +151,7 @@ def read_document(filename, check_box_states):
     else:
         output = None
     progress_open_or_close_connection()
+    root.update()
 
     root.midi_port = determine_technical_midi_port(var_midi_port.get())
 
@@ -183,27 +184,32 @@ def read_document(filename, check_box_states):
         print("Input Array: " + str(names))
         trigger_channel_renaming("Naming the channels...", output, channel_list_entries)
         progress(actions)
+        root.update()
 
     if coloring:
         print("Writing the following colors...")
         print("Input Array: " + str(colors))
         trigger_coloring("Coloring the channels...", output, channel_list_entries)
         progress(actions)
+        root.update()
 
     if phantoming:
         print("Writing the following phantom power values...")
         print("Input Array: " + str(phantoms))
         trigger_phantom_power("Set phantom power to the channels...", output, channel_list_entries)
         progress(actions)
+        root.update()
 
     if actions == 0:
         progress(actions)
+        root.update()
 
     print("Processing done")
 
     if is_network_communication_allowed:
         output.close()
     progress_open_or_close_connection()
+    root.update()
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):

@@ -157,8 +157,6 @@ def read_document(filename, check_box_states):
 
     time.sleep(1)
 
-    print("Start Processing...")
-
     actions = 0
 
     if check_box_states.__getitem__(0):  # Names
@@ -178,7 +176,9 @@ def read_document(filename, check_box_states):
         phantoming = True
     else:
         phantoming = False
-
+    
+    print("Start Processing...")
+    
     if naming:
         print("Writing the following channel names...")
         print("Input Array: " + str(names))

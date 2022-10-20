@@ -347,7 +347,7 @@ if __name__ == '__main__':
                 pb['value'] += 90 / actions
                 value_label['text'] = update_progress_label()
             else:
-                showinfo(message='The progress completed!')
+                showinfo(message='Writing completed!')
 
 
     def progress_open_or_close_connection():
@@ -355,7 +355,7 @@ if __name__ == '__main__':
             pb['value'] += 5
             value_label['text'] = update_progress_label()
         else:
-            showinfo(message='The progress completed!')
+            showinfo(message='Writing completed!')
 
 
     # label to show current value in percent

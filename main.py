@@ -214,6 +214,7 @@ def read_document(filename, check_box_states):
     if is_network_communication_allowed:
         output.close()
     progress_open_or_close_connection()
+    progress_open_or_close_connection()
     root.update()
 
 
@@ -235,7 +236,13 @@ def determine_technical_midi_port(selected_midi_port_as_string):
     return switcher.get(selected_midi_port_as_string, "Invalid port")
 
 
+def reset_progress_bar():
+    pb['value'] = 0
+    root.update()
+
+
 def browse_files():
+    reset_progress_bar()
     read_document(filedialog.askopenfilename(), get_checkbox_states())
 
 

@@ -13,7 +13,7 @@ from mido.sockets import connect
 import dliveConstants
 from ChannelListEntry import ChannelListEntry
 
-logging.basicConfig(filename='main.log', level=logging.DEBUG)
+logging.basicConfig(filename='main.log', level=logging.ERROR)
 
 version = "1.5.0"
 

@@ -1,8 +1,10 @@
 # coding=utf-8
+import logging
 import re
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label, \
-    Entry, BOTTOM, StringVar, OptionMenu
+    Entry, BOTTOM, StringVar, OptionMenu, ttk
+from tkinter.messagebox import showinfo
 
 import mido
 import pandas as pd
@@ -11,25 +13,26 @@ from mido.sockets import connect
 import dliveConstants
 from ChannelListEntry import ChannelListEntry
 
-version = "1.4.0"
+logging.basicConfig(filename='main.log', level=logging.ERROR)
+
+version = "1.5.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
 
 def trigger_channel_renaming(message, output, names):
-    print(message)
+    logging.info(message)
 
     for item in names:
 
         # Trim name if length of name > 6
         if len(str(item.get_name())) > 6:
             trimmed_name = str(item.get_name())[0:6]
-            print("Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
+            logging.info("Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
                 trimmed_name))
         else:
             trimmed_name = str(item.get_name())
 
-        # print("processing channel name: " + str(trimmed_name))
         characters = re.findall('.?', trimmed_name)
 
         payload = []
@@ -45,7 +48,7 @@ def trigger_channel_renaming(message, output, names):
             output.send(message)
         time.sleep(.1)
 
-    print("Wait 1 seconds")
+    logging.info("Wait 1 seconds")
     time.sleep(1)
 
 
@@ -80,11 +83,11 @@ def color_channel(output, channel, color):
 
 
 def trigger_coloring(message, output, colors):
-    print(message)
+    logging.info(message)
     for item in colors:
         color_channel(output, item.get_channel_dlive(), item.get_color())
 
-    print("Wait 1 seconds")
+    logging.info("Wait 1 seconds")
     time.sleep(1)
 
 
@@ -107,7 +110,7 @@ def phantom_channel(output, channel, phantom):
 
 
 def trigger_phantom_power(message, output, phantoms):
-    print(message)
+    logging.info(message)
     for item in phantoms:
         phantom_channel(output, item.get_channel_dlive(), item.get_phantom())
 
@@ -115,6 +118,8 @@ def trigger_phantom_power(message, output, phantoms):
 
 
 def read_document(filename, check_box_states):
+    logging.info('The following file will be read : ' + str(filename))
+
     df = pd.read_excel(filename)
 
     channels = []
@@ -145,37 +150,72 @@ def read_document(filename, check_box_states):
 
     if is_network_communication_allowed:
         mixrack_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-        print("Open connection to dlive on ip: " + mixrack_ip + ":" + str(dliveConstants.port) + " ...")
+        logging.info("Open connection to dlive on ip: " + mixrack_ip + ":" + str(dliveConstants.port) + " ...")
         output = connect(mixrack_ip, dliveConstants.port)
-        print("Connection successful.")
+        logging.info("Connection successful.")
     else:
         output = None
+    progress_open_or_close_connection()
+    root.update()
 
     root.midi_port = determine_technical_midi_port(var_midi_port.get())
 
     time.sleep(1)
 
-    print("Start Processing...")
+    actions = 0
 
     if check_box_states.__getitem__(0):  # Names
-        print("Writing the following channel names...")
-        print("Input Array: " + str(names))
-        trigger_channel_renaming("Naming the channels...", output, channel_list_entries)
+        actions = actions + 1
+        naming = True
+    else:
+        naming = False
 
     if check_box_states.__getitem__(1):  # Colors
-        print("Writing the following colors...")
-        print("Input Array: " + str(colors))
-        trigger_coloring("Coloring the channels...", output, channel_list_entries)
+        actions = actions + 1
+        coloring = True
+    else:
+        coloring = False
 
     if check_box_states.__getitem__(2):  # Phantom power
-        print("Writing the following phantom power values...")
-        print("Input Array: " + str(phantoms))
-        trigger_phantom_power("Set phantom power to the channels...", output, channel_list_entries)
+        actions = actions + 1
+        phantoming = True
+    else:
+        phantoming = False
 
-    print("Processing done")
+    logging.info("Start Processing...")
+
+    if naming:
+        logging.debug("Writing the following channel names...")
+        logging.debug("Input Array: " + str(names))
+        trigger_channel_renaming("Naming the channels...", output, channel_list_entries)
+        progress(actions)
+        root.update()
+
+    if coloring:
+        logging.debug("Writing the following colors...")
+        logging.debug("Input Array: " + str(colors))
+        trigger_coloring("Coloring the channels...", output, channel_list_entries)
+        progress(actions)
+        root.update()
+
+    if phantoming:
+        logging.debug("Writing the following phantom power values...")
+        logging.debug("Input Array: " + str(phantoms))
+        trigger_phantom_power("Set phantom power to the channels...", output, channel_list_entries)
+        progress(actions)
+        root.update()
+
+    if actions == 0:
+        progress(actions)
+        root.update()
+
+    logging.info("Processing done")
 
     if is_network_communication_allowed:
         output.close()
+    progress_open_or_close_connection()
+    progress_open_or_close_connection()
+    root.update()
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):
@@ -196,7 +236,13 @@ def determine_technical_midi_port(selected_midi_port_as_string):
     return switcher.get(selected_midi_port_as_string, "Invalid port")
 
 
+def reset_progress_bar():
+    pb['value'] = 0
+    root.update()
+
+
 def browse_files():
+    reset_progress_bar()
     read_document(filedialog.askopenfilename(), get_checkbox_states())
 
 
@@ -240,7 +286,7 @@ def get_checkbox_states():
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
-    root.geometry('600x250')
+    root.geometry('600x300')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
@@ -278,7 +324,45 @@ if __name__ == '__main__':
 
     Button(bottom_frame, text='Open Excel sheet and trigger writing process', command=browse_files).grid(row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
-    Button(bottom_frame, text='Quit', command=root.quit).grid(row=2)
+
+    pb = ttk.Progressbar(
+        bottom_frame,
+        orient='horizontal',
+        mode='determinate',
+        length=600
+    )
+
+    pb.grid(row=2)
+
+
+    def update_progress_label():
+        return f"Current Progress: {pb['value']}%"
+
+
+    def progress(actions=None):
+        if actions == 0:
+            pb['value'] += 90
+        else:
+            if pb['value'] < 100:
+                pb['value'] += 90 / actions
+                value_label['text'] = update_progress_label()
+            else:
+                showinfo(message='Writing completed!')
+
+
+    def progress_open_or_close_connection():
+        if pb['value'] < 100:
+            pb['value'] += 5
+            value_label['text'] = update_progress_label()
+        else:
+            showinfo(message='Writing completed!')
+
+
+    # label to show current value in percent
+    value_label = ttk.Label(bottom_frame, text=update_progress_label())
+    value_label.grid(row=3)
+
+    Button(bottom_frame, text='Quit', command=root.quit).grid(row=4)
     bottom_frame.pack(side=BOTTOM)
 
     root.mainloop()

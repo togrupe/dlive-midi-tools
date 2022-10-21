@@ -9,6 +9,8 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 * mido - Midi Library
 * pandas - excel reader/writer
 
+## Overview
+![Overview](overview.drawio.png)
 
 ## Input file
 Excel sheet, please edit the columns: Name, Color and Phantom

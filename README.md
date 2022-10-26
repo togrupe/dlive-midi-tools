@@ -3,7 +3,12 @@
 Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. 
 - Channel Name
 - Channel Color
-- 48V Phantom Power
+- 48V Phantom Power (only for local mixrack based sockets)
+
+## Use Cases
+* Single source for channel lists in multi console situations
+* Better overview on all channels during preparation phase
+* Sync channel names and colors for virtual soundchecks (planned for future release)
 
 ## Used Python Libraries
 * mido - Midi Library
@@ -17,15 +22,22 @@ Excel sheet, please edit the columns: Name, Color and Phantom
 
 ![Excel](excel.png)
 
-An example Excel file named: **dLiveChannelList.xls** can be found in the root folder. 
+An example Excel file named: **dLiveChannelList.xlsx** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 
 just delete the channels you don't want to process. Empty lines in between are not supported.
 
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write / save the sheets.
-Please make sure that you save your changes in the (*.xls) format. 
+Please make sure that you save your changes in the (*.xlsx) format. 
 
 The following colors are allowed:
-blue, red, light blue, purple, green, yellow, black, white
+* blue
+* red 
+* light blue 
+* purple 
+* green 
+* yellow 
+* black
+* white
 
 ## Settings on the dlive console
 The Midi Channel setting on dlive under `Utils/Shows -> Control -> Midi` should be be set to : `12 to 16`, which is default.

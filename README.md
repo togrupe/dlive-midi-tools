@@ -3,7 +3,7 @@
 Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. 
 - Channel Name
 - Channel Color
-- 48V Phantom Power (only for local mixrack based sockets)
+- 48V Phantom Power (only for mixrack local sockets 1-64)
 
 ## Use Cases
 * Single source for channel lists in multi console situations
@@ -38,6 +38,8 @@ The following colors are allowed:
 * yellow 
 * black
 * white
+
+If the given color does not match, the default color black is used instead.
 
 ## Settings on the dlive console
 The Midi Channel setting on dlive under `Utils/Shows -> Control -> Midi` should be be set to : `12 to 16`, which is default.

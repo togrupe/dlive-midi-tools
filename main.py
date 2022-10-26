@@ -13,9 +13,9 @@ from mido.sockets import connect
 import dliveConstants
 from ChannelListEntry import ChannelListEntry
 
-logging.basicConfig(filename='main.log', level=logging.ERROR)
+logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "1.5.0"
+version = "1.6.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 

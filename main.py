@@ -28,7 +28,7 @@ def trigger_channel_renaming(message, output, names):
         # Trim name if length of name > 6
         if len(str(item.get_name())) > 6:
             trimmed_name = str(item.get_name())[0:6]
-            logging.info("Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
+            logging.warning("Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
                 trimmed_name))
         else:
             trimmed_name = str(item.get_name())
@@ -53,9 +53,8 @@ def trigger_channel_renaming(message, output, names):
 
 
 def color_channel(output, channel, color):
-    colour = dliveConstants.lcd_color_black
-
     lower_color = str(color).lower()
+
     if lower_color == "blue":
         colour = dliveConstants.lcd_color_blue
     elif lower_color == "red":
@@ -72,6 +71,9 @@ def color_channel(output, channel, color):
         colour = dliveConstants.lcd_color_black
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
+    else:
+        logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
+        colour = dliveConstants.lcd_color_black
 
     payload_array = [root.midi_port, dliveConstants.sysex_message_set_channel_colour, channel,
                      colour]

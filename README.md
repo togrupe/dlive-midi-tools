@@ -13,7 +13,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 ## Input file
 Excel sheet, please edit the columns: Name, Color and Phantom
 
-![Excel](excel.png)
+![Excel](doc/excel.png)
 
 An example Excel file named: **dLiveChannelList.xls** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 
@@ -54,7 +54,7 @@ Prerequisites:
 
 Afterwards the following window appears. 
 
-![Gui](gui.png)
+![Gui](doc/gui.png)
 
 1. Check the Mixrack IP and Midi Port.
 

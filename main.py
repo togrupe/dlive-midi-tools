@@ -17,7 +17,7 @@ from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.DcaListEntry import DcaListEntry
 
-logging.basicConfig(filename='main.log', level=logging.INFO)
+logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
 version = "2.0.0"
 
@@ -58,9 +58,8 @@ def trigger_channel_renaming(message, output, names):
 
 
 def color_channel(output, channel, color):
-    colour = dliveConstants.lcd_color_black
-
     lower_color = str(color).lower()
+
     if lower_color == "blue":
         colour = dliveConstants.lcd_color_blue
     elif lower_color == "red":
@@ -77,6 +76,9 @@ def color_channel(output, channel, color):
         colour = dliveConstants.lcd_color_black
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
+    else:
+        logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
+        colour = dliveConstants.lcd_color_black
 
     payload_array = [root.midi_channel, dliveConstants.sysex_message_set_channel_colour, channel,
                      colour]

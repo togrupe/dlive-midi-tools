@@ -34,9 +34,14 @@ sysex_message_set_socket_preamp_pad = 0x09
 nrpn_message_hpf_on = 0x31
 nrpn_message_hpf_frequency = 0x30
 nrpn_message_fader_level = 0x17
+nrpn_message_dca_assign = 0x40
 
 # Note
 note_off = 0x00
+
+# DCA
+dca_on = 0x40
+dca_off = 0x00
 
 # Mute
 mute_on = 0x7F
@@ -76,7 +81,7 @@ midi_channel_drop_down_string_11 = "11 to 15"
 midi_channel_drop_down_string_12 = "12 to 16"
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
-allow_network_communication = True
+allow_network_communication = False
 
 # dlive Mixrack ip and port for midi/tcp
 ip = '192.168.1.70'

@@ -6,6 +6,9 @@ class DcaListEntry:
     def get_channel(self):
         return self.channel
 
+    def get_channel_dlive(self):
+        return self.get_channel() - 1
+
     def get_dca_config(self):
         return self.dca_config
 

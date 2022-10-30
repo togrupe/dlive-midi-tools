@@ -12,7 +12,7 @@ class ChannelListEntry:
         return self.channel
 
     def get_channel_dlive(self):
-        return self.channel - 1
+        return self.get_channel() - 1
 
     def get_name(self):
         return self.name

@@ -11,6 +11,9 @@ class PhantomListEntry:
     def get_socket_number(self):
         return self.socket_number
 
+    def get_socket_number_dlive(self):
+        return self.get_socket_number()-1
+
     def get_local_phantom(self):
         return self.local_phantom
 

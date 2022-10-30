@@ -706,7 +706,7 @@ midi_channel_frame = Frame(config_frame)
 midi_channel_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Names', 'Colors', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'Phantom', 'Pad', 'DCA'])
+columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', '48V Phantom', 'Pad', 'DCA'])
 ip_field = Frame(ip_frame)
 ip_byte0 = Entry(ip_field, width=3)
 ip_byte1 = Entry(ip_field, width=3)

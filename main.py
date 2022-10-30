@@ -103,19 +103,19 @@ def mute_on_channel(output, item):
         time.sleep(.1)
 
 
-def phantom_socket(output, item, type):
+def phantom_socket(output, item, socket_type):
     socket_tmp = item.get_socket_number()
     socket_dlive_tmp = item.get_socket_number_dlive()
-    if type == "local":
+    if socket_type == "local":
         lower_phantom = str(item.get_local_phantom()).lower()
         socket = socket_dlive_tmp
-    elif type == "DX1":
+    elif socket_type == "DX1":
         lower_phantom = str(item.get_dx1_phantom()).lower()
         if (socket_tmp <= 32):
             socket = socket_dlive_tmp + 64
         else:
             return
-    elif type == "DX3":
+    elif socket_type == "DX3":
         lower_phantom = str(item.get_dx3_phantom()).lower()
         if (socket_tmp <= 32):
             socket = socket_dlive_tmp + 96
@@ -229,19 +229,19 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             hpf_value_channel(output, item)
 
 
-def pad_socket(output, item, type):
+def pad_socket(output, item, socket_type):
     socket_tmp = item.get_socket_number_dlive()
 
-    if type == "local":
+    if socket_type == "local":
         lower_pad = str(item.get_local_pad()).lower()
         socket = item.get_socket_number_dlive()
-    elif type == "DX1":
+    elif socket_type == "DX1":
         lower_pad = str(item.get_dx1_pad()).lower()
         if item.socket_number <= 32:
             socket = socket_tmp + 64
         else:
             return
-    elif type == "DX3":
+    elif socket_type == "DX3":
         lower_pad = str(item.get_dx3_pad()).lower()
         if item.socket_number <= 32:
             socket = socket_tmp + 96

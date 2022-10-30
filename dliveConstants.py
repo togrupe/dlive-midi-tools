@@ -81,7 +81,7 @@ midi_channel_drop_down_string_11 = "11 to 15"
 midi_channel_drop_down_string_12 = "12 to 16"
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
-allow_network_communication = False
+allow_network_communication = True
 
 # dlive Mixrack ip and port for midi/tcp
 ip = '192.168.1.70'

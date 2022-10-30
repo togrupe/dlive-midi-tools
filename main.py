@@ -296,125 +296,15 @@ def dca_channel(output, item):
     # TODO: NRPN is currently not supported from mido
     channel = item.get_channel_dlive()
 
-    if str(item.get_dca_config().get_dca1()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off)
+    for dca_index in range(0, 24):
 
-    if str(item.get_dca_config().get_dca2()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 1)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 1)
+        dca_config = item.get_dca_config()
+        dca_array = dca_config.get_dca_array()
 
-    if str(item.get_dca_config().get_dca3()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 2)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 2)
-
-    if str(item.get_dca_config().get_dca4()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 3)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 3)
-
-    if str(item.get_dca_config().get_dca5()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 4)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 4)
-
-    if str(item.get_dca_config().get_dca6()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 5)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 5)
-
-    if str(item.get_dca_config().get_dca7()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 6)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 6)
-
-    if str(item.get_dca_config().get_dca8()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 7)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 7)
-
-    if str(item.get_dca_config().get_dca9()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 8)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 8)
-
-    if str(item.get_dca_config().get_dca10()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 9)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 9)
-
-    if str(item.get_dca_config().get_dca11()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 10)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 10)
-
-    if str(item.get_dca_config().get_dca12()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 11)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 11)
-
-    if str(item.get_dca_config().get_dca13()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 12)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 12)
-
-    if str(item.get_dca_config().get_dca14()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 13)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 13)
-
-    if str(item.get_dca_config().get_dca15()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 14)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 14)
-
-    if str(item.get_dca_config().get_dca16()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 15)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 15)
-
-    if str(item.get_dca_config().get_dca17()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 16)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 16)
-
-    if str(item.get_dca_config().get_dca18()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 17)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 17)
-
-    if str(item.get_dca_config().get_dca19()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 18)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 18)
-
-    if str(item.get_dca_config().get_dca20()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 19)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 19)
-
-    if str(item.get_dca_config().get_dca21()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 20)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 20)
-
-    if str(item.get_dca_config().get_dca22()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 21)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 21)
-
-    if str(item.get_dca_config().get_dca23()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 22)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 22)
-
-    if str(item.get_dca_config().get_dca24()).lower() == "x":
-        assign_dca(output, channel, dliveConstants.dca_on + 23)
-    else:
-        assign_dca(output, channel, dliveConstants.dca_off + 23)
+        if dca_array.__getitem__(dca_index).lower() == "x":
+            assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
+        else:
+            assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
 
 
 def handle_dca_parameter(message, output, dca_list, action):
@@ -536,7 +426,8 @@ def read_document(filename, check_box_states):
         root.update()
 
     if cb_hpf_value:
-        handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(), action="hpf_value")
+        handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(),
+                                  action="hpf_value")
         progress(actions)
         root.update()
 
@@ -606,30 +497,11 @@ def create_dca_content(sheet_dcas):
     index = 0
 
     for channel in sheet_dcas['Channel']:
-        dca_config_tmp = DcaConfig(str(sheet_dcas['DCA1'].__getitem__(index)),
-                                   str(sheet_dcas['DCA2'].__getitem__(index)),
-                                   str(sheet_dcas['DCA3'].__getitem__(index)),
-                                   str(sheet_dcas['DCA4'].__getitem__(index)),
-                                   str(sheet_dcas['DCA5'].__getitem__(index)),
-                                   str(sheet_dcas['DCA6'].__getitem__(index)),
-                                   str(sheet_dcas['DCA7'].__getitem__(index)),
-                                   str(sheet_dcas['DCA8'].__getitem__(index)),
-                                   str(sheet_dcas['DCA9'].__getitem__(index)),
-                                   str(sheet_dcas['DCA10'].__getitem__(index)),
-                                   str(sheet_dcas['DCA11'].__getitem__(index)),
-                                   str(sheet_dcas['DCA12'].__getitem__(index)),
-                                   str(sheet_dcas['DCA13'].__getitem__(index)),
-                                   str(sheet_dcas['DCA14'].__getitem__(index)),
-                                   str(sheet_dcas['DCA15'].__getitem__(index)),
-                                   str(sheet_dcas['DCA16'].__getitem__(index)),
-                                   str(sheet_dcas['DCA17'].__getitem__(index)),
-                                   str(sheet_dcas['DCA18'].__getitem__(index)),
-                                   str(sheet_dcas['DCA19'].__getitem__(index)),
-                                   str(sheet_dcas['DCA20'].__getitem__(index)),
-                                   str(sheet_dcas['DCA21'].__getitem__(index)),
-                                   str(sheet_dcas['DCA22'].__getitem__(index)),
-                                   str(sheet_dcas['DCA23'].__getitem__(index)),
-                                   str(sheet_dcas['DCA24'].__getitem__(index)))
+        dca_array = []
+        for dca_number in range(1, 25):
+            dca_array.append(str(sheet_dcas["DCA" + str(dca_number)].__getitem__(index)))
+
+        dca_config_tmp = DcaConfig(dca_array)
 
         dle = DcaListEntry(channel, dca_config_tmp)
         dca_list_entries.append(dle)

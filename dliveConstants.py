@@ -40,8 +40,8 @@ nrpn_message_dca_assign = 0x40
 note_off = 0x00
 
 # DCA
-dca_on = 0x40
-dca_off = 0x00
+dca_on_base_address = 0x40
+dca_off_base_address = 0x00
 
 # Mute
 mute_on = 0x7F

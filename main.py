@@ -4,7 +4,7 @@ import re
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, GROOVE, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showerror
 
 import mido
 import numpy
@@ -36,7 +36,10 @@ def name_channel(output, item):
     else:
         trimmed_name = str(item.get_name())
 
-    characters = re.findall('.?', trimmed_name)
+    if trimmed_name == 'nan':
+        characters = [' ', ' ', ' ',  ' ', ' ', ' ', '']
+    else:
+        characters = re.findall('.?', trimmed_name)
 
     payload = []
 
@@ -111,29 +114,27 @@ def phantom_socket(output, item, socket_type):
         socket = socket_dlive_tmp
     elif socket_type == "DX1":
         lower_phantom = str(item.get_dx1_phantom()).lower()
-        if (socket_tmp <= 32):
+        if socket_tmp <= 32:
             socket = socket_dlive_tmp + 64
         else:
             return
     elif socket_type == "DX3":
         lower_phantom = str(item.get_dx3_phantom()).lower()
-        if (socket_tmp <= 32):
+        if socket_tmp <= 32:
             socket = socket_dlive_tmp + 96
         else:
             return
 
     if lower_phantom == "yes":
         res = dliveConstants.phantom_power_on
-    elif lower_phantom == "no":
-        res = dliveConstants.phantom_power_off
     else:
         res = dliveConstants.phantom_power_off
 
     payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_48V, socket,
                      res]
 
+    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
-        message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
         output.send(message)
         time.sleep(.1)
 
@@ -150,7 +151,7 @@ def hpf_on_channel(output, item):
     midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
     select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_message_hpf_on]
+    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_on]
     set_value = [midi_channel_tmp, 0x06, res]
 
     if is_network_communication_allowed:
@@ -169,7 +170,7 @@ def hpf_value_channel(output, item):
     midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
     select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_message_hpf_frequency]
+    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_frequency]
     set_value = [midi_channel_tmp, 0x06, calculate_vv(item.get_hpf_value())]
 
     if is_network_communication_allowed:
@@ -203,7 +204,7 @@ def fader_level_channel(output, item):
     midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
     select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_message_fader_level]
+    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_fader_level]
     set_value = [midi_channel_tmp, 0x06, fader_level]
 
     if is_network_communication_allowed:
@@ -274,16 +275,12 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
             pad_socket(output, item, "DX3")
 
 
-class SheetVersionNotCompatible:
-    pass
-
-
 def assign_dca(output, channel, dca_value):
     midi_channel_tmp = 0xB << 4
     midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
     select_channel = [midi_channel_tmp, 0x63, channel]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_message_dca_assign]
+    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_dca_assign]
     set_value = [midi_channel_tmp, 0x06, dca_value]
 
     if is_network_communication_allowed:
@@ -319,13 +316,17 @@ def read_document(filename, check_box_states):
 
     sheet = Sheet()
 
-    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
-    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="DCAs")))
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
     if sheet.get_misc_model().get_version() != '2':
-        raise SheetVersionNotCompatible
+        error_msg = "Given excel sheet version is not compatible."
+        logging.error(error_msg)
+        showerror(message=error_msg)
+        return root.quit()
+
+    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
+    sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
+    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="DCAs")))
 
     time.sleep(2)
 

@@ -37,7 +37,7 @@ def name_channel(output, item):
         trimmed_name = str(item.get_name())
 
     if trimmed_name == 'nan':
-        characters = [' ', ' ', ' ',  ' ', ' ', ' ', '']
+        characters = [' ', ' ', ' ', ' ', ' ', ' ', '']
     else:
         characters = re.findall('.?', trimmed_name)
 

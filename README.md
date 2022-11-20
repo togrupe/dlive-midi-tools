@@ -80,9 +80,9 @@ Afterwards the following window appears.
 
 2. Select the columns you want to write, 
 
-3. If you want to create a Reaper Template session, set the corresponding tick.
+3. If you also want to create a Reaper Template session, set the corresponding tick.
 
-4. click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+4. Click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
 5. If something goes wrong, please check the console.
 

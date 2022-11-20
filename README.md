@@ -3,16 +3,20 @@
 Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. 
 - Channel Name
 - Channel Color
-- 48V Phantom Power (only for mixrack local sockets 1-64)
+- Channel HPF On & Value
+- 48V Phantom Power (Local, DX1 & DX3)
+- Channel PAD (Local, DX1 & DX3)
+- Channel DCA Assign
 
 ## Use Cases
-* Single source for channel lists in multi console situations
+* Single source (excel sheet) for channel lists in multi console situations
 * Better overview on all channels during preparation phase
-* Sync channel names and colors for virtual soundchecks (planned for future release)
+* Sync channel names and colors for virtual soundchecks
 
 ## Used Python Libraries
 * mido - Midi Library
 * pandas - excel reader/writer
+* reathon - Reaper Session Creator
 
 ## Overview
 ![Overview](overview.drawio.png)
@@ -76,9 +80,11 @@ Afterwards the following window appears.
 
 2. Select the columns you want to write, 
 
-3. then click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+3. If you want to create a Reaper Template session, set the corresponding tick.
 
-4. If something goes wrong, please check the console.
+4. click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+
+5. If something goes wrong, please check the console.
 
 If you find any issues, please let me know.
 

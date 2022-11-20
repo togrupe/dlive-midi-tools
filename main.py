@@ -312,7 +312,7 @@ def handle_dca_parameter(message, output, dca_list, action):
             dca_channel(output, item)
 
 
-def read_document(filename, check_box_states):
+def read_document(filename, check_box_states, check_box_reaper):
     logging.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
@@ -399,6 +399,12 @@ def read_document(filename, check_box_states):
     else:
         cb_dca = False
 
+    if check_box_reaper.__getitem__(0):
+        actions = actions + 1
+        cb_reaper = True
+    else:
+        cb_reaper = False
+
     logging.info("Start Processing...")
 
     if cb_names:
@@ -451,13 +457,17 @@ def read_document(filename, check_box_states):
         progress(actions)
         root.update()
 
-    if actions == 0:
+    if cb_reaper:
+        logging.info("Creating Reaper Recording Session Template file...")
+        SessionCreator.create_reaper_session(sheet)
+        logging.info("Session created")
+
         progress(actions)
         root.update()
 
-    logging.info("Creating Reaper Recording Session Template file...")
-    SessionCreator.create_reaper_session(sheet)
-    logging.info("Session created")
+    if actions == 0:
+        progress(actions)
+        root.update()
 
     logging.info("Processing done")
 
@@ -558,7 +568,7 @@ def reset_progress_bar():
 
 def browse_files():
     reset_progress_bar()
-    read_document(filedialog.askopenfilename(), get_checkbox_states())
+    read_document(filedialog.askopenfilename(), get_checkbox_states(), get_reaper_state())
 
 
 class Checkbar(Frame):
@@ -585,6 +595,8 @@ midi_channel_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', '48V Phantom', 'Pad', 'DCA'])
+reaper = Checkbar(root, ['Create Reaper Session'])
+
 ip_field = Frame(ip_frame)
 ip_byte0 = Entry(ip_field, width=3)
 ip_byte1 = Entry(ip_field, width=3)
@@ -599,6 +611,10 @@ def get_checkbox_states():
     return list(columns.state())
 
 
+def get_reaper_state():
+    return list(reaper.state())
+
+
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
     root.geometry('700x300')
@@ -607,7 +623,10 @@ if __name__ == '__main__':
     Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
 
     columns.pack(side=TOP, fill=X)
-    columns.config(relief=GROOVE, bd=2)
+    columns.config(bd=2)
+    reaper.pack(side=TOP, fill=X)
+    reaper.config(bd=2)
+
     Label(ip_frame, text="Mixrack IP Address:", width=25).pack(side=LEFT)
 
     ip_byte0.grid(row=0, column=0)

@@ -8,6 +8,8 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - 48V Phantom Power & PAD (Local, DX1 & DX3)
 - Channel DCA Assign
 
+more information can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
+
 ## Use Cases
 * Single source (excel sheet) for channel lists in multi console situations
 * Better overview on all channels during preparation phase

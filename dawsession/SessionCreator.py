@@ -34,9 +34,16 @@ def create_reaper_session(sheet):
 
     for item in sheet.get_channel_model():
         track = Track()
-        track_name = "{:0>3d}_{}".format(item.get_channel(), item.get_name())
+        name = item.get_name()
+
+        if name == 'nan':
+            track_name_raw = ""
+        else:
+            track_name_raw = name
+
+        track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
         track.props = [
-            ["NAME", track_name],
+            ["NAME", track_name_combined],
             ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
             ["REC", "1 0 1 0 0 0 0 0"],
             ["TRACKHEIGHT", "40 0 0 0 0 0"]

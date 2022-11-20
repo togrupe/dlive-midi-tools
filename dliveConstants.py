@@ -91,7 +91,7 @@ reaper_color_ltblue = 33541222
 reaper_color_white = 33554431
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
-allow_network_communication = False
+allow_network_communication = True
 
 # dlive Mixrack ip and port for midi/tcp
 ip = '192.168.1.70'

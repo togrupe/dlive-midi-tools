@@ -4,14 +4,14 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Channel Name
 - Channel Color
 - Channel HPF On & Value
-- 48V Phantom Power (Local, DX1 & DX3)
-- Channel PAD (Local, DX1 & DX3)
+- Channel Mute
+- 48V Phantom Power & PAD (Local, DX1 & DX3)
 - Channel DCA Assign
 
 ## Use Cases
 * Single source (excel sheet) for channel lists in multi console situations
 * Better overview on all channels during preparation phase
-* Sync channel names and colors for virtual soundchecks
+* Sync channel names and colors between Consoles and DAW for virtual soundchecks
 
 ## Used Python Libraries
 * mido - Midi Library

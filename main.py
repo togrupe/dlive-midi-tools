@@ -12,6 +12,7 @@ import pandas as pd
 from mido.sockets import connect
 
 import dliveConstants
+from dawsession import SessionCreator
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.DcaListEntry import DcaListEntry
@@ -453,6 +454,10 @@ def read_document(filename, check_box_states):
     if actions == 0:
         progress(actions)
         root.update()
+
+    logging.info("Creating Reaper Recording Session Template file...")
+    SessionCreator.create_reaper_session(sheet)
+    logging.info("Session created")
 
     logging.info("Processing done")
 

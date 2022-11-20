@@ -1,4 +1,4 @@
-# The color mappings
+# The dlive color mappings
 lcd_color_black = 0x00
 lcd_color_red = 0x01
 lcd_color_green = 0x02
@@ -80,8 +80,18 @@ midi_channel_drop_down_string_10 = "10 to 14"
 midi_channel_drop_down_string_11 = "11 to 15"
 midi_channel_drop_down_string_12 = "12 to 16"
 
+# The Reaper color mappings
+reaper_color_black = 16777216
+reaper_color_red = 17236731
+reaper_color_green = 23527270
+reaper_color_yellow = 23527423
+reaper_color_blue = 33521679
+reaper_color_purple = 30371836
+reaper_color_ltblue = 33541222
+reaper_color_white = 33554431
+
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
-allow_network_communication = True
+allow_network_communication = False
 
 # dlive Mixrack ip and port for midi/tcp
 ip = '192.168.1.70'

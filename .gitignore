@@ -132,3 +132,7 @@ dmypy.json
 .idea
 
 .DS_Store
+
+#Reaper
+*.rpp
+*.rpp-bak

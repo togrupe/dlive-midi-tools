@@ -25,11 +25,12 @@ more information can be found in the [wiki](https://github.com/togrupe/dlive-mid
 
 ## Input file
 Excel sheet, please have a look at the following tabs
-Channel Overview "Channels"
+
+# Channel Overview
 ![Channels](doc/excel_channels.png)
-48V Phantom Power and PAD Overview
+# 48V Phantom Power and PAD Overview
 ![Phantom](doc/excel_phantom.png)
-Channel DCA Overview
+# Channel DCA Overview
 ![DCA](doc/excel_dca.png)
 
 An example Excel file named: **dLiveChannelList.xlsx** can be found in the root folder. 

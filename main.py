@@ -27,6 +27,66 @@ version = "2.0.0"
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
 
+def convert_return_value_to_readable_color(in_message):
+    color = in_message[11]
+    color_ret = "black"
+
+    if color == dliveConstants.lcd_color_blue:
+        color_ret = "blue"
+    elif color == dliveConstants.lcd_color_ltblue:
+        color_ret = "light blue"
+    elif color == dliveConstants.lcd_color_red:
+        color_ret = "red"
+    elif color == dliveConstants.lcd_color_yellow:
+        color_ret = "yellow"
+    elif color == dliveConstants.lcd_color_green:
+        color_ret = "green"
+    elif color == dliveConstants.lcd_color_purple:
+        color_ret = "purple"
+    elif color == dliveConstants.lcd_color_black:
+        color_ret = "black"
+    elif color == dliveConstants.lcd_color_white:
+        color_ret = "white"
+    return color_ret
+
+
+def get_color_channel(output):
+    color = []
+
+    for channel in range(0, 127):
+        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_colour, channel]
+
+        message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
+        if is_network_communication_allowed:
+            color.append(output.send(message))
+
+            inport = mido.open_input()
+            in_message = inport.receive()
+
+            thisdict = {
+                "channel": channel,
+                "color": convert_return_value_to_readable_color(in_message)
+            }
+
+            color.append(thisdict)
+
+            print(in_message)
+            time.sleep(.1)
+    return color
+
+
+def get_name_channel(output):
+    names = []
+
+    for channel in range(0, 127):
+        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_name, channel]
+
+        message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
+        if is_network_communication_allowed:
+            names.append(output.send(message))
+            time.sleep(.1)
+
+
 def name_channel(output, item):
     # Trim name if length of name > 6
     if len(str(item.get_name())) > 6:

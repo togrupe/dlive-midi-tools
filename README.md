@@ -11,7 +11,7 @@ more information about future releases can be found in the [wiki](https://github
 ## Use Cases
 * Single source (excel sheet) for channel lists in multi console situations
 * Better overview on all channels during preparation phase
-* Sync channel names and colors between Consoles and DAW for virtual soundchecks
+* Sync channel names and colors between consoles and DAW for virtual soundchecks
 
 ## Used Python Libraries
 * mido - Midi Library

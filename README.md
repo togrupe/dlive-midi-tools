@@ -88,7 +88,7 @@ Afterwards the following window appears.
 
 4. Click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
-5. If something goes wrong, please check the console.
+5. If something goes wrong, please check the python console.
 
 If you find any issues, please let me know.
 

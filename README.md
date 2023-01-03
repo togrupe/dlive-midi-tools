@@ -6,7 +6,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Channel Mute
 - 48V Phantom Power & PAD (Local, DX1 & DX3)
 
-more information can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
+more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
 ## Use Cases
 * Single source (excel sheet) for channel lists in multi console situations

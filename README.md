@@ -3,10 +3,8 @@
 Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. 
 - Channel Name
 - Channel Color
-- Channel HPF On & Value
 - Channel Mute
 - 48V Phantom Power & PAD (Local, DX1 & DX3)
-- Channel DCA Assign
 
 more information can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
@@ -30,8 +28,7 @@ Excel sheet, please have a look at the following tabs
 ![Channels](doc/excel_channels.png)
 # 48V Phantom Power and PAD Overview
 ![Phantom](doc/excel_phantom.png)
-# Channel DCA Overview
-![DCA](doc/excel_dca.png)
+
 
 An example Excel file named: **dLiveChannelList.xlsx** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 

@@ -1,6 +1,6 @@
 # dlive-midi-tools
 ## Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. 
+Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. Additionally from the same excel sheet a DAW recording session for Reaper can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
@@ -84,7 +84,7 @@ Afterwards the following window appears.
 
 2. Select the columns you want to write, 
 
-3. If you also want to create a Reaper Template session, set the corresponding tick.
+3. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `recording-template.rpp` will be generated into the directory from where the tool was executed. 
 
 4. Click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 

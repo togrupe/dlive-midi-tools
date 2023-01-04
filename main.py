@@ -387,7 +387,6 @@ def read_document(filename, check_box_states, check_box_reaper):
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
-    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="DCAs")))
 
     time.sleep(2)
 
@@ -423,41 +422,17 @@ def read_document(filename, check_box_states, check_box_reaper):
     else:
         cb_mute = False
 
-    if check_box_states.__getitem__(3):  # Fader Level
-        actions = actions + 1
-        cb_fader_level = True
-    else:
-        cb_fader_level = False
-
-    if check_box_states.__getitem__(4):  # HPF On
-        actions = actions + 1
-        cb_hpf_on = True
-    else:
-        cb_hpf_on = False
-
-    if check_box_states.__getitem__(5):  # HPF value
-        actions = actions + 1
-        cb_hpf_value = True
-    else:
-        cb_hpf_value = False
-
-    if check_box_states.__getitem__(6):  # Phantom value
+    if check_box_states.__getitem__(3):  # Phantom value
         actions = actions + 1
         cb_phantom = True
     else:
         cb_phantom = False
 
-    if check_box_states.__getitem__(7):  # Pad value
+    if check_box_states.__getitem__(4):  # Pad value
         actions = actions + 1
         cb_pad = True
     else:
         cb_pad = False
-
-    if check_box_states.__getitem__(8):  # DCA values
-        actions = actions + 1
-        cb_dca = True
-    else:
-        cb_dca = False
 
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
@@ -482,23 +457,6 @@ def read_document(filename, check_box_states, check_box_reaper):
         progress(actions)
         root.update()
 
-    if cb_fader_level:
-        handle_channels_parameter("Set Fader Level on to the channels...", output, sheet.get_channel_model(),
-                                  action="fader_level")
-        progress(actions)
-        root.update()
-
-    if cb_hpf_on:
-        handle_channels_parameter("Set HPF On to the channels...", output, sheet.get_channel_model(), action="hpf_on")
-        progress(actions)
-        root.update()
-
-    if cb_hpf_value:
-        handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(),
-                                  action="hpf_value")
-        progress(actions)
-        root.update()
-
     if cb_phantom:
         handle_phantom_and_pad_parameter("Set Phantom Power to the channels...", output, sheet.get_phantom_pad_model(),
                                          action="phantom")
@@ -508,12 +466,6 @@ def read_document(filename, check_box_states, check_box_reaper):
     if cb_pad:
         handle_phantom_and_pad_parameter("Set Pad to the channels...", output, sheet.get_phantom_pad_model(),
                                          action="pad")
-        progress(actions)
-        root.update()
-
-    if cb_dca:
-        handle_dca_parameter("Set DCA assignments to the channels...", output, sheet.get_dca_model(),
-                             action="dca")
         progress(actions)
         root.update()
 
@@ -546,9 +498,9 @@ def create_channel_list_content(sheet_channels):
         cle = ChannelListEntry(channel,
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
-                               str(sheet_channels['HPF On'].__getitem__(index)),
-                               sheet_channels['HPF Value'].__getitem__(index),
-                               str(sheet_channels['Fader Level'].__getitem__(index)),
+                               None,
+                               None,
+                               None,
                                str(sheet_channels['Mute'].__getitem__(index))
                                )
         channel_list_entries.append(cle)
@@ -654,7 +606,7 @@ midi_channel_frame = Frame(config_frame)
 midi_channel_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', '48V Phantom', 'Pad', 'DCA'])
+columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
 reaper = Checkbar(root, ['Create Reaper Session'])
 
 ip_field = Frame(ip_frame)

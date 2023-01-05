@@ -22,7 +22,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.0.1"
+version = "2.0.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -547,7 +547,7 @@ midi_channel_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
-reaper = Checkbar(root, ['Create Reaper Session'])
+reaper = Checkbar(root, ['Create Reaper Session (1:1 Patch)'])
 
 ip_field = Frame(ip_frame)
 ip_byte0 = Entry(ip_field, width=3)

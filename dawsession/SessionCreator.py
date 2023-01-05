@@ -35,6 +35,12 @@ def generate_rec_item(channel):
     return ret
 
 
+def generate_hwout_item(channel):
+    channel_temp = 1024 + channel
+    ret = "" + str(channel_temp) + " 0 1 0 0 0 0 -1:U -1"
+    return ret
+
+
 def create_reaper_session(sheet):
     project = Project()
 
@@ -52,7 +58,8 @@ def create_reaper_session(sheet):
             ["NAME", track_name_combined],
             ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
             ["REC", generate_rec_item(item.get_channel_dlive())],
-            ["TRACKHEIGHT", "40 0 0 0 0 0"]
+            ["TRACKHEIGHT", "40 0 0 0 0 0"],
+            ["HWOUT", generate_hwout_item(item.get_channel_dlive())]
         ]
         project.add(track)
 

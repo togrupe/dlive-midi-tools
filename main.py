@@ -547,7 +547,7 @@ midi_channel_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
-reaper = Checkbar(root, ['Create Reaper Session'])
+reaper = Checkbar(root, ['Create Reaper Session (In & Out 1:1 Patch)'])
 
 ip_field = Frame(ip_frame)
 ip_byte0 = Entry(ip_field, width=3)

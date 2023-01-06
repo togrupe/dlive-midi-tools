@@ -44,6 +44,10 @@ def generate_hwout_item(channel):
 def create_reaper_session(sheet):
     project = Project()
 
+    project.props = [
+        ["MASTERHWOUT", ""]
+    ]
+
     for item in sheet.get_channel_model():
         track = Track()
         name = item.get_name()

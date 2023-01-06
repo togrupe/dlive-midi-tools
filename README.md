@@ -76,9 +76,21 @@ Prerequisites:
 
 `python3 main.py`
 
+4. (Optional) If you want to make a binary out of it, please do the following: 
+
+    4.1 Installation of pyinstaller
+
+    `pip install pyinstaller`
+
+    4.2 Create a onefile binary (works for Windows and MacOS)
+
+    `pyinstaller.exe --onefile -w main.py`
+
+
 Afterwards the following window appears. 
 
 ![Gui](doc/gui.png)
+
 
 1. Check the Mixrack IP and Midi Port.
 

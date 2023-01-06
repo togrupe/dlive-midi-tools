@@ -44,6 +44,10 @@ def generate_hwout_item(channel):
 def create_reaper_session(sheet):
     project = Project()
 
+    project.props = [
+        ["MASTERHWOUT", ""]
+    ]
+
     for item in sheet.get_channel_model():
         track = Track()
         name = item.get_name()
@@ -59,7 +63,7 @@ def create_reaper_session(sheet):
             ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
             ["REC", generate_rec_item(item.get_channel_dlive())],
             ["TRACKHEIGHT", "40 0 0 0 0 0"],
-            ["HWOUT", generate_hwout_item(item.get_channel_dlive())]
+            ["HWOUT", generate_hwout_item(item.get_channel_dlive())],
         ]
         project.add(track)
 

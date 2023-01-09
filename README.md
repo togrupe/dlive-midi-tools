@@ -21,6 +21,12 @@ more information about future releases can be found in the [wiki](https://github
 ## Overview
 ![Overview](overview.drawio.png)
 
+## Download
+| Version | OS      | Download                                                                                               |
+|---------|---------|--------------------------------------------------------------------------------------------------------|
+| v2.0.1  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/macos/dmt-v2_0_1-macos.zip)     |
+|         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/windows/dmt-v2_0_1-windows.zip) |
+
 ## Input file
 Excel sheet, please have a look at the following tabs
 

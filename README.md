@@ -17,7 +17,7 @@ more information about future releases can be found in the [wiki](https://github
 * mido - Midi Library
 * pandas - excel reader/writer
 * reathon - Reaper Session Creator
-* pyinstaller
+* pyinstaller - Binary creator
 
 ## Overview
 ![Overview](overview.drawio.png)

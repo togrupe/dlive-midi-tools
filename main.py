@@ -46,7 +46,14 @@ def name_channel(output, item):
 
     for character in characters:
         if len(str(character)) != 0:
-            payload.append(ord(character))
+            value = ord(character)
+            if value > 127:
+                error_msg = "One of the characters in Channel " + str(item.get_channel_dlive()+1) + " is not supported. E.g äöü are not supported."
+                logging.error(error_msg)
+                showerror(message=error_msg)
+                exit(1)
+            else:
+                payload.append(value)
 
     prefix = [root.midi_channel, dliveConstants.sysex_message_set_channel_name,
               item.get_channel_dlive()]
@@ -217,6 +224,7 @@ def fader_level_channel(output, item):
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
     for item in channel_list_entries:
+        logging.info("Processing Channel: " + str(item.get_channel_dlive()))
         if action == "name":
             name_channel(output, item)
         elif action == "color":
@@ -638,7 +646,7 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open Excel sheet and trigger writing process', command=browse_files).grid(row=0)
+    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=browse_files).grid(row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
     pb = ttk.Progressbar(

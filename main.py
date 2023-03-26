@@ -389,7 +389,6 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
         cb_reaper = False
 
     if check_box_write_to_dlive.__getitem__(0):
-        actions = actions + 1
         cb_write_to_dlive = True
     else:
         cb_write_to_dlive = False

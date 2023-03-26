@@ -1,6 +1,6 @@
 # dlive-midi-tools
 ## Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an spread sheet the following parameters can be preconfigured and in one or more steps be written into real dlive systems or into dLive Director via midi/tcp. Additionally from the same spread sheet a DAW recording session for Reaper can be generated. 
+Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on a spread sheet the following parameters can be preconfigured and in one or more steps be written into real dlive systems or into dLive Director via midi/tcp. Additionally from the same spread sheet a DAW recording session for Reaper can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute

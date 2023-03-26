@@ -9,9 +9,10 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
 ## Use Cases
-* Single source (excel sheet) for channel lists in multi console situations
+* Single source (spread sheet) for channel lists in single or multi console situations
 * Better overview on all channels during preparation phase
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
+* Supports dLive Director (use the external ip of your own machine as "Mixrack Ip Address")
 
 ## Used Python Libraries
 * mido - Midi Library

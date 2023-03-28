@@ -22,7 +22,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.0.1"
+version = "2.1.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -46,7 +46,14 @@ def name_channel(output, item):
 
     for character in characters:
         if len(str(character)) != 0:
-            payload.append(ord(character))
+            value = ord(character)
+            if value > 127:
+                error_msg = "One of the characters in Channel " + str(item.get_channel_dlive()+1) + " is not supported. E.g äöü are not supported."
+                logging.error(error_msg)
+                showerror(message=error_msg)
+                exit(1)
+            else:
+                payload.append(value)
 
     prefix = [root.midi_channel, dliveConstants.sysex_message_set_channel_name,
               item.get_channel_dlive()]
@@ -217,6 +224,7 @@ def fader_level_channel(output, item):
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
     for item in channel_list_entries:
+        logging.info("Processing Channel: " + str(item.get_channel_dlive()))
         if action == "name":
             name_channel(output, item)
         elif action == "color":
@@ -312,7 +320,7 @@ def handle_dca_parameter(message, output, dca_list, action):
             dca_channel(output, item)
 
 
-def read_document(filename, check_box_states, check_box_reaper):
+def read_document(filename, check_box_states, check_box_reaper, check_box_write_to_dlive):
     logging.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
@@ -330,7 +338,7 @@ def read_document(filename, check_box_states, check_box_reaper):
 
     time.sleep(2)
 
-    if is_network_communication_allowed:
+    if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
         mixrack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
         logging.info("Open connection to dlive on ip: " + mixrack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
         output = connect(mixrack_ip_tmp, dliveConstants.port)
@@ -380,34 +388,44 @@ def read_document(filename, check_box_states, check_box_reaper):
     else:
         cb_reaper = False
 
+    if check_box_write_to_dlive.__getitem__(0):
+        cb_write_to_dlive = True
+    else:
+        cb_write_to_dlive = False
+
     logging.info("Start Processing...")
 
-    if cb_names:
-        handle_channels_parameter("Set Name on to the channels...", output, sheet.get_channel_model(), action="name")
-        progress(actions)
-        root.update()
+    if cb_write_to_dlive:
+        if cb_names:
+            handle_channels_parameter("Set Name on to the channels...", output, sheet.get_channel_model(),
+                                      action="name")
+            progress(actions)
+            root.update()
 
-    if cb_color:
-        handle_channels_parameter("Set Colors on to the channels...", output, sheet.get_channel_model(), action="color")
-        progress(actions)
-        root.update()
+        if cb_color:
+            handle_channels_parameter("Set Colors on to the channels...", output, sheet.get_channel_model(),
+                                      action="color")
+            progress(actions)
+            root.update()
 
-    if cb_mute:
-        handle_channels_parameter("Set Mute on to the channels...", output, sheet.get_channel_model(), action="mute")
-        progress(actions)
-        root.update()
+        if cb_mute:
+            handle_channels_parameter("Set Mute on to the channels...", output, sheet.get_channel_model(),
+                                      action="mute")
+            progress(actions)
+            root.update()
 
-    if cb_phantom:
-        handle_phantom_and_pad_parameter("Set Phantom Power to the channels...", output, sheet.get_phantom_pad_model(),
-                                         action="phantom")
-        progress(actions)
-        root.update()
+        if cb_phantom:
+            handle_phantom_and_pad_parameter("Set Phantom Power to the channels...", output,
+                                             sheet.get_phantom_pad_model(),
+                                             action="phantom")
+            progress(actions)
+            root.update()
 
-    if cb_pad:
-        handle_phantom_and_pad_parameter("Set Pad to the channels...", output, sheet.get_phantom_pad_model(),
-                                         action="pad")
-        progress(actions)
-        root.update()
+        if cb_pad:
+            handle_phantom_and_pad_parameter("Set Pad to the channels...", output, sheet.get_phantom_pad_model(),
+                                             action="pad")
+            progress(actions)
+            root.update()
 
     if cb_reaper:
         logging.info("Creating Reaper Recording Session Template file...")
@@ -423,7 +441,7 @@ def read_document(filename, check_box_states, check_box_reaper):
 
     logging.info("Processing done")
 
-    if is_network_communication_allowed:
+    if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
         output.close()
     progress_open_or_close_connection()
     progress_open_or_close_connection()
@@ -520,7 +538,7 @@ def reset_progress_bar():
 
 def browse_files():
     reset_progress_bar()
-    read_document(filedialog.askopenfilename(), get_checkbox_states(), get_reaper_state())
+    read_document(filedialog.askopenfilename(), get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
 
 
 class Checkbar(Frame):
@@ -547,7 +565,8 @@ midi_channel_frame.grid(row=2, column=0, sticky="W")
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
-reaper = Checkbar(root, ['Create Reaper Session (In & Out 1:1 Patch)'])
+write_to_dlive = Checkbar(root, ['Write to dLive'])
+reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 
 ip_field = Frame(ip_frame)
 ip_byte0 = Entry(ip_field, width=3)
@@ -567,15 +586,23 @@ def get_reaper_state():
     return list(reaper.state())
 
 
+def get_dlive_write_state():
+    return list(write_to_dlive.state())
+
+
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
-    root.geometry('700x300')
+    root.geometry('700x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from the given Excel sheet which column you want to write.").pack(side=TOP)
+    Label(root, text="Choose from the given spread sheet which column you want to write.").pack(side=TOP)
 
     columns.pack(side=TOP, fill=X)
     columns.config(bd=2)
+    Label(root, text=" ").pack(side=TOP)
+    Label(root, text=" ").pack(side=TOP)
+    write_to_dlive.pack(side=TOP, fill=X)
+    write_to_dlive.config(bd=2)
     reaper.pack(side=TOP, fill=X)
     reaper.config(bd=2)
 
@@ -618,7 +645,7 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open Excel sheet and trigger writing process', command=browse_files).grid(row=0)
+    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=browse_files).grid(row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
     pb = ttk.Progressbar(

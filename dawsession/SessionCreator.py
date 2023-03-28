@@ -3,29 +3,30 @@ import logging
 from reathon.nodes import Project, Track
 
 import dliveConstants
+from dawsession import ReaperConstants
 
 
 def convert_sheet_color_to_reaper_color(color):
     lower_color = color.lower()
     if lower_color == "blue":
-        colour = dliveConstants.reaper_color_blue
+        colour = ReaperConstants.reaper_color_blue
     elif lower_color == "red":
-        colour = dliveConstants.reaper_color_red
+        colour = ReaperConstants.reaper_color_red
     elif lower_color == "light blue":
-        colour = dliveConstants.reaper_color_ltblue
+        colour = ReaperConstants.reaper_color_ltblue
     elif lower_color == 'purple':
-        colour = dliveConstants.reaper_color_purple
+        colour = ReaperConstants.reaper_color_purple
     elif lower_color == 'green':
-        colour = dliveConstants.reaper_color_green
+        colour = ReaperConstants.reaper_color_green
     elif lower_color == 'yellow':
-        colour = dliveConstants.reaper_color_yellow
+        colour = ReaperConstants.reaper_color_yellow
     elif lower_color == 'black':
-        colour = dliveConstants.reaper_color_black
+        colour = ReaperConstants.reaper_color_black
     elif lower_color == 'white':
-        colour = dliveConstants.reaper_color_white
+        colour = ReaperConstants.reaper_color_white
     else:
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
-        colour = dliveConstants.reaper_color_black
+        colour = ReaperConstants.reaper_color_black
     return colour
 
 

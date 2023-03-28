@@ -1,6 +1,6 @@
 # dlive-midi-tools
 ## Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on an excel sheet the following parameters can be preconfigured and in one or more steps be written into the dlive system via midi/tcp. Additionally from the same excel sheet a DAW recording session for Reaper can be generated. 
+Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive systems. Based on a spread sheet the following parameters can be preconfigured and in one or more steps be written into real dlive systems or into dLive Director via midi/tcp. Additionally from the same spread sheet a DAW recording session for Reaper can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
@@ -9,15 +9,16 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
 ## Use Cases
-* Single source (excel sheet) for channel lists in multi console situations
+* Single source (spread sheet) for channel lists in single or multi console situations
 * Better overview on all channels during preparation phase
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
+* Supports dLive Director (use the external ip of your own machine as "Mixrack Ip Address")
 
 ## Used Python Libraries
 * mido - Midi Library
 * pandas - excel reader/writer
 * reathon - Reaper Session Creator
-* pyinstaller
+* pyinstaller - Binary creator
 
 ## Overview
 ![Overview](overview.drawio.png)

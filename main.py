@@ -48,7 +48,7 @@ def name_channel(output, item):
         if len(str(character)) != 0:
             value = ord(character)
             if value > 127:
-                error_msg = "One of the characters in Channel " + str(item.get_channel_dlive()+1) + " is not supported. E.g äöü are not supported."
+                error_msg = "One of the characters in Channel " + str(item.get_channel_dlive()+1) + " is not supported. Characters like ä, ö, ü are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
                 exit(1)

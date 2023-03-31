@@ -12,7 +12,7 @@ more information about future releases can be found in the [wiki](https://github
 * Single source (spread sheet) for channel lists in single or multi console situations
 * Better overview on all channels during preparation phase
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
-* Supports dLive Director (use the external ip of your own machine as "Mixrack Ip Address")
+* Supports dLive Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
 
 ## Used Python Libraries
 * mido - Midi Library
@@ -26,6 +26,8 @@ more information about future releases can be found in the [wiki](https://github
 ## Download
 | Version | OS      | Download                                                                                               |
 |---------|---------|--------------------------------------------------------------------------------------------------------|
+| v2.1.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip      |
+|         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 | v2.0.1  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/macos/dmt-v2_0_1-macos.zip)     |
 |         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/windows/dmt-v2_0_1-windows.zip) |
 
@@ -43,7 +45,7 @@ By default, the channels 1-128 are available in the sheet. If you need less,
 just delete the channels you don't want to process. Empty lines in between are not supported.
 
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write / save the sheets.
-Please make sure that you save your changes in the (*.xlsx) format. 
+Please make sure that you save your changes in the (*.xlsx or .ods) format. 
 
 The following colors are allowed:
 * blue
@@ -102,11 +104,11 @@ Afterwards the following window appears.
 
 1. Check the Mixrack IP and Midi Port.
 
-2. Select the columns you want to write, 
+2. Select the columns you want to write, and select "Write to dLive"
 
-3. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `recording-template.rpp` will be generated into the directory from where the tool was executed. 
+3. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `recording-template.rpp` will be generated into the directory from where the tool was executed. You can also use the tool to create only the Reaper session file.
 
-4. Click the button "Open Excel Sheet and Trigger Writing Process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+4. Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
 5. If something goes wrong, please check the python console.
 

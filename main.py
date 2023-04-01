@@ -28,9 +28,9 @@ is_network_communication_allowed = dliveConstants.allow_network_communication
 
 
 def name_channel(output, item):
-    # Trim name if length of name > 6
-    if len(str(item.get_name())) > 6:
-        trimmed_name = str(item.get_name())[0:6]
+    # Trim name if length of name > dliveConstants.trim_after_x_charactors
+    if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
+        trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
         logging.info(
             "Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
                 trimmed_name))

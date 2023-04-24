@@ -4,7 +4,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Channel Name
 - Channel Color
 - Channel Mute
-- 48V Phantom Power & PAD (Local, DX1 & DX3)
+- 48V Phantom Power & PAD (Local, DX1 & DX3, SLink)
 
 more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
@@ -13,6 +13,7 @@ more information about future releases can be found in the [wiki](https://github
 * Better overview on all channels during preparation phase
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
+* Supports Avantis & Avantis Director
 
 ## Software Liability Warning
 
@@ -110,16 +111,17 @@ Afterwards the following window appears.
 
 ![Gui](doc/gui.png)
 
+1. Select the console
 
-1. Check the Mixrack IP and Midi Port.
+2. Check the Mixrack IP and Midi Port.
 
-2. Select the columns you want to write, and select "Write to dLive"
+3. Select the columns you want to write, and select "Write to dLive"
 
-3. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `recording-template.rpp` will be generated into the directory from where the tool was executed. You can also use the tool to create only the Reaper session file.
+4. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `recording-template.rpp` will be generated into the directory from where the tool was executed. You can also use the tool to create only the Reaper session file.
 
-4. Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+5. Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
-5. If something goes wrong, please check the python console.
+6. If something goes wrong, please check the python console.
 
 If you find any issues, please let me know.
 

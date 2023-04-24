@@ -23,7 +23,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.1.0"
+version = "2.2.0-alpha-SNAPSHOT"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -49,7 +49,8 @@ def name_channel(output, item):
         if len(str(character)) != 0:
             value = ord(character)
             if value > 127:
-                error_msg = "One of the characters in Channel " + str(item.get_channel_dlive()+1) + " is not supported. Characters like ä, ö, ü are not supported."
+                error_msg = "One of the characters in Channel " + str(
+                    item.get_channel_dlive() + 1) + " is not supported. Characters like ä, ö, ü are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
                 exit(1)
@@ -131,6 +132,12 @@ def phantom_socket(output, item, socket_type):
         lower_phantom = str(item.get_dx3_phantom()).lower()
         if socket_tmp <= 32:
             socket = socket_dlive_tmp + 96
+        else:
+            return
+    elif socket_type == "Slink":
+        lower_phantom = str(item.get_slink_phantom()).lower()
+        if socket_tmp <= 48 or 65 < socket_tmp < 128:
+            socket = socket_dlive_tmp
         else:
             return
 
@@ -259,6 +266,13 @@ def pad_socket(output, item, socket_type):
         else:
             return
 
+    elif socket_type == "Slink":
+        lower_pad = str(item.get_slink_pad()).lower()
+        if item.socket_number <= 128:
+            socket = socket_tmp
+        else:
+            return
+
     if lower_pad == "yes":
         res = dliveConstants.pad_on
     else:
@@ -276,13 +290,19 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
     logging.info(message)
     for item in phantom_list_entries:
         if action == "phantom":
-            phantom_socket(output, item, "local")
-            phantom_socket(output, item, "DX1")
-            phantom_socket(output, item, "DX3")
+            if root.console == dliveConstants.console_drop_down_dlive:
+                phantom_socket(output, item, "local")
+                phantom_socket(output, item, "DX1")
+                phantom_socket(output, item, "DX3")
+            elif root.console == dliveConstants.console_drop_down_avantis:
+                phantom_socket(output, item, "Slink")
         elif action == "pad":
-            pad_socket(output, item, "local")
-            pad_socket(output, item, "DX1")
-            pad_socket(output, item, "DX3")
+            if root.console == dliveConstants.console_drop_down_dlive:
+                pad_socket(output, item, "local")
+                pad_socket(output, item, "DX1")
+                pad_socket(output, item, "DX3")
+            elif root.console == dliveConstants.console_drop_down_avantis:
+                pad_socket(output, item, "Slink")
 
 
 def assign_dca(output, channel, dca_value):
@@ -328,7 +348,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    if sheet.get_misc_model().get_version() != '2':
+    if sheet.get_misc_model().get_version() != '3':
         error_msg = "Given excel sheet version is not compatible."
         logging.error(error_msg)
         showerror(message=error_msg)
@@ -350,6 +370,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     root.update()
 
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
+    root.console = determine_console_id(var_console.get())
 
     actions = 0
 
@@ -507,7 +528,9 @@ def create_phantom_pad_content(sheet_48V_and_pad):
                                str(sheet_48V_and_pad['DX3 Phantom'].__getitem__(index)),
                                str(sheet_48V_and_pad['Local Pad'].__getitem__(index)),
                                str(sheet_48V_and_pad['DX1 Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)))
+                               str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)),
+                               str(sheet_48V_and_pad['Slink Phantom'].__getitem__(index)),
+                               str(sheet_48V_and_pad['Slink Pad'].__getitem__(index)))
 
         phantom_and_pad_list_entries.append(ple)
         index = index + 1
@@ -530,6 +553,14 @@ def determine_technical_midi_port(selected_midi_port_as_string):
         dliveConstants.midi_channel_drop_down_string_12: 11
     }
     return switcher.get(selected_midi_port_as_string, "Invalid port")
+
+
+def determine_console_id(selected_console_as_string):
+    switcher = {
+        dliveConstants.console_drop_down_dlive: dliveConstants.console_drop_down_dlive,
+        dliveConstants.console_drop_down_avantis: dliveConstants.console_drop_down_avantis
+    }
+    return switcher.get(selected_console_as_string, "Invalid console")
 
 
 def reset_progress_bar():
@@ -562,14 +593,17 @@ class Checkbar(Frame):
 root = Tk()
 config_frame = Frame(root)
 ip_frame = Frame(config_frame)
+console_frame = Frame(config_frame)
+console_frame.grid(row=1, column=0, sticky="W")
 Label(config_frame, text="       ").grid(row=0, column=0)
-ip_frame.grid(row=1, column=0, sticky="W")
+ip_frame.grid(row=2, column=0, sticky="W")
 midi_channel_frame = Frame(config_frame)
-midi_channel_frame.grid(row=2, column=0, sticky="W")
+midi_channel_frame.grid(row=3, column=0, sticky="W")
+
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
-write_to_dlive = Checkbar(root, ['Write to dLive'])
+write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 
 ip_field = Frame(ip_frame)
@@ -580,6 +614,7 @@ ip_byte3 = Entry(ip_field, width=3)
 mixrack_ip = ""
 midi_channel = None
 var_midi_channel = StringVar(root)
+var_console = StringVar(root)
 
 reaper_output_dir = ""
 reaper_file_prefix = ""
@@ -598,7 +633,7 @@ def get_dlive_write_state():
 
 
 if __name__ == '__main__':
-    root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
+    root.title('Channel List Manager for Allen & Heath dLive and Avantis Systems - v' + version)
     root.geometry('700x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
@@ -613,7 +648,17 @@ if __name__ == '__main__':
     reaper.pack(side=TOP, fill=X)
     reaper.config(bd=2)
 
-    Label(ip_frame, text="Mixrack IP Address:", width=25).pack(side=LEFT)
+    var_console.set(dliveConstants.console_drop_down_dlive)  # default value
+
+    Label(console_frame, text="Console:", width=25).pack(side=LEFT)
+
+    dropdown_console = OptionMenu(console_frame, var_console,
+                                  dliveConstants.console_drop_down_dlive,
+                                  dliveConstants.console_drop_down_avantis,
+                                  )
+    dropdown_console.pack(side=RIGHT)
+
+    Label(ip_frame, text="(Mixrack-) IP Address:", width=25).pack(side=LEFT)
 
     ip_byte0.grid(row=0, column=0)
     Label(ip_field, text=".").grid(row=0, column=1)
@@ -626,7 +671,7 @@ if __name__ == '__main__':
 
     var_midi_channel.set(dliveConstants.midi_channel_drop_down_string_12)  # default value
 
-    Label(midi_channel_frame, text="   Mixrack Midi Channel:", width=25).pack(side=LEFT)
+    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
 
     dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
                                        dliveConstants.midi_channel_drop_down_string_1,

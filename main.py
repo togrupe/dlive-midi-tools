@@ -1,5 +1,6 @@
 # coding=utf-8
 import logging
+import os
 import re
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
@@ -429,7 +430,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     if cb_reaper:
         logging.info("Creating Reaper Recording Session Template file...")
-        SessionCreator.create_reaper_session(sheet)
+        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
         logging.info("Session created")
 
         progress(actions)
@@ -538,7 +539,10 @@ def reset_progress_bar():
 
 def browse_files():
     reset_progress_bar()
-    read_document(filedialog.askopenfilename(), get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
+    input_file_path = filedialog.askopenfilename()
+    root.reaper_output_dir = os.path.dirname(input_file_path)
+    root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
+    read_document(input_file_path, get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
 
 
 class Checkbar(Frame):
@@ -576,6 +580,9 @@ ip_byte3 = Entry(ip_field, width=3)
 mixrack_ip = ""
 midi_channel = None
 var_midi_channel = StringVar(root)
+
+reaper_output_dir = ""
+reaper_file_prefix = ""
 
 
 def get_checkbox_states():

@@ -42,7 +42,7 @@ def generate_hwout_item(channel):
     return ret
 
 
-def create_reaper_session(sheet):
+def create_reaper_session(sheet, reaper_output_dir, prefix):
     project = Project()
 
     project.props = [
@@ -68,7 +68,10 @@ def create_reaper_session(sheet):
         ]
         project.add(track)
 
-    project.write("recording-template.rpp")
+    reaper_outputfile = reaper_output_dir + "/" + prefix + "-" + "recording-template.rpp"
+    logging.info("Reaper template will be generated into folder:" + reaper_outputfile)
+
+    project.write(reaper_outputfile)
 
 
 if __name__ == '__main__':

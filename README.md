@@ -14,9 +14,18 @@ more information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
 
+## Software Liability Warning
+
+This software is provided "as is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+
+Furthermore, this software may be subject to known or unknown bugs, errors, and vulnerabilities, which may result in unexpected behavior or security breaches. The authors or copyright holders shall not be liable for any damages or losses resulting from such bugs, errors, or vulnerabilities.
+
+By using this software, you acknowledge and agree that you do so at your own risk and that you will be solely responsible for any damages or losses that may arise from such use.
+
+
 ## Used Python Libraries
 * mido - Midi Library
-* pandas - excel reader/writer
+* pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
 * pyinstaller - Binary creator
 

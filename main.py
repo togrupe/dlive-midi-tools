@@ -23,7 +23,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.1.0"
+version = "2.2.0-alpha-SNAPSHOT"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 

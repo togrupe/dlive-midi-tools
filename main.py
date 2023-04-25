@@ -633,7 +633,7 @@ def get_dlive_write_state():
 
 
 if __name__ == '__main__':
-    root.title('Channel List Manager for Allen & Heath dLive and Avantis Systems - v' + version)
+    root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
     root.geometry('700x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)

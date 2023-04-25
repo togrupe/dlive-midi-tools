@@ -42,7 +42,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 |         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/windows/dmt-v2_0_1-windows.zip) |
 
 ## Input file
-Excel sheet, please have a look at the following tabs
+Microsoft Excel spread sheet, please have a look at the following tabs
 
 # Channel Overview
 ![Channels](doc/excel_channels.png)
@@ -50,7 +50,7 @@ Excel sheet, please have a look at the following tabs
 ![Phantom](doc/excel_phantom.png)
 
 
-An example Excel file named: **dLiveChannelList.xlsx** can be found in the root folder. 
+An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 
 just delete the channels you don't want to process. Empty lines in between are not supported.
 
@@ -70,15 +70,15 @@ The following colors are allowed:
 If the given color does not match, the default color black is used instead.
 
 ## Settings on the dlive console
-The Midi Channel setting on dlive under `Utils/Shows -> Control -> Midi` should be be set to : `12 to 16`, which is default.
+The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to : `12 to 16`, which is default.
 
 If you want to change the preconfigured Midi port, you can change it in the Graphical User Interface according to your dlive settings. 
 
 ## Default ip and port
-The default dlive mixrack ip address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
+The default dlive mixrack ip-address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
 change it, you can edit the field `ip` in the file: dliveConstants.py or during runtime within the Graphical User Interface.  
 
-Please make sure that your ethernet or Wi-Fi interface has an ip address in the same subnet. e.g. 192.168.1.10
+Please make sure that your ethernet or Wi-Fi interface has an ip address in the same subnet. e.g. Ip: 192.168.1.10 / Subnet: 255.255.255.0
  
 
 ## Usage
@@ -117,11 +117,11 @@ Afterwards the following window appears.
 
 3. Select the columns you want to write, and select "Write to dLive"
 
-4. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `recording-template.rpp` will be generated into the directory from where the tool was executed. You can also use the tool to create only the Reaper session file.
+4. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` will be generated into the directory from where the spreadsheet has been chosen. You can also use the tool to create only the Reaper session file.
 
 5. Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
-6. If something goes wrong, please check the python console.
+6. If something goes wrong, please check the python console or the `main.log`
 
 If you find any issues, please let me know.
 

@@ -30,7 +30,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.2.0-alpha-SNAPSHOT"
+version = "2.2.0-alpha2-SNAPSHOT"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -127,23 +127,29 @@ def phantom_socket(output, item, socket_type):
     socket_tmp = item.get_socket_number()
     socket_dlive_tmp = item.get_socket_number_dlive()
     if socket_type == "local":
-        lower_phantom = str(item.get_local_phantom()).lower()
-        socket = socket_dlive_tmp
+        if socket_tmp <= 64:
+            lower_phantom = str(item.get_local_phantom()).lower()
+            socket = socket_dlive_tmp
+        else:
+            return
+
     elif socket_type == "DX1":
-        lower_phantom = str(item.get_dx1_phantom()).lower()
         if socket_tmp <= 32:
+            lower_phantom = str(item.get_dx1_phantom()).lower()
             socket = socket_dlive_tmp + 64
         else:
             return
+
     elif socket_type == "DX3":
-        lower_phantom = str(item.get_dx3_phantom()).lower()
         if socket_tmp <= 32:
+            lower_phantom = str(item.get_dx3_phantom()).lower()
             socket = socket_dlive_tmp + 96
         else:
             return
+
     elif socket_type == "Slink":
-        lower_phantom = str(item.get_slink_phantom()).lower()
         if socket_tmp <= 48 or 65 < socket_tmp < 128:
+            lower_phantom = str(item.get_slink_phantom()).lower()
             socket = socket_dlive_tmp
         else:
             return
@@ -258,24 +264,32 @@ def pad_socket(output, item, socket_type):
     socket_tmp = item.get_socket_number_dlive()
 
     if socket_type == "local":
-        lower_pad = str(item.get_local_pad()).lower()
-        socket = item.get_socket_number_dlive()
+        if socket_tmp <= 64:
+            lower_pad = str(item.get_local_pad()).lower()
+            socket = item.get_socket_number_dlive()
+        else:
+            return
+
     elif socket_type == "DX1":
-        lower_pad = str(item.get_dx1_pad()).lower()
+
         if item.socket_number <= 32:
+            lower_pad = str(item.get_dx1_pad()).lower()
             socket = socket_tmp + 64
         else:
             return
+
     elif socket_type == "DX3":
-        lower_pad = str(item.get_dx3_pad()).lower()
+
         if item.socket_number <= 32:
+            lower_pad = str(item.get_dx3_pad()).lower()
             socket = socket_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
-        lower_pad = str(item.get_slink_pad()).lower()
+
         if item.socket_number <= 128:
+            lower_pad = str(item.get_slink_pad()).lower()
             socket = socket_tmp
         else:
             return

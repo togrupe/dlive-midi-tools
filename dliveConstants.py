@@ -1,3 +1,10 @@
+####################################################
+# dlive constants configuration file
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 # The dlive color mappings
 lcd_color_black = 0x00
 lcd_color_red = 0x01

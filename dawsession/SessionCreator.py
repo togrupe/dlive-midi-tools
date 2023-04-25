@@ -1,8 +1,14 @@
+####################################################
+# Session Creator
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 import logging
 
 from reathon.nodes import Project, Track
 
-import dliveConstants
 from dawsession import ReaperConstants
 
 

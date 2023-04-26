@@ -384,8 +384,14 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    if sheet.get_misc_model().get_version() != '3':
-        error_msg = "Given excel sheet version is not compatible."
+    latest_spreadsheet_version = '3'
+
+    read_version = sheet.get_misc_model().get_version()
+
+    if read_version != latest_spreadsheet_version:
+        error_msg = "Given spreadsheet version: " + str(read_version) + " is not compatible. Please use the latest excel " \
+                                                                   "sheet (Version " + latest_spreadsheet_version + \
+                    "). You can see the version in the spreadsheet tab \"Misc\""
         logging.error(error_msg)
         showerror(message=error_msg)
         return root.quit()

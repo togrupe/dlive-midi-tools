@@ -126,8 +126,12 @@ def mute_on_channel(output, item):
 def phantom_socket(output, item, socket_type):
     socket_tmp = item.get_socket_number()
     socket_dlive_tmp = item.get_socket_number_dlive()
+
     if socket_type == "local":
-        if socket_tmp <= 64:
+        if socket_tmp <= 64 and root.console == dliveConstants.console_drop_down_dlive:
+            lower_phantom = str(item.get_local_phantom()).lower()
+            socket = socket_dlive_tmp
+        elif socket_tmp <= 12 and root.console == dliveConstants.console_drop_down_avantis:
             lower_phantom = str(item.get_local_phantom()).lower()
             socket = socket_dlive_tmp
         else:
@@ -148,9 +152,9 @@ def phantom_socket(output, item, socket_type):
             return
 
     elif socket_type == "Slink":
-        if socket_tmp <= 48 or 65 < socket_tmp < 128:
+        if socket_tmp <= 128:
             lower_phantom = str(item.get_slink_phantom()).lower()
-            socket = socket_dlive_tmp
+            socket = socket_dlive_tmp + 64
         else:
             return
 
@@ -158,6 +162,10 @@ def phantom_socket(output, item, socket_type):
         res = dliveConstants.phantom_power_on
     else:
         res = dliveConstants.phantom_power_off
+
+    # TODO Currently required because value of socket cannot be higher than 127
+    if socket > 127:
+        return
 
     payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_48V, socket,
                      res]
@@ -261,36 +269,37 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
 
 
 def pad_socket(output, item, socket_type):
-    socket_tmp = item.get_socket_number_dlive()
+    socket_tmp = item.get_socket_number()
+    socket_dlive_tmp = item.get_socket_number_dlive()
 
     if socket_type == "local":
-        if socket_tmp <= 64:
+        if socket_tmp <= 64 and root.console == dliveConstants.console_drop_down_dlive:
             lower_pad = str(item.get_local_pad()).lower()
-            socket = item.get_socket_number_dlive()
+            socket = socket_dlive_tmp
+        elif socket_tmp <= 12 and root.console == dliveConstants.console_drop_down_avantis:
+            lower_pad = str(item.get_local_pad()).lower()
+            socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
-
-        if item.socket_number <= 32:
+        if socket_tmp <= 32:
             lower_pad = str(item.get_dx1_pad()).lower()
-            socket = socket_tmp + 64
+            socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
-
-        if item.socket_number <= 32:
+        if socket_tmp <= 32:
             lower_pad = str(item.get_dx3_pad()).lower()
-            socket = socket_tmp + 96
+            socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
-
-        if item.socket_number <= 128:
+        if socket_tmp <= 128:
             lower_pad = str(item.get_slink_pad()).lower()
-            socket = socket_tmp
+            socket = socket_dlive_tmp + 64
         else:
             return
 
@@ -298,6 +307,10 @@ def pad_socket(output, item, socket_type):
         res = dliveConstants.pad_on
     else:
         res = dliveConstants.pad_off
+
+    # TODO Currently required because value of socket cannot be higher than 127
+    if socket > 127:
+        return
 
     payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_pad, socket, res]
 
@@ -316,6 +329,7 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
                 phantom_socket(output, item, "DX1")
                 phantom_socket(output, item, "DX3")
             elif root.console == dliveConstants.console_drop_down_avantis:
+                phantom_socket(output, item, "local")
                 phantom_socket(output, item, "Slink")
         elif action == "pad":
             if root.console == dliveConstants.console_drop_down_dlive:
@@ -323,6 +337,7 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
                 pad_socket(output, item, "DX1")
                 pad_socket(output, item, "DX3")
             elif root.console == dliveConstants.console_drop_down_avantis:
+                pad_socket(output, item, "local")
                 pad_socket(output, item, "Slink")
 
 
@@ -669,7 +684,7 @@ if __name__ == '__main__':
     reaper.pack(side=TOP, fill=X)
     reaper.config(bd=2)
 
-    var_console.set(dliveConstants.console_drop_down_dlive)  # default value
+    var_console.set(dliveConstants.console_drop_down_dlive_default)  # default value
 
     Label(console_frame, text="Console:", width=25).pack(side=LEFT)
 

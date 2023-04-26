@@ -91,6 +91,8 @@ midi_channel_drop_down_string_12 = "12 to 16"
 console_drop_down_avantis = "Avantis"
 console_drop_down_dlive = "dLive"
 
+console_drop_down_dlive_default=console_drop_down_avantis
+
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
 allow_network_communication = True
 

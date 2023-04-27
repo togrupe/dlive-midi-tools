@@ -91,14 +91,18 @@ midi_channel_drop_down_string_12 = "12 to 16"
 console_drop_down_avantis = "Avantis"
 console_drop_down_dlive = "dLive"
 
-console_drop_down_dlive_default=console_drop_down_dlive
+console_drop_down_dlive_default = console_drop_down_dlive
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
 allow_network_communication = True
 
 # Trim after 6 or 8 Charactors
-trim_after_x_charactors=8
+trim_after_x_charactors = 8
+
+config_file = "config.json"
 
 # dlive Mixrack ip and port for midi/tcp. Please use 127.0.0.1 for dLive Director.
 ip = '192.168.1.70'
 port = 51325
+
+

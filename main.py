@@ -5,6 +5,7 @@
 #
 ####################################################
 import ipaddress
+import json
 # coding=utf-8
 import logging
 import os
@@ -12,6 +13,7 @@ import re
 import socket
 import threading
 import time
+import tkinter
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk
 from tkinter.messagebox import showinfo, showerror
@@ -378,12 +380,14 @@ def handle_dca_parameter(message, output, dca_list, action):
         if action == "dca":
             dca_channel(output, item)
 
+
 def is_valid_ip_address(ip_address):
     try:
         ipaddress.IPv4Address(ip_address)
         return True
     except ipaddress.AddressValueError:
         return False
+
 
 def read_document(filename, check_box_states, check_box_reaper, check_box_write_to_dlive):
     logging.info('The following file will be read : ' + str(filename))
@@ -415,8 +419,8 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
         if not is_valid_ip_address(mix_rack_ip_tmp):
             error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
-                                                                    "format: e.g. 192.168.1.70. Each ip subpart can " \
-                                                                    "only be between 0-255"
+                                                                          "format: e.g. 192.168.1.70. Each ip subpart can " \
+                                                                          "only be between 0-255"
             logging.error(error_msg_invalid_ip)
             showerror(message=error_msg_invalid_ip)
             reset_progress_bar()
@@ -428,9 +432,9 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
             logging.info("Connection successful.")
         except socket.timeout:
             connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
-                                                                                             "established. " \
-                                                                                             "Are you in the same " \
-                                                                                             "subnet?"
+                                                                                       "established. " \
+                                                                                       "Are you in the same " \
+                                                                                       "subnet?"
 
             logging.error(connect_err_message)
             showerror(message=connect_err_message)
@@ -709,6 +713,48 @@ def get_dlive_write_state():
     return list(write_to_dlive.state())
 
 
+def save_current_ip():
+    file = dliveConstants.config_file
+    current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
+    json_str = '{"ip": "' + current_ip + '"}'
+
+    data = json.loads(json_str)
+    with open(file, 'w') as file:
+        json.dump(data, file)
+
+
+def read_perstisted_ip():
+    filename = dliveConstants.config_file
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            return data['ip']
+    else:
+        return dliveConstants.ip
+
+
+def reset_ip_field_to_default_ip():
+    ip_byte0.delete(0, tkinter.END)
+    ip_byte0.insert(0, "192")
+    ip_byte1.delete(0, tkinter.END)
+    ip_byte1.insert(0, "168")
+    ip_byte2.delete(0, tkinter.END)
+    ip_byte2.insert(0, "1")
+    ip_byte3.delete(0, tkinter.END)
+    ip_byte3.insert(0, "70")
+
+
+def set_ip_field_to_local_director_ip():
+    ip_byte0.delete(0, tkinter.END)
+    ip_byte0.insert(0, "127")
+    ip_byte1.delete(0, tkinter.END)
+    ip_byte1.insert(0, "0")
+    ip_byte2.delete(0, tkinter.END)
+    ip_byte2.insert(0, "0")
+    ip_byte3.delete(0, tkinter.END)
+    ip_byte3.insert(0, "1")
+
+
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
     root.geometry('700x400')
@@ -744,6 +790,10 @@ if __name__ == '__main__':
     ip_byte2.grid(row=0, column=4)
     Label(ip_field, text=".").grid(row=0, column=5)
     ip_byte3.grid(row=0, column=6)
+    Label(ip_field, text="     ").grid(row=0, column=7)
+    Button(ip_field, text='Save', command=save_current_ip).grid(row=0, column=8)
+    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
+    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
     ip_field.pack(side=RIGHT)
 
     var_midi_channel.set(dliveConstants.midi_channel_drop_down_string_12)  # default value
@@ -765,7 +815,8 @@ if __name__ == '__main__':
                                        dliveConstants.midi_channel_drop_down_string_12)
     dropdown_midi_channel.pack(side=RIGHT)
 
-    ip_from_config_file = dliveConstants.ip.split(".")
+    ip = read_perstisted_ip()
+    ip_from_config_file = ip.split(".")
 
     ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
     ip_byte1.insert(11, ip_from_config_file.__getitem__(1))

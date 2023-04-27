@@ -9,6 +9,7 @@
 import logging
 import os
 import re
+import threading
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk
@@ -30,7 +31,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.2.0-alpha2-SNAPSHOT"
+version = "2.2.0-alpha3-SNAPSHOT"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -617,6 +618,10 @@ def browse_files():
     root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
     read_document(input_file_path, get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
 
+def trigger_background_process():
+    bg_thread = threading.Thread(target=browse_files)
+    bg_thread.start()
+
 
 class Checkbar(Frame):
     def __init__(self, parent=None, picks=[], side=LEFT, anchor=W):
@@ -739,7 +744,7 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=browse_files).grid(row=0)
+    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=trigger_background_process).grid(row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
     pb = ttk.Progressbar(

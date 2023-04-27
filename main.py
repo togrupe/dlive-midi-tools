@@ -713,10 +713,17 @@ def get_dlive_write_state():
     return list(write_to_dlive.state())
 
 
-def save_current_ip():
+def save_current_ui_settings():
     file = dliveConstants.config_file
     current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-    json_str = '{"ip": "' + current_ip + '"}'
+
+    data = {
+        'ip': str(current_ip),
+        'console': dropdown_console.getvar(str(var_console))
+    }
+
+    # Ein Python-Dictionary in einen JSON-String umwandeln
+    json_str = json.dumps(data)
 
     data = json.loads(json_str)
     with open(file, 'w') as file:
@@ -731,6 +738,16 @@ def read_perstisted_ip():
             return data['ip']
     else:
         return dliveConstants.ip
+
+
+def read_perstisted_console():
+    filename = dliveConstants.config_file
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            return data['console']
+    else:
+        return dliveConstants.console_drop_down_dlive_default
 
 
 def reset_ip_field_to_default_ip():
@@ -771,7 +788,7 @@ if __name__ == '__main__':
     reaper.pack(side=TOP, fill=X)
     reaper.config(bd=2)
 
-    var_console.set(dliveConstants.console_drop_down_dlive_default)  # default value
+    var_console.set(read_perstisted_console())
 
     Label(console_frame, text="Console:", width=25).pack(side=LEFT)
 
@@ -791,7 +808,7 @@ if __name__ == '__main__':
     Label(ip_field, text=".").grid(row=0, column=5)
     ip_byte3.grid(row=0, column=6)
     Label(ip_field, text="     ").grid(row=0, column=7)
-    Button(ip_field, text='Save', command=save_current_ip).grid(row=0, column=8)
+    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
     Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
     Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
     ip_field.pack(side=RIGHT)

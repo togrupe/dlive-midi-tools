@@ -4,7 +4,7 @@
 # Author: Tobias Grupe
 #
 ####################################################
-
+import ipaddress
 # coding=utf-8
 import logging
 import os
@@ -378,6 +378,12 @@ def handle_dca_parameter(message, output, dca_list, action):
         if action == "dca":
             dca_channel(output, item)
 
+def is_valid_ip_address(ip_address):
+    try:
+        ipaddress.IPv4Address(ip_address)
+        return True
+    except ipaddress.AddressValueError:
+        return False
 
 def read_document(filename, check_box_states, check_box_reaper, check_box_write_to_dlive):
     logging.info('The following file will be read : ' + str(filename))
@@ -405,14 +411,27 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     time.sleep(2)
 
     if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
-        mixrack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-        logging.info("Open connection to dlive on ip: " + mixrack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
+        mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
+
+        if not is_valid_ip_address(mix_rack_ip_tmp):
+            error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
+                                                                    "format: e.g. 192.168.1.70. Each ip subpart can " \
+                                                                    "only be between 0-255"
+            logging.error(error_msg_invalid_ip)
+            showerror(message=error_msg_invalid_ip)
+            reset_progress_bar()
+            return
+
+        logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
         try:
-            output = connect(mixrack_ip_tmp, dliveConstants.port)
+            output = connect(mix_rack_ip_tmp, dliveConstants.port)
             logging.info("Connection successful.")
         except socket.timeout:
-            connect_err_message = "Connection could to given ip: " + mixrack_ip_tmp + "could not be established. Are " \
-                                                                                      "you in the same subnet?"
+            connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
+                                                                                             "established. " \
+                                                                                             "Are you in the same " \
+                                                                                             "subnet?"
+
             logging.error(connect_err_message)
             showerror(message=connect_err_message)
             reset_progress_bar()

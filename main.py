@@ -390,8 +390,9 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     read_version = sheet.get_misc_model().get_version()
 
     if read_version != latest_spreadsheet_version:
-        error_msg = "Given spreadsheet version: " + str(read_version) + " is not compatible. Please use the latest excel " \
-                                                                   "sheet (Version " + latest_spreadsheet_version + \
+        error_msg = "Given spreadsheet version: " + str(
+            read_version) + " is not compatible. Please use the latest excel " \
+                            "sheet (Version " + latest_spreadsheet_version + \
                     "). You can see the version in the spreadsheet tab \"Misc\""
         logging.error(error_msg)
         showerror(message=error_msg)
@@ -618,6 +619,7 @@ def browse_files():
     root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
     read_document(input_file_path, get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
 
+
 def trigger_background_process():
     bg_thread = threading.Thread(target=browse_files)
     bg_thread.start()
@@ -744,7 +746,8 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=trigger_background_process).grid(row=0)
+    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=trigger_background_process).grid(
+        row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
     pb = ttk.Progressbar(

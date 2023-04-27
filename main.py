@@ -9,6 +9,7 @@
 import logging
 import os
 import re
+import socket
 import threading
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
@@ -406,8 +407,16 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
         mixrack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
         logging.info("Open connection to dlive on ip: " + mixrack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
-        output = connect(mixrack_ip_tmp, dliveConstants.port)
-        logging.info("Connection successful.")
+        try:
+            output = connect(mixrack_ip_tmp, dliveConstants.port)
+            logging.info("Connection successful.")
+        except socket.timeout:
+            connect_err_message = "Connection could to given ip: " + mixrack_ip_tmp + "could not be established. Are " \
+                                                                                      "you in the same subnet?"
+            logging.error(connect_err_message)
+            showerror(message=connect_err_message)
+            reset_progress_bar()
+            return
     else:
         output = None
     progress_open_or_close_connection()

@@ -719,7 +719,8 @@ def save_current_ui_settings():
 
     data = {
         'ip': str(current_ip),
-        'console': dropdown_console.getvar(str(var_console))
+        'console': dropdown_console.getvar(str(var_console)),
+        'midi-port': dropdown_midi_channel.getvar(str(var_midi_channel))
     }
 
     # Ein Python-Dictionary in einen JSON-String umwandeln
@@ -747,7 +748,17 @@ def read_perstisted_console():
             data = json.load(file)
             return data['console']
     else:
-        return dliveConstants.console_drop_down_dlive_default
+        return dliveConstants.console_drop_down_default
+
+
+def read_perstisted_midi_port():
+    filename = dliveConstants.config_file
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            return data['midi-port']
+    else:
+        return dliveConstants.midi_channel_drop_down_string_default
 
 
 def reset_ip_field_to_default_ip():
@@ -813,7 +824,7 @@ if __name__ == '__main__':
     Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
     ip_field.pack(side=RIGHT)
 
-    var_midi_channel.set(dliveConstants.midi_channel_drop_down_string_12)  # default value
+    var_midi_channel.set(read_perstisted_midi_port())  # default value
 
     Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
 

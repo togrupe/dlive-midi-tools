@@ -36,8 +36,14 @@ def convert_sheet_color_to_reaper_color(color):
     return colour
 
 
-def generate_rec_item(channel):
-    ret = "1 " + str(channel) + " 1 0 0 0 0 0"
+def generate_rec_item(channel, arm):
+    arm_color = arm.lower()
+    if arm_color == "yes":
+        arm_set = '1 '
+    else:
+        arm_set = '0 '
+
+    ret = arm_set + str(channel) + " 1 0 0 0 0 0"
 
     return ret
 
@@ -56,23 +62,28 @@ def create_reaper_session(sheet, reaper_output_dir, prefix):
     ]
 
     for item in sheet.get_channel_model():
-        track = Track()
-        name = item.get_name()
+        lower_recording = str(item.get_recording()).lower()
+        if lower_recording == 'nan':
+            continue
+        if lower_recording == 'yes':
 
-        if name == 'nan':
-            track_name_raw = ""
-        else:
-            track_name_raw = name
+            track = Track()
+            name = item.get_name()
 
-        track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
-        track.props = [
-            ["NAME", track_name_combined],
-            ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
-            ["REC", generate_rec_item(item.get_channel_dlive())],
-            ["TRACKHEIGHT", "40 0 0 0 0 0"],
-            ["HWOUT", generate_hwout_item(item.get_channel_dlive())]
-        ]
-        project.add(track)
+            if name == 'nan':
+                track_name_raw = ""
+            else:
+                track_name_raw = name
+
+            track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
+            track.props = [
+                ["NAME", track_name_combined],
+                ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
+                ["REC", generate_rec_item(item.get_channel_dlive(), item.get_record_arm())],
+                ["TRACKHEIGHT", "40 0 0 0 0 0"],
+                ["HWOUT", generate_hwout_item(item.get_channel_dlive())]
+            ]
+            project.add(track)
 
     reaper_outputfile = reaper_output_dir + "/" + prefix + "-" + "recording-template.rpp"
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)

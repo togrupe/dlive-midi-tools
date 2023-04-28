@@ -34,7 +34,7 @@ from model.Sheet import Sheet
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.2.0-RC2"
+version = "2.2.0-RC3"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -396,7 +396,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '3'
+    latest_spreadsheet_version = '4'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -557,7 +557,9 @@ def create_channel_list_content(sheet_channels):
                                None,
                                None,
                                None,
-                               str(sheet_channels['Mute'].__getitem__(index))
+                               str(sheet_channels['Mute'].__getitem__(index)),
+                               str(sheet_channels['Recording'].__getitem__(index)),
+                               str(sheet_channels['Record Arm'].__getitem__(index))
                                )
         channel_list_entries.append(cle)
         index = index + 1

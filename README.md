@@ -119,17 +119,15 @@ Afterwards the following window appears.
 
 4. `Director` Button, sets the ip to 127.0.0.1
 
-5. `Saves` Saves the current setting (console, ip, midi-port)
+5. `Default` Sets the ip back to default: 192.168.1.70
 
-6. `Default` Sets the ip back to default: 192.168.1.70
+6. Select the columns you want to write, and select `Write to console`
 
-7. Select the columns you want to write, and select `Write to console`
+7. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` will be generated into the directory from where the spreadsheet has been chosen. You can also use the tool to create only the Reaper session file.
 
-8. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` will be generated into the directory from where the spreadsheet has been chosen. You can also use the tool to create only the Reaper session file.
+8.  Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
-9.  Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
-
-10. If something goes wrong, please check the python console or the `main.log`
+9. If something goes wrong, please check the python console or the `main.log`
 
 If you find any issues, please let me know.
 

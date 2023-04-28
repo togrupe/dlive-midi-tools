@@ -106,5 +106,3 @@ config_file = "config.json"
 # dlive Mixrack ip and port for midi/tcp. Please use 127.0.0.1 for dLive Director.
 ip = '192.168.1.70'
 port = 51325
-
-

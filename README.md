@@ -9,11 +9,12 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
 ## Use Cases
+* Supports dLive & dLive Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
+* Supports Avantis & Avantis Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
 * Single source (spread sheet) for channel lists in single or multi console situations
 * Better overview on all channels during preparation phase
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
-* Supports dLive Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
-* Supports Avantis & Avantis Director
+
 
 ## Software Liability Warning
 
@@ -36,11 +37,10 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | OS      | Download                                                                                               |
 |---------|---------|--------------------------------------------------------------------------------------------------------|
+| v2.2.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
+|         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
 | v2.1.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
 |         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
-| v2.0.1  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/macos/dmt-v2_0_1-macos.zip)     |
-|         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_0_1/windows/dmt-v2_0_1-windows.zip) |
-
 ## Input file
 Microsoft Excel spread sheet, please have a look at the following tabs
 
@@ -85,6 +85,7 @@ Please make sure that your ethernet or Wi-Fi interface has an ip address in the 
 Prerequisites: 
 * Python >= 3.8
 * dlive Firmware: >= 1.90
+* Reaper >= 6.75
 
 1. Recommendation: Please backup your current show file, just to be on the safe side if something goes wrong.
 
@@ -125,7 +126,7 @@ Afterwards the following window appears.
 
 7. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` will be generated into the directory from where the spreadsheet has been chosen. You can also use the tool to create only the Reaper session file.
 
-8.  Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+8. Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
 9. If something goes wrong, please check the python console or the `main.log`
 

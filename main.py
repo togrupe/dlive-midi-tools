@@ -718,6 +718,7 @@ def save_current_ui_settings():
     current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
 
     data = {
+        'version': 1,
         'ip': str(current_ip),
         'console': dropdown_console.getvar(str(var_console)),
         'midi-port': dropdown_midi_channel.getvar(str(var_midi_channel))

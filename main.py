@@ -766,7 +766,8 @@ def read_perstisted_console():
             logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
             return console_ret
     else:
-        logging.info("Use default console: " + dliveConstants.console_drop_down_default +  " from dliveConstants.console_drop_down_default")
+        logging.info(
+            "Use default console: " + dliveConstants.console_drop_down_default + " from dliveConstants.console_drop_down_default")
         return dliveConstants.console_drop_down_default
 
 
@@ -780,7 +781,8 @@ def read_perstisted_midi_port():
             logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
             return midi_port_ret
     else:
-        logging.info("Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + "from dliveConstants.midi_channel_drop_down_string_default")
+        logging.info(
+            "Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + "from dliveConstants.midi_channel_drop_down_string_default")
         return dliveConstants.midi_channel_drop_down_string_default
 
 

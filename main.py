@@ -1,7 +1,19 @@
+####################################################
+# Main Script
+#
+# Author: Tobias Grupe
+#
+####################################################
 # coding=utf-8
+import ipaddress
+import json
 import logging
+import os
 import re
+import socket
+import threading
 import time
+import tkinter
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk
 from tkinter.messagebox import showinfo, showerror
@@ -20,17 +32,23 @@ from model.Misc import Misc
 from model.PhantomListEntry import PhantomListEntry
 from model.Sheet import Sheet
 
+LOCAL_DLIVE_SOCKET_COUNT_MAX = 64
+LOCAL_AVANTIS_SOCKET_COUNT_MAX = 12
+DX1_SOCKET_COUNT_MAX = 32
+DX3_SOCKET_COUNT_MAX = 32
+SLINK_SOCKET_COUNT_MAX = 128
+
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.1.0"
+version = "2.2.0"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
 
 def name_channel(output, item):
-    # Trim name if length of name > 6
-    if len(str(item.get_name())) > 6:
-        trimmed_name = str(item.get_name())[0:6]
+    # Trim name if length of name > dliveConstants.trim_after_x_charactors
+    if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
+        trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
         logging.info(
             "Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
                 trimmed_name))
@@ -48,7 +66,8 @@ def name_channel(output, item):
         if len(str(character)) != 0:
             value = ord(character)
             if value > 127:
-                error_msg = "One of the characters in Channel " + str(item.get_channel_dlive()+1) + " is not supported. Characters like ä, ö, ü are not supported."
+                error_msg = "One of the characters in Channel " + str(
+                    item.get_channel_dlive() + 1) + " is not supported. Characters like ä, ö, ü are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
                 exit(1)
@@ -117,19 +136,35 @@ def mute_on_channel(output, item):
 def phantom_socket(output, item, socket_type):
     socket_tmp = item.get_socket_number()
     socket_dlive_tmp = item.get_socket_number_dlive()
+
     if socket_type == "local":
-        lower_phantom = str(item.get_local_phantom()).lower()
-        socket = socket_dlive_tmp
+        if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
+            lower_phantom = str(item.get_local_phantom()).lower()
+            socket = socket_dlive_tmp
+        elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
+            lower_phantom = str(item.get_local_phantom()).lower()
+            socket = socket_dlive_tmp
+        else:
+            return
+
     elif socket_type == "DX1":
-        lower_phantom = str(item.get_dx1_phantom()).lower()
-        if socket_tmp <= 32:
+        if socket_tmp <= DX1_SOCKET_COUNT_MAX:
+            lower_phantom = str(item.get_dx1_phantom()).lower()
             socket = socket_dlive_tmp + 64
         else:
             return
+
     elif socket_type == "DX3":
-        lower_phantom = str(item.get_dx3_phantom()).lower()
-        if socket_tmp <= 32:
+        if socket_tmp <= DX3_SOCKET_COUNT_MAX:
+            lower_phantom = str(item.get_dx3_phantom()).lower()
             socket = socket_dlive_tmp + 96
+        else:
+            return
+
+    elif socket_type == "Slink":
+        if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
+            lower_phantom = str(item.get_slink_phantom()).lower()
+            socket = socket_dlive_tmp + 64
         else:
             return
 
@@ -137,6 +172,10 @@ def phantom_socket(output, item, socket_type):
         res = dliveConstants.phantom_power_on
     else:
         res = dliveConstants.phantom_power_off
+
+    # TODO Currently required because value of socket cannot be higher than 127
+    if socket > 127:
+        return
 
     payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_48V, socket,
                      res]
@@ -224,7 +263,7 @@ def fader_level_channel(output, item):
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
     for item in channel_list_entries:
-        logging.info("Processing Channel: " + str(item.get_channel_dlive()))
+        logging.info("Processing " + action + " for channel: " + str(item.get_channel_dlive() + 1))
         if action == "name":
             name_channel(output, item)
         elif action == "color":
@@ -240,21 +279,37 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
 
 
 def pad_socket(output, item, socket_type):
-    socket_tmp = item.get_socket_number_dlive()
+    socket_tmp = item.get_socket_number()
+    socket_dlive_tmp = item.get_socket_number_dlive()
 
     if socket_type == "local":
-        lower_pad = str(item.get_local_pad()).lower()
-        socket = item.get_socket_number_dlive()
-    elif socket_type == "DX1":
-        lower_pad = str(item.get_dx1_pad()).lower()
-        if item.socket_number <= 32:
-            socket = socket_tmp + 64
+        if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
+            lower_pad = str(item.get_local_pad()).lower()
+            socket = socket_dlive_tmp
+        elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
+            lower_pad = str(item.get_local_pad()).lower()
+            socket = socket_dlive_tmp
         else:
             return
+
+    elif socket_type == "DX1":
+        if socket_tmp <= DX1_SOCKET_COUNT_MAX:
+            lower_pad = str(item.get_dx1_pad()).lower()
+            socket = socket_dlive_tmp + 64
+        else:
+            return
+
     elif socket_type == "DX3":
-        lower_pad = str(item.get_dx3_pad()).lower()
-        if item.socket_number <= 32:
-            socket = socket_tmp + 96
+        if socket_tmp <= DX3_SOCKET_COUNT_MAX:
+            lower_pad = str(item.get_dx3_pad()).lower()
+            socket = socket_dlive_tmp + 96
+        else:
+            return
+
+    elif socket_type == "Slink":
+        if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
+            lower_pad = str(item.get_slink_pad()).lower()
+            socket = socket_dlive_tmp + 64
         else:
             return
 
@@ -262,6 +317,10 @@ def pad_socket(output, item, socket_type):
         res = dliveConstants.pad_on
     else:
         res = dliveConstants.pad_off
+
+    # TODO Currently required because value of socket cannot be higher than 127
+    if socket > 127:
+        return
 
     payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_pad, socket, res]
 
@@ -274,14 +333,23 @@ def pad_socket(output, item, socket_type):
 def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
     logging.info(message)
     for item in phantom_list_entries:
+        logging.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
         if action == "phantom":
-            phantom_socket(output, item, "local")
-            phantom_socket(output, item, "DX1")
-            phantom_socket(output, item, "DX3")
+            if root.console == dliveConstants.console_drop_down_dlive:
+                phantom_socket(output, item, "local")
+                phantom_socket(output, item, "DX1")
+                phantom_socket(output, item, "DX3")
+            elif root.console == dliveConstants.console_drop_down_avantis:
+                phantom_socket(output, item, "local")
+                phantom_socket(output, item, "Slink")
         elif action == "pad":
-            pad_socket(output, item, "local")
-            pad_socket(output, item, "DX1")
-            pad_socket(output, item, "DX3")
+            if root.console == dliveConstants.console_drop_down_dlive:
+                pad_socket(output, item, "local")
+                pad_socket(output, item, "DX1")
+                pad_socket(output, item, "DX3")
+            elif root.console == dliveConstants.console_drop_down_avantis:
+                pad_socket(output, item, "local")
+                pad_socket(output, item, "Slink")
 
 
 def assign_dca(output, channel, dca_value):
@@ -320,6 +388,14 @@ def handle_dca_parameter(message, output, dca_list, action):
             dca_channel(output, item)
 
 
+def is_valid_ip_address(ip_address):
+    try:
+        ipaddress.IPv4Address(ip_address)
+        return True
+    except ipaddress.AddressValueError:
+        return False
+
+
 def read_document(filename, check_box_states, check_box_reaper, check_box_write_to_dlive):
     logging.info('The following file will be read : ' + str(filename))
 
@@ -327,8 +403,15 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    if sheet.get_misc_model().get_version() != '2':
-        error_msg = "Given excel sheet version is not compatible."
+    latest_spreadsheet_version = '4'
+
+    read_version = sheet.get_misc_model().get_version()
+
+    if read_version != latest_spreadsheet_version:
+        error_msg = "Given spreadsheet version: " + str(
+            read_version) + " is not compatible. Please use the latest excel " \
+                            "sheet (Version " + latest_spreadsheet_version + \
+                    "). You can see the version in the spreadsheet tab \"Misc\""
         logging.error(error_msg)
         showerror(message=error_msg)
         return root.quit()
@@ -339,16 +422,38 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     time.sleep(2)
 
     if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
-        mixrack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-        logging.info("Open connection to dlive on ip: " + mixrack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
-        output = connect(mixrack_ip_tmp, dliveConstants.port)
-        logging.info("Connection successful.")
+        mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
+
+        if not is_valid_ip_address(mix_rack_ip_tmp):
+            error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
+                                                                          "format: e.g. 192.168.1.70. Each ip subpart can " \
+                                                                          "only be between 0-255"
+            logging.error(error_msg_invalid_ip)
+            showerror(message=error_msg_invalid_ip)
+            reset_progress_bar()
+            return
+
+        logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
+        try:
+            output = connect(mix_rack_ip_tmp, dliveConstants.port)
+            logging.info("Connection successful.")
+        except socket.timeout:
+            connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
+                                                                                       "established. " \
+                                                                                       "Are you in the same " \
+                                                                                       "subnet?"
+
+            logging.error(connect_err_message)
+            showerror(message=connect_err_message)
+            reset_progress_bar()
+            return
     else:
         output = None
     progress_open_or_close_connection()
     root.update()
 
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
+    root.console = determine_console_id(var_console.get())
 
     actions = 0
 
@@ -429,8 +534,8 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     if cb_reaper:
         logging.info("Creating Reaper Recording Session Template file...")
-        SessionCreator.create_reaper_session(sheet)
-        logging.info("Session created")
+        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
+        logging.info("Reaper Recording Session Template created")
 
         progress(actions)
         root.update()
@@ -459,7 +564,9 @@ def create_channel_list_content(sheet_channels):
                                None,
                                None,
                                None,
-                               str(sheet_channels['Mute'].__getitem__(index))
+                               str(sheet_channels['Mute'].__getitem__(index)),
+                               str(sheet_channels['Recording'].__getitem__(index)),
+                               str(sheet_channels['Record Arm'].__getitem__(index))
                                )
         channel_list_entries.append(cle)
         index = index + 1
@@ -506,7 +613,9 @@ def create_phantom_pad_content(sheet_48V_and_pad):
                                str(sheet_48V_and_pad['DX3 Phantom'].__getitem__(index)),
                                str(sheet_48V_and_pad['Local Pad'].__getitem__(index)),
                                str(sheet_48V_and_pad['DX1 Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)))
+                               str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)),
+                               str(sheet_48V_and_pad['Slink Phantom'].__getitem__(index)),
+                               str(sheet_48V_and_pad['Slink Pad'].__getitem__(index)))
 
         phantom_and_pad_list_entries.append(ple)
         index = index + 1
@@ -531,6 +640,14 @@ def determine_technical_midi_port(selected_midi_port_as_string):
     return switcher.get(selected_midi_port_as_string, "Invalid port")
 
 
+def determine_console_id(selected_console_as_string):
+    switcher = {
+        dliveConstants.console_drop_down_dlive: dliveConstants.console_drop_down_dlive,
+        dliveConstants.console_drop_down_avantis: dliveConstants.console_drop_down_avantis
+    }
+    return switcher.get(selected_console_as_string, "Invalid console")
+
+
 def reset_progress_bar():
     pb['value'] = 0
     root.update()
@@ -538,7 +655,15 @@ def reset_progress_bar():
 
 def browse_files():
     reset_progress_bar()
-    read_document(filedialog.askopenfilename(), get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
+    input_file_path = filedialog.askopenfilename()
+    root.reaper_output_dir = os.path.dirname(input_file_path)
+    root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
+    read_document(input_file_path, get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
+
+
+def trigger_background_process():
+    bg_thread = threading.Thread(target=browse_files)
+    bg_thread.start()
 
 
 class Checkbar(Frame):
@@ -558,14 +683,17 @@ class Checkbar(Frame):
 root = Tk()
 config_frame = Frame(root)
 ip_frame = Frame(config_frame)
+console_frame = Frame(config_frame)
+console_frame.grid(row=1, column=0, sticky="W")
 Label(config_frame, text="       ").grid(row=0, column=0)
-ip_frame.grid(row=1, column=0, sticky="W")
+ip_frame.grid(row=2, column=0, sticky="W")
 midi_channel_frame = Frame(config_frame)
-midi_channel_frame.grid(row=2, column=0, sticky="W")
+midi_channel_frame.grid(row=3, column=0, sticky="W")
+
 config_frame.pack(side=TOP)
 
 columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
-write_to_dlive = Checkbar(root, ['Write to dLive'])
+write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 
 ip_field = Frame(ip_frame)
@@ -576,6 +704,10 @@ ip_byte3 = Entry(ip_field, width=3)
 mixrack_ip = ""
 midi_channel = None
 var_midi_channel = StringVar(root)
+var_console = StringVar(root)
+
+reaper_output_dir = ""
+reaper_file_prefix = ""
 
 
 def get_checkbox_states():
@@ -590,12 +722,100 @@ def get_dlive_write_state():
     return list(write_to_dlive.state())
 
 
+def save_current_ui_settings():
+    file = dliveConstants.config_file
+    current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
+
+    data = {
+        'version': 1,
+        'ip': str(current_ip),
+        'console': dropdown_console.getvar(str(var_console)),
+        'midi-port': dropdown_midi_channel.getvar(str(var_midi_channel))
+    }
+
+    # Ein Python-Dictionary in einen JSON-String umwandeln
+    json_str = json.dumps(data)
+
+    data = json.loads(json_str)
+    with open(file, 'w') as file:
+        json.dump(data, file)
+        logging.info("Following data has be persisted: " + str(json_str) + " into file: " + str(file) + ".")
+
+
+def read_perstisted_ip():
+    filename = dliveConstants.config_file
+    if os.path.exists(filename):
+        logging.info("Try to read persisted ip from " + dliveConstants.config_file + " file.")
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            ip_ret = data['ip']
+            logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
+            return ip_ret
+    else:
+        logging.info("Use default ip: " + dliveConstants.ip + " from dliveConstants.ip")
+        return dliveConstants.ip
+
+
+def read_perstisted_console():
+    filename = dliveConstants.config_file
+    if os.path.exists(filename):
+        logging.info("Try to read persisted console from " + dliveConstants.config_file + " file.")
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            console_ret = data['console']
+            logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
+            return console_ret
+    else:
+        logging.info(
+            "Use default console: " + dliveConstants.console_drop_down_default + " from dliveConstants.console_drop_down_default")
+        return dliveConstants.console_drop_down_default
+
+
+def read_perstisted_midi_port():
+    filename = dliveConstants.config_file
+    if os.path.exists(filename):
+        logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            midi_port_ret = data['midi-port']
+            logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
+            return midi_port_ret
+    else:
+        logging.info(
+            "Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + "from dliveConstants.midi_channel_drop_down_string_default")
+        return dliveConstants.midi_channel_drop_down_string_default
+
+
+def reset_ip_field_to_default_ip():
+    ip_byte0.delete(0, tkinter.END)
+    ip_byte0.insert(0, "192")
+    ip_byte1.delete(0, tkinter.END)
+    ip_byte1.insert(0, "168")
+    ip_byte2.delete(0, tkinter.END)
+    ip_byte2.insert(0, "1")
+    ip_byte3.delete(0, tkinter.END)
+    ip_byte3.insert(0, "70")
+    logging.info("Default ip: " + dliveConstants.ip + " was set.")
+
+
+def set_ip_field_to_local_director_ip():
+    ip_byte0.delete(0, tkinter.END)
+    ip_byte0.insert(0, "127")
+    ip_byte1.delete(0, tkinter.END)
+    ip_byte1.insert(0, "0")
+    ip_byte2.delete(0, tkinter.END)
+    ip_byte2.insert(0, "0")
+    ip_byte3.delete(0, tkinter.END)
+    ip_byte3.insert(0, "1")
+    logging.info("Director ip: 127.0.0.1 was set.")
+
+
 if __name__ == '__main__':
-    root.title('Channel List Manager for Allen & Heath dLive Systems - v' + version)
+    root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
     root.geometry('700x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from the given spread sheet which column you want to write.").pack(side=TOP)
+    Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
     columns.pack(side=TOP, fill=X)
     columns.config(bd=2)
@@ -606,7 +826,17 @@ if __name__ == '__main__':
     reaper.pack(side=TOP, fill=X)
     reaper.config(bd=2)
 
-    Label(ip_frame, text="Mixrack IP Address:", width=25).pack(side=LEFT)
+    var_console.set(read_perstisted_console())
+
+    Label(console_frame, text="Console:", width=25).pack(side=LEFT)
+
+    dropdown_console = OptionMenu(console_frame, var_console,
+                                  dliveConstants.console_drop_down_dlive,
+                                  dliveConstants.console_drop_down_avantis,
+                                  )
+    dropdown_console.pack(side=RIGHT)
+
+    Label(ip_frame, text="(Mixrack-) IP Address:", width=25).pack(side=LEFT)
 
     ip_byte0.grid(row=0, column=0)
     Label(ip_field, text=".").grid(row=0, column=1)
@@ -615,11 +845,15 @@ if __name__ == '__main__':
     ip_byte2.grid(row=0, column=4)
     Label(ip_field, text=".").grid(row=0, column=5)
     ip_byte3.grid(row=0, column=6)
+    Label(ip_field, text="     ").grid(row=0, column=7)
+    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
+    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
+    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
     ip_field.pack(side=RIGHT)
 
-    var_midi_channel.set(dliveConstants.midi_channel_drop_down_string_12)  # default value
+    var_midi_channel.set(read_perstisted_midi_port())  # default value
 
-    Label(midi_channel_frame, text="   Mixrack Midi Channel:", width=25).pack(side=LEFT)
+    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
 
     dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
                                        dliveConstants.midi_channel_drop_down_string_1,
@@ -636,7 +870,8 @@ if __name__ == '__main__':
                                        dliveConstants.midi_channel_drop_down_string_12)
     dropdown_midi_channel.pack(side=RIGHT)
 
-    ip_from_config_file = dliveConstants.ip.split(".")
+    ip = read_perstisted_ip()
+    ip_from_config_file = ip.split(".")
 
     ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
     ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
@@ -645,7 +880,8 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=browse_files).grid(row=0)
+    Button(bottom_frame, text='Open spreadsheet and trigger writing process', command=trigger_background_process).grid(
+        row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
     pb = ttk.Progressbar(

@@ -1,3 +1,10 @@
+####################################################
+# Reaper constants configuration file
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 # The Reaper color mappings
 reaper_color_black = 16777216
 reaper_color_red = 17236731

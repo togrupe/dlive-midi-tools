@@ -1,3 +1,10 @@
+####################################################
+# dlive constants configuration file
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 # The dlive color mappings
 lcd_color_black = 0x00
 lcd_color_red = 0x01
@@ -80,9 +87,22 @@ midi_channel_drop_down_string_10 = "10 to 14"
 midi_channel_drop_down_string_11 = "11 to 15"
 midi_channel_drop_down_string_12 = "12 to 16"
 
+midi_channel_drop_down_string_default = midi_channel_drop_down_string_12
+
+# Strings Console Selector
+console_drop_down_avantis = "Avantis"
+console_drop_down_dlive = "dLive"
+
+console_drop_down_default = console_drop_down_dlive
+
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
 allow_network_communication = True
 
-# dlive Mixrack ip and port for midi/tcp
+# Trim after 6 or 8 Charactors
+trim_after_x_charactors = 8
+
+config_file = "config.json"
+
+# dlive Mixrack ip and port for midi/tcp. Please use 127.0.0.1 for dLive Director.
 ip = '192.168.1.70'
 port = 51325

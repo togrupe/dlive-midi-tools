@@ -87,7 +87,7 @@ Prerequisites:
 * dlive Firmware: >= 1.90
 * Reaper >= 6.75
 
-1. Recommendation: Please backup your current show file, just to be on the safe side if something goes wrong.
+1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 
 2. Before you run the script, please run the following command to download the required python modules using `pip`. Please make sure `pip` is installed.
 
@@ -128,7 +128,7 @@ Afterwards the following window appears.
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1. 
    You can also use the tool to create only the Reaper session file.
 
-8. Click the button "Open spread sheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+8. Click the button "Open spreadsheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
 9. If something goes wrong, please check the python console or the `main.log`
 

@@ -4,9 +4,9 @@
 # Author: Tobias Grupe
 #
 ####################################################
+# coding=utf-8
 import ipaddress
 import json
-# coding=utf-8
 import logging
 import os
 import re
@@ -263,7 +263,7 @@ def fader_level_channel(output, item):
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
     for item in channel_list_entries:
-        logging.info("Processing Channel: " + str(item.get_channel_dlive()))
+        logging.info("Processing " + action + " for channel: " + str(item.get_channel_dlive() + 1))
         if action == "name":
             name_channel(output, item)
         elif action == "color":
@@ -333,6 +333,7 @@ def pad_socket(output, item, socket_type):
 def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
     logging.info(message)
     for item in phantom_list_entries:
+        logging.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
         if action == "phantom":
             if root.console == dliveConstants.console_drop_down_dlive:
                 phantom_socket(output, item, "local")
@@ -534,7 +535,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     if cb_reaper:
         logging.info("Creating Reaper Recording Session Template file...")
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
-        logging.info("Session created")
+        logging.info("Reaper Recording Session Template created")
 
         progress(actions)
         root.update()
@@ -738,35 +739,48 @@ def save_current_ui_settings():
     data = json.loads(json_str)
     with open(file, 'w') as file:
         json.dump(data, file)
+        logging.info("Following data has be persisted: " + str(json_str) + " into file: " + str(file) + ".")
 
 
 def read_perstisted_ip():
     filename = dliveConstants.config_file
     if os.path.exists(filename):
+        logging.info("Try to read persisted ip from " + dliveConstants.config_file + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
-            return data['ip']
+            ip_ret = data['ip']
+            logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
+            return ip_ret
     else:
+        logging.info("Use default ip: " + dliveConstants.ip + " from dliveConstants.ip")
         return dliveConstants.ip
 
 
 def read_perstisted_console():
     filename = dliveConstants.config_file
     if os.path.exists(filename):
+        logging.info("Try to read persisted console from " + dliveConstants.config_file + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
-            return data['console']
+            console_ret = data['console']
+            logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
+            return console_ret
     else:
+        logging.info("Use default console: " + dliveConstants.console_drop_down_default +  " from dliveConstants.console_drop_down_default")
         return dliveConstants.console_drop_down_default
 
 
 def read_perstisted_midi_port():
     filename = dliveConstants.config_file
     if os.path.exists(filename):
+        logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
-            return data['midi-port']
+            midi_port_ret = data['midi-port']
+            logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
+            return midi_port_ret
     else:
+        logging.info("Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + "from dliveConstants.midi_channel_drop_down_string_default")
         return dliveConstants.midi_channel_drop_down_string_default
 
 
@@ -779,6 +793,7 @@ def reset_ip_field_to_default_ip():
     ip_byte2.insert(0, "1")
     ip_byte3.delete(0, tkinter.END)
     ip_byte3.insert(0, "70")
+    logging.info("Default ip: " + dliveConstants.ip + " was set.")
 
 
 def set_ip_field_to_local_director_ip():
@@ -790,6 +805,7 @@ def set_ip_field_to_local_director_ip():
     ip_byte2.insert(0, "0")
     ip_byte3.delete(0, tkinter.END)
     ip_byte3.insert(0, "1")
+    logging.info("Director ip: 127.0.0.1 was set.")
 
 
 if __name__ == '__main__':

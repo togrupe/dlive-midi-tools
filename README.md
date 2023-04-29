@@ -9,12 +9,12 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
 ## Use Cases
-* Supports dLive & dLive Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
-* Supports Avantis & Avantis Director (use the external ip or 127.0.0.1 of your own machine as "Mixrack IP Address")
-* Single source (spread sheet) for channel lists in single or multi console situations
+
+* Single source (spreadsheet) for channel lists in single or multi console situations
 * Better overview on all channels during preparation phase
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
-
+* Supports dLive & dLive Director
+* Supports Avantis & Avantis Director
 
 ## Software Liability Warning
 
@@ -135,3 +135,23 @@ Afterwards the following window appears.
 If you find any issues, please let me know.
 
 Have fun!
+
+
+## Release Notes
+
+### v2.2.0
+
+#### New Features:
+- Avantis support.
+- Director button introduced.
+- Save button added, to persist data.
+- Default button added, to set back the ip to default.
+- Recordable & Record Arm feature added.
+- Reaper template is now generated right next to the chosen spreadsheet with the same name as prefix.
+- Robustness improved.
+
+#### Issues fixed:
+- Temporary GUI freeze fixed
+
+#### Known issues:
+- DX2 (Pad/Phantom) for Avantis via SLink is currently not due to technical limitation not possible.

@@ -791,7 +791,7 @@ if __name__ == '__main__':
     root.geometry('700x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from the given spread sheet which column you want to write.").pack(side=TOP)
+    Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
     columns.pack(side=TOP, fill=X)
     columns.config(bd=2)
@@ -856,7 +856,7 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open spread sheet and trigger writing process', command=trigger_background_process).grid(
+    Button(bottom_frame, text='Open spreadsheet and trigger writing process', command=trigger_background_process).grid(
         row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 

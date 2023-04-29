@@ -791,7 +791,7 @@ def read_perstisted_midi_port():
             return midi_port_ret
     else:
         logging.info(
-            "Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + "from dliveConstants.midi_channel_drop_down_string_default")
+            "Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + " from dliveConstants.midi_channel_drop_down_string_default")
         return dliveConstants.midi_channel_drop_down_string_default
 
 

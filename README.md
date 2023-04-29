@@ -118,7 +118,7 @@ Afterwards the following window appears.
 
 3. `Save` Saves the current settings (console, ip, midi-port) for the next start of the tool.
 
-4. `Director` Button, sets the ip to 127.0.0.1.
+4. `Director`, sets the ip to 127.0.0.1, to use Director locally on the same machine. Director has to be Started before. 
 
 5. `Default` Sets the ip back to default: 192.168.1.70.
 

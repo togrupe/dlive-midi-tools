@@ -502,32 +502,32 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     if cb_write_to_dlive:
         if cb_names:
-            handle_channels_parameter("Set Name on to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set Name to channels...", output, sheet.get_channel_model(),
                                       action="name")
             progress(actions)
             root.update()
 
         if cb_color:
-            handle_channels_parameter("Set Colors on to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set Colors to channels...", output, sheet.get_channel_model(),
                                       action="color")
             progress(actions)
             root.update()
 
         if cb_mute:
-            handle_channels_parameter("Set Mute on to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set Mute to channels...", output, sheet.get_channel_model(),
                                       action="mute")
             progress(actions)
             root.update()
 
         if cb_phantom:
-            handle_phantom_and_pad_parameter("Set Phantom Power to the channels...", output,
+            handle_phantom_and_pad_parameter("Set Phantom Power to channels...", output,
                                              sheet.get_phantom_pad_model(),
                                              action="phantom")
             progress(actions)
             root.update()
 
         if cb_pad:
-            handle_phantom_and_pad_parameter("Set Pad to the channels...", output, sheet.get_phantom_pad_model(),
+            handle_phantom_and_pad_parameter("Set Pad to channels...", output, sheet.get_phantom_pad_model(),
                                              action="pad")
             progress(actions)
             root.update()

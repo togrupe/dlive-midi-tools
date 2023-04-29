@@ -42,7 +42,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 | v2.1.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
 |         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 ## Input file
-Microsoft Excel spread sheet, please have a look at the following tabs
+Spreadsheet (.xlsx, *.ods) , please have a look at the following tabs.
 
 # Channel Overview
 ![Channels](doc/excel_channels.png)

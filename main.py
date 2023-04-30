@@ -748,8 +748,11 @@ def read_perstisted_ip():
         logging.info("Try to read persisted ip from " + dliveConstants.config_file + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
-            ip_ret = data['ip']
-            logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
+            try:
+                ip_ret = data['ip']
+                logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
+            except KeyError:
+                ip_ret = dliveConstants.ip
             return ip_ret
     else:
         logging.info("Use default ip: " + dliveConstants.ip + " from dliveConstants.ip")
@@ -762,8 +765,11 @@ def read_perstisted_console():
         logging.info("Try to read persisted console from " + dliveConstants.config_file + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
-            console_ret = data['console']
-            logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
+            try:
+                console_ret = data['console']
+                logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
+            except KeyError:
+                console_ret = dliveConstants.console_drop_down_default
             return console_ret
     else:
         logging.info(
@@ -777,8 +783,11 @@ def read_perstisted_midi_port():
         logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
-            midi_port_ret = data['midi-port']
-            logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
+            try:
+                midi_port_ret = data['midi-port']
+                logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
+            except KeyError:
+                midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
             return midi_port_ret
     else:
         logging.info(

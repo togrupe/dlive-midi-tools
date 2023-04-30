@@ -752,11 +752,17 @@ def read_perstisted_ip():
                 ip_ret = data['ip']
                 logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
             except KeyError:
+                logging.error("No key: ip found, using default ip: " +
+                              dliveConstants.ip +
+                              " from dliveConstants instead.")
                 ip_ret = dliveConstants.ip
-            return ip_ret
     else:
-        logging.info("Use default ip: " + dliveConstants.ip + " from dliveConstants.ip")
-        return dliveConstants.ip
+        logging.info("No config file found, using default ip: "
+                     + dliveConstants.ip +
+                     " from dliveConstants instead")
+        ip_ret = dliveConstants.ip
+
+    return ip_ret
 
 
 def read_perstisted_console():
@@ -769,12 +775,19 @@ def read_perstisted_console():
                 console_ret = data['console']
                 logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
             except KeyError:
+                logging.error("No key: console found, Using default console: " +
+                              dliveConstants.console_drop_down_default +
+                              " from dliveConstants instead.")
+
                 console_ret = dliveConstants.console_drop_down_default
-            return console_ret
     else:
-        logging.info(
-            "Use default console: " + dliveConstants.console_drop_down_default + " from dliveConstants.console_drop_down_default")
-        return dliveConstants.console_drop_down_default
+        logging.info("No config file found, using default console: " +
+                     dliveConstants.console_drop_down_default +
+                     " from dliveConstants instead.")
+
+        console_ret = dliveConstants.console_drop_down_default
+
+    return console_ret
 
 
 def read_perstisted_midi_port():
@@ -787,12 +800,19 @@ def read_perstisted_midi_port():
                 midi_port_ret = data['midi-port']
                 logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
             except KeyError:
+                logging.info("Use default midi-port: " +
+                             dliveConstants.midi_channel_drop_down_string_default +
+                             "from dliveConstants instead.")
+
                 midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
-            return midi_port_ret
     else:
-        logging.info(
-            "Use default midi-port: " + dliveConstants.midi_channel_drop_down_string_default + " from dliveConstants.midi_channel_drop_down_string_default")
-        return dliveConstants.midi_channel_drop_down_string_default
+        logging.info("No config file found, using default midi-port: " +
+                     dliveConstants.midi_channel_drop_down_string_default +
+                     "from dliveConstants instead.")
+
+        midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
+
+    return midi_port_ret
 
 
 def reset_ip_field_to_default_ip():

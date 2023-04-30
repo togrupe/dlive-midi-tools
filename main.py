@@ -742,7 +742,7 @@ def save_current_ui_settings():
         logging.info("Following data has be persisted: " + str(json_str) + " into file: " + str(file) + ".")
 
 
-def read_perstisted_ip():
+def read_persisted_ip():
     filename = dliveConstants.config_file
     if os.path.exists(filename):
         logging.info("Try to read persisted ip from " + dliveConstants.config_file + " file.")
@@ -765,7 +765,7 @@ def read_perstisted_ip():
     return ip_ret
 
 
-def read_perstisted_console():
+def read_persisted_console():
     filename = dliveConstants.config_file
     if os.path.exists(filename):
         logging.info("Try to read persisted console from " + dliveConstants.config_file + " file.")
@@ -790,7 +790,7 @@ def read_perstisted_console():
     return console_ret
 
 
-def read_perstisted_midi_port():
+def read_persisted_midi_port():
     filename = dliveConstants.config_file
     if os.path.exists(filename):
         logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
@@ -855,7 +855,7 @@ if __name__ == '__main__':
     reaper.pack(side=TOP, fill=X)
     reaper.config(bd=2)
 
-    var_console.set(read_perstisted_console())
+    var_console.set(read_persisted_console())
 
     Label(console_frame, text="Console:", width=25).pack(side=LEFT)
 
@@ -880,7 +880,7 @@ if __name__ == '__main__':
     Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
     ip_field.pack(side=RIGHT)
 
-    var_midi_channel.set(read_perstisted_midi_port())  # default value
+    var_midi_channel.set(read_persisted_midi_port())  # default value
 
     Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
 
@@ -899,7 +899,7 @@ if __name__ == '__main__':
                                        dliveConstants.midi_channel_drop_down_string_12)
     dropdown_midi_channel.pack(side=RIGHT)
 
-    ip = read_perstisted_ip()
+    ip = read_persisted_ip()
     ip_from_config_file = ip.split(".")
 
     ip_byte0.insert(10, ip_from_config_file.__getitem__(0))

@@ -42,7 +42,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 | v2.1.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
 |         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 ## Input file
-Spreadsheet (.xlsx, *.ods) , please have a look at the following tabs.
+Spreadsheet (*.xlsx, *.ods) , please have a look at the following tabs.
 
 # Channel Overview
 ![Channels](doc/excel_channels.png)
@@ -55,7 +55,7 @@ By default, the channels 1-128 are available in the sheet. If you need less,
 just delete the channels you don't want to process. Empty lines in between are not supported.
 
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write / save the sheets.
-Please make sure that you save your changes in the (*.xlsx or .ods) format. 
+Please make sure that you save your changes in the (*.xlsx or *.ods) format. 
 
 The following colors are allowed:
 * blue

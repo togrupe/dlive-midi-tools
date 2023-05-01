@@ -37,10 +37,10 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | OS      | Download                                                                                               |
 |---------|---------|--------------------------------------------------------------------------------------------------------|
-| v2.2.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
-|         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
-| v2.1.0  | MacOS   | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
-|         | Windows | [Link](http://wp1054826.server-he.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
+| v2.2.0  | MacOS   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
+|         | Windows | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
+| v2.1.0  | MacOS   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
+|         | Windows | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 ## Input file
 Spreadsheet (*.xlsx, *.ods) , please have a look at the following tabs.
 

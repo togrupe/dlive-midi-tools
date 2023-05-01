@@ -142,13 +142,13 @@ Have fun!
 ### v2.2.0
 
 #### New Features:
-- Avantis support.
-- Director button introduced.
-- Save button added, to persist data.
-- Default button added, to set back the ip to default.
-- Recordable & Record Arm feature added.
-- Reaper template is now generated right next to the chosen spreadsheet with the same name as prefix.
-- Robustness improved.
+- Avantis support
+- Director button introduced
+- Save button added, to persist data
+- Default button added, to set back the ip to default
+- Recordable & Record Arm feature added
+- Reaper template is now generated right next to the chosen spreadsheet with the same name as prefix
+- Robustness improved
 
 #### Issues fixed:
 - Temporary GUI freeze fixed

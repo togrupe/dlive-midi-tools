@@ -1,5 +1,5 @@
 class ChannelListEntry:
-    def __init__(self, channel, name, color, hpf_on, hpf_value, fader_level, mute):
+    def __init__(self, channel, name, color, hpf_on, hpf_value, fader_level, mute, recording, record_arm):
         self.channel = channel
         self.name = name
         self.color = color
@@ -7,6 +7,8 @@ class ChannelListEntry:
         self.hpf_value = hpf_value
         self.fader_level = fader_level
         self.mute = mute
+        self.recording = recording
+        self.record_arm = record_arm
 
     def get_channel(self):
         return self.channel
@@ -31,3 +33,9 @@ class ChannelListEntry:
 
     def get_mute(self):
         return self.mute
+
+    def get_recording(self):
+        return self.recording
+
+    def get_record_arm(self):
+        return self.record_arm

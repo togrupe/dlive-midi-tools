@@ -261,10 +261,10 @@ def hpf_on_channel(output, item):
     parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_on]
     set_value = [midi_channel_tmp, 0x06, res]
 
-    if is_network_communication_allowed:
-        message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        output.send(message)
-        time.sleep(.1)
+    #if is_network_communication_allowed:
+        # message = mido.Message.from_bytes(select_channel + parameter + set_value)
+        # output.send(message)
+        # time.sleep(.1)
 
 
 def calculate_vv(hpf_value):
@@ -276,14 +276,14 @@ def hpf_value_channel(output, item):
     midi_channel_tmp = 0xB << 4
     midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
-    select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_frequency]
-    set_value = [midi_channel_tmp, 0x06, calculate_vv(item.get_hpf_value())]
+    #select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
+    #parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_frequency]
+    #set_value = [midi_channel_tmp, 0x06, calculate_vv(item.get_hpf_value())]
 
-    if is_network_communication_allowed:
-        message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        output.send(message)
-        time.sleep(.1)
+    #if is_network_communication_allowed:
+        # message = mido.Message.from_bytes(select_channel + parameter + set_value)
+        # output.send(message)
+        # time.sleep(.1)
 
 
 def fader_level_channel(output, item):
@@ -314,10 +314,10 @@ def fader_level_channel(output, item):
     parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_fader_level]
     set_value = [midi_channel_tmp, 0x06, fader_level]
 
-    if is_network_communication_allowed:
-        message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        output.send(message)
-        time.sleep(.1)
+    #if is_network_communication_allowed:
+        # message = mido.Message.from_bytes(select_channel + parameter + set_value)
+        # output.send(message)
+        # time.sleep(.1)
 
 
 def handle_channels_parameter(message, output, channel_list_entries, action):
@@ -416,14 +416,14 @@ def assign_dca(output, channel, dca_value):
     midi_channel_tmp = 0xB << 4
     midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
-    select_channel = [midi_channel_tmp, 0x63, channel]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_dca_assign]
-    set_value = [midi_channel_tmp, 0x06, dca_value]
+    #select_channel = [midi_channel_tmp, 0x63, channel]
+    #parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_dca_assign]
+    #set_value = [midi_channel_tmp, 0x06, dca_value]
 
-    if is_network_communication_allowed:
-        message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        output.send(message)
-        time.sleep(.1)
+    #if is_network_communication_allowed:
+    #    message = mido.Message.from_bytes(select_channel + parameter + set_value)
+    #    output.send(message)
+    #    time.sleep(.1)
 
 
 def dca_channel(output, item):

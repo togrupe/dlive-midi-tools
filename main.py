@@ -534,17 +534,41 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     else:
         cb_mute = False
 
-    if check_box_states.__getitem__(3):  # Phantom value
+    if check_box_states.__getitem__(3):  # Phantom
         actions = actions + 1
         cb_phantom = True
     else:
         cb_phantom = False
 
-    if check_box_states.__getitem__(4):  # Pad value
+    if check_box_states.__getitem__(4):  # Pad
         actions = actions + 1
         cb_pad = True
     else:
         cb_pad = False
+
+    if check_box_states.__getitem__(5):  # HPF On
+        actions = actions + 1
+        cb_hpf_on = True
+    else:
+        cb_hpf_on = False
+
+    if check_box_states.__getitem__(6):  # HPF value
+        actions = actions + 1
+        cb_hpf_value = True
+    else:
+        cb_hpf_value = False
+
+    if check_box_states.__getitem__(7):  # Fader Level
+        actions = actions + 1
+        cb_fader_level = True
+    else:
+        cb_fader_level = False
+
+    if check_box_states.__getitem__(8):  # DCAs
+        actions = actions + 1
+        cb_dca = True
+    else:
+        cb_dca = False
 
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
@@ -588,6 +612,30 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
         if cb_pad:
             handle_phantom_and_pad_parameter("Set Pad to the channels...", output, sheet.get_phantom_pad_model(),
                                              action="pad")
+            progress(actions)
+            root.update()
+
+        if cb_hpf_on:
+            handle_channels_parameter("Set HPF On to the channels...", output, sheet.get_channel_model(),
+                                             action="hpf_on")
+            progress(actions)
+            root.update()
+
+        if cb_hpf_value:
+            handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(),
+                                             action="hpf_value")
+            progress(actions)
+            root.update()
+
+        if cb_fader_level:
+            handle_channels_parameter("Set Fader Level to the channels...", output, sheet.get_channel_model(),
+                                             action="fader_level")
+            progress(actions)
+            root.update()
+
+        if cb_dca:
+            handle_dca_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
+                                             action="dca")
             progress(actions)
             root.update()
 
@@ -756,7 +804,7 @@ midi_channel_frame.grid(row=3, column=0, sticky="W")
 
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad'])
+columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad', 'HPF On', 'HPF Value', 'Fader Level', 'DCAs'])
 write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 

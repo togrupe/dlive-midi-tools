@@ -40,7 +40,7 @@ SLINK_SOCKET_COUNT_MAX = 128
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.2.0"
+version = "2.3.0-RC1"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -463,7 +463,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '4'
+    latest_spreadsheet_version = '5'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -478,8 +478,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
-
-    time.sleep(2)
+    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="DCAs")))
 
     if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
@@ -621,9 +620,9 @@ def create_channel_list_content(sheet_channels):
         cle = ChannelListEntry(channel,
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
-                               None,
-                               None,
-                               None,
+                               str(sheet_channels['HPF On'].__getitem__(index)),
+                               str(sheet_channels['HPF Value'].__getitem__(index)),
+                               str(sheet_channels['Fader Level'].__getitem__(index)),
                                str(sheet_channels['Mute'].__getitem__(index)),
                                str(sheet_channels['Recording'].__getitem__(index)),
                                str(sheet_channels['Record Arm'].__getitem__(index))
@@ -675,7 +674,12 @@ def create_phantom_pad_content(sheet_48V_and_pad):
                                str(sheet_48V_and_pad['DX1 Pad'].__getitem__(index)),
                                str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)),
                                str(sheet_48V_and_pad['Slink Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Pad'].__getitem__(index)))
+                               str(sheet_48V_and_pad['Slink Pad'].__getitem__(index)),
+                               str(sheet_48V_and_pad['Local Gain'].__getitem__(index)),
+                               str(sheet_48V_and_pad['DX1 Gain'].__getitem__(index)),
+                               str(sheet_48V_and_pad['DX3 Gain'].__getitem__(index)),
+                               str(sheet_48V_and_pad['Slink Gain'].__getitem__(index)),
+                               )
 
         phantom_and_pad_list_entries.append(ple)
         index = index + 1

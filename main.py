@@ -247,47 +247,39 @@ def phantom_socket(output, item, socket_type):
 
 
 def hpf_on_channel(output, item):
-    # TODO: NRPN is currently not supported from mido
     lower_hpf_on = str(item.get_hpf_on()).lower()
     if lower_hpf_on == "yes":
         res = dliveConstants.hpf_on
     else:
         res = dliveConstants.hpf_off
 
-    midi_channel_tmp = 0xB << 4
-    midi_channel_tmp = midi_channel_tmp + root.midi_channel
-
-    select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_on]
-    set_value = [midi_channel_tmp, 0x06, res]
-
-    #if is_network_communication_allowed:
-        # message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        # output.send(message)
-        # time.sleep(.1)
+    if is_network_communication_allowed:
+        output.send(
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_hpf_on))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=res))
+        time.sleep(.001)
 
 
 def calculate_vv(hpf_value):
-    return int(127 * ((4608 * numpy.log10(hpf_value / 4) / numpy.log10(2)) - 10699) / 41314)
+    return int(127 * ((4608 * numpy.log10(float(hpf_value) / 4) / numpy.log10(2)) - 10699) / 41314)
 
 
 def hpf_value_channel(output, item):
-    # TODO: NRPN is currently not supported from mido
-    midi_channel_tmp = 0xB << 4
-    midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
-    #select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    #parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_hpf_frequency]
-    #set_value = [midi_channel_tmp, 0x06, calculate_vv(item.get_hpf_value())]
+    value_freq = calculate_vv(item.get_hpf_value())
 
-    #if is_network_communication_allowed:
-        # message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        # output.send(message)
-        # time.sleep(.1)
+    if is_network_communication_allowed:
+        output.send(
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_hpf_frequency))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=value_freq))
+        time.sleep(.001)
 
 
 def fader_level_channel(output, item):
-    # TODO: NRPN is currently not supported by mido
     lower_fader_level = str(item.get_fader_level()).lower()
 
     switcher = {
@@ -307,17 +299,15 @@ def fader_level_channel(output, item):
     }
     fader_level = switcher.get(lower_fader_level, "Invalid Fader level")
 
-    midi_channel_tmp = 0xB << 4
-    midi_channel_tmp = midi_channel_tmp + root.midi_channel
+    logging.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))
 
-    select_channel = [midi_channel_tmp, 0x63, item.get_channel_dlive()]
-    parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_fader_level]
-    set_value = [midi_channel_tmp, 0x06, fader_level]
-
-    #if is_network_communication_allowed:
-        # message = mido.Message.from_bytes(select_channel + parameter + set_value)
-        # output.send(message)
-        # time.sleep(.1)
+    if is_network_communication_allowed:
+        output.send(
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                             value=dliveConstants.nrpn_parameter_id_fader_level))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=int(fader_level)))
+        time.sleep(.001)
 
 
 def handle_channels_parameter(message, output, channel_list_entries, action):
@@ -413,15 +403,15 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
 
 
 def assign_dca(output, channel, dca_value):
-
     if is_network_communication_allowed:
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62, value=dliveConstants.nrpn_parameter_id_dca_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_dca_assign))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=dca_value))
         time.sleep(.001)
 
+
 def dca_channel(output, item):
-    # TODO: NRPN is currently not supported from mido
     channel = item.get_channel_dlive()
 
     for dca_index in range(0, 24):
@@ -611,25 +601,25 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
         if cb_hpf_on:
             handle_channels_parameter("Set HPF On to the channels...", output, sheet.get_channel_model(),
-                                             action="hpf_on")
+                                      action="hpf_on")
             progress(actions)
             root.update()
 
         if cb_hpf_value:
             handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(),
-                                             action="hpf_value")
+                                      action="hpf_value")
             progress(actions)
             root.update()
 
         if cb_fader_level:
             handle_channels_parameter("Set Fader Level to the channels...", output, sheet.get_channel_model(),
-                                             action="fader_level")
+                                      action="fader_level")
             progress(actions)
             root.update()
 
         if cb_dca:
             handle_dca_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
-                                             action="dca")
+                                 action="dca")
             progress(actions)
             root.update()
 

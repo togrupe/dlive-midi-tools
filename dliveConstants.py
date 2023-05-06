@@ -71,6 +71,20 @@ fader_level_minus40 = 0x1B
 fader_level_minus45 = 0x11
 fader_level_minus_inf = 0x00
 
+# Gain levels
+gain_level_plus60 = 0x7F
+gain_level_plus55 = 0x73
+gain_level_plus50 = 0x67
+gain_level_plus45 = 0x5C
+gain_level_plus40 = 0x50
+gain_level_plus35 = 0x45
+gain_level_plus30 = 0x3A
+gain_level_plus25 = 0x2E
+gain_level_plus20 = 0x22
+gain_level_plus15 = 0x17
+gain_level_plus10 = 0x0c
+gain_level_plus5 = 0x0
+
 # SysEx header definitions
 sysexhdrstart = [0xF0, 0x00, 0x00, 0x1A, 0x50, 0x10, sysex_header_major_version, sysex_header_minor_version]
 sysexhdrend = [0xF7]

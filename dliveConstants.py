@@ -82,7 +82,7 @@ gain_level_plus30 = 0x3A
 gain_level_plus25 = 0x2E
 gain_level_plus20 = 0x22
 gain_level_plus15 = 0x17
-gain_level_plus10 = 0x0c
+gain_level_plus10 = 0x0C
 gain_level_plus5 = 0x0
 
 # SysEx header definitions

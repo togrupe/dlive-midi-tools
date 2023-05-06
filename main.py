@@ -387,31 +387,31 @@ def gain_socket(output, item, socket_type):
 
     if socket_type == "local":
         if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            gain_sheet_lower = str(item.get_local_gain()).lower()
+            gain_sheet_lower = str(float(str(item.get_local_gain())))
             socket = socket_dlive_tmp
         elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            gain_sheet_lower = str(item.get_local_gain()).lower()
+            gain_sheet_lower = str(float(str(item.get_local_gain())))
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
         if socket_tmp <= DX1_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(item.get_dx1_gain()).lower()
+            gain_sheet_lower = str(float(str(item.get_dx1_gain())))
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
         if socket_tmp <= DX3_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(item.get_dx3_gain()).lower()
+            gain_sheet_lower = str(float(str(item.get_dx3_gain())))
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
         if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(item.get_slink_gain()).lower()
+            gain_sheet_lower = str(float(str(item.get_slink_gain())))
             socket = socket_dlive_tmp + 64
         else:
             return
@@ -438,7 +438,8 @@ def gain_socket(output, item, socket_type):
 
     if is_network_communication_allowed:
         # TODO: implement pitchbend
-        output.send(mido.Message('pitch', channel=root.midi_channel, pitch=0))
+        logging.info("Set Gain Level " + str(gain_level) + "dB to socket: " + str(socket_type) + ":" + str(socket))
+        #output.send(mido.Message('pitch', channel=root.midi_channel, pitch=0))
         #output.send(mido.Message('control_change', channel=root.midi_channel, control=socket, value=0))
         time.sleep(.001)
 

@@ -387,31 +387,31 @@ def gain_socket(output, item, socket_type):
 
     if socket_type == "local":
         if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            gain_sheet_lower = int(item.get_local_gain()).lower()
+            gain_sheet_lower = str(item.get_local_gain()).lower()
             socket = socket_dlive_tmp
         elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            gain_sheet_lower = int(item.get_local_gain()).lower()
+            gain_sheet_lower = str(item.get_local_gain()).lower()
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
         if socket_tmp <= DX1_SOCKET_COUNT_MAX:
-            gain_sheet_lower = int(item.get_dx1_gain()).lower()
+            gain_sheet_lower = str(item.get_dx1_gain()).lower()
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
         if socket_tmp <= DX3_SOCKET_COUNT_MAX:
-            gain_sheet_lower = int(item.get_dx3_gain()).lower()
+            gain_sheet_lower = str(item.get_dx3_gain()).lower()
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
         if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
-            gain_sheet_lower = int(item.get_slink_gain()).lower()
+            gain_sheet_lower = str(item.get_slink_gain()).lower()
             socket = socket_dlive_tmp + 64
         else:
             return
@@ -421,7 +421,7 @@ def gain_socket(output, item, socket_type):
         return
 
     switcher = {
-        "60.0": dliveConstants.gain_level_plus60
+        "60.0": dliveConstants.gain_level_plus60,
         "55.0": dliveConstants.gain_level_plus55,
         "50.0": dliveConstants.gain_level_plus50,
         "45.0": dliveConstants.gain_level_plus45,
@@ -434,9 +434,10 @@ def gain_socket(output, item, socket_type):
         "10.0": dliveConstants.gain_level_plus10,
         "5.0": dliveConstants.gain_level_plus5
     }
-    gain_level = switcher.get(gain_sheet_lower, "Invalid Fader level")
+    gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
 
     if is_network_communication_allowed:
+        # TODO: implement pitchbend
         output.send(mido.Message('pitch', channel=root.midi_channel, pitch=0))
         #output.send(mido.Message('control_change', channel=root.midi_channel, control=socket, value=0))
         time.sleep(.001)

@@ -438,9 +438,11 @@ def gain_socket(output, item, socket_type):
 
     if is_network_communication_allowed:
         # TODO: implement pitchbend
-        logging.info("Set Gain Level " + str(gain_level) + "dB to socket: " + str(socket_type) + ":" + str(socket))
-        #output.send(mido.Message('pitch', channel=root.midi_channel, pitch=0))
-        #output.send(mido.Message('control_change', channel=root.midi_channel, control=socket, value=0))
+        logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) +" to socket: " + str(socket_type) + ":" + str(socket))
+        #value_14bit = int((gain_level / 128.0) * 16383)
+        #value_14bit = socket << 7 & int((gain_level / 128.0) * 16383)
+        #output.send(mido.Message('pitch', channel=root.midi_channel, pitch=value_14bit))
+        #output.send(mido.Message('control_change', channel=root.midi_channel, control=socket, value=gain_level))
         time.sleep(.001)
 
 
@@ -1106,7 +1108,7 @@ if __name__ == '__main__':
 
 
     def update_progress_label():
-        return f"Current Progress: {pb['value']}%"
+        return f"Current Progress: {round(pb['value'], 1)} %"
 
 
     def progress(actions=None):

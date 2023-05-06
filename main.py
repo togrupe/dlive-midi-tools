@@ -437,12 +437,11 @@ def gain_socket(output, item, socket_type):
     gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
 
     if is_network_communication_allowed:
-        # TODO: implement pitchbend
         logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) +" to socket: " + str(socket_type) + ":" + str(socket))
-        #value_14bit = int((gain_level / 128.0) * 16383)
-        #value_14bit = socket << 7 & int((gain_level / 128.0) * 16383)
-        #output.send(mido.Message('pitch', channel=root.midi_channel, pitch=value_14bit))
-        #output.send(mido.Message('control_change', channel=root.midi_channel, control=socket, value=gain_level))
+
+        #combined = ((socket << 7) | gain_level)
+
+        #output.send(mido.Message('pitchwheel', channel=root.midi_channel, pitch=combined))
         time.sleep(.001)
 
 

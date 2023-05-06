@@ -280,7 +280,7 @@ def hpf_value_channel(output, item):
 
 
 def fader_level_channel(output, item):
-    lower_fader_level = str(item.get_fader_level()).lower()
+    lower_fader_level = str(float(str(item.get_fader_level())))
 
     switcher = {
         "10.0": dliveConstants.fader_level_plus10,
@@ -486,6 +486,9 @@ def dca_channel(output, item):
     channel = item.get_channel_dlive()
 
     for dca_index in range(0, 24):
+
+        if root.console == dliveConstants.console_drop_down_avantis and dca_index > 15:
+            return
 
         dca_config = item.get_dca_config()
         dca_array = dca_config.get_dca_array()

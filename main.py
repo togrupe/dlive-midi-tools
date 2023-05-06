@@ -413,18 +413,12 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
 
 
 def assign_dca(output, channel, dca_value):
-    midi_channel_tmp = 0xB << 4
-    midi_channel_tmp = midi_channel_tmp + root.midi_channel
 
-    #select_channel = [midi_channel_tmp, 0x63, channel]
-    #parameter = [midi_channel_tmp, 0x62, dliveConstants.nrpn_parameter_id_dca_assign]
-    #set_value = [midi_channel_tmp, 0x06, dca_value]
-
-    #if is_network_communication_allowed:
-    #    message = mido.Message.from_bytes(select_channel + parameter + set_value)
-    #    output.send(message)
-    #    time.sleep(.1)
-
+    if is_network_communication_allowed:
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62, value=dliveConstants.nrpn_parameter_id_dca_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=dca_value))
+        time.sleep(.001)
 
 def dca_channel(output, item):
     # TODO: NRPN is currently not supported from mido
@@ -845,7 +839,6 @@ def save_current_ui_settings():
         'midi-port': dropdown_midi_channel.getvar(str(var_midi_channel))
     }
 
-    # Ein Python-Dictionary in einen JSON-String umwandeln
     json_str = json.dumps(data)
 
     data = json.loads(json_str)

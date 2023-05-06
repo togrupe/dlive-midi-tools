@@ -380,6 +380,52 @@ def pad_socket(output, item, socket_type):
         time.sleep(.1)
 
 
+def gain_socket(output, item, socket_type):
+    #TODO: not yet fully implemented
+    socket_tmp = item.get_socket_number()
+    socket_dlive_tmp = item.get_socket_number_dlive()
+
+    if socket_type == "local":
+        if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
+            lower_pad = str(item.get_local_gain()).lower()
+            socket = socket_dlive_tmp
+        elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
+            lower_pad = str(item.get_local_pad()).lower()
+            socket = socket_dlive_tmp
+        else:
+            return
+
+    elif socket_type == "DX1":
+        if socket_tmp <= DX1_SOCKET_COUNT_MAX:
+            lower_pad = str(item.get_dx1_pad()).lower()
+            socket = socket_dlive_tmp + 64
+        else:
+            return
+
+    elif socket_type == "DX3":
+        if socket_tmp <= DX3_SOCKET_COUNT_MAX:
+            lower_pad = str(item.get_dx3_pad()).lower()
+            socket = socket_dlive_tmp + 96
+        else:
+            return
+
+    elif socket_type == "Slink":
+        if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
+            lower_pad = str(item.get_slink_pad()).lower()
+            socket = socket_dlive_tmp + 64
+        else:
+            return
+
+    # TODO Currently required because value of socket cannot be higher than 127
+    if socket > 127:
+        return
+
+    if is_network_communication_allowed:
+        output.send(mido.Message('pitch', channel=root.midi_channel, pitch=0))
+        #output.send(mido.Message('control_change', channel=root.midi_channel, control=socket, value=0))
+        time.sleep(.001)
+
+
 def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
     logging.info(message)
     for item in phantom_list_entries:
@@ -400,6 +446,14 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
             elif root.console == dliveConstants.console_drop_down_avantis:
                 pad_socket(output, item, "local")
                 pad_socket(output, item, "Slink")
+        elif action == "gain":
+            if root.console == dliveConstants.console_drop_down_dlive:
+                gain_socket(output, item, "local")
+                gain_socket(output, item, "DX1")
+                gain_socket(output, item, "DX3")
+            elif root.console == dliveConstants.console_drop_down_avantis:
+                gain_socket(output, item, "local")
+                gain_socket(output, item, "Slink")
 
 
 def assign_dca(output, channel, dca_value):
@@ -554,6 +608,12 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     else:
         cb_dca = False
 
+    if check_box_states.__getitem__(9):  # Gain
+        actions = actions + 1
+        cb_gain = True
+    else:
+        cb_gain = False
+
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
         cb_reaper = True
@@ -620,6 +680,12 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
         if cb_dca:
             handle_dca_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
                                  action="dca")
+            progress(actions)
+            root.update()
+
+        if cb_gain:
+            handle_phantom_and_pad_parameter("Set Gain to the channels...", output, sheet.get_phantom_pad_model(),
+                                 action="gain")
             progress(actions)
             root.update()
 
@@ -788,7 +854,7 @@ midi_channel_frame.grid(row=3, column=0, sticky="W")
 
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad', 'HPF On', 'HPF Value', 'Fader Level', 'DCAs'])
+columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad', 'HPF On', 'HPF Value', 'Fader Level', 'DCAs', 'Gain'])
 write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 
@@ -936,7 +1002,7 @@ def set_ip_field_to_local_director_ip():
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
-    root.geometry('700x400')
+    root.geometry('800x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)

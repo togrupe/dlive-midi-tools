@@ -267,7 +267,6 @@ def calculate_vv(hpf_value):
 
 
 def hpf_value_channel(output, item):
-
     value_freq = calculate_vv(item.get_hpf_value())
 
     if is_network_communication_allowed:
@@ -305,7 +304,7 @@ def fader_level_channel(output, item):
         output.send(
             mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                             value=dliveConstants.nrpn_parameter_id_fader_level))
+                                 value=dliveConstants.nrpn_parameter_id_fader_level))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=int(fader_level)))
         time.sleep(.001)
 
@@ -381,7 +380,6 @@ def pad_socket(output, item, socket_type):
 
 
 def gain_socket(output, item, socket_type):
-    #TODO: not yet fully implemented
     socket_tmp = item.get_socket_number()
     socket_dlive_tmp = item.get_socket_number_dlive()
 
@@ -437,16 +435,17 @@ def gain_socket(output, item, socket_type):
     gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
 
     if is_network_communication_allowed:
-        logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) +" to socket: " + str(socket_type) + ":" + str(socket))
+        logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) + " to socket: " + str(
+            socket_type) + ":" + str(socket))
 
-        byte_socket = socket << 8
-        byte_gain = gain_level << 1
-        byte_all = byte_socket | byte_gain
+        byte_1 = gain_level << 8
+        byte_2 = socket << 1
+        byte_all = byte_1 | byte_2
         byte_out = byte_all >> 1
         byte_out = byte_out - 8192
 
         output.send(mido.Message('pitchwheel', channel=root.midi_channel, pitch=byte_out))
-        time.sleep(.001)
+        time.sleep(.01)
 
 
 def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
@@ -711,7 +710,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
         if cb_gain:
             handle_phantom_and_pad_parameter("Set Gain to the channels...", output, sheet.get_phantom_pad_model(),
-                                 action="gain")
+                                             action="gain")
             progress(actions)
             root.update()
 
@@ -880,7 +879,8 @@ midi_channel_frame.grid(row=3, column=0, sticky="W")
 
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad', 'HPF On', 'HPF Value', 'Fader Level', 'DCAs', 'Gain'])
+columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad', 'HPF On', 'HPF Value', 'Fader Level', 'DCAs',
+                          'Gain'])
 write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 

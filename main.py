@@ -40,7 +40,7 @@ SLINK_SOCKET_COUNT_MAX = 128
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.3.0-alpha1"
+version = "2.3.0-alpha3"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 

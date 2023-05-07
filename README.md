@@ -156,6 +156,10 @@ Have fun!
 - HPF On Support (dLive only)
 - HPF Value Support (dLive only)
 
+#### Improvements
+- Progress Bar improved
+- Infobox for missing Avantis features added
+
 #### Technical Limitations
 - DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
 - HPF on & HPF value for Avantis due to technical limitation currently not possible.
@@ -173,12 +177,14 @@ Have fun!
 - Default button added, to set back the ip to default
 - Recordable & Record Arm feature added
 - Reaper template is now generated right next to the chosen spreadsheet with the same name as prefix
-- Robustness improved
 
 #### Technical Limitations
 - DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
 
 #### Issues fixed:
 - Temporary GUI freeze fixed
-- 
+
+#### Improvements
+- Robustness improved
+
 #### Known issues:

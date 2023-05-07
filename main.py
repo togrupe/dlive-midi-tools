@@ -71,6 +71,7 @@ def convert_return_value_to_readable_color(in_message):
 
 
 def get_color_channel(output):
+    # TODO: Not yet implemented fully
     color = []
 
     for channel in range(0, 127):
@@ -96,6 +97,7 @@ def get_color_channel(output):
 
 
 def get_name_channel(output):
+    # TODO: Not yet implemented fully
     names = []
 
     for channel in range(0, 127):

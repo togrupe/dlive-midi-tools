@@ -541,7 +541,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
-    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="DCAs")))
+    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="Channels")))
 
     if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
@@ -597,41 +597,41 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     else:
         cb_mute = False
 
-    if check_box_states.__getitem__(3):  # Phantom
-        actions = actions + 1
-        cb_phantom = True
-    else:
-        cb_phantom = False
-
-    if check_box_states.__getitem__(4):  # Pad
-        actions = actions + 1
-        cb_pad = True
-    else:
-        cb_pad = False
-
-    if check_box_states.__getitem__(5):  # HPF On
-        actions = actions + 1
-        cb_hpf_on = True
-    else:
-        cb_hpf_on = False
-
-    if check_box_states.__getitem__(6):  # HPF value
-        actions = actions + 1
-        cb_hpf_value = True
-    else:
-        cb_hpf_value = False
-
-    if check_box_states.__getitem__(7):  # Fader Level
+    if check_box_states.__getitem__(3):  # Fader Level
         actions = actions + 1
         cb_fader_level = True
     else:
         cb_fader_level = False
 
-    if check_box_states.__getitem__(8):  # DCAs
+    if check_box_states.__getitem__(4):  # HPF On
+        actions = actions + 1
+        cb_hpf_on = True
+    else:
+        cb_hpf_on = False
+
+    if check_box_states.__getitem__(5):  # HPF value
+        actions = actions + 1
+        cb_hpf_value = True
+    else:
+        cb_hpf_value = False
+
+    if check_box_states.__getitem__(6):  # DCAs
         actions = actions + 1
         cb_dca = True
     else:
         cb_dca = False
+
+    if check_box_states.__getitem__(7):  # Phantom
+        actions = actions + 1
+        cb_phantom = True
+    else:
+        cb_phantom = False
+
+    if check_box_states.__getitem__(8):  # Pad
+        actions = actions + 1
+        cb_pad = True
+    else:
+        cb_pad = False
 
     if check_box_states.__getitem__(9):  # Gain
         actions = actions + 1
@@ -879,8 +879,8 @@ midi_channel_frame.grid(row=3, column=0, sticky="W")
 
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Name', 'Color', 'Mute', '48V Phantom', 'Pad', 'HPF On', 'HPF Value', 'Fader Level', 'DCAs',
-                          'Gain'])
+columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'DCAs',
+                          '48V Phantom', 'Pad', 'Gain'])
 write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 

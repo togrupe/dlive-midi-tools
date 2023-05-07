@@ -40,7 +40,7 @@ SLINK_SOCKET_COUNT_MAX = 128
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.3.0-alpha3"
+version = "2.3.0-alpha4"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -603,13 +603,13 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     else:
         cb_fader_level = False
 
-    if check_box_states.__getitem__(4):  # HPF On
+    if check_box_states.__getitem__(4) and var_console.get() == dliveConstants.console_drop_down_dlive:  # HPF On
         actions = actions + 1
         cb_hpf_on = True
     else:
         cb_hpf_on = False
 
-    if check_box_states.__getitem__(5):  # HPF value
+    if check_box_states.__getitem__(5) and var_console.get() == dliveConstants.console_drop_down_dlive:  # HPF value
         actions = actions + 1
         cb_hpf_value = True
     else:
@@ -1025,6 +1025,15 @@ def set_ip_field_to_local_director_ip():
     ip_byte3.insert(0, "1")
     logging.info("Director ip: 127.0.0.1 was set.")
 
+
+def on_console_selected(*args):
+    print("The selected console is:", var_console.get())
+    if var_console.get() == "Avantis":
+        print("The following features will be deactivated.")
+        showinfo(message='Info: "HPF On" and "HPF Value" are currently not supported by the API of Avantis !')
+
+
+var_console.trace("w", on_console_selected)
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)

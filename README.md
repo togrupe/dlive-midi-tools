@@ -156,13 +156,13 @@ Have fun!
 - HPF On Support (dLive only)
 - HPF Value Support (dLive only)
 
+#### Technical Limitations
+- DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on & HPF value for Avantis due to technical limitation currently not possible.
+
 #### Issues fixed:
 
-
 #### Known issues:
-- DX2 (Pad/Phantom) for Avantis via SLink is currently not due to technical limitation not possible.
-- HPF on & HPF value for Avantis via SLink is currently not due to technical limitation not possible.
-
 
 ### v2.2.0
 
@@ -175,8 +175,10 @@ Have fun!
 - Reaper template is now generated right next to the chosen spreadsheet with the same name as prefix
 - Robustness improved
 
+#### Technical Limitations
+- DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
+
 #### Issues fixed:
 - Temporary GUI freeze fixed
-
+- 
 #### Known issues:
-- DX2 (Pad/Phantom) for Avantis via SLink is currently not due to technical limitation not possible.

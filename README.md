@@ -4,7 +4,13 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Channel Name
 - Channel Color
 - Channel Mute
-- 48V Phantom Power & PAD (Local, DX1 & DX3, SLink)
+- 48V Phantom Power (Local, DX1 & DX3, SLink) 
+- PAD (Local, DX1 & DX3, SLink)
+- Gain (Local, DX1 & DX3, SLink)
+- DCA Assignments
+- Fader Level
+- HPF On (dLive only)
+- HPF Value (dLive only)
 
 more information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
@@ -138,6 +144,23 @@ Have fun!
 
 
 ## Release Notes
+
+### v2.3.0
+
+#### New Features:
+- Gain Support
+- DCA Support
+- Fader Level Support
+- HPF On Support (dLive only)
+- HPF Value Support (dLive only)
+
+#### Issues fixed:
+
+
+#### Known issues:
+- DX2 (Pad/Phantom) for Avantis via SLink is currently not due to technical limitation not possible.
+- HPF on & HPF value for Avantis via SLink is currently not due to technical limitation not possible.
+
 
 ### v2.2.0
 

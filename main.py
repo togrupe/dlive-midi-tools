@@ -649,7 +649,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     else:
         cb_dca = False
 
-    if check_box_states.__getitem__(7):  # Mute Groups
+    if check_box_states.__getitem__(7) and var_console.get() == dliveConstants.console_drop_down_dlive:  # Mute Groups
         actions = actions + 1
         cb_mg = True
     else:
@@ -1087,7 +1087,7 @@ def on_console_selected(*args):
     print("The selected console is:", var_console.get())
     if var_console.get() == "Avantis":
         print("The following features will be deactivated.")
-        showinfo(message='Info: "HPF On" and "HPF Value" are currently not supported by the API of Avantis !')
+        showinfo(message='Info: "HPF On", "HPF Value" and "Mute Groups" are currently not supported by the API of Avantis!')
 
 
 var_console.trace("w", on_console_selected)

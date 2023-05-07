@@ -151,8 +151,8 @@ Have fun!
 #### New Features:
 - Gain Support
 - DCA Support
-- Mute Group Support
 - Fader Level Support
+- Mute Group Support (dLive only)
 - HPF On Support (dLive only)
 - HPF Value Support (dLive only)
 

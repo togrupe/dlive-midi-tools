@@ -7,8 +7,8 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
-- DCA Assignments
 - Fader Level
+- DCA Assignments
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
@@ -42,12 +42,14 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ![Overview](overview.drawio.png)
 
 ## Download
-| Version | OS      | Download                                                                                               |
-|---------|---------|--------------------------------------------------------------------------------------------------------|
-| v2.2.0  | MacOS   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
-|         | Windows | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
-| v2.1.0  | MacOS   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
-|         | Windows | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
+| Version | OS                | Download                                                                                         |
+|---------|-------------------|--------------------------------------------------------------------------------------------------|
+| v2.3.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           |
+|         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |
+| v2.2.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
+|         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
+| v2.1.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
+|         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 ## Input file
 Spreadsheet (*.xlsx, *.ods) , please have a look at the following tabs.
 

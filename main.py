@@ -472,11 +472,11 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
         elif action == "gain":
             if root.console == dliveConstants.console_drop_down_dlive:
                 gain_socket(output, item, "local")
-                # gain_socket(output, item, "DX1")
-                # gain_socket(output, item, "DX3")
-            # elif root.console == dliveConstants.console_drop_down_avantis:
-                # gain_socket(output, item, "local")
-                # gain_socket(output, item, "Slink")
+                gain_socket(output, item, "DX1")
+                gain_socket(output, item, "DX3")
+            elif root.console == dliveConstants.console_drop_down_avantis:
+                gain_socket(output, item, "local")
+                gain_socket(output, item, "Slink")
 
 
 def assign_dca(output, channel, dca_value):

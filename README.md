@@ -8,8 +8,8 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
 - DCA Assignments
-- Mute Group Assignments
 - Fader Level
+- Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
 

@@ -29,6 +29,8 @@ from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.DcaListEntry import DcaListEntry
 from model.Misc import Misc
+from model.MuteGroupConfig import MuteGroupConfig
+from model.MuteGroupListEntry import MuteGroupListEntry
 from model.PhantomListEntry import PhantomListEntry
 from model.Sheet import Sheet
 
@@ -487,6 +489,15 @@ def assign_dca(output, channel, dca_value):
         time.sleep(.001)
 
 
+def assign_mg(output, channel, mg_value):
+    if is_network_communication_allowed:
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_mg_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
+        time.sleep(.001)
+
+
 def dca_channel(output, item):
     channel = item.get_channel_dlive()
 
@@ -504,11 +515,27 @@ def dca_channel(output, item):
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
 
 
-def handle_dca_parameter(message, output, dca_list, action):
+def mg_channel(output, item):
+    channel = item.get_channel_dlive()
+
+    for mg_index in range(0, 8):
+
+        mg_config = item.get_mg_config()
+        mg_array = mg_config.get_mg_array()
+
+        if mg_array.__getitem__(mg_index).lower() == "x":
+            assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
+        else:
+            assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
+
+
+def handle_dca_mg_parameter(message, output, content_list, action):
     logging.info(message)
-    for item in dca_list:
+    for item in content_list:
         if action == "dca":
             dca_channel(output, item)
+        elif action == "mg":
+            mg_channel(output, item)
 
 
 def is_valid_ip_address(ip_address):
@@ -542,6 +569,7 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
     sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="Channels")))
+    sheet.set_mg_model(create_mg_content(pd.read_excel(filename, sheet_name="Channels")))
 
     if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
@@ -621,19 +649,25 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
     else:
         cb_dca = False
 
-    if check_box_states.__getitem__(7):  # Phantom
+    if check_box_states.__getitem__(7):  # Mute Groups
+        actions = actions + 1
+        cb_mg = True
+    else:
+        cb_mg = False
+
+    if check_box_states.__getitem__(8):  # Phantom
         actions = actions + 1
         cb_phantom = True
     else:
         cb_phantom = False
 
-    if check_box_states.__getitem__(8):  # Pad
+    if check_box_states.__getitem__(9):  # Pad
         actions = actions + 1
         cb_pad = True
     else:
         cb_pad = False
 
-    if check_box_states.__getitem__(9):  # Gain
+    if check_box_states.__getitem__(10):  # Gain
         actions = actions + 1
         cb_gain = True
     else:
@@ -703,8 +737,14 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
             root.update()
 
         if cb_dca:
-            handle_dca_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
-                                 action="dca")
+            handle_dca_mg_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
+                                    action="dca")
+            progress(actions)
+            root.update()
+
+        if cb_mg:
+            handle_dca_mg_parameter("Set Mute Group Assignments to the channels...", output, sheet.get_mg_model(),
+                                    action="mg")
             progress(actions)
             root.update()
 
@@ -782,6 +822,23 @@ def create_dca_content(sheet_dcas):
         dca_list_entries.append(dle)
         index = index + 1
     return dca_list_entries
+
+
+def create_mg_content(sheet_mg):
+    mg_list_entries = []
+    index = 0
+
+    for channel in sheet_mg['Channel']:
+        mg_array = []
+        for mg_number in range(1, 9):
+            mg_array.append(str(sheet_mg["Mute" + str(mg_number)].__getitem__(index)))
+
+        mg_config_tmp = MuteGroupConfig(mg_array)
+
+        mgle = MuteGroupListEntry(channel, mg_config_tmp)
+        mg_list_entries.append(mgle)
+        index = index + 1
+    return mg_list_entries
 
 
 def create_phantom_pad_content(sheet_48V_and_pad):
@@ -879,7 +936,7 @@ midi_channel_frame.grid(row=3, column=0, sticky="W")
 
 config_frame.pack(side=TOP)
 
-columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'DCAs',
+columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'DCAs', 'Mute Groups',
                           '48V Phantom', 'Pad', 'Gain'])
 write_to_dlive = Checkbar(root, ['Write to console'])
 reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
@@ -1037,7 +1094,7 @@ var_console.trace("w", on_console_selected)
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
-    root.geometry('800x400')
+    root.geometry('900x400')
     root.resizable(False, False)
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)

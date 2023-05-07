@@ -44,6 +44,7 @@ nrpn_parameter_id_hpf_on = 0x31
 nrpn_parameter_id_hpf_frequency = 0x30
 nrpn_parameter_id_fader_level = 0x17
 nrpn_parameter_id_dca_assign = 0x40
+nrpn_parameter_id_mg_assign = 0x40
 
 # Note
 note_off = 0x00
@@ -51,6 +52,10 @@ note_off = 0x00
 # DCA
 dca_on_base_address = 0x40
 dca_off_base_address = 0x00
+
+# Mute Groups
+mg_on_base_address = 0x58
+mg_off_base_address = 0x18
 
 # Mute
 mute_on = 0x7F

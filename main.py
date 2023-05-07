@@ -439,9 +439,13 @@ def gain_socket(output, item, socket_type):
     if is_network_communication_allowed:
         logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) +" to socket: " + str(socket_type) + ":" + str(socket))
 
-        #combined = ((socket << 7) | gain_level)
+        byte_socket = socket << 8
+        byte_gain = gain_level << 1
+        byte_all = byte_socket | byte_gain
+        byte_out = byte_all >> 1
+        byte_out = byte_out - 8192
 
-        #output.send(mido.Message('pitchwheel', channel=root.midi_channel, pitch=combined))
+        output.send(mido.Message('pitchwheel', channel=root.midi_channel, pitch=byte_out))
         time.sleep(.001)
 
 
@@ -468,11 +472,11 @@ def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, acti
         elif action == "gain":
             if root.console == dliveConstants.console_drop_down_dlive:
                 gain_socket(output, item, "local")
-                gain_socket(output, item, "DX1")
-                gain_socket(output, item, "DX3")
-            elif root.console == dliveConstants.console_drop_down_avantis:
-                gain_socket(output, item, "local")
-                gain_socket(output, item, "Slink")
+                # gain_socket(output, item, "DX1")
+                # gain_socket(output, item, "DX3")
+            # elif root.console == dliveConstants.console_drop_down_avantis:
+                # gain_socket(output, item, "local")
+                # gain_socket(output, item, "Slink")
 
 
 def assign_dca(output, channel, dca_value):

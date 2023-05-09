@@ -34,18 +34,12 @@ from model.MuteGroupListEntry import MuteGroupListEntry
 from model.PhantomListEntry import PhantomListEntry
 from model.Sheet import Sheet
 
-LOCAL_DLIVE_SOCKET_COUNT_MAX = 64
-LOCAL_AVANTIS_SOCKET_COUNT_MAX = 12
-DX1_SOCKET_COUNT_MAX = 32
-DX3_SOCKET_COUNT_MAX = 32
-SLINK_SOCKET_COUNT_MAX = 128
-
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.3.0-alpha5"
+version = "2.3.0-alpha6"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -205,31 +199,31 @@ def phantom_socket(output, item, socket_type):
     socket_dlive_tmp = item.get_socket_number_dlive()
 
     if socket_type == "local":
-        if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
+        if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
             lower_phantom = str(item.get_local_phantom()).lower()
             socket = socket_dlive_tmp
-        elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
+        elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
             lower_phantom = str(item.get_local_phantom()).lower()
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
-        if socket_tmp <= DX1_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
             lower_phantom = str(item.get_dx1_phantom()).lower()
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
-        if socket_tmp <= DX3_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
             lower_phantom = str(item.get_dx3_phantom()).lower()
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
-        if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
             lower_phantom = str(item.get_slink_phantom()).lower()
             socket = socket_dlive_tmp + 64
         else:
@@ -339,31 +333,31 @@ def pad_socket(output, item, socket_type):
     socket_dlive_tmp = item.get_socket_number_dlive()
 
     if socket_type == "local":
-        if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
+        if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
             lower_pad = str(item.get_local_pad()).lower()
             socket = socket_dlive_tmp
-        elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
+        elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
             lower_pad = str(item.get_local_pad()).lower()
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
-        if socket_tmp <= DX1_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
             lower_pad = str(item.get_dx1_pad()).lower()
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
-        if socket_tmp <= DX3_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
             lower_pad = str(item.get_dx3_pad()).lower()
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
-        if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
             lower_pad = str(item.get_slink_pad()).lower()
             socket = socket_dlive_tmp + 64
         else:
@@ -391,31 +385,31 @@ def gain_socket(output, item, socket_type):
     socket_dlive_tmp = item.get_socket_number_dlive()
 
     if socket_type == "local":
-        if socket_tmp <= LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
+        if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
             gain_sheet_lower = str(float(str(item.get_local_gain())))
             socket = socket_dlive_tmp
-        elif socket_tmp <= LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
+        elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
             gain_sheet_lower = str(float(str(item.get_local_gain())))
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
-        if socket_tmp <= DX1_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
             gain_sheet_lower = str(float(str(item.get_dx1_gain())))
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
-        if socket_tmp <= DX3_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
             gain_sheet_lower = str(float(str(item.get_dx3_gain())))
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
-        if socket_tmp <= SLINK_SOCKET_COUNT_MAX:
+        if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
             gain_sheet_lower = str(float(str(item.get_slink_gain())))
             socket = socket_dlive_tmp + 64
         else:

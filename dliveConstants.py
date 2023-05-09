@@ -94,6 +94,13 @@ gain_level_plus5 = 0x0
 sysexhdrstart = [0xF0, 0x00, 0x00, 0x1A, 0x50, 0x10, sysex_header_major_version, sysex_header_minor_version]
 sysexhdrend = [0xF7]
 
+# The max socket amount for each type
+LOCAL_DLIVE_SOCKET_COUNT_MAX = 64
+LOCAL_AVANTIS_SOCKET_COUNT_MAX = 12
+DX1_SOCKET_COUNT_MAX = 32
+DX3_SOCKET_COUNT_MAX = 32
+SLINK_SOCKET_COUNT_MAX = 128
+
 # Strings Midi Channel Selector
 midi_channel_drop_down_string_1 = "1 to 5"
 midi_channel_drop_down_string_2 = "2 to 6"

@@ -40,6 +40,9 @@ DX1_SOCKET_COUNT_MAX = 32
 DX3_SOCKET_COUNT_MAX = 32
 SLINK_SOCKET_COUNT_MAX = 128
 
+LABEL_IPADDRESS_AVANTIS = "IP-Address:"
+LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
+
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
 version = "2.3.0-alpha5"
@@ -926,37 +929,6 @@ class Checkbar(Frame):
         return map((lambda var: var.get()), self.vars)
 
 
-root = Tk()
-config_frame = Frame(root)
-ip_frame = Frame(config_frame)
-console_frame = Frame(config_frame)
-console_frame.grid(row=1, column=0, sticky="W")
-Label(config_frame, text="       ").grid(row=0, column=0)
-ip_frame.grid(row=2, column=0, sticky="W")
-midi_channel_frame = Frame(config_frame)
-midi_channel_frame.grid(row=3, column=0, sticky="W")
-
-config_frame.pack(side=TOP)
-
-columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'DCAs', 'Mute Groups',
-                          '48V Phantom', 'Pad', 'Gain'])
-write_to_dlive = Checkbar(root, ['Write to console'])
-reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
-
-ip_field = Frame(ip_frame)
-ip_byte0 = Entry(ip_field, width=3)
-ip_byte1 = Entry(ip_field, width=3)
-ip_byte2 = Entry(ip_field, width=3)
-ip_byte3 = Entry(ip_field, width=3)
-mixrack_ip = ""
-midi_channel = None
-var_midi_channel = StringVar(root)
-var_console = StringVar(root)
-
-reaper_output_dir = ""
-reaper_file_prefix = ""
-
-
 def get_checkbox_states():
     return list(columns.state())
 
@@ -1087,17 +1059,75 @@ def set_ip_field_to_local_director_ip():
 
 def on_console_selected(*args):
     print("The selected console is:", var_console.get())
-    if var_console.get() == "Avantis":
-        print("The following features will be deactivated.")
-        showinfo(message='Info: "HPF On", "HPF Value" and "Mute Groups" are currently not supported by the API of Avantis!')
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        label_ip_address_text["text"] = LABEL_IPADDRESS_AVANTIS
+        root.update()
+        showinfo(
+            message='Info: "HPF On", "HPF Value" and "Mute Groups" are currently not supported by the API of Avantis!')
+    elif var_console.get() == dliveConstants.console_drop_down_dlive:
+        label_ip_address_text["text"] = LABEL_IPADDRESS_DLIVE
 
 
-var_console.trace("w", on_console_selected)
+def update_progress_label():
+    return f"Current Progress: {round(pb['value'], 1)} %"
+
+
+def progress(actions=None):
+    if actions == 0:
+        pb['value'] += 90
+    else:
+        if pb['value'] < 100:
+            pb['value'] += 90 / actions
+            value_label['text'] = update_progress_label()
+        else:
+            showinfo(message='Writing completed!')
+
+
+def progress_open_or_close_connection():
+    if pb['value'] < 100:
+        pb['value'] += 5
+        value_label['text'] = update_progress_label()
+    else:
+        showinfo(message='Writing completed!')
+
+
+root = Tk()
+ip_address_label = StringVar(root)
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
     root.geometry('900x400')
     root.resizable(False, False)
+
+    config_frame = Frame(root)
+    ip_frame = Frame(config_frame)
+    console_frame = Frame(config_frame)
+    console_frame.grid(row=1, column=0, sticky="W")
+    Label(config_frame, text="       ").grid(row=0, column=0)
+    ip_frame.grid(row=2, column=0, sticky="W")
+    midi_channel_frame = Frame(config_frame)
+    midi_channel_frame.grid(row=3, column=0, sticky="W")
+
+    config_frame.pack(side=TOP)
+
+    columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'DCAs', 'Mute Groups',
+                              '48V Phantom', 'Pad', 'Gain'])
+    write_to_dlive = Checkbar(root, ['Write to console'])
+    reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
+
+    ip_field = Frame(ip_frame)
+    ip_byte0 = Entry(ip_field, width=3)
+    ip_byte1 = Entry(ip_field, width=3)
+    ip_byte2 = Entry(ip_field, width=3)
+    ip_byte3 = Entry(ip_field, width=3)
+    mixrack_ip = ""
+    midi_channel = None
+    var_midi_channel = StringVar(root)
+    var_console = StringVar(root)
+
+    reaper_output_dir = ""
+    reaper_file_prefix = ""
+
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
@@ -1120,7 +1150,12 @@ if __name__ == '__main__':
                                   )
     dropdown_console.pack(side=RIGHT)
 
-    Label(ip_frame, text="(Mixrack-) IP Address:", width=25).pack(side=LEFT)
+    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        label_ip_address_text["text"] = LABEL_IPADDRESS_AVANTIS
+    elif var_console.get() == dliveConstants.console_drop_down_dlive:
+        label_ip_address_text["text"] = LABEL_IPADDRESS_DLIVE
+    label_ip_address_text.pack(side=LEFT)
 
     ip_byte0.grid(row=0, column=0)
     Label(ip_field, text=".").grid(row=0, column=1)
@@ -1172,34 +1207,10 @@ if __name__ == '__main__':
         bottom_frame,
         orient='horizontal',
         mode='determinate',
-        length=600
+        length=850
     )
 
     pb.grid(row=2)
-
-
-    def update_progress_label():
-        return f"Current Progress: {round(pb['value'], 1)} %"
-
-
-    def progress(actions=None):
-        if actions == 0:
-            pb['value'] += 90
-        else:
-            if pb['value'] < 100:
-                pb['value'] += 90 / actions
-                value_label['text'] = update_progress_label()
-            else:
-                showinfo(message='Writing completed!')
-
-
-    def progress_open_or_close_connection():
-        if pb['value'] < 100:
-            pb['value'] += 5
-            value_label['text'] = update_progress_label()
-        else:
-            showinfo(message='Writing completed!')
-
 
     # label to show current value in percent
     value_label = ttk.Label(bottom_frame, text=update_progress_label())
@@ -1207,5 +1218,7 @@ if __name__ == '__main__':
 
     Button(bottom_frame, text='Quit', command=root.quit).grid(row=4)
     bottom_frame.pack(side=BOTTOM)
+
+    var_console.trace("w", on_console_selected)
 
     root.mainloop()

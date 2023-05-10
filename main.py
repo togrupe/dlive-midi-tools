@@ -13,9 +13,8 @@ import re
 import socket
 import threading
 import time
-import tkinter
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
-    Entry, BOTTOM, StringVar, OptionMenu, ttk
+    Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END
 from tkinter.messagebox import showinfo, showerror
 
 import mido
@@ -545,7 +544,7 @@ def is_valid_ip_address(ip_address):
         return False
 
 
-def read_document(filename, check_box_states, check_box_reaper, check_box_write_to_dlive):
+def read_document(filename, check_box_reaper, check_box_write_to_dlive):
     logging.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
@@ -606,82 +605,72 @@ def read_document(filename, check_box_states, check_box_reaper, check_box_write_
 
     actions = 0
 
-    if check_box_states.__getitem__(0):  # Names
-        actions = actions + 1
-        cb_names = True
+    if check_box_write_to_dlive.__getitem__(0):
+        cb_write_to_dlive = True
     else:
-        cb_names = False
+        cb_write_to_dlive = False
 
-    if check_box_states.__getitem__(1):  # Colors
-        actions = actions + 1
-        cb_color = True
-    else:
-        cb_color = False
+    if cb_write_to_dlive:
+        for var in grid.vars:
+            # Name
+            if var._name == "Name":
+                actions = actions + 1
+                cb_names = True
+            # Colors
+            elif var._name == "Color":
+                actions = actions + 1
+                cb_color = True
 
-    if check_box_states.__getitem__(2):  # Mute
-        actions = actions + 1
-        cb_mute = True
-    else:
-        cb_mute = False
+            # Mute
+            elif var._name == "Mute":
+                actions = actions + 1
+                cb_mute = True
 
-    if check_box_states.__getitem__(3):  # Fader Level
-        actions = actions + 1
-        cb_fader_level = True
-    else:
-        cb_fader_level = False
+            # Fader Level
+            elif var._name == "Fader Level":  #
+                actions = actions + 1
+                cb_fader_level = True
 
-    if check_box_states.__getitem__(4) and var_console.get() == dliveConstants.console_drop_down_dlive:  # HPF On
-        actions = actions + 1
-        cb_hpf_on = True
-    else:
-        cb_hpf_on = False
+            # HPF On
+            elif var._name == "HPF On" and var_console.get() == dliveConstants.console_drop_down_dlive:
+                actions = actions + 1
+                cb_hpf_on = True
 
-    if check_box_states.__getitem__(5) and var_console.get() == dliveConstants.console_drop_down_dlive:  # HPF value
-        actions = actions + 1
-        cb_hpf_value = True
-    else:
-        cb_hpf_value = False
+            # HPF value
+            elif var._name == "HPF Value" and var_console.get() == dliveConstants.console_drop_down_dlive:
+                actions = actions + 1
+                cb_hpf_value = True
 
-    if check_box_states.__getitem__(6):  # DCAs
-        actions = actions + 1
-        cb_dca = True
-    else:
-        cb_dca = False
+            # DCAs
+            elif var._name == "DCAs":
+                actions = actions + 1
+                cb_dca = True
 
-    if check_box_states.__getitem__(7) and var_console.get() == dliveConstants.console_drop_down_dlive:  # Mute Groups
-        actions = actions + 1
-        cb_mg = True
-    else:
-        cb_mg = False
+            # Mute Groups
+            elif var._name == "Mute Groups" and var_console.get() == dliveConstants.console_drop_down_dlive:
+                actions = actions + 1
+                cb_mg = True
 
-    if check_box_states.__getitem__(8):  # Phantom
-        actions = actions + 1
-        cb_phantom = True
-    else:
-        cb_phantom = False
+            # Phantom
+            elif var._name == "48V Phantom":
+                actions = actions + 1
+                cb_phantom = True
 
-    if check_box_states.__getitem__(9):  # Pad
-        actions = actions + 1
-        cb_pad = True
-    else:
-        cb_pad = False
+            # Pad
+            elif var._name == "PAD":
+                actions = actions + 1
+                cb_pad = True
 
-    if check_box_states.__getitem__(10):  # Gain
-        actions = actions + 1
-        cb_gain = True
-    else:
-        cb_gain = False
+            # Gain
+            elif var._name == "Gain":
+                actions = actions + 1
+                cb_gain = True
 
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
         cb_reaper = True
     else:
         cb_reaper = False
-
-    if check_box_write_to_dlive.__getitem__(0):
-        cb_write_to_dlive = True
-    else:
-        cb_write_to_dlive = False
 
     logging.info("Start Processing...")
 
@@ -901,7 +890,7 @@ def browse_files():
     input_file_path = filedialog.askopenfilename()
     root.reaper_output_dir = os.path.dirname(input_file_path)
     root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
-    read_document(input_file_path, get_checkbox_states(), get_reaper_state(), get_dlive_write_state())
+    read_document(input_file_path, get_reaper_state(), get_dlive_write_state())
 
 
 def trigger_background_process():
@@ -921,10 +910,6 @@ class Checkbar(Frame):
 
     def state(self):
         return map((lambda var: var.get()), self.vars)
-
-
-def get_checkbox_states():
-    return list(columns.state())
 
 
 def get_reaper_state():
@@ -1028,25 +1013,25 @@ def read_persisted_midi_port():
 
 
 def reset_ip_field_to_default_ip():
-    ip_byte0.delete(0, tkinter.END)
+    ip_byte0.delete(0, END)
     ip_byte0.insert(0, "192")
-    ip_byte1.delete(0, tkinter.END)
+    ip_byte1.delete(0, END)
     ip_byte1.insert(0, "168")
-    ip_byte2.delete(0, tkinter.END)
+    ip_byte2.delete(0, END)
     ip_byte2.insert(0, "1")
-    ip_byte3.delete(0, tkinter.END)
+    ip_byte3.delete(0, END)
     ip_byte3.insert(0, "70")
     logging.info("Default ip: " + dliveConstants.ip + " was set.")
 
 
 def set_ip_field_to_local_director_ip():
-    ip_byte0.delete(0, tkinter.END)
+    ip_byte0.delete(0, END)
     ip_byte0.insert(0, "127")
-    ip_byte1.delete(0, tkinter.END)
+    ip_byte1.delete(0, END)
     ip_byte1.insert(0, "0")
-    ip_byte2.delete(0, tkinter.END)
+    ip_byte2.delete(0, END)
     ip_byte2.insert(0, "0")
-    ip_byte3.delete(0, tkinter.END)
+    ip_byte3.delete(0, END)
     ip_byte3.insert(0, "1")
     logging.info("Director ip: 127.0.0.1 was set.")
 
@@ -1085,12 +1070,46 @@ def progress_open_or_close_connection():
         showinfo(message='Writing completed!')
 
 
+class CheckboxGrid(Frame):
+    def __init__(self, parent, headers, labels):
+        super().__init__(parent)
+        self.vars = []
+        self.headers = headers
+        self.labels = labels
+        self.create_widgets()
+
+    def create_widgets(self):
+        for i, header in enumerate(self.headers):
+            frame = LabelFrame(self, text=header)
+            frame.grid(row=0, column=i, padx=10, pady=5, sticky="nsew")
+            group_vars = []
+            for j, label in enumerate(self.labels[i]):
+                var = BooleanVar(value=False, name=label)
+                self.vars.append(var)
+                checkbox = Checkbutton(frame, text=label, variable=var)
+                checkbox.grid(row=j + 1, column=0, sticky="w")
+                group_vars.append(var)
+            self.create_group_checkbox(frame, group_vars)
+
+    def create_group_checkbox(self, parent, group_vars):
+        group_var = BooleanVar()
+        group_checkbox = Checkbutton(parent, text="Select all", variable=group_var,
+                                     command=lambda: self.toggle_group(group_vars, group_var.get()))
+        group_checkbox.grid(row=0, column=1, sticky="e")
+        for var in group_vars:
+            var.trace_add("write", lambda *_: group_var.set(all(var.get() for var in group_vars)))
+
+    def toggle_group(self, group_vars, state):
+        for var in group_vars:
+            var.set(state)
+
+
 root = Tk()
 ip_address_label = StringVar(root)
 
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
-    root.geometry('900x400')
+    root.geometry('900x550')
     root.resizable(False, False)
 
     config_frame = Frame(root)
@@ -1104,8 +1123,6 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    columns = Checkbar(root, ['Name', 'Color', 'Mute', 'Fader Level', 'HPF On', 'HPF Value', 'DCAs', 'Mute Groups',
-                              '48V Phantom', 'Pad', 'Gain'])
     write_to_dlive = Checkbar(root, ['Write to console'])
     reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
 
@@ -1125,8 +1142,12 @@ if __name__ == '__main__':
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
-    columns.pack(side=TOP, fill=X)
-    columns.config(bd=2)
+    headers = ["Channel", "Preamp", "Processing", "Attribute"]
+    labels = [["Name", "Color"], ["48V Phantom", "PAD", "Gain"], ["Mute", "Fader Level", "HPF On", "HPF Value"],
+              ["DCAs", "Mute Groups"]]
+    grid = CheckboxGrid(root, headers, labels)
+    grid.pack(side=TOP)
+
     Label(root, text=" ").pack(side=TOP)
     Label(root, text=" ").pack(side=TOP)
     write_to_dlive.pack(side=TOP, fill=X)

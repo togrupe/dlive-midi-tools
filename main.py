@@ -610,59 +610,73 @@ def read_document(filename, check_box_reaper, check_box_write_to_dlive):
     else:
         cb_write_to_dlive = False
 
+    cb_names = False
+    cb_color = False
+    cb_fader_level = False
+    cb_mute = False
+    cb_hpf_on = False
+    cb_hpf_value = False
+    cb_dca = False
+    cb_mg = False
+    cb_phantom = False
+    cb_pad = False
+    cb_gain = False
+
     if cb_write_to_dlive:
         for var in grid.vars:
             # Name
-            if var._name == "Name":
+            logging.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
+            if var._name == "Name" and var.get() == True:
                 actions = actions + 1
                 cb_names = True
+
             # Colors
-            elif var._name == "Color":
+            elif var._name == "Color" and var.get() == True:
                 actions = actions + 1
                 cb_color = True
 
             # Mute
-            elif var._name == "Mute":
+            elif var._name == "Mute" and var.get() == True:
                 actions = actions + 1
                 cb_mute = True
 
             # Fader Level
-            elif var._name == "Fader Level":  #
+            elif var._name == "Fader Level" and var.get() == True:
                 actions = actions + 1
                 cb_fader_level = True
 
             # HPF On
-            elif var._name == "HPF On" and var_console.get() == dliveConstants.console_drop_down_dlive:
+            elif var._name == "HPF On" and var.get() == True and var_console.get() == dliveConstants.console_drop_down_dlive:
                 actions = actions + 1
                 cb_hpf_on = True
 
             # HPF value
-            elif var._name == "HPF Value" and var_console.get() == dliveConstants.console_drop_down_dlive:
+            elif var._name == "HPF Value" and var.get() == True and var_console.get() == dliveConstants.console_drop_down_dlive:
                 actions = actions + 1
                 cb_hpf_value = True
 
             # DCAs
-            elif var._name == "DCAs":
+            elif var._name == "DCAs" and var.get() == True:
                 actions = actions + 1
                 cb_dca = True
 
             # Mute Groups
-            elif var._name == "Mute Groups" and var_console.get() == dliveConstants.console_drop_down_dlive:
+            elif var._name == "Mute Groups" and var.get() == True and var_console.get() == dliveConstants.console_drop_down_dlive:
                 actions = actions + 1
                 cb_mg = True
 
             # Phantom
-            elif var._name == "48V Phantom":
+            elif var._name == "48V Phantom" and var.get() == True:
                 actions = actions + 1
                 cb_phantom = True
 
             # Pad
-            elif var._name == "PAD":
+            elif var._name == "PAD" and var.get() == True:
                 actions = actions + 1
                 cb_pad = True
 
             # Gain
-            elif var._name == "Gain":
+            elif var._name == "Gain" and var.get() == True:
                 actions = actions + 1
                 cb_gain = True
 

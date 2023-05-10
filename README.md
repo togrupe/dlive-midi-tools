@@ -161,6 +161,9 @@ Have fun!
 #### Improvements
 - Progress Bar improved
 - Infobox for missing Avantis features added
+- Checkbox Group introduced
+- Group "Select All" added
+- IP-Address Label is now dynamic
 
 #### Technical Limitations
 - DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.

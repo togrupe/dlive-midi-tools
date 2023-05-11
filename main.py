@@ -24,6 +24,7 @@ from mido.sockets import connect
 
 import dliveConstants
 from dawsession import SessionCreator
+from gui import GuiConstants
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.DcaListEntry import DcaListEntry
@@ -38,7 +39,7 @@ LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.3.0-alpha7"
+version = "2.3.0-alpha8"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -259,7 +260,7 @@ def hpf_on_channel(output, item):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_on))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=res))
-        time.sleep(.001)
+        time.sleep(.01)
 
 
 def calculate_vv(hpf_value):
@@ -275,7 +276,7 @@ def hpf_value_channel(output, item):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_frequency))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=value_freq))
-        time.sleep(.001)
+        time.sleep(.01)
 
 
 def fader_level_channel(output, item):
@@ -294,7 +295,7 @@ def fader_level_channel(output, item):
         "-35.0": dliveConstants.fader_level_minus35,
         "-40.0": dliveConstants.fader_level_minus40,
         "-45.0": dliveConstants.fader_level_minus45,
-        "-inf": dliveConstants.fader_level_minus_inf
+        "-99.0": dliveConstants.fader_level_minus_inf
     }
     fader_level = switcher.get(lower_fader_level, "Invalid Fader level")
 
@@ -493,7 +494,7 @@ def assign_mg(output, channel, mg_value):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_mg_assign))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
-        time.sleep(.001)
+        time.sleep(.01)
 
 
 def dca_channel(output, item):
@@ -544,20 +545,20 @@ def is_valid_ip_address(ip_address):
         return False
 
 
-def read_document(filename, check_box_reaper, check_box_write_to_dlive):
+def read_document(filename, check_box_reaper, check_box_write_to_console):
     logging.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '5'
+    latest_spreadsheet_version = '6'
 
     read_version = sheet.get_misc_model().get_version()
 
     if read_version != latest_spreadsheet_version:
         error_msg = "Given spreadsheet version: " + str(
-            read_version) + " is not compatible. Please use the latest excel " \
+            read_version) + " is not compatible. Please use the latest spread " \
                             "sheet (Version " + latest_spreadsheet_version + \
                     "). You can see the version in the spreadsheet tab \"Misc\""
         logging.error(error_msg)
@@ -569,7 +570,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_dlive):
     sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_mg_model(create_mg_content(pd.read_excel(filename, sheet_name="Channels")))
 
-    if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
+    if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
 
         if not is_valid_ip_address(mix_rack_ip_tmp):
@@ -605,10 +606,14 @@ def read_document(filename, check_box_reaper, check_box_write_to_dlive):
 
     actions = 0
 
-    if check_box_write_to_dlive.__getitem__(0):
-        cb_write_to_dlive = True
+    if check_box_write_to_console.__getitem__(0):
+        cb_write_to_console = True
     else:
-        cb_write_to_dlive = False
+        cb_write_to_console = False
+
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        disable_avantis_checkboxes()
+        root.update()
 
     cb_names = False
     cb_color = False
@@ -622,61 +627,61 @@ def read_document(filename, check_box_reaper, check_box_write_to_dlive):
     cb_pad = False
     cb_gain = False
 
-    if cb_write_to_dlive:
+    if cb_write_to_console:
         for var in grid.vars:
             # Name
             logging.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
-            if var._name == "Name" and var.get() == True:
+            if var._name == GuiConstants.TEXT_NAME and var.get() is True:
                 actions = actions + 1
                 cb_names = True
 
-            # Colors
-            elif var._name == "Color" and var.get() == True:
+            # Color
+            elif var._name == GuiConstants.TEXT_COLOR and var.get() is True:
                 actions = actions + 1
                 cb_color = True
 
             # Mute
-            elif var._name == "Mute" and var.get() == True:
+            elif var._name == GuiConstants.TEXT_MUTE and var.get() is True:
                 actions = actions + 1
                 cb_mute = True
 
             # Fader Level
-            elif var._name == "Fader Level" and var.get() == True:
+            elif var._name == GuiConstants.TEXT_FADER_LEVEL and var.get() is True:
                 actions = actions + 1
                 cb_fader_level = True
 
             # HPF On
-            elif var._name == "HPF On" and var.get() == True and var_console.get() == dliveConstants.console_drop_down_dlive:
+            elif var._name == GuiConstants.TEXT_HPF_ON and var.get() is True:
                 actions = actions + 1
                 cb_hpf_on = True
 
             # HPF value
-            elif var._name == "HPF Value" and var.get() == True and var_console.get() == dliveConstants.console_drop_down_dlive:
+            elif var._name == GuiConstants.TEXT_HPF_VALUE and var.get() is True:
                 actions = actions + 1
                 cb_hpf_value = True
 
             # DCAs
-            elif var._name == "DCAs" and var.get() == True:
+            elif var._name == GuiConstants.TEXT_DCA and var.get() is True:
                 actions = actions + 1
                 cb_dca = True
 
             # Mute Groups
-            elif var._name == "Mute Groups" and var.get() == True and var_console.get() == dliveConstants.console_drop_down_dlive:
+            elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
                 actions = actions + 1
                 cb_mg = True
 
             # Phantom
-            elif var._name == "48V Phantom" and var.get() == True:
+            elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
                 actions = actions + 1
                 cb_phantom = True
 
             # Pad
-            elif var._name == "PAD" and var.get() == True:
+            elif var._name == GuiConstants.TEXT_PAD and var.get() is True:
                 actions = actions + 1
                 cb_pad = True
 
             # Gain
-            elif var._name == "Gain" and var.get() == True:
+            elif var._name == GuiConstants.TEXT_GAIN and var.get() is True:
                 actions = actions + 1
                 cb_gain = True
 
@@ -688,7 +693,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_dlive):
 
     logging.info("Start Processing...")
 
-    if cb_write_to_dlive:
+    if cb_write_to_console:
         if cb_names:
             handle_channels_parameter("Set Name to channels...", output, sheet.get_channel_model(),
                                       action="name")
@@ -770,7 +775,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_dlive):
 
     logging.info("Processing done")
 
-    if is_network_communication_allowed & check_box_write_to_dlive.__getitem__(0):
+    if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         output.close()
     progress_open_or_close_connection()
     progress_open_or_close_connection()
@@ -1050,15 +1055,50 @@ def set_ip_field_to_local_director_ip():
     logging.info("Director ip: 127.0.0.1 was set.")
 
 
+def remove_tick(var_name):
+    for var in grid.vars:
+        if var._name == var_name:
+            var.set(False)
+
+
+def disable_avantis_checkboxes():
+    for checkbox in grid.checkboxes:
+        if checkbox.__getitem__("text") == GuiConstants.TEXT_HPF_ON:
+            remove_tick(GuiConstants.TEXT_HPF_ON)
+            checkbox.config(state="disabled")
+            continue
+        if checkbox.__getitem__("text") == GuiConstants.TEXT_HPF_VALUE:
+            remove_tick(GuiConstants.TEXT_HPF_VALUE)
+            checkbox.config(state="disabled")
+            continue
+        if checkbox.__getitem__("text") == GuiConstants.TEXT_MUTE_GROUPS:
+            remove_tick(GuiConstants.TEXT_MUTE_GROUPS)
+            checkbox.config(state="disabled")
+            continue
+
+
+def reactivate_avantis_checkboxes():
+    for checkbox in grid.checkboxes:
+        checkbox.config(state="normal")
+
+
 def on_console_selected(*args):
     print("The selected console is:", var_console.get())
     if var_console.get() == dliveConstants.console_drop_down_avantis:
         label_ip_address_text["text"] = LABEL_IPADDRESS_AVANTIS
         root.update()
         showinfo(
-            message='Info: "HPF On", "HPF Value" and "Mute Groups" are currently not supported by the API of Avantis!')
+            message='Info: "' + GuiConstants.TEXT_HPF_ON +
+                    '", "' + GuiConstants.TEXT_HPF_VALUE +
+                    '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
+                    '" are currently not supported by the API of Avantis!')
+        disable_avantis_checkboxes()
+        root.update()
+
     elif var_console.get() == dliveConstants.console_drop_down_dlive:
         label_ip_address_text["text"] = LABEL_IPADDRESS_DLIVE
+        reactivate_avantis_checkboxes()
+        root.update()
 
 
 def update_progress_label():
@@ -1090,9 +1130,10 @@ class CheckboxGrid(Frame):
         self.vars = []
         self.headers = headers
         self.labels = labels
-        self.create_widgets()
+        self.checkboxes = self.create_widgets()
 
     def create_widgets(self):
+        self.checkboxes = []
         for i, header in enumerate(self.headers):
             frame = LabelFrame(self, text=header)
             frame.grid(row=0, column=i, padx=10, pady=5, sticky="nsew")
@@ -1102,8 +1143,10 @@ class CheckboxGrid(Frame):
                 self.vars.append(var)
                 checkbox = Checkbutton(frame, text=label, variable=var)
                 checkbox.grid(row=j + 1, column=0, sticky="w")
+                self.checkboxes.append(checkbox)
                 group_vars.append(var)
             self.create_group_checkbox(frame, group_vars)
+        return self.checkboxes
 
     def create_group_checkbox(self, parent, group_vars):
         group_var = BooleanVar()
@@ -1138,7 +1181,7 @@ if __name__ == '__main__':
     config_frame.pack(side=TOP)
 
     write_to_dlive = Checkbar(root, ['Write to console'])
-    reaper = Checkbar(root, ['Generate Reaper recording session (In & Out 1:1 Patch)'])
+    reaper = Checkbar(root, ['Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)'])
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1157,8 +1200,11 @@ if __name__ == '__main__':
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
     headers = ["Channel", "Preamp", "Processing", "Attribute"]
-    labels = [["Name", "Color"], ["48V Phantom", "PAD", "Gain"], ["Mute", "Fader Level", "HPF On", "HPF Value"],
-              ["DCAs", "Mute Groups"]]
+    labels = [[GuiConstants.TEXT_NAME, GuiConstants.TEXT_COLOR],
+              [GuiConstants.TEXT_PHANTOM, GuiConstants.TEXT_PAD, GuiConstants.TEXT_GAIN],
+              [GuiConstants.TEXT_MUTE, GuiConstants.TEXT_FADER_LEVEL, GuiConstants.TEXT_HPF_ON,
+               GuiConstants.TEXT_HPF_VALUE],
+              [GuiConstants.TEXT_DCA, GuiConstants.TEXT_MUTE_GROUPS]]
     grid = CheckboxGrid(root, headers, labels)
     grid.pack(side=TOP)
 
@@ -1182,8 +1228,14 @@ if __name__ == '__main__':
     label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
     if var_console.get() == dliveConstants.console_drop_down_avantis:
         label_ip_address_text["text"] = LABEL_IPADDRESS_AVANTIS
+        disable_avantis_checkboxes()
+        root.update()
+        root.focus()
     elif var_console.get() == dliveConstants.console_drop_down_dlive:
         label_ip_address_text["text"] = LABEL_IPADDRESS_DLIVE
+        reactivate_avantis_checkboxes()
+        root.update()
+        root.focus()
     label_ip_address_text.pack(side=LEFT)
 
     ip_byte0.grid(row=0, column=0)

@@ -125,9 +125,9 @@ Afterwards the following window appears.
 
 2. Check the (Mixrack-) IP and Midi Port. 
 
-3. `Save` Persists the current settings (`console`, `ip`, `midi-port`) for the next start of the tool.
+3. `Save` Persists the current settings (console, ip, midi-port) for the next start of the tool.
 
-4. `Director`, sets the ip to 127.0.0.1, to use Director locally on the same machine. Director has to be Started before. You can also write to a Director instance running on different machine, in this case please use the external ip of this machine where director is alreay started and open. 
+4. `Director`, sets the ip to 127.0.0.1, to use Director locally on the same machine. Director has to be started before. You can also write to a Director instance running on a different machine, in this case please use the external ip-address of this machine where director is already started and running. (In case of connection issues, please check the firewall rules or disable it temporarily)
 
 5. `Default` Sets the ip back to default: 192.168.1.70.
 

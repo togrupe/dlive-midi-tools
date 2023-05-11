@@ -125,25 +125,25 @@ Afterwards the following window appears.
 
 2. Check the (Mixrack-) IP and Midi Port. 
 
-3. `Save` Saves the current settings (console, ip, midi-port) for the next start of the tool.
+3. `Save` Persists the current settings (`console`, `ip`, `midi-port`) for the next start of the tool.
 
-4. `Director`, sets the ip to 127.0.0.1, to use Director locally on the same machine. Director has to be Started before. 
+4. `Director`, sets the ip to 127.0.0.1, to use Director locally on the same machine. Director has to be Started before. You can also write to a Director instance running on different machine, in this case please use the external ip of this machine where director is alreay started and open. 
 
 5. `Default` Sets the ip back to default: 192.168.1.70.
 
 6. Select the columns you want to write, and select `Write to console`
 
-7. If you also want to create a Reaper Template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
-   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1. 
-   You can also use the tool to create only the Reaper session file.
+7. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
+   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) 
+   You can also use the tool to create only the Reaper session file, in case you use a different console. 
 
 8. Click the button "Open spreadsheet and trigger writing process" to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
 9. If something goes wrong, please check the python console or the `main.log`
 
-If you find any issues, please let me know.
+If you find any issues, please let me know. New ideas are welcome. 
 
-Have fun!
+Have fun! 
 
 
 ## Release Notes
@@ -151,9 +151,9 @@ Have fun!
 ### v2.3.0
 
 #### New Features:
+- Fader Level Support
 - Gain Support
 - DCA Support
-- Fader Level Support
 - Mute Group Support (dLive only)
 - HPF On Support (dLive only)
 - HPF Value Support (dLive only)

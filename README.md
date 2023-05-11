@@ -161,8 +161,8 @@ Have fun!
 #### Improvements
 - Progress Bar improved
 - Infobox for missing Avantis features added
-- Checkbox Group introduced
-- Group "Select All" added
+- Checkbox Groups introduced
+- Checkbox Group "Select All" added
 - IP-Address Label is now dynamic
 
 #### Technical Limitations

@@ -1184,7 +1184,7 @@ if __name__ == '__main__':
     file_menu = Menu(menu_bar, tearoff=0)
     file_menu.add_command(label="About", command=about_dialog)
     file_menu.add_separator()
-    file_menu.add_command(label="Exit", command=root.quit)
+    file_menu.add_command(label="Exit", command=root.destroy())
 
     # Add the file menu to the menu bar
     menu_bar.add_cascade(label="Help", menu=file_menu)

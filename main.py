@@ -40,7 +40,7 @@ LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
-version = "2.3.0-RC1"
+version = "2.3.0-RC2"
 date = "May 2023"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication

@@ -14,7 +14,7 @@ import socket
 import threading
 import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
-    Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END
+    Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
 
 import mido
@@ -25,6 +25,7 @@ from mido.sockets import connect
 import dliveConstants
 from dawsession import SessionCreator
 from gui import GuiConstants
+from gui.AboutDialog import AboutDialog
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.DcaListEntry import DcaListEntry
@@ -40,6 +41,7 @@ LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
 version = "2.3.0-RC1"
+date = "May 2023"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -1164,10 +1166,31 @@ class CheckboxGrid(Frame):
 root = Tk()
 ip_address_label = StringVar(root)
 
+
+def about_dialog():
+    about = AboutDialog(root)
+    about.resizable(False, False)
+    about.mainloop()
+
+
 if __name__ == '__main__':
     root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
     root.geometry('900x550')
     root.resizable(False, False)
+
+    menu_bar = Menu(root)
+
+    # Create the file menu
+    file_menu = Menu(menu_bar, tearoff=0)
+    file_menu.add_command(label="About", command=about_dialog)
+    file_menu.add_separator()
+    file_menu.add_command(label="Exit", command=root.quit)
+
+    # Add the file menu to the menu bar
+    menu_bar.add_cascade(label="Help", menu=file_menu)
+
+    # Display the menu bar
+    root.config(menu=menu_bar)
 
     config_frame = Frame(root)
     ip_frame = Frame(config_frame)
@@ -1297,7 +1320,7 @@ if __name__ == '__main__':
     value_label = ttk.Label(bottom_frame, text=update_progress_label())
     value_label.grid(row=3)
 
-    Button(bottom_frame, text='Quit', command=root.quit).grid(row=4)
+    Button(bottom_frame, text='Quit', command=root.destroy).grid(row=4)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)

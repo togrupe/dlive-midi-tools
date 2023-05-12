@@ -57,6 +57,8 @@ Spreadsheet (*.xlsx, *.ods) , please have a look at the following tabs.
 ![Channels](doc/excel_channels.png)
 # 48V Phantom Power and PAD Overview
 ![Phantom](doc/excel_phantom.png)
+# Generated Reaper Template Example
+![Phantom](doc/reaper_demo.png)
 
 
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 

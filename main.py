@@ -23,6 +23,7 @@ import pandas as pd
 from mido.sockets import connect
 
 import dliveConstants
+import Toolinfo
 from dawsession import SessionCreator
 from gui import GuiConstants
 from gui.AboutDialog import AboutDialog
@@ -39,9 +40,6 @@ LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
-
-version = "2.3.0-RC2"
-date = "May 2023"
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -1174,7 +1172,7 @@ def about_dialog():
 
 
 if __name__ == '__main__':
-    root.title('Channel List Manager for Allen & Heath dLive and Avantis - v' + version)
+    root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('900x550')
     root.resizable(False, False)
 

@@ -1,6 +1,15 @@
+####################################################
+# About - Dialog
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 import tkinter as tk
 from tkinter import BOTTOM, TOP
 from tkinter.ttk import Frame, Button
+
+import Toolinfo
 
 
 class AboutDialog(tk.Toplevel):
@@ -21,16 +30,16 @@ class AboutDialog(tk.Toplevel):
 
         # create labels for the about dialog
         toolname_label = tk.Label(content_frame, text="Toolname:")
-        toolname_value = tk.Label(content_frame, text="Channel List Manager for dLive and Avantis")
+        toolname_value = tk.Label(content_frame, text=Toolinfo.tool_name)
 
         github_project_label = tk.Label(content_frame, text="GitHub Project:")
         github_project_value = tk.Label(content_frame, text="https://github.com/togrupe/dlive-midi-tools")
 
         version_label = tk.Label(content_frame, text="Version:")
-        version_value = tk.Label(content_frame, text="v2.3.0")
+        version_value = tk.Label(content_frame, text=Toolinfo.version)
 
         build_label = tk.Label(content_frame, text="Build-Date:")
-        build_value = tk.Label(content_frame, text="May 2023")
+        build_value = tk.Label(content_frame, text=Toolinfo.build_date)
 
         license_label = tk.Label(content_frame, text="License:")
         license_value = tk.Label(content_frame, text="MIT License")

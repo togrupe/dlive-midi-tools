@@ -50,16 +50,13 @@ By using this software, you acknowledge and agree that you do so at your own ris
 |         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
 | v2.1.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
 |         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
-## Input file
+## Input file / The Spreadsheet Template
 Spreadsheet (*.xlsx, *.ods) , please have a look at the following tabs.
 
 # Channel Overview
 ![Channels](doc/excel_channels.png)
 # 48V Phantom Power and PAD Overview
 ![Phantom](doc/excel_phantom.png)
-# Generated Reaper Template Example
-![Phantom](doc/reaper_demo.png)
-
 
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 
@@ -79,6 +76,9 @@ The following colors are allowed:
 * white
 
 If the given color does not match, the default color black is used instead.
+
+# Generated Reaper Template Example
+![Phantom](doc/reaper_demo.png)
 
 ## Settings on the dlive console
 The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to : `12 to 16`, which is default.

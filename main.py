@@ -39,7 +39,7 @@ from model.Sheet import Sheet
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
-DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.001
+DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.005
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 

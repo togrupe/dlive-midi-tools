@@ -40,6 +40,7 @@ LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
 DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.005
+DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001
 
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
@@ -487,7 +488,7 @@ def assign_dca(output, channel, dca_value):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_dca_assign))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=dca_value))
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
 
 
 def assign_mg(output, channel, mg_value):
@@ -496,7 +497,7 @@ def assign_mg(output, channel, mg_value):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_mg_assign))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
 
 
 def dca_channel(output, item):

@@ -39,6 +39,8 @@ from model.Sheet import Sheet
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 
+DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.001
+
 logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
@@ -140,7 +142,7 @@ def name_channel(output, item):
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
-        time.sleep(.1)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def color_channel(output, item):
@@ -172,7 +174,7 @@ def color_channel(output, item):
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
-        time.sleep(.1)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def mute_on_channel(output, item):
@@ -191,7 +193,7 @@ def mute_on_channel(output, item):
     if is_network_communication_allowed:
         output.send(message_on)
         output.send(message_off)
-        time.sleep(.1)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def phantom_socket(output, item, socket_type):
@@ -244,7 +246,7 @@ def phantom_socket(output, item, socket_type):
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
-        time.sleep(.1)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def hpf_on_channel(output, item):
@@ -260,7 +262,7 @@ def hpf_on_channel(output, item):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_on))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=res))
-        time.sleep(.01)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def calculate_vv(hpf_value):
@@ -276,7 +278,7 @@ def hpf_value_channel(output, item):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_frequency))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=value_freq))
-        time.sleep(.01)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def fader_level_channel(output, item):
@@ -307,7 +309,7 @@ def fader_level_channel(output, item):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_fader_level))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=int(fader_level)))
-        time.sleep(.001)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def handle_channels_parameter(message, output, channel_list_entries, action):
@@ -377,7 +379,7 @@ def pad_socket(output, item, socket_type):
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
-        time.sleep(.1)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def gain_socket(output, item, socket_type):
@@ -446,7 +448,7 @@ def gain_socket(output, item, socket_type):
         byte_out = byte_out - 8192
 
         output.send(mido.Message('pitchwheel', channel=root.midi_channel, pitch=byte_out))
-        time.sleep(.01)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
@@ -485,7 +487,7 @@ def assign_dca(output, channel, dca_value):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_dca_assign))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=dca_value))
-        time.sleep(.001)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def assign_mg(output, channel, mg_value):
@@ -494,7 +496,7 @@ def assign_mg(output, channel, mg_value):
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_mg_assign))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
-        time.sleep(.01)
+        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
 def dca_channel(output, item):
@@ -1301,7 +1303,7 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(root)
 
-    Button(bottom_frame, text='Open spreadsheet and trigger writing process', command=trigger_background_process).grid(
+    Button(bottom_frame, text='Open spreadsheet and start writing process', command=trigger_background_process).grid(
         row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 

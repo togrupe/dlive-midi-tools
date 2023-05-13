@@ -77,7 +77,7 @@ The following colors are allowed:
 
 If the given color does not match, the default color black is used instead.
 
-# Generated Reaper Template Example
+# Example Generated Reaper Recording Session
 ![Phantom](doc/reaper_demo.png)
 
 ## Settings on the dlive console
@@ -166,6 +166,8 @@ Have fun!
 - Checkbox Groups introduced
 - Checkbox Group "Select All" added
 - IP-Address Label is now dynamic
+- Processing accelerated
+
 
 #### Technical Limitations
 - DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.

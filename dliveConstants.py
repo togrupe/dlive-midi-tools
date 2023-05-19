@@ -33,7 +33,9 @@ sysex_header_minor_version = 0x00
 
 # SysEx messages
 sysex_message_set_channel_name = 0x03
+sysex_message_get_channel_name = 0x01
 sysex_message_set_channel_colour = 0x06
+sysex_message_get_channel_colour = 0x04
 sysex_message_set_socket_preamp_48V = 0x0C
 sysex_message_set_socket_preamp_pad = 0x09
 
@@ -42,6 +44,7 @@ nrpn_parameter_id_hpf_on = 0x31
 nrpn_parameter_id_hpf_frequency = 0x30
 nrpn_parameter_id_fader_level = 0x17
 nrpn_parameter_id_dca_assign = 0x40
+nrpn_parameter_id_mg_assign = 0x40
 
 # Note
 note_off = 0x00
@@ -49,6 +52,10 @@ note_off = 0x00
 # DCA
 dca_on_base_address = 0x40
 dca_off_base_address = 0x00
+
+# Mute Groups
+mg_on_base_address = 0x58
+mg_off_base_address = 0x18
 
 # Mute
 mute_on = 0x7F
@@ -69,9 +76,30 @@ fader_level_minus40 = 0x1B
 fader_level_minus45 = 0x11
 fader_level_minus_inf = 0x00
 
+# Gain levels
+gain_level_plus60 = 0x7F
+gain_level_plus55 = 0x73
+gain_level_plus50 = 0x67
+gain_level_plus45 = 0x5C
+gain_level_plus40 = 0x50
+gain_level_plus35 = 0x45
+gain_level_plus30 = 0x3A
+gain_level_plus25 = 0x2E
+gain_level_plus20 = 0x22
+gain_level_plus15 = 0x17
+gain_level_plus10 = 0x0C
+gain_level_plus5 = 0x0
+
 # SysEx header definitions
 sysexhdrstart = [0xF0, 0x00, 0x00, 0x1A, 0x50, 0x10, sysex_header_major_version, sysex_header_minor_version]
 sysexhdrend = [0xF7]
+
+# The max socket amount for each type
+LOCAL_DLIVE_SOCKET_COUNT_MAX = 64
+LOCAL_AVANTIS_SOCKET_COUNT_MAX = 12
+DX1_SOCKET_COUNT_MAX = 32
+DX3_SOCKET_COUNT_MAX = 32
+SLINK_SOCKET_COUNT_MAX = 128
 
 # Strings Midi Channel Selector
 midi_channel_drop_down_string_1 = "1 to 5"

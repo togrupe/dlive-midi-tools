@@ -168,8 +168,8 @@ Have fun!
 
 
 #### Technical Limitations
-- DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on & HPF value for Avantis due to technical limitation currently not possible.
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
 
 #### Issues fixed:
 

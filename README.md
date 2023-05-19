@@ -51,19 +51,24 @@ By using this software, you acknowledge and agree that you do so at your own ris
 | v2.1.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
 |         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 ## Input file / The Spreadsheet Template
-Spreadsheet (*.xlsx, *.ods) , please have a look at the following tabs.
-
-# Channel Overview
-![Channels](doc/excel_channels.png)
-# 48V Phantom Power and PAD Overview
-![Phantom](doc/excel_phantom.png)
-
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 
-just delete the channels you don't want to process. Empty lines in between are not supported.
+just delete the channels you don't want to process. <br>
+
+Empty lines in between are **not** supported. <br>
 
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write / save the sheets.
-Please make sure that you save your changes in the (*.xlsx or *.ods) format. 
+Please make sure that you save your changes in the (*.xlsx or *.ods) format.
+
+### Channel Overview
+![Channels](doc/excel_channels.png)
+
+#### Name: <br>
+Channel-Name, names longer 8 characters are gonna be automatically trimmed.
+
+Special characters like "äöüéß" are not allowed, otherwise you will get an Error Message.
+
+#### Color: <br>
 
 The following colors are allowed:
 * blue
@@ -77,7 +82,67 @@ The following colors are allowed:
 
 If the given color does not match, the default color black is used instead.
 
+#### Mute: <br>
+* yes - to mute <br>
+* no - to unmute.
+
+Empty cells are interpreted as **no**.
+
+#### Fader Level: <br>
+Dropdown list with predefined fader level values. (-99 = -inf)
+
+#### HPF On
+yes - to activate the Highpass Filter
+no - to deactivate the Highpass Filter
+
+Empty cells are interpreted as **no**
+
+#### HPF Value
+20-2000Hz - to set the Highpass Filter value
+
+#### Recording
+yes - Channel is taken into account for DAW Recording Session <br>
+no - Channel will not be part the DAW Recoding session. <br>
+
+Empty cells are interpreted as **no**
+
+#### Record Arm
+yes - The Record Button is armed / activated <br>
+no - The Record Button is not active
+
+Empty cells are interpreted as **no**
+
+#### DCA1-24
+By setting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
+
+#### Mute1-8
+By setting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
+
+### 48V Phantom Power and PAD Overview
+![Phantom](doc/excel_phantom.png)
+
+**Attention** <br> The following settings are for the corresponding **sockets** and **NOT** for channels.
+
+#### Local/DX1/DX3/Slink Phantom
+yes - activates the 48V Phantom Power <br>
+no - to switch phantom power off. <br>
+
+Empty cells are interpreted as **no**
+
+#### Local/DX1/DX3/Slink Pad
+yes - to activate the PAD for the socket. <br>
+no - to switch the pad off for socket. <br>
+
+Empty cells are interpreted as **no**
+
+
+#### Local/DX1/DX3/Slink Gain
+Dropdown list with predefined gain values (5-60dB).
+
+
 # Example Generated Reaper Recording Session
+The columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the template generation process. 
+
 ![Phantom](doc/reaper_demo.png)
 
 ## Settings on the dlive console
@@ -95,7 +160,8 @@ Please make sure that your ethernet or Wi-Fi interface has an ip address in the 
 ## Usage
 Prerequisites: 
 * Python >= 3.8
-* dlive Firmware: >= 1.90
+* dlive Firmware: >= 1.97
+* Avantis Firmware: >= 1.25
 * Reaper >= 6.75
 
 1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.

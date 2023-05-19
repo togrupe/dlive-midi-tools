@@ -4,11 +4,11 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Channel Name
 - Channel Color
 - Channel Mute
+- Fader Level
+- DCA Assignments
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
-- Fader Level
-- DCA Assignments
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
@@ -50,6 +50,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 |         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
 | v2.1.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
 |         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
+
 ## Input file / The Spreadsheet Template
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
 By default, the channels 1-128 are available in the sheet. If you need less, 

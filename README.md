@@ -42,14 +42,14 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ![Overview](overview.drawio.png)
 
 ## Download
-| Version | OS                | Download                                                                                         |
-|---------|-------------------|--------------------------------------------------------------------------------------------------|
-| v2.3.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           |
-|         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |
-| v2.2.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
-|         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |      
-| v2.1.0  | MacOS (x86_64)    | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
-|         | Windows (x86_64)  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
+| Version | Date       | OS                 | Download                                                                                         |
+|---------|------------|--------------------|--------------------------------------------------------------------------------------------------|
+| v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           |
+|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |
+| v2.2.0  | 29.04.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           |
+|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |   
+| v2.1.0  | 31.03.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |
+|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |
 
 ## Input file / The Spreadsheet Template
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 

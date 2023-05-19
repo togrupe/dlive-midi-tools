@@ -65,7 +65,7 @@ Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 ![Channels](doc/excel_channels.png)
 
 #### Name: <br>
-Channel-Name, names longer 8 characters are gonna be automatically trimmed.
+Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.
 
 Special characters like "äöüéß" are not allowed, otherwise you will get an Error Message.
 

@@ -62,89 +62,20 @@ Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write / save the
 Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 
 ### Channel Overview
-![Channels](doc/excel_channels.png)
+![Channels](doc/channels/excel_channels.png)
 
-#### Name: <br>
-Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.
-
-Special characters like "äöüéß" are not allowed, otherwise you will get an Error Message.
-
-#### Color: <br>
-
-The following colors are allowed:
-* blue
-* red 
-* light blue 
-* purple 
-* green 
-* yellow 
-* black
-* white
-
-If the given color does not match, the default color black is used instead.
-
-#### Mute: <br>
-* yes - to mute <br>
-* no - to unmute.
-
-Empty cells are interpreted as **no**.
-
-#### Fader Level: <br>
-Dropdown list with predefined fader level values. (-99 = -inf)
-
-#### HPF On
-yes - to activate the Highpass Filter
-no - to deactivate the Highpass Filter
-
-Empty cells are interpreted as **no**
-
-#### HPF Value
-20-2000Hz - to set the Highpass Filter value
-
-#### Recording
-yes - Channel is taken into account for DAW Recording Session <br>
-no - Channel will not be part the DAW Recoding session. <br>
-
-Empty cells are interpreted as **no**
-
-#### Record Arm
-yes - The Record Button is armed / activated <br>
-no - The Record Button is not active
-
-Empty cells are interpreted as **no**
-
-#### DCA1-24
-By setting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
-
-#### Mute1-8
-By setting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
+More Details of the Channel columns can be found [here](doc/channels/README.md)
 
 ### 48V Phantom Power and PAD Overview
-![Phantom](doc/excel_phantom.png)
+![Phantom](doc/sockets/excel_phantom.png)
 
-**Attention** <br> The following settings are for the corresponding **sockets** and **NOT** for channels.
-
-#### Local/DX1/DX3/Slink Phantom
-yes - activates the 48V Phantom Power <br>
-no - to switch phantom power off. <br>
-
-Empty cells are interpreted as **no**
-
-#### Local/DX1/DX3/Slink Pad
-yes - to activate the PAD for the socket. <br>
-no - to switch the pad off for socket. <br>
-
-Empty cells are interpreted as **no**
-
-
-#### Local/DX1/DX3/Slink Gain
-Dropdown list with predefined gain values (5-60dB).
-
+More Details of the 48V Phantom Power and PAD columns can be found [here](doc/sockets/README.md)
 
 # Example Generated Reaper Recording Session
-The columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the template generation process. 
+If you select the "Generate Reaper Recording Session" checkbox, 
+the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the template generation process. 
 
-![Phantom](doc/reaper_demo.png)
+![Phantom](doc/reaper/reaper_demo.png)
 
 ## Settings on the dlive console
 The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to : `12 to 16`, which is default.

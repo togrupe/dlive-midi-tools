@@ -64,12 +64,12 @@ Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 ### Channel Overview
 ![Channels](doc/channels/excel_channels.png)
 
-More Details of the Channel columns can be found [here](doc/channels/README.md)
+More details to the `Channels` columns can be found [here](doc/channels/README.md)
 
 ### 48V Phantom Power and PAD Overview
 ![Phantom](doc/sockets/excel_phantom.png)
 
-More Details of the 48V Phantom Power and PAD columns can be found [here](doc/sockets/README.md)
+More details to the `48V & PAD` columns can be found [here](doc/sockets/README.md)
 
 # Example Generated Reaper Recording Session
 If you select the "Generate Reaper Recording Session" checkbox, 

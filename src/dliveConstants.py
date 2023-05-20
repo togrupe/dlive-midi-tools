@@ -129,7 +129,7 @@ allow_network_communication = True
 # Trim after 6 or 8 Charactors
 trim_after_x_charactors = 8
 
-config_file = "../config.json"
+config_file = "config.json"
 
 # dlive Mixrack ip and port for midi/tcp. Please use 127.0.0.1 for dLive Director.
 ip = '192.168.1.70'

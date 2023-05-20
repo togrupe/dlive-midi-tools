@@ -43,7 +43,10 @@ LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.01
 DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001
 
-logging.basicConfig(filename='main.log', level=logging.DEBUG)
+LOG_FILE = 'main.log'
+CONFIG_FILE = 'config.json'
+
+logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -963,9 +966,9 @@ def save_current_ui_settings():
 
 
 def read_persisted_ip():
-    filename = dliveConstants.config_file
+    filename = CONFIG_FILE
     if os.path.exists(filename):
-        logging.info("Try to read persisted ip from " + dliveConstants.config_file + " file.")
+        logging.info("Try to read persisted ip from " + str(filename) + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
             try:
@@ -986,9 +989,9 @@ def read_persisted_ip():
 
 
 def read_persisted_console():
-    filename = dliveConstants.config_file
+    filename = CONFIG_FILE
     if os.path.exists(filename):
-        logging.info("Try to read persisted console from " + dliveConstants.config_file + " file.")
+        logging.info("Try to read persisted console from " + str(filename) + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
             try:
@@ -1011,7 +1014,7 @@ def read_persisted_console():
 
 
 def read_persisted_midi_port():
-    filename = dliveConstants.config_file
+    filename = CONFIG_FILE
     if os.path.exists(filename):
         logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
         with open(filename, 'r') as file:

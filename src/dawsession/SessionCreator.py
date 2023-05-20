@@ -9,7 +9,7 @@ import logging
 
 from reathon.nodes import Project, Track
 
-from dawsession import ReaperConstants
+from src.dawsession import ReaperConstants
 
 
 def convert_sheet_color_to_reaper_color(color):

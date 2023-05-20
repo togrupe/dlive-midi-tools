@@ -39,7 +39,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * pyinstaller - Binary creator
 
 ## Overview
-![Overview](overview.drawio.png)
+![Overview](doc/overview.drawio.png)
 
 ## Download
 | Version | Date       | OS                 | Download                                                                                         | Release Notes |

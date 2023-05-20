@@ -1,5 +1,5 @@
 ####################################################
-# About - Dialog
+# Tool Info
 #
 # Author: Tobias Grupe
 #

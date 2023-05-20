@@ -22,18 +22,20 @@ import numpy
 import pandas as pd
 from mido.sockets import connect
 
-from src import dliveConstants, Toolinfo
+import Toolinfo
+import dliveConstants
 from dawsession import SessionCreator
-from gui import GuiConstants
+import GuiConstants
 from gui.AboutDialog import AboutDialog
-from src.model.ChannelListEntry import ChannelListEntry
-from src.model.DcaConfig import DcaConfig
-from src.model.DcaListEntry import DcaListEntry
-from src.model.Misc import Misc
-from src.model.MuteGroupConfig import MuteGroupConfig
-from src.model.MuteGroupListEntry import MuteGroupListEntry
-from src.model.PhantomListEntry import PhantomListEntry
-from src.model.Sheet import Sheet
+
+from model.ChannelListEntry import ChannelListEntry
+from model.DcaConfig import DcaConfig
+from model.DcaListEntry import DcaListEntry
+from model.Misc import Misc
+from model.MuteGroupConfig import MuteGroupConfig
+from model.MuteGroupListEntry import MuteGroupListEntry
+from model.PhantomListEntry import PhantomListEntry
+from model.Sheet import Sheet
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
@@ -41,7 +43,7 @@ LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.01
 DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001
 
-logging.basicConfig(filename='../main.log', level=logging.DEBUG)
+logging.basicConfig(filename='main.log', level=logging.DEBUG)
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 

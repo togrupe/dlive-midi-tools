@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import BOTTOM, TOP
 from tkinter.ttk import Frame, Button
 
-from src import Toolinfo
+import Toolinfo
 
 
 class AboutDialog(tk.Toplevel):

@@ -27,8 +27,8 @@ Empty cells are interpreted as **no**.
 Dropdown list with predefined fader level values. (-99 = -inf)
 
 #### HPF On
-yes - to activate the Highpass Filter
-no - to deactivate the Highpass Filter
+yes - to activate the Highpass Filter <br>
+no - to deactivate the Highpass Filter 
 
 Empty cells are interpreted as **no**
 
@@ -37,7 +37,7 @@ Empty cells are interpreted as **no**
 
 #### Recording
 yes - Channel is taken into account for DAW Recording Session <br>
-no - Channel will not be part the DAW Recoding session. <br>
+no - Channel will not be part the DAW Recoding session.
 
 Empty cells are interpreted as **no**
 
@@ -48,9 +48,9 @@ no - The Record Button is not active
 Empty cells are interpreted as **no**
 
 #### DCA1-24
-By setting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
+By putting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
 
 #### Mute1-8
-By setting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
+By putting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
 
 [back](../../README.md)

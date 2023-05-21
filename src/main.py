@@ -30,10 +30,8 @@ from gui.AboutDialog import AboutDialog
 
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
-from model.DcaListEntry import DcaListEntry
 from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
-from model.MuteGroupListEntry import MuteGroupListEntry
 from model.PhantomListEntry import PhantomListEntry
 from model.Sheet import Sheet
 
@@ -569,8 +567,6 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
-    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_mg_model(create_mg_content(pd.read_excel(filename, sheet_name="Channels")))
 
     if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
@@ -746,13 +742,14 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
         if cb_dca:
-            handle_channels_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
+            handle_channels_parameter("Set DCA Assignments to the channels...", output, sheet.get_channel_model(),
                                       action="dca")
             progress(actions)
             root.update()
 
         if cb_mg:
-            handle_channels_parameter("Set Mute Group Assignments to the channels...", output, sheet.get_mg_model(),
+            handle_channels_parameter("Set Mute Group Assignments to the channels...", output,
+                                      sheet.get_channel_model(),
                                       action="mg")
             progress(actions)
             root.update()
@@ -789,6 +786,19 @@ def create_channel_list_content(sheet_channels):
     index = 0
 
     for channel in sheet_channels['Channel']:
+
+        dca_array = []
+        for dca_number in range(1, 25):
+            dca_array.append(str(sheet_channels["DCA" + str(dca_number)].__getitem__(index)))
+
+        dca_config_tmp = DcaConfig(dca_array)
+
+        mg_array = []
+        for mg_number in range(1, 9):
+            mg_array.append(str(sheet_channels["Mute" + str(mg_number)].__getitem__(index)))
+
+        mg_config_tmp = MuteGroupConfig(mg_array)
+
         cle = ChannelListEntry(channel,
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
@@ -797,7 +807,9 @@ def create_channel_list_content(sheet_channels):
                                str(sheet_channels['Fader Level'].__getitem__(index)),
                                str(sheet_channels['Mute'].__getitem__(index)),
                                str(sheet_channels['Recording'].__getitem__(index)),
-                               str(sheet_channels['Record Arm'].__getitem__(index))
+                               str(sheet_channels['Record Arm'].__getitem__(index)),
+                               dca_config_tmp,
+                               mg_config_tmp
                                )
         channel_list_entries.append(cle)
         index = index + 1
@@ -814,40 +826,6 @@ def create_misc_content(sheet_misc):
 
     misc.set_version(sheet_version)
     return misc
-
-
-def create_dca_content(sheet_dcas):
-    dca_list_entries = []
-    index = 0
-
-    for channel in sheet_dcas['Channel']:
-        dca_array = []
-        for dca_number in range(1, 25):
-            dca_array.append(str(sheet_dcas["DCA" + str(dca_number)].__getitem__(index)))
-
-        dca_config_tmp = DcaConfig(dca_array)
-
-        dle = DcaListEntry(channel, dca_config_tmp)
-        dca_list_entries.append(dle)
-        index = index + 1
-    return dca_list_entries
-
-
-def create_mg_content(sheet_mg):
-    mg_list_entries = []
-    index = 0
-
-    for channel in sheet_mg['Channel']:
-        mg_array = []
-        for mg_number in range(1, 9):
-            mg_array.append(str(sheet_mg["Mute" + str(mg_number)].__getitem__(index)))
-
-        mg_config_tmp = MuteGroupConfig(mg_array)
-
-        mgle = MuteGroupListEntry(channel, mg_config_tmp)
-        mg_list_entries.append(mgle)
-        index = index + 1
-    return mg_list_entries
 
 
 def create_phantom_pad_content(sheet_48V_and_pad):

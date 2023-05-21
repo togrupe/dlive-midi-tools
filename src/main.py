@@ -1208,8 +1208,14 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    write_to_dlive = Checkbar(root, ['Write to console'])
-    reaper = Checkbar(root, ['Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)'])
+    frame = LabelFrame(root, text="Output Option")
+    write_to_dlive = Checkbar(frame, ['Write to Console'])
+    reaper = Checkbar(frame, ['Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)'])
+
+    write_to_dlive.pack(side=TOP, fill=X)
+    write_to_dlive.config(bd=2)
+    reaper.pack(side=TOP, fill=X)
+    reaper.config(bd=2)
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1238,10 +1244,7 @@ if __name__ == '__main__':
 
     Label(root, text=" ").pack(side=TOP)
     Label(root, text=" ").pack(side=TOP)
-    write_to_dlive.pack(side=TOP, fill=X)
-    write_to_dlive.config(bd=2)
-    reaper.pack(side=TOP, fill=X)
-    reaper.config(bd=2)
+    frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())
 

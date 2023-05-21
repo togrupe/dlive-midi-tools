@@ -15,7 +15,7 @@ class ChannelListEntry:
     def get_channel(self):
         return self.channel
 
-    def get_channel_dlive(self):
+    def get_channel_console(self):
         return self.get_channel() - 1
 
     def get_name(self):

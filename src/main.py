@@ -133,7 +133,7 @@ def name_channel(output, item):
             value = ord(character)
             if value > 127:
                 error_msg = "One of the characters in Channel " + str(
-                    item.get_channel_dlive() + 1) + " is not supported. Characters like ä, ö, ü are not supported."
+                    item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
                 exit(1)
@@ -141,7 +141,7 @@ def name_channel(output, item):
                 payload.append(value)
 
     prefix = [root.midi_channel, dliveConstants.sysex_message_set_channel_name,
-              item.get_channel_dlive()]
+              item.get_channel_console()]
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
@@ -171,7 +171,7 @@ def color_channel(output, item):
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
 
-    payload_array = [root.midi_channel, dliveConstants.sysex_message_set_channel_colour, item.get_channel_dlive(),
+    payload_array = [root.midi_channel, dliveConstants.sysex_message_set_channel_colour, item.get_channel_console(),
                      colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -184,7 +184,7 @@ def mute_on_channel(output, item):
     midi_channel_tmp = root.midi_channel
 
     lower_mute_on = item.get_mute().lower()
-    channel = item.get_channel_dlive()
+    channel = item.get_channel_console()
 
     if lower_mute_on == "yes":
         message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_on)
@@ -261,7 +261,7 @@ def hpf_on_channel(output, item):
 
     if is_network_communication_allowed:
         output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_on))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=res))
@@ -277,7 +277,7 @@ def hpf_value_channel(output, item):
 
     if is_network_communication_allowed:
         output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_frequency))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=value_freq))
@@ -308,7 +308,7 @@ def fader_level_channel(output, item):
 
     if is_network_communication_allowed:
         output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_fader_level))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=int(fader_level)))
@@ -317,8 +317,18 @@ def fader_level_channel(output, item):
 
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
+
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        max_count_dsp_channels = 64
+    else:
+        max_count_dsp_channels = 128
+
     for item in channel_list_entries:
-        logging.info("Processing " + action + " for channel: " + str(item.get_channel_dlive() + 1))
+        if item.get_channel_console() > max_count_dsp_channels - 1:
+            logging.warning("Skipping Channel...current channel number: " + str(item.get_channel()) +
+                            " is bigger than the console supports.")
+            continue
+        logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
             name_channel(output, item)
         elif action == "color":
@@ -498,7 +508,7 @@ def assign_dca(output, channel, dca_value):
 
 
 def dca_channel(output, item):
-    channel = item.get_channel_dlive()
+    channel = item.get_channel_console()
 
     for dca_index in range(0, 24):
 
@@ -524,7 +534,7 @@ def assign_mg(output, channel, mg_value):
 
 
 def mg_channel(output, item):
-    channel = item.get_channel_dlive()
+    channel = item.get_channel_console()
 
     for mg_index in range(0, 8):
 

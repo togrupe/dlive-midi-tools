@@ -333,6 +333,10 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             hpf_on_channel(output, item)
         elif action == "hpf_value":
             hpf_value_channel(output, item)
+        elif action == "dca":
+            dca_channel(output, item)
+        elif action == "mg":
+            mg_channel(output, item)
 
 
 def pad_socket(output, item, socket_type):
@@ -495,15 +499,6 @@ def assign_dca(output, channel, dca_value):
         time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
 
 
-def assign_mg(output, channel, mg_value):
-    if is_network_communication_allowed:
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_mg_assign))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
-        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
-
-
 def dca_channel(output, item):
     channel = item.get_channel_dlive()
 
@@ -521,6 +516,15 @@ def dca_channel(output, item):
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
 
 
+def assign_mg(output, channel, mg_value):
+    if is_network_communication_allowed:
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_mg_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
+        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
+
+
 def mg_channel(output, item):
     channel = item.get_channel_dlive()
 
@@ -533,15 +537,6 @@ def mg_channel(output, item):
             assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
         else:
             assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
-
-
-def handle_dca_mg_parameter(message, output, content_list, action):
-    logging.info(message)
-    for item in content_list:
-        if action == "dca":
-            dca_channel(output, item)
-        elif action == "mg":
-            mg_channel(output, item)
 
 
 def is_valid_ip_address(ip_address):
@@ -751,14 +746,14 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
         if cb_dca:
-            handle_dca_mg_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
-                                    action="dca")
+            handle_channels_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
+                                      action="dca")
             progress(actions)
             root.update()
 
         if cb_mg:
-            handle_dca_mg_parameter("Set Mute Group Assignments to the channels...", output, sheet.get_mg_model(),
-                                    action="mg")
+            handle_channels_parameter("Set Mute Group Assignments to the channels...", output, sheet.get_mg_model(),
+                                      action="mg")
             progress(actions)
             root.update()
 

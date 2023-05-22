@@ -269,11 +269,16 @@ def hpf_on_channel(output, item):
 
 
 def calculate_vv(hpf_value):
-    return int(127 * ((4608 * numpy.log10(float(hpf_value) / 4) / numpy.log10(2)) - 10699) / 41314)
+    return int(27.58 * numpy.log(float(hpf_value)) - 82.622)
 
 
 def hpf_value_channel(output, item):
-    value_freq = calculate_vv(item.get_hpf_value())
+    hpf_value = item.get_hpf_value()
+    if int(hpf_value) < 20 or int(hpf_value) > 2000:
+        showerror(message="Highpass filter value of CH: " + str(item.get_channel()) +
+                          " only allows values between 20 and 2000 Hz.")
+
+    value_freq = calculate_vv(hpf_value)
 
     if is_network_communication_allowed:
         output.send(
@@ -1163,7 +1168,7 @@ def about_dialog():
 
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('900x550')
+    root.geometry('850x550')
     root.resizable(False, False)
 
     menu_bar = Menu(root)

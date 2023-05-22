@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Make sure a venv directory is available and pip install -r dependencies has been started
+#Make sure a venv directory is available, pip install pyinstaller & pip install -r dependencies has been started
 latest_tag=`/usr/bin/git describe --tags --abbrev=0`
 replaced_tag=${latest_tag//./_}
 basename=dmt-${replaced_tag}-macos

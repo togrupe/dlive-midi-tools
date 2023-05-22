@@ -935,7 +935,7 @@ def get_dlive_write_state():
 
 
 def save_current_ui_settings():
-    file = dliveConstants.config_file
+    file = CONFIG_FILE
     current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
 
     data = {

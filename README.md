@@ -44,6 +44,8 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | Date       | OS                 | Download                                                                                         | Release Notes |
 |---------|------------|--------------------|--------------------------------------------------------------------------------------------------|---------------|
+| v2.3.1  |            | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_1/dmt-v2_3_1-macos.zip)           | [Link](#v231) | 
+|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_1/dmt-v2_3_1-windows.zip)         |               |
 | v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
 |         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
 | v2.2.0  | 29.04.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
@@ -155,7 +157,29 @@ Have fun!
 
 ## Release Notes
 
+### v2.3.1
+
+Type: Maintenance Release
+
+#### New Features:
+
+#### Improvements
+- HPF Value Formula improved
+- Repository cleaned up
+- Small Code Refactorings
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
+
+#### Issues fixed:
+
+#### Known issues:
+
+
 ### v2.3.0
+
+Type: Feature Release
 
 #### New Features:
 - Fader Level Support
@@ -184,6 +208,8 @@ Have fun!
 
 
 ### v2.2.0
+
+Type: Feature Release
 
 #### New Features:
 - Avantis support

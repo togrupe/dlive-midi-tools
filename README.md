@@ -56,6 +56,13 @@ An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the
 By default, the channels 1-128 are available in the sheet. If you need less, 
 just delete the channels you don't want to process. <br>
 
+You can also write in blocks. e.g. 
+* CH1-16
+* CH25-32
+* CH97-128
+
+in this case the not mentioned channels are not touched.
+
 Empty lines in between are **not** supported. <br>
 
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write / save the sheets.

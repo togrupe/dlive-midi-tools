@@ -159,7 +159,7 @@ Have fun!
 
 ### v2.3.1
 
-Type: Maintenance Release
+Maintenance Release
 
 #### New Features:
 
@@ -180,7 +180,7 @@ Type: Maintenance Release
 
 ### v2.3.0
 
-Type: Feature Release
+Feature Release
 
 #### New Features:
 - Fader Level Support
@@ -210,7 +210,7 @@ Type: Feature Release
 
 ### v2.2.0
 
-Type: Feature Release
+Feature Release
 
 #### New Features:
 - Avantis support

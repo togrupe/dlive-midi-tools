@@ -4,7 +4,7 @@
 latest_tag=`/usr/bin/git describe --tags --abbrev=0`
 replaced_tag=${latest_tag//./_}
 basename=dmt-${replaced_tag}-macos
-./venv/bin/pyinstaller -y --onefile -w ./src/main.py --name ${basename}
+./venv/bin/pyinstaller -y --onefile -w ./src/Main.py --name ${basename}
 rm -R out
 echo ${latest_tag}
 mkdir out

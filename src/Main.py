@@ -1,10 +1,10 @@
+# coding=utf-8
 ####################################################
 # Main Script
 #
 # Author: Tobias Grupe
 #
 ####################################################
-# coding=utf-8
 import ipaddress
 import json
 import logging
@@ -473,9 +473,9 @@ def gain_socket(output, item, socket_type):
         time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
+def handle_socket_parameter(message, output, socket_list_entries, action):
     logging.info(message)
-    for item in phantom_list_entries:
+    for item in socket_list_entries:
         logging.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
         if action == "phantom":
             if root.console == dliveConstants.console_drop_down_dlive:
@@ -581,7 +581,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         return root.quit()
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
+    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="48V & Pad")))
 
     if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
@@ -726,15 +726,15 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
         if cb_phantom:
-            handle_phantom_and_pad_parameter("Set Phantom Power to channels...", output,
-                                             sheet.get_phantom_pad_model(),
-                                             action="phantom")
+            handle_socket_parameter("Set Phantom Power to channels...", output,
+                                    sheet.get_socket_model(),
+                                    action="phantom")
             progress(actions)
             root.update()
 
         if cb_pad:
-            handle_phantom_and_pad_parameter("Set Pad to channels...", output, sheet.get_phantom_pad_model(),
-                                             action="pad")
+            handle_socket_parameter("Set Pad to channels...", output, sheet.get_socket_model(),
+                                    action="pad")
             progress(actions)
             root.update()
 
@@ -770,8 +770,8 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
         if cb_gain:
-            handle_phantom_and_pad_parameter("Set Gain to the channels...", output, sheet.get_phantom_pad_model(),
-                                             action="gain")
+            handle_socket_parameter("Set Gain to the channels...", output, sheet.get_socket_model(),
+                                    action="gain")
             progress(actions)
             root.update()
 
@@ -843,7 +843,7 @@ def create_misc_content(sheet_misc):
     return misc
 
 
-def create_phantom_pad_content(sheet_48V_and_pad):
+def create_socket_list_content(sheet_48V_and_pad):
     phantom_and_pad_list_entries = []
     index = 0
 

@@ -113,7 +113,7 @@ Prerequisites:
 
 3. Run the script with the following command: 
 
-`python3 main.py`
+`python3 Main.py`
 
 4. (Optional) If you want to make a binary out of it, please do the following: 
 
@@ -123,7 +123,7 @@ Prerequisites:
 
     4.2 Create a onefile binary (works for Windows and MacOS)
 
-    `pyinstaller.exe --onefile -w main.py`
+    `pyinstaller.exe --onefile -w Main.py`
 
 
 Afterwards the following window appears. 

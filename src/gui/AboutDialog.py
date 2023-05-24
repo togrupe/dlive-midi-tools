@@ -1,16 +1,15 @@
+# coding=utf-8
 ####################################################
 # About - Dialog
 #
 # Author: Tobias Grupe
 #
 ####################################################
-
 import tkinter as tk
 from tkinter import BOTTOM, TOP
 from tkinter.ttk import Frame, Button
 
 import Toolinfo
-
 
 class AboutDialog(tk.Toplevel):
     def __init__(self, parent):

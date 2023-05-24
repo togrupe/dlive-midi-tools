@@ -1,3 +1,10 @@
+# coding=utf-8
+####################################################
+# Represents channel with its attributes.
+#
+# Author: Tobias Grupe
+#
+####################################################
 class ChannelListEntry:
     def __init__(self, channel, name, color, hpf_on, hpf_value, fader_level, mute, recording, record_arm, dca_config, mg_config):
         self.channel = channel

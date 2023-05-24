@@ -1,3 +1,10 @@
+# coding=utf-8
+####################################################
+# Represents the complete input sheet.
+#
+# Author: Tobias Grupe
+#
+####################################################
 class Sheet:
     def __init__(self):
         self.channel_model = None

@@ -1,10 +1,10 @@
+# coding=utf-8
 ####################################################
 # Main Script
 #
 # Author: Tobias Grupe
 #
 ####################################################
-# coding=utf-8
 import ipaddress
 import json
 import logging

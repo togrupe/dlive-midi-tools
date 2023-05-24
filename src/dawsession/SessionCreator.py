@@ -1,3 +1,4 @@
+# coding=utf-8
 ####################################################
 # Session Creator
 #
@@ -6,9 +7,7 @@
 ####################################################
 
 import logging
-
 from reathon.nodes import Project, Track
-
 from dawsession import ReaperConstants
 
 
@@ -89,7 +88,3 @@ def create_reaper_session(sheet, reaper_output_dir, prefix):
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)
 
     project.write(reaper_outputfile)
-
-
-if __name__ == '__main__':
-    create_reaper_session()

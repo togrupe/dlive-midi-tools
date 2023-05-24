@@ -1,3 +1,4 @@
+# coding=utf-8
 ####################################################
 # dlive constants configuration file
 #

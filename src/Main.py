@@ -627,6 +627,33 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
                 color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
                               dliveConstants.channel_offset_matrices_stereo)
 
+    if bus_type == "fx_send_mono":
+        for item in groups_model.get_fx_send_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
+                             dliveConstants.channel_offset_fx_send_mono)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
+                              dliveConstants.channel_offset_fx_send_mono)
+
+    if bus_type == "fx_send_stereo":
+        for item in groups_model.get_fx_send_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
+                             dliveConstants.channel_offset_fx_send_stereo)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
+                              dliveConstants.channel_offset_fx_send_stereo)
+
+    if bus_type == "fx_return":
+        for item in groups_model.get_fx_return_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
+                             dliveConstants.channel_offset_fx_return)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
+                              dliveConstants.channel_offset_fx_return)
+
 
 def read_document(filename, check_box_reaper, check_box_write_to_console):
     logging.info('The following file will be read : ' + str(filename))
@@ -722,6 +749,12 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     cb_matrix_mono_color = False
     cb_matrix_stereo_name = False
     cb_matrix_stereo_color = False
+    cb_fx_send_mono_name = False
+    cb_fx_send_mono_color = False
+    cb_fx_send_stereo_name = False
+    cb_fx_send_stereo_color = False
+    cb_fx_return_name = False
+    cb_fx_return_color = False
 
     if cb_write_to_console:
         for var in grid.vars:
@@ -850,6 +883,37 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             elif var._name == GuiConstants.TEXT_MTX_STEREO_COLOR and var.get() is True:
                 actions = actions + 1
                 cb_matrix_stereo_color = True
+
+            # FX Send Mono Name
+            elif var._name == GuiConstants.TEXT_FX_SEND_MONO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_fx_send_mono_name = True
+
+            # FX Send Mono Color
+            elif var._name == GuiConstants.TEXT_FX_SEND_MONO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_fx_send_mono_color = True
+
+            # FX Send Stereo Name
+            elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_fx_send_stereo_name = True
+
+            # FX Send Stereo Color
+            elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_fx_send_stereo_color = True
+
+            # FX Return Name
+            elif var._name == GuiConstants.TEXT_FX_RETURN_NAME and var.get() is True:
+                actions = actions + 1
+                cb_fx_return_name = True
+
+            # FX Return Color
+            elif var._name == GuiConstants.TEXT_FX_RETURN_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_fx_return_color = True
+
 
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
@@ -1009,6 +1073,42 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         if cb_matrix_stereo_color:
             handle_groups_parameter("Set Color to Mono Matrices...", output, sheet.get_group_model(),
                                     action="color", bus_type="matrix_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_fx_send_mono_name:
+            handle_groups_parameter("Set Name to Mono FX Send...", output, sheet.get_group_model(),
+                                    action="name", bus_type="fx_send_mono")
+            progress(actions)
+            root.update()
+
+        if cb_fx_send_mono_color:
+            handle_groups_parameter("Set Color to Mono FX Send...", output, sheet.get_group_model(),
+                                    action="color", bus_type="fx_send_mono")
+            progress(actions)
+            root.update()
+
+        if cb_fx_send_stereo_name:
+            handle_groups_parameter("Set Name to Stereo FX Send...", output, sheet.get_group_model(),
+                                    action="name", bus_type="fx_send_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_fx_send_stereo_color:
+            handle_groups_parameter("Set Color to Stereo FX Send...", output, sheet.get_group_model(),
+                                    action="color", bus_type="fx_send_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_fx_return_name:
+            handle_groups_parameter("Set Name to FX Return...", output, sheet.get_group_model(),
+                                    action="name", bus_type="fx_return")
+            progress(actions)
+            root.update()
+
+        if cb_fx_return_color:
+            handle_groups_parameter("Set Color to FX Return...", output, sheet.get_group_model(),
+                                    action="color", bus_type="fx_return")
             progress(actions)
             root.update()
 
@@ -1197,13 +1297,55 @@ def create_groups_list_content(sheet_groups):
             mtx_stereo_list_entries.append(gse)
             index = index + 1
 
+    fx_send_mono_list_entries = []
+    index = 0
+
+    for item in sheet_groups['Mono FX Send']:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups['FX Name'].__getitem__(index)),
+                             str(sheet_groups['FX Color'].__getitem__(index))
+                             )
+
+            fx_send_mono_list_entries.append(gse)
+            index = index + 1
+
+    fx_send_stereo_list_entries = []
+    index = 0
+
+    for item in sheet_groups['Stereo FX Send']:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups['StFX Name'].__getitem__(index)),
+                             str(sheet_groups['StFX Color'].__getitem__(index))
+                             )
+
+            fx_send_stereo_list_entries.append(gse)
+            index = index + 1
+
+    fx_return_list_entries = []
+    index = 0
+
+    for item in sheet_groups['FX Return']:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups['FX Return Name'].__getitem__(index)),
+                             str(sheet_groups['FX Return Color'].__getitem__(index))
+                             )
+
+            fx_return_list_entries.append(gse)
+            index = index + 1
+
     return GroupsListEntry(dca_list_entries,
                            aux_mono_list_entries,
                            aux_stereo_list_entries,
                            grp_mono_list_entries,
                            grp_stereo_list_entries,
                            mtx_mono_list_entries,
-                           mtx_stereo_list_entries)
+                           mtx_stereo_list_entries,
+                           fx_send_mono_list_entries,
+                           fx_send_stereo_list_entries,
+                           fx_return_list_entries)
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):
@@ -1506,7 +1648,7 @@ def about_dialog():
 
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1200x650')
+    root.geometry('1300x650')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1559,7 +1701,7 @@ if __name__ == '__main__':
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
-    headers = ["Channel", "Sockets", "Auxes & Groups", "DCAs & Matrices"]
+    headers = ["Channel", "Sockets", "Auxes & Groups", "DCAs & Matrices", "FX"]
     labels = [
         [GuiConstants.TEXT_NAME,
          GuiConstants.TEXT_COLOR,
@@ -1569,11 +1711,11 @@ if __name__ == '__main__':
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
          GuiConstants.TEXT_MUTE_GROUPS
-        ],
+         ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,
          GuiConstants.TEXT_GAIN
-        ],
+         ],
         [GuiConstants.TEXT_AUX_MONO_NAME,
          GuiConstants.TEXT_AUX_MONO_COLOR,
          GuiConstants.TEXT_AUX_STEREO_NAME,
@@ -1582,13 +1724,20 @@ if __name__ == '__main__':
          GuiConstants.TEXT_GRP_MONO_COLOR,
          GuiConstants.TEXT_GRP_STEREO_NAME,
          GuiConstants.TEXT_GRP_STEREO_COLOR
-        ],
+         ],
         [GuiConstants.TEXT_DCA_NAME,
          GuiConstants.TEXT_DCA_COLOR,
          GuiConstants.TEXT_MTX_MONO_NAME,
          GuiConstants.TEXT_MTX_MONO_COLOR,
          GuiConstants.TEXT_MTX_STEREO_NAME,
          GuiConstants.TEXT_MTX_STEREO_COLOR
+         ],
+        [GuiConstants.TEXT_FX_SEND_MONO_NAME,
+         GuiConstants.TEXT_FX_SEND_MONO_COLOR,
+         GuiConstants.TEXT_FX_SEND_STEREO_NAME,
+         GuiConstants.TEXT_FX_SEND_STEREO_COLOR,
+         GuiConstants.TEXT_FX_RETURN_NAME,
+         GuiConstants.TEXT_FX_RETURN_COLOR
         ]
     ]
 

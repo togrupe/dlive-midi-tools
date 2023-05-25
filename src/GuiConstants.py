@@ -36,3 +36,12 @@ TEXT_MTX_MONO_COLOR = "Mono Matrix Color"
 
 TEXT_MTX_STEREO_NAME = "Stereo Matrix Name"
 TEXT_MTX_STEREO_COLOR = "Stereo Matrix Color"
+
+TEXT_FX_SEND_MONO_NAME = "Mono FX Send Name"
+TEXT_FX_SEND_MONO_COLOR = "Mono FX Send Color"
+
+TEXT_FX_SEND_STEREO_NAME = "Stereo FX Send Name"
+TEXT_FX_SEND_STEREO_COLOR = "Stereo FX Send Color"
+
+TEXT_FX_RETURN_NAME = "FX Return Name"
+TEXT_FX_RETURN_COLOR = "FX Return Color"

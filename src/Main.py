@@ -914,7 +914,6 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
                 actions = actions + 1
                 cb_fx_return_color = True
 
-
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
         cb_reaper = True
@@ -1207,134 +1206,34 @@ def create_socket_list_content(sheet_sockets):
 
 def create_groups_list_content(sheet_groups):
     dca_list_entries = []
-    index = 0
-
-    for dca in sheet_groups['DCA']:
-        if str(dca) != 'nan':
-            gse = GroupSetup(int(dca),
-                             str(sheet_groups['DCA Name'].__getitem__(index)),
-                             str(sheet_groups['DCA Color'].__getitem__(index))
-                             )
-
-            dca_list_entries.append(gse)
-            index = index + 1
+    extract_data(dca_list_entries, sheet_groups, 'DCA', 'DCA Name', 'DCA Color')
 
     aux_mono_list_entries = []
-    index = 0
-
-    for mono_aux in sheet_groups['Mono Auxes']:
-        if str(mono_aux) != 'nan':
-            gse = GroupSetup(int(mono_aux),
-                             str(sheet_groups['Aux Name'].__getitem__(index)),
-                             str(sheet_groups['Aux Color'].__getitem__(index))
-                             )
-
-            aux_mono_list_entries.append(gse)
-            index = index + 1
+    extract_data(aux_mono_list_entries, sheet_groups, 'Mono Auxes', 'Aux Name', 'Aux Color')
 
     aux_stereo_list_entries = []
-    index = 0
-
-    for mono_aux in sheet_groups['Stereo Auxes']:
-        if str(mono_aux) != 'nan':
-            gse = GroupSetup(int(mono_aux),
-                             str(sheet_groups['StAux Name'].__getitem__(index)),
-                             str(sheet_groups['StAux Color'].__getitem__(index))
-                             )
-
-            aux_stereo_list_entries.append(gse)
-            index = index + 1
+    extract_data(aux_stereo_list_entries, sheet_groups, 'Stereo Auxes', 'StAux Name', 'StAux Color')
 
     grp_mono_list_entries = []
-    index = 0
-
-    for mono_aux in sheet_groups['Mono Group']:
-        if str(mono_aux) != 'nan':
-            gse = GroupSetup(int(mono_aux),
-                             str(sheet_groups['Group Name'].__getitem__(index)),
-                             str(sheet_groups['Group Color'].__getitem__(index))
-                             )
-
-            grp_mono_list_entries.append(gse)
-            index = index + 1
+    extract_data(grp_mono_list_entries, sheet_groups, 'Mono Group', 'Group Name', 'Group Color')
 
     grp_stereo_list_entries = []
-    index = 0
-
-    for item in sheet_groups['Stereo Group']:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups['StGroup Name'].__getitem__(index)),
-                             str(sheet_groups['StGroup Color'].__getitem__(index))
-                             )
-
-            grp_stereo_list_entries.append(gse)
-            index = index + 1
+    extract_data(grp_stereo_list_entries, sheet_groups, 'Stereo Group', 'StGroup Name', 'StGroup Color')
 
     mtx_mono_list_entries = []
-    index = 0
-
-    for item in sheet_groups['Mono Matrix']:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups['Matrix Name'].__getitem__(index)),
-                             str(sheet_groups['Matrix Color'].__getitem__(index))
-                             )
-
-            mtx_mono_list_entries.append(gse)
-            index = index + 1
+    extract_data(mtx_mono_list_entries, sheet_groups, 'Mono Matrix', 'Matrix Name', 'Matrix Color')
 
     mtx_stereo_list_entries = []
-    index = 0
-
-    for item in sheet_groups['Stereo Matrix']:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups['StMatrix Name'].__getitem__(index)),
-                             str(sheet_groups['StMatrix Color'].__getitem__(index))
-                             )
-
-            mtx_stereo_list_entries.append(gse)
-            index = index + 1
+    extract_data(mtx_stereo_list_entries, sheet_groups, 'Stereo Matrix', 'StMatrix Name', 'StMatrix Color')
 
     fx_send_mono_list_entries = []
-    index = 0
-
-    for item in sheet_groups['Mono FX Send']:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups['FX Name'].__getitem__(index)),
-                             str(sheet_groups['FX Color'].__getitem__(index))
-                             )
-
-            fx_send_mono_list_entries.append(gse)
-            index = index + 1
+    extract_data(fx_send_mono_list_entries, sheet_groups, 'Mono FX Send', 'FX Name', 'FX Color')
 
     fx_send_stereo_list_entries = []
-    index = 0
-
-    for item in sheet_groups['Stereo FX Send']:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups['StFX Name'].__getitem__(index)),
-                             str(sheet_groups['StFX Color'].__getitem__(index))
-                             )
-
-            fx_send_stereo_list_entries.append(gse)
-            index = index + 1
+    extract_data(fx_send_stereo_list_entries, sheet_groups, 'Stereo FX Send', 'StFX Name', 'StFX Color')
 
     fx_return_list_entries = []
-    index = 0
-
-    for item in sheet_groups['FX Return']:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups['FX Return Name'].__getitem__(index)),
-                             str(sheet_groups['FX Return Color'].__getitem__(index))
-                             )
-
-            fx_return_list_entries.append(gse)
-            index = index + 1
+    extract_data(fx_return_list_entries, sheet_groups, 'FX Return', 'FX Return Name', 'FX Return Color')
 
     return GroupsListEntry(dca_list_entries,
                            aux_mono_list_entries,
@@ -1346,6 +1245,19 @@ def create_groups_list_content(sheet_groups):
                            fx_send_mono_list_entries,
                            fx_send_stereo_list_entries,
                            fx_return_list_entries)
+
+
+def extract_data(dca_list_entries, sheet_groups, type, name, color):
+    index = 0
+    for dca in sheet_groups[type]:
+        if str(dca) != 'nan':
+            gse = GroupSetup(int(dca),
+                             str(sheet_groups[name].__getitem__(index)),
+                             str(sheet_groups[color].__getitem__(index))
+                             )
+
+            dca_list_entries.append(gse)
+            index = index + 1
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):
@@ -1711,11 +1623,11 @@ if __name__ == '__main__':
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
          GuiConstants.TEXT_MUTE_GROUPS
-        ],
+         ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,
          GuiConstants.TEXT_GAIN
-        ],
+         ],
         [GuiConstants.TEXT_AUX_MONO_NAME,
          GuiConstants.TEXT_AUX_MONO_COLOR,
          GuiConstants.TEXT_AUX_STEREO_NAME,
@@ -1724,21 +1636,21 @@ if __name__ == '__main__':
          GuiConstants.TEXT_GRP_MONO_COLOR,
          GuiConstants.TEXT_GRP_STEREO_NAME,
          GuiConstants.TEXT_GRP_STEREO_COLOR
-        ],
+         ],
         [GuiConstants.TEXT_DCA_NAME,
          GuiConstants.TEXT_DCA_COLOR,
          GuiConstants.TEXT_MTX_MONO_NAME,
          GuiConstants.TEXT_MTX_MONO_COLOR,
          GuiConstants.TEXT_MTX_STEREO_NAME,
          GuiConstants.TEXT_MTX_STEREO_COLOR
-        ],
+         ],
         [GuiConstants.TEXT_FX_SEND_MONO_NAME,
          GuiConstants.TEXT_FX_SEND_MONO_COLOR,
          GuiConstants.TEXT_FX_SEND_STEREO_NAME,
          GuiConstants.TEXT_FX_SEND_STEREO_COLOR,
          GuiConstants.TEXT_FX_RETURN_NAME,
          GuiConstants.TEXT_FX_RETURN_COLOR
-        ]
+         ]
     ]
 
     grid = CheckboxGrid(root, headers, labels)

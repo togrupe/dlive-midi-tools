@@ -173,7 +173,8 @@ def color_channel(output, item, midi_channel_offset, channel_offset):
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
 
-    payload_array = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour, channel_offset + item.get_channel_console(),
+    payload_array = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour,
+                     channel_offset + item.get_channel_console(),
                      colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -575,45 +576,56 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
     if bus_type == "aux_mono":
         for item in groups_model.get_auxes_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_mono)
+                name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                             dliveConstants.channel_offset_auxes_mono)
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_mono)
+                color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                              dliveConstants.channel_offset_auxes_mono)
 
     if bus_type == "aux_stereo":
         for item in groups_model.get_auxes_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_stereo)
+                name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                             dliveConstants.channel_offset_auxes_stereo)
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_stereo)
+                color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                              dliveConstants.channel_offset_auxes_stereo)
 
     if bus_type == "group_mono":
         for item in groups_model.get_group_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_mono)
+                name_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                             dliveConstants.channel_offset_groups_mono)
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_mono)
+                color_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                              dliveConstants.channel_offset_groups_mono)
 
     if bus_type == "group_stereo":
         for item in groups_model.get_group_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_stereo)
+                name_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                             dliveConstants.channel_offset_groups_stereo)
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_stereo)
+                color_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                              dliveConstants.channel_offset_groups_stereo)
 
     if bus_type == "matrix_mono":
         for item in groups_model.get_matrix_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_mono)
+                name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                             dliveConstants.channel_offset_matrices_mono)
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_mono)
+                color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                              dliveConstants.channel_offset_matrices_mono)
 
     if bus_type == "matrix_stereo":
         for item in groups_model.get_matrix_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_stereo)
+                name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                             dliveConstants.channel_offset_matrices_stereo)
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_stereo)
-
+                color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                              dliveConstants.channel_offset_matrices_stereo)
 
 
 def read_document(filename, check_box_reaper, check_box_write_to_console):
@@ -1494,7 +1506,7 @@ def about_dialog():
 
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1200x800')
+    root.geometry('1200x650')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1547,21 +1559,39 @@ if __name__ == '__main__':
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
-    headers = ["Channel", "Preamp", "Processing", "Attribute", "Groups"]
-    labels = [[GuiConstants.TEXT_NAME, GuiConstants.TEXT_COLOR],
-              [GuiConstants.TEXT_PHANTOM, GuiConstants.TEXT_PAD, GuiConstants.TEXT_GAIN],
-              [GuiConstants.TEXT_MUTE, GuiConstants.TEXT_FADER_LEVEL, GuiConstants.TEXT_HPF_ON,
-               GuiConstants.TEXT_HPF_VALUE],
-              [GuiConstants.TEXT_DCA, GuiConstants.TEXT_MUTE_GROUPS],
-              [GuiConstants.TEXT_DCA_NAME, GuiConstants.TEXT_DCA_COLOR,
-               GuiConstants.TEXT_AUX_MONO_NAME, GuiConstants.TEXT_AUX_MONO_COLOR,
-               GuiConstants.TEXT_AUX_STEREO_NAME, GuiConstants.TEXT_AUX_STERE0_COLOR,
-               GuiConstants.TEXT_GRP_MONO_NAME, GuiConstants.TEXT_GRP_MONO_COLOR,
-               GuiConstants.TEXT_GRP_STEREO_NAME, GuiConstants.TEXT_GRP_STEREO_COLOR,
-               GuiConstants.TEXT_MTX_MONO_NAME, GuiConstants.TEXT_MTX_MONO_COLOR,
-               GuiConstants.TEXT_MTX_STEREO_NAME, GuiConstants.TEXT_MTX_STEREO_COLOR
-               ]
-              ]
+    headers = ["Channel", "Sockets", "Auxes & Groups", "DCAs & Matrices"]
+    labels = [
+        [GuiConstants.TEXT_NAME,
+         GuiConstants.TEXT_COLOR,
+         GuiConstants.TEXT_MUTE,
+         GuiConstants.TEXT_FADER_LEVEL,
+         GuiConstants.TEXT_HPF_ON,
+         GuiConstants.TEXT_HPF_VALUE,
+         GuiConstants.TEXT_DCA,
+         GuiConstants.TEXT_MUTE_GROUPS
+        ],
+        [GuiConstants.TEXT_PHANTOM,
+         GuiConstants.TEXT_PAD,
+         GuiConstants.TEXT_GAIN
+        ],
+        [GuiConstants.TEXT_AUX_MONO_NAME,
+         GuiConstants.TEXT_AUX_MONO_COLOR,
+         GuiConstants.TEXT_AUX_STEREO_NAME,
+         GuiConstants.TEXT_AUX_STERE0_COLOR,
+         GuiConstants.TEXT_GRP_MONO_NAME,
+         GuiConstants.TEXT_GRP_MONO_COLOR,
+         GuiConstants.TEXT_GRP_STEREO_NAME,
+         GuiConstants.TEXT_GRP_STEREO_COLOR
+        ],
+        [GuiConstants.TEXT_DCA_NAME,
+         GuiConstants.TEXT_DCA_COLOR,
+         GuiConstants.TEXT_MTX_MONO_NAME,
+         GuiConstants.TEXT_MTX_MONO_COLOR,
+         GuiConstants.TEXT_MTX_STEREO_NAME,
+         GuiConstants.TEXT_MTX_STEREO_COLOR
+        ]
+    ]
+
     grid = CheckboxGrid(root, headers, labels)
     grid.pack(side=TOP)
 

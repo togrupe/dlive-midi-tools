@@ -96,6 +96,7 @@ sysexhdrstart = [0xF0, 0x00, 0x00, 0x1A, 0x50, 0x10, sysex_header_major_version,
 sysexhdrend = [0xF7]
 
 # MIDI-Channel Offsets
+midi_channel_offset_channels = 0x0
 midi_channel_offset_groups = 0x1
 midi_channel_offset_auxes = 0x2
 midi_channel_offset_matrices = 0x3
@@ -105,20 +106,19 @@ midi_channel_offset_fx_send_mono = 0x4
 midi_channel_offset_fx_send_stereo = 0x4
 midi_channel_offset_fx_return = 0x4
 
-#Channel Offsets
-channel_offset_groups_mono = 0x00
+# Channel Offsets
+channel_offset_channels = 0x0
+channel_offset_groups_mono = 0x0
 channel_offset_groups_stereo = 0x40
-channel_offset_auxes_mono = 0x00
+channel_offset_auxes_mono = 0x0
 channel_offset_auxes_stereo = 0x40
-channel_offset_matrices_mono = 0x00
+channel_offset_matrices_mono = 0x0
 channel_offset_matrices_stereo = 0x40
 channel_offset_dca = 0x36
 channel_offset_mg = 0x4E
-channel_offset_fx_send_mono = 0x00
+channel_offset_fx_send_mono = 0x0
 channel_offset_fx_send_stereo = 0x10
 channel_offset_fx_return = 0x20
-
-
 
 # The max socket amount for each type
 LOCAL_DLIVE_SOCKET_COUNT_MAX = 64

@@ -338,9 +338,9 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             continue
         logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
-            name_channel(output, item, 0, 0)
+            name_channel(output, item, dliveConstants.midi_channel_offset_channels, dliveConstants.channel_offset_channels)
         elif action == "color":
-            color_channel(output, item, 0, 0)
+            color_channel(output, item, dliveConstants.midi_channel_offset_channels, dliveConstants.channel_offset_channels)
         elif action == "mute":
             mute_on_channel(output, item)
         elif action == "fader_level":

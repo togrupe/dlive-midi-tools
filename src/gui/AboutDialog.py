@@ -11,6 +11,7 @@ from tkinter.ttk import Frame, Button
 
 import Toolinfo
 
+
 class AboutDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)

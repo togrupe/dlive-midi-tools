@@ -1701,7 +1701,7 @@ if __name__ == '__main__':
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
-    headers = ["Channel", "Sockets", "Auxes & Groups", "DCAs & Matrices", "FX"]
+    headers = ["Channel", "Sockets", "Auxes & Groups", "DCAs & Matrices", "FX Send & Return"]
     labels = [
         [GuiConstants.TEXT_NAME,
          GuiConstants.TEXT_COLOR,
@@ -1711,11 +1711,11 @@ if __name__ == '__main__':
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
          GuiConstants.TEXT_MUTE_GROUPS
-         ],
+        ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,
          GuiConstants.TEXT_GAIN
-         ],
+        ],
         [GuiConstants.TEXT_AUX_MONO_NAME,
          GuiConstants.TEXT_AUX_MONO_COLOR,
          GuiConstants.TEXT_AUX_STEREO_NAME,
@@ -1724,14 +1724,14 @@ if __name__ == '__main__':
          GuiConstants.TEXT_GRP_MONO_COLOR,
          GuiConstants.TEXT_GRP_STEREO_NAME,
          GuiConstants.TEXT_GRP_STEREO_COLOR
-         ],
+        ],
         [GuiConstants.TEXT_DCA_NAME,
          GuiConstants.TEXT_DCA_COLOR,
          GuiConstants.TEXT_MTX_MONO_NAME,
          GuiConstants.TEXT_MTX_MONO_COLOR,
          GuiConstants.TEXT_MTX_STEREO_NAME,
          GuiConstants.TEXT_MTX_STEREO_COLOR
-         ],
+        ],
         [GuiConstants.TEXT_FX_SEND_MONO_NAME,
          GuiConstants.TEXT_FX_SEND_MONO_COLOR,
          GuiConstants.TEXT_FX_SEND_STEREO_NAME,

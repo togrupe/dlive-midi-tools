@@ -1563,10 +1563,10 @@ if __name__ == '__main__':
     labels = [
         [GuiConstants.TEXT_NAME,
          GuiConstants.TEXT_COLOR,
-         GuiConstants.TEXT_MUTE,
-         GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_HPF_ON,
          GuiConstants.TEXT_HPF_VALUE,
+         GuiConstants.TEXT_MUTE,
+         GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
          GuiConstants.TEXT_MUTE_GROUPS
         ],

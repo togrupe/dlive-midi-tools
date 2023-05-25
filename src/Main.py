@@ -30,9 +30,11 @@ from gui.AboutDialog import AboutDialog
 
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
+from model.GroupSetup import GroupSetup
+from model.GroupsListEntry import GroupsListEntry
 from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
-from model.PhantomListEntry import PhantomListEntry
+from model.SocketListEntry import SocketListEntry
 from model.Sheet import Sheet
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
@@ -111,7 +113,7 @@ def get_name_channel(output):
             time.sleep(.1)
 
 
-def name_channel(output, item):
+def name_channel(output, item, midi_channel_offset, channel_offset):
     # Trim name if length of name > dliveConstants.trim_after_x_charactors
     if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
         trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
@@ -140,15 +142,15 @@ def name_channel(output, item):
             else:
                 payload.append(value)
 
-    prefix = [root.midi_channel, dliveConstants.sysex_message_set_channel_name,
-              item.get_channel_console()]
+    prefix = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_name,
+              channel_offset + item.get_channel_console()]
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
         time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def color_channel(output, item):
+def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
     if lower_color == "blue":
@@ -171,7 +173,7 @@ def color_channel(output, item):
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
 
-    payload_array = [root.midi_channel, dliveConstants.sysex_message_set_channel_colour, item.get_channel_console(),
+    payload_array = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour, channel_offset + item.get_channel_console(),
                      colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -335,9 +337,9 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             continue
         logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
-            name_channel(output, item)
+            name_channel(output, item, 0, 0)
         elif action == "color":
-            color_channel(output, item)
+            color_channel(output, item, 0, 0)
         elif action == "mute":
             mute_on_channel(output, item)
         elif action == "fader_level":
@@ -560,6 +562,60 @@ def is_valid_ip_address(ip_address):
         return False
 
 
+def handle_groups_parameter(message, output, groups_model, action, bus_type):
+    logging.info(message)
+
+    if bus_type == "dca":
+        for item in groups_model.get_dca_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
+
+    if bus_type == "aux_mono":
+        for item in groups_model.get_auxes_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_mono)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_mono)
+
+    if bus_type == "aux_stereo":
+        for item in groups_model.get_auxes_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_stereo)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_auxes, dliveConstants.channel_offset_auxes_stereo)
+
+    if bus_type == "group_mono":
+        for item in groups_model.get_group_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_mono)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_mono)
+
+    if bus_type == "group_stereo":
+        for item in groups_model.get_group_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_stereo)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_groups, dliveConstants.channel_offset_groups_stereo)
+
+    if bus_type == "matrix_mono":
+        for item in groups_model.get_matrix_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_mono)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_mono)
+
+    if bus_type == "matrix_stereo":
+        for item in groups_model.get_matrix_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_stereo)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_matrices, dliveConstants.channel_offset_matrices_stereo)
+
+
+
 def read_document(filename, check_box_reaper, check_box_write_to_console):
     logging.info('The following file will be read : ' + str(filename))
 
@@ -567,7 +623,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '6'
+    latest_spreadsheet_version = '7'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -581,7 +637,8 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         return root.quit()
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="48V & Pad")))
+    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets")))
+    sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups")))
 
     if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
@@ -639,6 +696,20 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     cb_phantom = False
     cb_pad = False
     cb_gain = False
+    cb_dca_name = False
+    cb_dca_color = False
+    cb_aux_mono_name = False
+    cb_aux_mono_color = False
+    cb_aux_stereo_name = False
+    cb_aux_stereo_color = False
+    cb_group_mono_name = False
+    cb_group_mono_color = False
+    cb_group_stereo_name = False
+    cb_group_stereo_color = False
+    cb_matrix_mono_name = False
+    cb_matrix_mono_color = False
+    cb_matrix_stereo_name = False
+    cb_matrix_stereo_color = False
 
     if cb_write_to_console:
         for var in grid.vars:
@@ -697,6 +768,76 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             elif var._name == GuiConstants.TEXT_GAIN and var.get() is True:
                 actions = actions + 1
                 cb_gain = True
+
+            # DCA Name
+            elif var._name == GuiConstants.TEXT_DCA_NAME and var.get() is True:
+                actions = actions + 1
+                cb_dca_name = True
+
+            # DCA Name
+            elif var._name == GuiConstants.TEXT_DCA_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_dca_color = True
+
+            # Aux Mono Name
+            elif var._name == GuiConstants.TEXT_AUX_MONO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_aux_mono_name = True
+
+            # Aux Mono Color
+            elif var._name == GuiConstants.TEXT_AUX_MONO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_aux_mono_color = True
+
+            # Aux Stereo Name
+            elif var._name == GuiConstants.TEXT_AUX_STEREO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_aux_stereo_name = True
+
+            # Aux Stereo Color
+            elif var._name == GuiConstants.TEXT_AUX_STERE0_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_aux_stereo_color = True
+
+            # Group Mono Name
+            elif var._name == GuiConstants.TEXT_GRP_MONO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_group_mono_name = True
+
+            # Group Mono Color
+            elif var._name == GuiConstants.TEXT_GRP_MONO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_group_mono_color = True
+
+            # Group Stereo Name
+            elif var._name == GuiConstants.TEXT_GRP_STEREO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_group_stereo_name = True
+
+            # Group Stereo Color
+            elif var._name == GuiConstants.TEXT_GRP_STEREO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_group_stereo_color = True
+
+            # Matrix Mono Name
+            elif var._name == GuiConstants.TEXT_MTX_MONO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_matrix_mono_name = True
+
+            # Matrix Mono Color
+            elif var._name == GuiConstants.TEXT_MTX_MONO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_matrix_mono_color = True
+
+            # Matrix Stereo Name
+            elif var._name == GuiConstants.TEXT_MTX_STEREO_NAME and var.get() is True:
+                actions = actions + 1
+                cb_matrix_stereo_name = True
+
+            # Matrix Stereo Color
+            elif var._name == GuiConstants.TEXT_MTX_STEREO_COLOR and var.get() is True:
+                actions = actions + 1
+                cb_matrix_stereo_color = True
 
     if check_box_reaper.__getitem__(0):
         actions = actions + 1
@@ -775,6 +916,90 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             progress(actions)
             root.update()
 
+        if cb_dca_name:
+            handle_groups_parameter("Set Name to DCAs...", output, sheet.get_group_model(),
+                                    action="name", bus_type="dca")
+            progress(actions)
+            root.update()
+
+        if cb_dca_color:
+            handle_groups_parameter("Set Color to DCAs...", output, sheet.get_group_model(),
+                                    action="color", bus_type="dca")
+            progress(actions)
+            root.update()
+
+        if cb_aux_mono_name:
+            handle_groups_parameter("Set Name to Mono Auxes...", output, sheet.get_group_model(),
+                                    action="name", bus_type="aux_mono")
+            progress(actions)
+            root.update()
+
+        if cb_aux_mono_color:
+            handle_groups_parameter("Set Color to Mono Auxes...", output, sheet.get_group_model(),
+                                    action="color", bus_type="aux_mono")
+            progress(actions)
+            root.update()
+
+        if cb_aux_stereo_name:
+            handle_groups_parameter("Set Name to Mono Auxes...", output, sheet.get_group_model(),
+                                    action="name", bus_type="aux_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_aux_stereo_color:
+            handle_groups_parameter("Set Color to Mono Auxes...", output, sheet.get_group_model(),
+                                    action="color", bus_type="aux_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_group_mono_name:
+            handle_groups_parameter("Set Name to Mono Groups...", output, sheet.get_group_model(),
+                                    action="name", bus_type="group_mono")
+            progress(actions)
+            root.update()
+
+        if cb_group_mono_color:
+            handle_groups_parameter("Set Color to Mono Groups...", output, sheet.get_group_model(),
+                                    action="color", bus_type="group_mono")
+            progress(actions)
+            root.update()
+
+        if cb_group_stereo_name:
+            handle_groups_parameter("Set Name to Stereo Groups...", output, sheet.get_group_model(),
+                                    action="name", bus_type="group_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_group_stereo_color:
+            handle_groups_parameter("Set Color to Stereo Groups...", output, sheet.get_group_model(),
+                                    action="color", bus_type="group_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_matrix_mono_name:
+            handle_groups_parameter("Set Name to Mono Matrices...", output, sheet.get_group_model(),
+                                    action="name", bus_type="matrix_mono")
+            progress(actions)
+            root.update()
+
+        if cb_matrix_mono_color:
+            handle_groups_parameter("Set Color to Mono Matrices...", output, sheet.get_group_model(),
+                                    action="color", bus_type="matrix_mono")
+            progress(actions)
+            root.update()
+
+        if cb_matrix_stereo_name:
+            handle_groups_parameter("Set Name to Mono Matrices...", output, sheet.get_group_model(),
+                                    action="name", bus_type="matrix_stereo")
+            progress(actions)
+            root.update()
+
+        if cb_matrix_stereo_color:
+            handle_groups_parameter("Set Color to Mono Matrices...", output, sheet.get_group_model(),
+                                    action="color", bus_type="matrix_stereo")
+            progress(actions)
+            root.update()
+
     if cb_reaper:
         logging.info("Creating Reaper Recording Session Template file...")
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
@@ -843,29 +1068,130 @@ def create_misc_content(sheet_misc):
     return misc
 
 
-def create_socket_list_content(sheet_48V_and_pad):
-    phantom_and_pad_list_entries = []
+def create_socket_list_content(sheet_sockets):
+    socket_list_entries = []
     index = 0
 
-    for socket in sheet_48V_and_pad['Socket Number']:
-        ple = PhantomListEntry(socket,
-                               str(sheet_48V_and_pad['Local Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX1 Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Local Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX1 Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Local Gain'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX1 Gain'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Gain'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Gain'].__getitem__(index)),
-                               )
+    for socket in sheet_sockets['Socket Number']:
+        ple = SocketListEntry(socket,
+                              str(sheet_sockets['Local Phantom'].__getitem__(index)),
+                              str(sheet_sockets['DX1 Phantom'].__getitem__(index)),
+                              str(sheet_sockets['DX3 Phantom'].__getitem__(index)),
+                              str(sheet_sockets['Local Pad'].__getitem__(index)),
+                              str(sheet_sockets['DX1 Pad'].__getitem__(index)),
+                              str(sheet_sockets['DX3 Pad'].__getitem__(index)),
+                              str(sheet_sockets['Slink Phantom'].__getitem__(index)),
+                              str(sheet_sockets['Slink Pad'].__getitem__(index)),
+                              str(sheet_sockets['Local Gain'].__getitem__(index)),
+                              str(sheet_sockets['DX1 Gain'].__getitem__(index)),
+                              str(sheet_sockets['DX3 Gain'].__getitem__(index)),
+                              str(sheet_sockets['Slink Gain'].__getitem__(index)),
+                              )
 
-        phantom_and_pad_list_entries.append(ple)
+        socket_list_entries.append(ple)
         index = index + 1
-    return phantom_and_pad_list_entries
+    return socket_list_entries
+
+
+def create_groups_list_content(sheet_groups):
+    dca_list_entries = []
+    index = 0
+
+    for dca in sheet_groups['DCA']:
+        if str(dca) != 'nan':
+            gse = GroupSetup(int(dca),
+                             str(sheet_groups['DCA Name'].__getitem__(index)),
+                             str(sheet_groups['DCA Color'].__getitem__(index))
+                             )
+
+            dca_list_entries.append(gse)
+            index = index + 1
+
+    aux_mono_list_entries = []
+    index = 0
+
+    for mono_aux in sheet_groups['Mono Auxes']:
+        if str(mono_aux) != 'nan':
+            gse = GroupSetup(int(mono_aux),
+                             str(sheet_groups['Aux Name'].__getitem__(index)),
+                             str(sheet_groups['Aux Color'].__getitem__(index))
+                             )
+
+            aux_mono_list_entries.append(gse)
+            index = index + 1
+
+    aux_stereo_list_entries = []
+    index = 0
+
+    for mono_aux in sheet_groups['Stereo Auxes']:
+        if str(mono_aux) != 'nan':
+            gse = GroupSetup(int(mono_aux),
+                             str(sheet_groups['StAux Name'].__getitem__(index)),
+                             str(sheet_groups['StAux Color'].__getitem__(index))
+                             )
+
+            aux_stereo_list_entries.append(gse)
+            index = index + 1
+
+    grp_mono_list_entries = []
+    index = 0
+
+    for mono_aux in sheet_groups['Mono Group']:
+        if str(mono_aux) != 'nan':
+            gse = GroupSetup(int(mono_aux),
+                             str(sheet_groups['Group Name'].__getitem__(index)),
+                             str(sheet_groups['Group Color'].__getitem__(index))
+                             )
+
+            grp_mono_list_entries.append(gse)
+            index = index + 1
+
+    grp_stereo_list_entries = []
+    index = 0
+
+    for item in sheet_groups['Stereo Group']:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups['StGroup Name'].__getitem__(index)),
+                             str(sheet_groups['StGroup Color'].__getitem__(index))
+                             )
+
+            grp_stereo_list_entries.append(gse)
+            index = index + 1
+
+    mtx_mono_list_entries = []
+    index = 0
+
+    for item in sheet_groups['Mono Matrix']:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups['Matrix Name'].__getitem__(index)),
+                             str(sheet_groups['Matrix Color'].__getitem__(index))
+                             )
+
+            mtx_mono_list_entries.append(gse)
+            index = index + 1
+
+    mtx_stereo_list_entries = []
+    index = 0
+
+    for item in sheet_groups['Stereo Matrix']:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups['StMatrix Name'].__getitem__(index)),
+                             str(sheet_groups['StMatrix Color'].__getitem__(index))
+                             )
+
+            mtx_stereo_list_entries.append(gse)
+            index = index + 1
+
+    return GroupsListEntry(dca_list_entries,
+                           aux_mono_list_entries,
+                           aux_stereo_list_entries,
+                           grp_mono_list_entries,
+                           grp_stereo_list_entries,
+                           mtx_mono_list_entries,
+                           mtx_stereo_list_entries)
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):
@@ -1168,7 +1494,7 @@ def about_dialog():
 
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('850x550')
+    root.geometry('1200x800')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1221,12 +1547,21 @@ if __name__ == '__main__':
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
-    headers = ["Channel", "Preamp", "Processing", "Attribute"]
+    headers = ["Channel", "Preamp", "Processing", "Attribute", "Groups"]
     labels = [[GuiConstants.TEXT_NAME, GuiConstants.TEXT_COLOR],
               [GuiConstants.TEXT_PHANTOM, GuiConstants.TEXT_PAD, GuiConstants.TEXT_GAIN],
               [GuiConstants.TEXT_MUTE, GuiConstants.TEXT_FADER_LEVEL, GuiConstants.TEXT_HPF_ON,
                GuiConstants.TEXT_HPF_VALUE],
-              [GuiConstants.TEXT_DCA, GuiConstants.TEXT_MUTE_GROUPS]]
+              [GuiConstants.TEXT_DCA, GuiConstants.TEXT_MUTE_GROUPS],
+              [GuiConstants.TEXT_DCA_NAME, GuiConstants.TEXT_DCA_COLOR,
+               GuiConstants.TEXT_AUX_MONO_NAME, GuiConstants.TEXT_AUX_MONO_COLOR,
+               GuiConstants.TEXT_AUX_STEREO_NAME, GuiConstants.TEXT_AUX_STERE0_COLOR,
+               GuiConstants.TEXT_GRP_MONO_NAME, GuiConstants.TEXT_GRP_MONO_COLOR,
+               GuiConstants.TEXT_GRP_STEREO_NAME, GuiConstants.TEXT_GRP_STEREO_COLOR,
+               GuiConstants.TEXT_MTX_MONO_NAME, GuiConstants.TEXT_MTX_MONO_COLOR,
+               GuiConstants.TEXT_MTX_STEREO_NAME, GuiConstants.TEXT_MTX_STEREO_COLOR
+               ]
+              ]
     grid = CheckboxGrid(root, headers, labels)
     grid.pack(side=TOP)
 
@@ -1307,7 +1642,7 @@ if __name__ == '__main__':
         bottom_frame,
         orient='horizontal',
         mode='determinate',
-        length=850
+        length=1150
     )
 
     pb.grid(row=2)

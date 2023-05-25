@@ -5,7 +5,7 @@
 # Author: Tobias Grupe
 #
 ####################################################
-class PhantomListEntry:
+class SocketListEntry:
     def __init__(self, socket_number, local_phantom, dx1_phantom, dx3_phantom, local_pad, dx1_pad, dx3_pad, slink_phantom, slink_pad, local_gain, dx1_gain, dx3_gain, slink_gain):
         self.socket_number = socket_number
         self.local_phantom = local_phantom

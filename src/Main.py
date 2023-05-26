@@ -1613,7 +1613,7 @@ if __name__ == '__main__':
     Label(root, text=" ").pack(side=TOP)
     Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
 
-    headers = ["Channel", "Sockets", "Auxes & Groups", "DCAs & Matrices", "FX Send & Return"]
+    headers = ["Channels", "Sockets", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [
         [GuiConstants.TEXT_NAME,
          GuiConstants.TEXT_COLOR,

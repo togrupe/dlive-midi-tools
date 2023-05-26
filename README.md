@@ -9,6 +9,11 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
+- DCA Names & Colors
+- Aux Names & Colors
+- Group Names & Colors
+- Matrices Names & Colors
+- FX Send & Return
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
@@ -44,8 +49,8 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | Date       | OS                 | Download                                                                                         | Release Notes |
 |---------|------------|--------------------|--------------------------------------------------------------------------------------------------|---------------|
-| v2.3.1  |            | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_1/dmt-v2_3_1-macos.zip)           | [Link](#v231) | 
-|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_1/dmt-v2_3_1-windows.zip)         |               |
+| v2.4.0  |            | MacOS (x86_64)     |                                                                                                  | [Link](#v240) | 
+|         |            | Windows (x86_64)   |                                                                                                  |               |
 | v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
 |         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
 | v2.2.0  | 29.04.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
@@ -75,10 +80,15 @@ Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 
 More details to the `Channels` columns can be found [here](doc/channels/README.md)
 
-### 48V Phantom Power and PAD Overview
-![Phantom](doc/sockets/excel_phantom.png)
+### Sockets Overview
+![Sockets](doc/sockets/excel_sockets.png)
 
-More details to the `48V & PAD` columns can be found [here](doc/sockets/README.md)
+More details to the `Sockets` columns can be found [here](doc/sockets/README.md)
+
+### Groups Overview
+![Groups](doc/groups/excel_groups.png)
+
+More details to the `Groups` columns can be found [here](doc/groups/README.md)
 
 # Example Generated Reaper Recording Session
 If you select the "Generate Reaper Recording Session" checkbox, 
@@ -157,11 +167,16 @@ Have fun!
 
 ## Release Notes
 
-### v2.3.1
+### v2.4.0
 
-Maintenance Release
+Feature & Maintenance Release
 
 #### New Features:
+- DCA Names & Colors
+- Aux Names & Colors
+- Group Names & Colors
+- Matrices Names & Colors
+- FX Send & Return
 
 #### Improvements
 - HPF Value Formula improved

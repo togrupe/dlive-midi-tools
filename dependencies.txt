@@ -4,4 +4,3 @@ xlrd
 openpyxl
 odfpy
 reathon
-pyinstaller

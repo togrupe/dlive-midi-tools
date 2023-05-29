@@ -13,7 +13,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Aux Names & Colors
 - Group Names & Colors
 - Matrices Names & Colors
-- FX Send & Return
+- FX Send + Returns Names & Colors
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)

@@ -951,19 +951,6 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             progress(actions)
             root.update()
 
-        if cb_phantom:
-            handle_socket_parameter("Set Phantom Power to channels...", output,
-                                    sheet.get_socket_model(),
-                                    action="phantom")
-            progress(actions)
-            root.update()
-
-        if cb_pad:
-            handle_socket_parameter("Set Pad to channels...", output, sheet.get_socket_model(),
-                                    action="pad")
-            progress(actions)
-            root.update()
-
         if cb_hpf_on:
             handle_channels_parameter("Set HPF On to channels...", output, sheet.get_channel_model(),
                                       action="hpf_on")
@@ -992,6 +979,19 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             handle_channels_parameter("Set Mute Group Assignments to channels...", output,
                                       sheet.get_channel_model(),
                                       action="mg")
+            progress(actions)
+            root.update()
+
+        if cb_phantom:
+            handle_socket_parameter("Set Phantom Power to channels...", output,
+                                    sheet.get_socket_model(),
+                                    action="phantom")
+            progress(actions)
+            root.update()
+
+        if cb_pad:
+            handle_socket_parameter("Set Pad to channels...", output, sheet.get_socket_model(),
+                                    action="pad")
             progress(actions)
             root.update()
 
@@ -1262,16 +1262,16 @@ def create_groups_list_content(sheet_groups):
                            fx_return_list_entries)
 
 
-def extract_data(dca_list_entries, sheet_groups, type, name, color):
+def extract_data(list_entries, sheet_groups, type_name, name, color):
     index = 0
-    for dca in sheet_groups[type]:
-        if str(dca) != 'nan':
-            gse = GroupSetup(int(dca),
+    for item in sheet_groups[type_name]:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
                              str(sheet_groups[name].__getitem__(index)),
                              str(sheet_groups[color].__getitem__(index))
                              )
 
-            dca_list_entries.append(gse)
+            list_entries.append(gse)
             index = index + 1
 
 

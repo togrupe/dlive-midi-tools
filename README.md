@@ -183,6 +183,7 @@ Feature & Maintenance Release
 - Repository cleaned up
 - Small Code Refactorings
 - Channels > 64 skipped for Avantis
+- Current Action added to GUI
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.

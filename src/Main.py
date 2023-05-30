@@ -1143,6 +1143,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         output.close()
     progress_open_or_close_connection()
+    progress_open_or_close_connection()
     root.update()
 
 
@@ -1518,8 +1519,10 @@ def progress(actions=None):
 
 
 def progress_open_or_close_connection():
-    if pb['value'] < 100:
-        pb['value'] += 5
+    if pb['value'] < 100.0:
+        pb['value'] += 5.0
+        if pb['value'] > 100.0:
+            pb['value'] = 100.0
         value_label['text'] = update_progress_label()
     else:
         showinfo(message='Writing completed!')

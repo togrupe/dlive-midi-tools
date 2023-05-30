@@ -113,7 +113,7 @@ def get_name_channel(output):
             time.sleep(.1)
 
 
-def name_channel(output, item, midi_channel_offset, channel_offset):
+def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     # Trim name if length of name > dliveConstants.trim_after_x_charactors
     if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
         trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
@@ -134,8 +134,8 @@ def name_channel(output, item, midi_channel_offset, channel_offset):
         if len(str(character)) != 0:
             value = ord(character)
             if value > 127:
-                error_msg = "One of the characters in Channel " + str(
-                    item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü are not supported."
+                error_msg = "One of the characters in " + str(bus_type) + ": channel " + str(
+                    item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü, é are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
                 exit(1)
@@ -340,7 +340,7 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
         logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
             name_channel(output, item, dliveConstants.midi_channel_offset_channels,
-                         dliveConstants.channel_offset_channels)
+                         dliveConstants.channel_offset_channels, "Input Channels")
         elif action == "color":
             color_channel(output, item, dliveConstants.midi_channel_offset_channels,
                           dliveConstants.channel_offset_channels)
@@ -575,7 +575,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
     if bus_type == "dca":
         for item in groups_model.get_dca_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
+                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
 
@@ -583,7 +583,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_auxes_mono_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
-                             dliveConstants.channel_offset_auxes_mono)
+                             dliveConstants.channel_offset_auxes_mono, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
                               dliveConstants.channel_offset_auxes_mono)
@@ -592,7 +592,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_auxes_stereo_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
-                             dliveConstants.channel_offset_auxes_stereo)
+                             dliveConstants.channel_offset_auxes_stereo, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
                               dliveConstants.channel_offset_auxes_stereo)
@@ -601,7 +601,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_group_mono_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_groups,
-                             dliveConstants.channel_offset_groups_mono)
+                             dliveConstants.channel_offset_groups_mono, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_groups,
                               dliveConstants.channel_offset_groups_mono)
@@ -610,7 +610,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_group_stereo_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_groups,
-                             dliveConstants.channel_offset_groups_stereo)
+                             dliveConstants.channel_offset_groups_stereo, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_groups,
                               dliveConstants.channel_offset_groups_stereo)
@@ -619,7 +619,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_matrix_mono_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
-                             dliveConstants.channel_offset_matrices_mono)
+                             dliveConstants.channel_offset_matrices_mono, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
                               dliveConstants.channel_offset_matrices_mono)
@@ -628,7 +628,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_matrix_stereo_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
-                             dliveConstants.channel_offset_matrices_stereo)
+                             dliveConstants.channel_offset_matrices_stereo, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
                               dliveConstants.channel_offset_matrices_stereo)
@@ -637,7 +637,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_fx_send_mono_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
-                             dliveConstants.channel_offset_fx_send_mono)
+                             dliveConstants.channel_offset_fx_send_mono, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
                               dliveConstants.channel_offset_fx_send_mono)
@@ -646,7 +646,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_fx_send_stereo_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
-                             dliveConstants.channel_offset_fx_send_stereo)
+                             dliveConstants.channel_offset_fx_send_stereo, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
                               dliveConstants.channel_offset_fx_send_stereo)
@@ -655,7 +655,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
         for item in groups_model.get_fx_return_config():
             if action == "name":
                 name_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
-                             dliveConstants.channel_offset_fx_return)
+                             dliveConstants.channel_offset_fx_return, bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
                               dliveConstants.channel_offset_fx_return)
@@ -1142,7 +1142,6 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         output.close()
-    progress_open_or_close_connection()
     progress_open_or_close_connection()
     root.update()
 

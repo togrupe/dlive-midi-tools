@@ -325,6 +325,7 @@ def fader_level_channel(output, item):
 
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
+    current_action_label["text"] = message
 
     if var_console.get() == dliveConstants.console_drop_down_avantis:
         max_count_dsp_channels = 64
@@ -338,9 +339,11 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             continue
         logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
-            name_channel(output, item, dliveConstants.midi_channel_offset_channels, dliveConstants.channel_offset_channels)
+            name_channel(output, item, dliveConstants.midi_channel_offset_channels,
+                         dliveConstants.channel_offset_channels)
         elif action == "color":
-            color_channel(output, item, dliveConstants.midi_channel_offset_channels, dliveConstants.channel_offset_channels)
+            color_channel(output, item, dliveConstants.midi_channel_offset_channels,
+                          dliveConstants.channel_offset_channels)
         elif action == "mute":
             mute_on_channel(output, item)
         elif action == "fader_level":
@@ -478,6 +481,8 @@ def gain_socket(output, item, socket_type):
 
 def handle_socket_parameter(message, output, socket_list_entries, action):
     logging.info(message)
+    current_action_label["text"] = message
+
     for item in socket_list_entries:
         logging.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
         if action == "phantom":
@@ -565,6 +570,7 @@ def is_valid_ip_address(ip_address):
 
 def handle_groups_parameter(message, output, groups_model, action, bus_type):
     logging.info(message)
+    current_action_label["text"] = message
 
     if bus_type == "dca":
         for item in groups_model.get_dca_config():
@@ -694,7 +700,9 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
         try:
             output = connect(mix_rack_ip_tmp, dliveConstants.port)
-            logging.info("Connection successful.")
+            action = "Connection successful"
+            logging.info(action)
+            current_action_label["text"] = action
         except socket.timeout:
             connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
                                                                                        "established. " \
@@ -920,11 +928,13 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     else:
         cb_reaper = False
 
-    logging.info("Start Processing...")
+    action = "Start Processing..."
+    logging.info(action)
+    current_action_label["text"] = action
 
     if cb_write_to_console:
         if cb_names:
-            handle_channels_parameter("Set Name to channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set Names to channels...", output, sheet.get_channel_model(),
                                       action="name")
             progress(actions)
             root.update()
@@ -936,7 +946,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
         if cb_mute:
-            handle_channels_parameter("Set Mute to channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set Mutes to channels...", output, sheet.get_channel_model(),
                                       action="mute")
             progress(actions)
             root.update()
@@ -955,38 +965,38 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
         if cb_hpf_on:
-            handle_channels_parameter("Set HPF On to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set HPF On to channels...", output, sheet.get_channel_model(),
                                       action="hpf_on")
             progress(actions)
             root.update()
 
         if cb_hpf_value:
-            handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set HPF Value to channels...", output, sheet.get_channel_model(),
                                       action="hpf_value")
             progress(actions)
             root.update()
 
         if cb_fader_level:
-            handle_channels_parameter("Set Fader Level to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set Fader Level to channels...", output, sheet.get_channel_model(),
                                       action="fader_level")
             progress(actions)
             root.update()
 
         if cb_dca:
-            handle_channels_parameter("Set DCA Assignments to the channels...", output, sheet.get_channel_model(),
+            handle_channels_parameter("Set DCA Assignments to channels...", output, sheet.get_channel_model(),
                                       action="dca")
             progress(actions)
             root.update()
 
         if cb_mg:
-            handle_channels_parameter("Set Mute Group Assignments to the channels...", output,
+            handle_channels_parameter("Set Mute Group Assignments to channels...", output,
                                       sheet.get_channel_model(),
                                       action="mg")
             progress(actions)
             root.update()
 
         if cb_gain:
-            handle_socket_parameter("Set Gain to the channels...", output, sheet.get_socket_model(),
+            handle_socket_parameter("Set Gain to channels...", output, sheet.get_socket_model(),
                                     action="gain")
             progress(actions)
             root.update()
@@ -1112,7 +1122,10 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             root.update()
 
     if cb_reaper:
-        logging.info("Creating Reaper Recording Session Template file...")
+        action = "Creating Reaper Recording Session Template file..."
+        logging.info(action)
+        current_action_label["text"] = action
+
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
         logging.info("Reaper Recording Session Template created")
 
@@ -1123,7 +1136,9 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         progress(actions)
         root.update()
 
-    logging.info("Processing done")
+    action = "Processing done"
+    logging.info(action)
+    current_action_label["text"] = ""
 
     if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
         output.close()
@@ -1550,6 +1565,7 @@ class CheckboxGrid(Frame):
 
 root = Tk()
 ip_address_label = StringVar(root)
+current_action_label = StringVar(root)
 
 
 def about_dialog():
@@ -1558,9 +1574,17 @@ def about_dialog():
     about.mainloop()
 
 
+def update_current_action():
+    current_action_label['text'] = update_current_action_label()
+
+
+def update_current_action_label():
+    return f"Current Action:"
+
+
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x650')
+    root.geometry('1300x750')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1611,7 +1635,10 @@ if __name__ == '__main__':
     reaper_file_prefix = ""
 
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
+    Label(root, text="Choose from given spreadsheet which column you want to write"
+                     "                                                                              "
+                     "                                                                               "
+                     "                                                             ").pack(side=TOP)
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [
@@ -1729,20 +1756,24 @@ if __name__ == '__main__':
         row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
+    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
+    current_action_label.grid(row=2)
+    Label(bottom_frame, text=" ", width=30).grid(row=3)
+
     pb = ttk.Progressbar(
         bottom_frame,
         orient='horizontal',
         mode='determinate',
-        length=1150
+        length=1250
     )
 
-    pb.grid(row=2)
+    pb.grid(row=4)
 
     # label to show current value in percent
     value_label = ttk.Label(bottom_frame, text=update_progress_label())
-    value_label.grid(row=3)
+    value_label.grid(row=5)
 
-    Button(bottom_frame, text='Quit', command=root.destroy).grid(row=4)
+    Button(bottom_frame, text='Quit', command=root.destroy).grid(row=6)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)

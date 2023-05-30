@@ -1635,10 +1635,7 @@ if __name__ == '__main__':
     reaper_file_prefix = ""
 
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from given spreadsheet which column you want to write"
-                     "                                                                              "
-                     "                                                                               "
-                     "                                                             ").pack(side=TOP)
+    Label(root, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [

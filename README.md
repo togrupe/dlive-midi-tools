@@ -151,7 +151,7 @@ Afterwards the following window appears.
 
 5. `Default` Sets the ip back to default: 192.168.1.70.
 
-6. Select the columns you want to write, and select `Write to console`
+6. Select the columns you want to write, and select `Write to selected Audio Console`
 
 7. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) 

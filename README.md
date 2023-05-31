@@ -9,11 +9,12 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
-- DCA Names & Colors
-- Aux Names & Colors
-- Group Names & Colors
-- Matrices Names & Colors
-- FX Send + Returns Names & Colors
+- DCA Name & Color
+- Aux Name & Color
+- Group Name & Color
+- Matrices Name & Color
+- FX Sends Name & Color
+- FX Returns Name & Color
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
@@ -172,18 +173,19 @@ Have fun!
 Feature & Maintenance Release
 
 #### New Features:
-- DCA Names & Colors
-- Aux Names & Colors
-- Group Names & Colors
-- Matrices Names & Colors
-- FX Send & Return
+- DCA Name & Color
+- Aux Name & Color
+- Group Name & Color
+- Matrices Name & Color
+- FX Sends Name & Color
+- FX Returns Name & Color
+- Current Action now shown in UI
 
 #### Improvements
 - HPF Value Formula improved
 - Repository cleaned up
 - Small Code Refactorings
 - Channels > 64 skipped for Avantis
-- Current Action added to GUI
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.

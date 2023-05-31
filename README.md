@@ -69,7 +69,7 @@ You can also write in blocks. e.g.
 * CH25-32
 * CH97-128
 
-in this case the not mentioned channels are not touched.
+in this case the not mentioned channels are not touched, this works as well for the  `Groups`.
 
 Empty lines in between are **not** supported. <br>
 

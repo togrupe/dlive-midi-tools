@@ -3,6 +3,9 @@ Channel-Name, Keep in mind that names longer than 8 characters are going to be t
 
 Special characters like "äöüéß" are not allowed, otherwise you will get an Error Message.
 
+Keep in mind that for each type of bus, the maximum count of possible busses are available.
+Please use only the cells which fits to your current Mixrack Configuration.
+
 #### Dca/Aux/Grp/Mtx/FX Color: <br>
 
 The following colors are allowed:

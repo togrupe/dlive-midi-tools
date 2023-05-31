@@ -194,6 +194,7 @@ Feature & Maintenance Release
 #### Issues fixed:
 
 #### Known issues:
+* Some Name columns appear e.g. as "1.0" when "1" is written. Solution finding pending.
 
 
 ### v2.3.0

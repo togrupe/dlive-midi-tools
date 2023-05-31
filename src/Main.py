@@ -1615,7 +1615,7 @@ if __name__ == '__main__':
     config_frame.pack(side=TOP)
 
     frame = LabelFrame(root, text="Output Option")
-    write_to_dlive = Checkbar(frame, ['Write to Console'])
+    write_to_dlive = Checkbar(frame, ['Write to Audio Console'])
     reaper = Checkbar(frame, ['Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)'])
 
     write_to_dlive.pack(side=TOP, fill=X)

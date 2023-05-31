@@ -575,7 +575,8 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
     if bus_type == "dca":
         for item in groups_model.get_dca_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca, bus_type)
+                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca,
+                             bus_type)
             elif action == "color":
                 color_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
 
@@ -685,45 +686,12 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets")))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups")))
 
-    if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
-        mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-
-        if not is_valid_ip_address(mix_rack_ip_tmp):
-            error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
-                                                                          "format: e.g. 192.168.1.70. Each ip subpart can " \
-                                                                          "only be between 0-255"
-            logging.error(error_msg_invalid_ip)
-            showerror(message=error_msg_invalid_ip)
-            reset_progress_bar()
-            return
-
-        logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
-        try:
-            output = connect(mix_rack_ip_tmp, dliveConstants.port)
-            action = "Connection successful"
-            logging.info(action)
-            current_action_label["text"] = action
-        except socket.timeout:
-            connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
-                                                                                       "established. " \
-                                                                                       "Are you in the same " \
-                                                                                       "subnet?"
-
-            logging.error(connect_err_message)
-            showerror(message=connect_err_message)
-            reset_progress_bar()
-            return
-    else:
-        output = None
-    progress_open_or_close_connection()
-    root.update()
-
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
     root.console = determine_console_id(var_console.get())
 
     actions = 0
 
-    if check_box_write_to_console.__getitem__(0):
+    if check_box_write_to_console:
         cb_write_to_console = True
     else:
         cb_write_to_console = False
@@ -922,15 +890,52 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
                 actions = actions + 1
                 cb_fx_return_color = True
 
-    if check_box_reaper.__getitem__(0):
+    if check_box_reaper:
         actions = actions + 1
         cb_reaper = True
     else:
         cb_reaper = False
 
+    if check_box_write_to_console and actions == 0:
+        showinfo(message="No spreadsheet column(s) selected. Please select at least one column")
+        return
+
     action = "Start Processing..."
     logging.info(action)
     current_action_label["text"] = action
+
+    if is_network_communication_allowed & check_box_write_to_console:
+        mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
+
+        if not is_valid_ip_address(mix_rack_ip_tmp):
+            error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
+                                                                          "format: e.g. 192.168.1.70. Each ip subpart can " \
+                                                                          "only be between 0-255"
+            logging.error(error_msg_invalid_ip)
+            showerror(message=error_msg_invalid_ip)
+            reset_progress_bar()
+            return
+
+        logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
+        try:
+            output = connect(mix_rack_ip_tmp, dliveConstants.port)
+            action = "Connection successful"
+            logging.info(action)
+            current_action_label["text"] = action
+        except socket.timeout:
+            connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
+                                                                                       "established. " \
+                                                                                       "Are you in the same " \
+                                                                                       "subnet?"
+
+            logging.error(connect_err_message)
+            showerror(message=connect_err_message)
+            reset_progress_bar()
+            return
+    else:
+        output = None
+    progress_open_or_close_connection()
+    root.update()
 
     if cb_write_to_console:
         if cb_names:
@@ -1140,7 +1145,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     logging.info(action)
     current_action_label["text"] = ""
 
-    if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
+    if is_network_communication_allowed & check_box_write_to_console:
         output.close()
     progress_open_or_close_connection()
     progress_open_or_close_connection()
@@ -1308,37 +1313,23 @@ def reset_progress_bar():
 
 def browse_files():
     reset_progress_bar()
-    input_file_path = filedialog.askopenfilename()
-    root.reaper_output_dir = os.path.dirname(input_file_path)
-    root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
-    read_document(input_file_path, get_reaper_state(), get_dlive_write_state())
+
+    cb_reaper = var_write_reaper.get()
+    cb_console_write = var_write_to_console.get()
+
+    if cb_reaper or cb_console_write:
+        input_file_path = filedialog.askopenfilename()
+
+        root.reaper_output_dir = os.path.dirname(input_file_path)
+        root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
+        read_document(input_file_path, cb_reaper, cb_console_write)
+    else:
+        showerror(message="Nothing to do, please select at least one output option.")
 
 
 def trigger_background_process():
     bg_thread = threading.Thread(target=browse_files)
     bg_thread.start()
-
-
-class Checkbar(Frame):
-    def __init__(self, parent=None, picks=[], side=LEFT, anchor=W):
-        Frame.__init__(self, parent)
-        self.vars = []
-        for pick in picks:
-            var = IntVar()
-            chk = Checkbutton(self, text=pick, variable=var)
-            chk.pack(side=side, anchor=anchor, expand=YES)
-            self.vars.append(var)
-
-    def state(self):
-        return map((lambda var: var.get()), self.vars)
-
-
-def get_reaper_state():
-    return list(reaper.state())
-
-
-def get_dlive_write_state():
-    return list(write_to_dlive.state())
 
 
 def save_current_ui_settings():
@@ -1614,14 +1605,17 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    frame = LabelFrame(root, text="Output Option")
-    write_to_dlive = Checkbar(frame, ['Write to Audio Console'])
-    reaper = Checkbar(frame, ['Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)'])
+    output_option_frame = LabelFrame(root, text="Output Option")
+    var_write_to_console = BooleanVar(value=True)
+    write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
+                                   var=var_write_to_console)
+    var_write_reaper = BooleanVar(value=False)
+    reaper = Checkbutton(output_option_frame,
+                         text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                         var=var_write_reaper)
 
-    write_to_dlive.pack(side=TOP, fill=X)
-    write_to_dlive.config(bd=2)
-    reaper.pack(side=TOP, fill=X)
-    reaper.config(bd=2)
+    write_to_console.grid(row=0, column=0, sticky="W")
+    reaper.grid(row=1, column=0, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1684,7 +1678,7 @@ if __name__ == '__main__':
 
     Label(root, text=" ").pack(side=TOP)
     Label(root, text=" ").pack(side=TOP)
-    frame.pack(side=TOP, fill=X)
+    output_option_frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())
 

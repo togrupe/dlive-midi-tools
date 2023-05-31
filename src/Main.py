@@ -1595,7 +1595,7 @@ if __name__ == '__main__':
     file_menu = Menu(menu_bar, tearoff=0)
     file_menu.add_command(label="About", command=about_dialog)
     file_menu.add_separator()
-    file_menu.add_command(label="Exit", command=root.destroy)
+    file_menu.add_command(label="Close", command=root.destroy)
 
     # Add the file menu to the menu bar
     menu_bar.add_cascade(label="Help", menu=file_menu)
@@ -1772,7 +1772,8 @@ if __name__ == '__main__':
     value_label = ttk.Label(bottom_frame, text=update_progress_label())
     value_label.grid(row=5)
 
-    Button(bottom_frame, text='Quit', command=root.destroy).grid(row=6)
+    Button(bottom_frame, text='Close', command=root.destroy).grid(row=6)
+    Label(bottom_frame, text=" ", width=30).grid(row=7)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)

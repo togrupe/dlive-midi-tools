@@ -1514,12 +1514,10 @@ def progress(actions=None):
         if pb['value'] < 100:
             pb['value'] += 90 / actions
             value_label['text'] = update_progress_label()
-        else:
-            showinfo(message='Writing completed!')
 
 
 def progress_open_or_close_connection():
-    if pb['value'] < 100.0:
+    if round(pb['value']) < 100.0:
         pb['value'] += 5.0
         if pb['value'] > 100.0:
             pb['value'] = 100.0
@@ -1612,8 +1610,6 @@ def connect_to_console(mix_rack_ip_tmp, test=False):
         return None
 
 
-
-
 def disconnect_from_console(output):
     output.close()
 
@@ -1621,7 +1617,7 @@ def disconnect_from_console(output):
 def test_ip_connection():
     reset_current_action_label()
     test_ip = read_current_ui_ip_address()
-    logging.info("Test connection to " + str(test_ip) )
+    logging.info("Test connection to " + str(test_ip))
     try:
         ret = connect_to_console(test_ip, test=True)
 

@@ -1492,6 +1492,16 @@ def reactivate_avantis_checkboxes():
         checkbox.config(state="normal")
 
 
+def select_all_checkboxes():
+    for var in grid.vars:
+        var.set(True)
+
+
+def clear_all_checkboxes():
+    for var in grid.vars:
+        var.set(False)
+
+
 def on_console_selected(*args):
     print("The selected console is:", var_console.get())
     if var_console.get() == dliveConstants.console_drop_down_avantis:
@@ -1697,6 +1707,15 @@ if __name__ == '__main__':
 
     grid = CheckboxGrid(root, headers, labels)
     grid.pack(side=TOP)
+
+    global_select_frame = Frame(root)
+
+    button_select_all = Button(global_select_frame, text='Select All', command=select_all_checkboxes, width=8)
+    button_select_all.grid(row=0, column=0)
+    button_clear_all = Button(global_select_frame, text='Clear', command=clear_all_checkboxes, width=8)
+    button_clear_all.grid(row=0, column=1)
+
+    global_select_frame.pack(side=TOP)
 
     Label(root, text=" ").pack(side=TOP)
     Label(root, text=" ").pack(side=TOP)

@@ -1599,10 +1599,13 @@ def connect_to_console(mix_rack_ip_tmp, test=False):
         current_action_label["text"] = action
         return output
     except socket.timeout:
-        connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
+        connect_err_message = "Connection to IP-Address: " + mix_rack_ip_tmp + " " + "could not be " \
                                                                                    "established. " \
                                                                                    "Are you in the same " \
                                                                                    "subnet?"
+        action = "Connection failed"
+        logging.error(action)
+        current_action_label["text"] = action
 
         logging.error(connect_err_message)
         showerror(message=connect_err_message)
@@ -1625,7 +1628,10 @@ def test_ip_connection():
             disconnect_from_console(ret)
             showinfo(message="Connection Test successful")
     except OSError:
-        showerror(message="Connection Test failed")
+        action = "Connection Test failed"
+        logging.error(action)
+        current_action_label["text"] = action
+        showerror(message=action)
 
 
 if __name__ == '__main__':

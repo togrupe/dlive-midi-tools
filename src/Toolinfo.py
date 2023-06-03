@@ -6,5 +6,5 @@
 #
 ####################################################
 tool_name = "Channel List Manager for Allen & Heath dLive and Avantis"
-version = "2.4.0-RC4"
+version = "2.4.0"
 build_date = "June 2023"

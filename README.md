@@ -151,15 +151,21 @@ Afterwards the following window appears.
 
 5. `Default` Sets the ip back to default: 192.168.1.70.
 
-6. Select the spreadsheet columns you want to write, and select `Write to Audio Console or Director`
+6. `Test Connection` Tries to establish an test connection to the console. In both cases (successful/failed) you will be informed by a messagebox.
 
-7. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
+7. Select the spreadsheet columns you want to write, and select `Write to Audio Console or Director`.
+   
+   `Select All` selects all checkboxes.
+   `Clear` removes all ticks.
+
+
+8. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) 
    You can also use the tool to create only the Reaper session file, in case you use a different console. 
 
-8. Click the button `Open spreadsheet and start writing process` to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+9. Click the button `Open spreadsheet and start writing process` to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
 
-9. If something goes wrong, please check the python console or the `main.log`
+10. If something goes wrong, please check the python console or the `main.log`
 
 If you find any issues, please let me know. New ideas are welcome. 
 

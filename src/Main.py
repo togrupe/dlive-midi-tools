@@ -138,6 +138,9 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
                     item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü, é are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
+                reset_current_action_label()
+                reset_progress_bar()
+                output.close()
                 exit(1)
             else:
                 payload.append(value)
@@ -684,7 +687,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
     sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets")))
-    sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups")))
+    sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
     root.console = determine_console_id(var_console.get())
@@ -1307,7 +1310,8 @@ def determine_console_id(selected_console_as_string):
 
 
 def reset_progress_bar():
-    pb['value'] = 0
+    pb['value'] = 0.0
+    value_label['text'] = update_progress_label()
     root.update()
 
 
@@ -1322,7 +1326,20 @@ def browse_files():
 
         root.reaper_output_dir = os.path.dirname(input_file_path)
         root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
-        read_document(input_file_path, cb_reaper, cb_console_write)
+        try:
+            read_document(input_file_path, cb_reaper, cb_console_write)
+        except TypeError as exc:
+
+            logging.error(exc)
+
+            showerror(message="An error happened, probably an empty line could be the issue. "
+                              "Empty lines in spreadsheet are not supported.")
+
+            reset_progress_bar()
+            reset_current_action_label()
+
+            exit(1)
+
     else:
         showerror(message="Nothing to do, please select at least one output option.")
 
@@ -1569,6 +1586,11 @@ def about_dialog():
 
 def update_current_action():
     current_action_label['text'] = update_current_action_label()
+
+
+def reset_current_action_label():
+    current_action_label['text'] = ""
+    root.update()
 
 
 def update_current_action_label():

@@ -908,33 +908,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     current_action_label["text"] = action
 
     if is_network_communication_allowed & check_box_write_to_console:
-        mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-
-        if not is_valid_ip_address(mix_rack_ip_tmp):
-            error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
-                                                                          "format: e.g. 192.168.1.70. Each ip subpart can " \
-                                                                          "only be between 0-255"
-            logging.error(error_msg_invalid_ip)
-            showerror(message=error_msg_invalid_ip)
-            reset_progress_bar()
-            return
-
-        logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
-        try:
-            output = connect(mix_rack_ip_tmp, dliveConstants.port)
-            action = "Connection successful"
-            logging.info(action)
-            current_action_label["text"] = action
-        except socket.timeout:
-            connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
-                                                                                       "established. " \
-                                                                                       "Are you in the same " \
-                                                                                       "subnet?"
-
-            logging.error(connect_err_message)
-            showerror(message=connect_err_message)
-            reset_progress_bar()
-            return
+        output = connect_to_console(read_current_ui_ip_address())
     else:
         output = None
     progress_open_or_close_connection()
@@ -1149,10 +1123,15 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     current_action_label["text"] = ""
 
     if is_network_communication_allowed & check_box_write_to_console:
-        output.close()
+        if output is not None:
+            output.close()
     progress_open_or_close_connection()
     progress_open_or_close_connection()
     root.update()
+
+
+def read_current_ui_ip_address():
+    return ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
 
 
 def create_channel_list_content(sheet_channels):
@@ -1323,6 +1302,9 @@ def browse_files():
 
     if cb_reaper or cb_console_write:
         input_file_path = filedialog.askopenfilename()
+        if input_file_path == "":
+            # Nothing to do
+            return
 
         root.reaper_output_dir = os.path.dirname(input_file_path)
         root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
@@ -1607,6 +1589,49 @@ def update_current_action_label():
     return f"Current Action:"
 
 
+def connect_to_console(mix_rack_ip_tmp, test=False):
+    logging.info("Open connection to console on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
+    try:
+        output = connect(mix_rack_ip_tmp, dliveConstants.port)
+        if test:
+            action = "Connection Test Successful"
+        else:
+            action = "Connection successful"
+        logging.info(action)
+        current_action_label["text"] = action
+        return output
+    except socket.timeout:
+        connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
+                                                                                   "established. " \
+                                                                                   "Are you in the same " \
+                                                                                   "subnet?"
+
+        logging.error(connect_err_message)
+        showerror(message=connect_err_message)
+        reset_progress_bar()
+        return None
+
+
+
+
+def disconnect_from_console(output):
+    output.close()
+
+
+def test_ip_connection():
+    reset_current_action_label()
+    test_ip = read_current_ui_ip_address()
+    logging.info("Test connection to " + str(test_ip) )
+    try:
+        ret = connect_to_console(test_ip, test=True)
+
+        if ret is not None:
+            disconnect_from_console(ret)
+            showinfo(message="Connection Test successful")
+    except OSError:
+        showerror(message="Connection Test failed")
+
+
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('1300x750')
@@ -1755,6 +1780,7 @@ if __name__ == '__main__':
     Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
     Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
     Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
+    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
     ip_field.pack(side=RIGHT)
 
     var_midi_channel.set(read_persisted_midi_port())  # default value

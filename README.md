@@ -179,7 +179,10 @@ Feature & Maintenance Release
 - Matrices Name & Color
 - FX Sends Name & Color
 - FX Returns Name & Color
-- Current Action now shown in UI
+- Current Processing Action now shown in UI
+- Test Connection Button added
+- Select All Button added
+- Clear Button added
 
 #### Improvements
 - HPF Value Formula improved
@@ -194,7 +197,7 @@ Feature & Maintenance Release
 #### Issues fixed:
 
 #### Known issues:
-* Some Name columns appear e.g. as "1.0" when "1" is written. Solution finding pending.
+
 
 
 ### v2.3.0

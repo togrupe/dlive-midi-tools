@@ -178,7 +178,7 @@ Have fun!
 
 Feature & Maintenance Release
 
-#### New Features:
+#### New Features
 - DCA Name & Color
 - Aux Name & Color
 - Group Name & Color
@@ -200,9 +200,9 @@ Feature & Maintenance Release
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
 - HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
 
-#### Issues fixed:
+#### Issues fixed
 
-#### Known issues:
+#### Known issues
 
 
 
@@ -210,7 +210,7 @@ Feature & Maintenance Release
 
 Feature Release
 
-#### New Features:
+#### New Features
 - Fader Level Support
 - Gain Support
 - DCA Support
@@ -231,16 +231,16 @@ Feature Release
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
 - HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
 
-#### Issues fixed:
+#### Issues fixed
 
-#### Known issues:
+#### Known issues
 
 
 ### v2.2.0
 
 Feature Release
 
-#### New Features:
+#### New Features
 - Avantis support
 - Director button introduced
 - Save button added, to persist data
@@ -251,10 +251,10 @@ Feature Release
 #### Technical Limitations
 - DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
 
-#### Issues fixed:
+#### Issues fixed
 - Temporary GUI freeze fixed
 
 #### Improvements
 - Robustness improved
 
-#### Known issues:
+#### Known issues

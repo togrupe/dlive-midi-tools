@@ -151,7 +151,7 @@ Afterwards the following window appears.
 
 5. `Default` Sets the ip back to default: 192.168.1.70.
 
-6. `Test Connection` Tries to establish an test connection to the console. In both cases (successful/failed) you will be informed by a messagebox.
+6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a messagebox.
 
 7. Select the spreadsheet columns you want to write, and select `Write to Audio Console or Director`.
    

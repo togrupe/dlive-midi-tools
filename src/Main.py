@@ -1312,10 +1312,13 @@ def browse_files():
             read_document(input_file_path, cb_reaper, cb_console_write)
         except TypeError as exc:
 
-            logging.error(exc)
+            error_message = "An error happened, probably an empty line could be the issue. " \
+                            "Empty lines in spreadsheet are not supported."
 
-            showerror(message="An error happened, probably an empty line could be the issue. "
-                              "Empty lines in spreadsheet are not supported.")
+            showerror(message=error_message)
+
+            logging.error(error_message)
+            logging.error(exc)
 
             reset_progress_bar()
             reset_current_action_label()
@@ -1324,13 +1327,15 @@ def browse_files():
 
         except ValueError as exc:
 
-            logging.error(exc)
+            error_message = "One of the following columns have unexpected characters. " \
+                            "(Mono Auxes, Stereo Auxes, Mono Groups, Stereo Group, \n" \
+                            "Mono Matrix, Stereo Matrix, \n" \
+                            "Mono FX Send, Stereo FX Send, FX Return), the should only contain integer numbers. \n" \
+                            "Please use the Name columns."
 
-            showerror(message="One of the following columns have unexpected characters. "
-                              "(Mono Auxes, Stereo Auxes, Mono Groups, Stereo Group, \n"
-                              "Mono Matrix, Stereo Matrix, \n"
-                              "Mono FX Send, Stereo FX Send, FX Return), the should only contain integer numbers. \n"
-                              "Please use the Name columns.")
+            showerror(message=error_message)
+            logging.error(error_message)
+            logging.error(exc)
 
             reset_progress_bar()
             reset_current_action_label()
@@ -1615,9 +1620,9 @@ def connect_to_console(mix_rack_ip_tmp, test=False):
         return output
     except socket.timeout:
         connect_err_message = "Connection to IP-Address: " + mix_rack_ip_tmp + " " + "could not be " \
-                                                                                   "established. " \
-                                                                                   "Are you in the same " \
-                                                                                   "subnet?"
+                                                                                     "established. " \
+                                                                                     "Are you in the same " \
+                                                                                     "subnet?"
         action = "Connection failed"
         logging.error(action)
         current_action_label["text"] = action

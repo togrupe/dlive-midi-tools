@@ -1327,8 +1327,7 @@ def browse_files():
             logging.error(exc)
 
             showerror(message="One of the following columns have unexpected characters. "
-                              "(Channel, Socket Number, \n"
-                              "Mono Auxes, Stereo Auxes, Mono Groups, Stereo Group, \n"
+                              "(Mono Auxes, Stereo Auxes, Mono Groups, Stereo Group, \n"
                               "Mono Matrix, Stereo Matrix, \n"
                               "Mono FX Send, Stereo FX Send, FX Return), the should only contain integer numbers. \n"
                               "Please use the Name columns.")

@@ -115,6 +115,8 @@ Prerequisites:
 * dlive Firmware: >= 1.97
 * Avantis Firmware: >= 1.25
 * Reaper >= 6.75
+* Windows 10
+* MacOS >= BigSur
 
 1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 

@@ -163,7 +163,9 @@ Afterwards the following window appears.
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) 
    You can also use the tool to create only the Reaper session file, in case you use a different console. 
 
-9. Click the button `Open spreadsheet and start writing process` to select your custom Excel sheet. Afterwards the selected action(s) start automatically.
+9. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards the selected action(s) start automatically.
+   
+   **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
 10. If something goes wrong, please check the python console or the `main.log`
 

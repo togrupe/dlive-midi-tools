@@ -27,6 +27,7 @@ import dliveConstants
 from dawsession import SessionCreator
 import GuiConstants
 from gui.AboutDialog import AboutDialog
+from model.Action import Action
 
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
@@ -357,7 +358,7 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             hpf_value_channel(output, item)
         elif action == "dca":
             dca_channel(output, item)
-        elif action == "mg":
+        elif action == "mute_group":
             mg_channel(output, item)
 
 
@@ -703,198 +704,230 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         disable_avantis_checkboxes()
         root.update()
 
-    cb_names = False
-    cb_color = False
-    cb_fader_level = False
-    cb_mute = False
-    cb_hpf_on = False
-    cb_hpf_value = False
-    cb_dca = False
-    cb_mg = False
-    cb_phantom = False
-    cb_pad = False
-    cb_gain = False
-    cb_dca_name = False
-    cb_dca_color = False
-    cb_aux_mono_name = False
-    cb_aux_mono_color = False
-    cb_aux_stereo_name = False
-    cb_aux_stereo_color = False
-    cb_group_mono_name = False
-    cb_group_mono_color = False
-    cb_group_stereo_name = False
-    cb_group_stereo_color = False
-    cb_matrix_mono_name = False
-    cb_matrix_mono_color = False
-    cb_matrix_stereo_name = False
-    cb_matrix_stereo_color = False
-    cb_fx_send_mono_name = False
-    cb_fx_send_mono_color = False
-    cb_fx_send_stereo_name = False
-    cb_fx_send_stereo_color = False
-    cb_fx_return_name = False
-    cb_fx_return_color = False
+    action_list = []
 
     if cb_write_to_console:
         for var in grid.vars:
             # Name
             logging.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
             if var._name == GuiConstants.TEXT_NAME and var.get() is True:
-                actions = actions + 1
-                cb_names = True
+                action = Action(GuiConstants.TEXT_NAME, "channels",
+                                "Set Names to channels...", "name")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Color
             elif var._name == GuiConstants.TEXT_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_color = True
+                action = Action(GuiConstants.TEXT_COLOR, "channels",
+                                "Set Color to channels...", "color")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Mute
             elif var._name == GuiConstants.TEXT_MUTE and var.get() is True:
-                actions = actions + 1
-                cb_mute = True
+                action = Action(GuiConstants.TEXT_MUTE, "channels",
+                                "Set Mute to channels...", "mute")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Fader Level
             elif var._name == GuiConstants.TEXT_FADER_LEVEL and var.get() is True:
-                actions = actions + 1
-                cb_fader_level = True
+                action = Action(GuiConstants.TEXT_FADER_LEVEL, "channels",
+                                "Set Fader Level to channels...", "fader_level")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # HPF On
             elif var._name == GuiConstants.TEXT_HPF_ON and var.get() is True:
-                actions = actions + 1
-                cb_hpf_on = True
+                action = Action(GuiConstants.TEXT_HPF_ON, "channels",
+                                "Set HPF On to channels...", "hpf_on")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # HPF value
             elif var._name == GuiConstants.TEXT_HPF_VALUE and var.get() is True:
-                actions = actions + 1
-                cb_hpf_value = True
+                action = Action(GuiConstants.TEXT_HPF_VALUE, "channels",
+                                "Set HPF Value to channels...", "hpf_value")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # DCAs
             elif var._name == GuiConstants.TEXT_DCA and var.get() is True:
-                actions = actions + 1
-                cb_dca = True
+                action = Action(GuiConstants.TEXT_DCA, "channels",
+                                "Set DCA Assignments to channels...", "dca")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Mute Groups
             elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
-                actions = actions + 1
-                cb_mg = True
+                action = Action(GuiConstants.TEXT_MUTE_GROUPS, "channels",
+                                "Set Mute Group Assignments to channels...", "mute_group")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Phantom
             elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
-                actions = actions + 1
-                cb_phantom = True
+                action = Action(GuiConstants.TEXT_PHANTOM, "sockets",
+                                "Set Phantom Power to sockets...", "phantom")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Pad
             elif var._name == GuiConstants.TEXT_PAD and var.get() is True:
-                actions = actions + 1
-                cb_pad = True
+                action = Action(GuiConstants.TEXT_PAD, "sockets",
+                                "Set Pad to sockets...", "pad")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Gain
             elif var._name == GuiConstants.TEXT_GAIN and var.get() is True:
-                actions = actions + 1
-                cb_gain = True
+                action = Action(GuiConstants.TEXT_GAIN, "sockets",
+                                "Set Gain to sockets...", "gain")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # DCA Name
             elif var._name == GuiConstants.TEXT_DCA_NAME and var.get() is True:
-                actions = actions + 1
-                cb_dca_name = True
+                action = Action(GuiConstants.TEXT_DCA_NAME, "groups",
+                                "Set DCA Names...", "name", bus_type="dca")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
-            # DCA Name
+            # DCA Color
             elif var._name == GuiConstants.TEXT_DCA_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_dca_color = True
+                action = Action(GuiConstants.TEXT_DCA_COLOR, "groups",
+                                "Set DCA Color...", "color", bus_type="dca")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Aux Mono Name
             elif var._name == GuiConstants.TEXT_AUX_MONO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_aux_mono_name = True
+                action = Action(GuiConstants.TEXT_AUX_MONO_NAME, "groups",
+                                "Set Aux Mono Name...", "name", bus_type="aux_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Aux Mono Color
             elif var._name == GuiConstants.TEXT_AUX_MONO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_aux_mono_color = True
+                action = Action(GuiConstants.TEXT_AUX_MONO_COLOR, "groups",
+                                "Set Aux Mono Color...", "color", bus_type="aux_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Aux Stereo Name
             elif var._name == GuiConstants.TEXT_AUX_STEREO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_aux_stereo_name = True
+                action = Action(GuiConstants.TEXT_AUX_STEREO_NAME, "groups",
+                                "Set Aux Stereo Name...", "name", bus_type="aux_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Aux Stereo Color
             elif var._name == GuiConstants.TEXT_AUX_STERE0_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_aux_stereo_color = True
+                action = Action(GuiConstants.TEXT_AUX_STERE0_COLOR, "groups",
+                                "Set Aux Stereo Color...", "color", bus_type="aux_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Group Mono Name
             elif var._name == GuiConstants.TEXT_GRP_MONO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_group_mono_name = True
+                action = Action(GuiConstants.TEXT_GRP_MONO_NAME, "groups",
+                                "Set Group Mono Name...", "name", bus_type="group_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Group Mono Color
             elif var._name == GuiConstants.TEXT_GRP_MONO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_group_mono_color = True
+                action = Action(GuiConstants.TEXT_GRP_MONO_COLOR, "groups",
+                                "Set Group Mono Color...", "color", bus_type="group_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Group Stereo Name
             elif var._name == GuiConstants.TEXT_GRP_STEREO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_group_stereo_name = True
+                action = Action(GuiConstants.TEXT_GRP_STEREO_NAME, "groups",
+                                "Set Group Stereo Name...", "name", bus_type="group_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Group Stereo Color
             elif var._name == GuiConstants.TEXT_GRP_STEREO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_group_stereo_color = True
+                action = Action(GuiConstants.TEXT_GRP_STEREO_COLOR, "groups",
+                                "Set Group Stereo Color...", "color", bus_type="group_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Matrix Mono Name
             elif var._name == GuiConstants.TEXT_MTX_MONO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_matrix_mono_name = True
+                action = Action(GuiConstants.TEXT_MTX_MONO_NAME, "groups",
+                                "Set Matrix Mono Name...", "name", bus_type="matrix_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Matrix Mono Color
             elif var._name == GuiConstants.TEXT_MTX_MONO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_matrix_mono_color = True
+                action = Action(GuiConstants.TEXT_MTX_MONO_COLOR, "groups",
+                                "Set Matrix Mono Color...", "color", bus_type="matrix_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Matrix Stereo Name
             elif var._name == GuiConstants.TEXT_MTX_STEREO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_matrix_stereo_name = True
+                action = Action(GuiConstants.TEXT_MTX_STEREO_NAME, "groups",
+                                "Set Matrix Stereo Name...", "name", bus_type="matrix_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Matrix Stereo Color
             elif var._name == GuiConstants.TEXT_MTX_STEREO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_matrix_stereo_color = True
+                action = Action(GuiConstants.TEXT_MTX_STEREO_COLOR, "groups",
+                                "Set Matrix Stereo Color...", "color", bus_type="matrix_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # FX Send Mono Name
             elif var._name == GuiConstants.TEXT_FX_SEND_MONO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_fx_send_mono_name = True
+                action = Action(GuiConstants.TEXT_FX_SEND_MONO_NAME, "groups",
+                                "Set FX Send Mono Name...", "name", bus_type="fx_send_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # FX Send Mono Color
             elif var._name == GuiConstants.TEXT_FX_SEND_MONO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_fx_send_mono_color = True
+                action = Action(GuiConstants.TEXT_FX_SEND_MONO_COLOR, "groups",
+                                "Set FX Send Mono Color...", "color", bus_type="fx_send_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # FX Send Stereo Name
             elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_NAME and var.get() is True:
-                actions = actions + 1
-                cb_fx_send_stereo_name = True
+                action = Action(GuiConstants.TEXT_FX_SEND_STEREO_NAME, "groups",
+                                "Set FX Send Stereo Name...", "name", bus_type="fx_send_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # FX Send Stereo Color
             elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_fx_send_stereo_color = True
+                action = Action(GuiConstants.TEXT_FX_SEND_STEREO_COLOR, "groups",
+                                "Set FX Send Stereo Color...", "color", bus_type="fx_send_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # FX Return Name
             elif var._name == GuiConstants.TEXT_FX_RETURN_NAME and var.get() is True:
-                actions = actions + 1
-                cb_fx_return_name = True
+                action = Action(GuiConstants.TEXT_FX_RETURN_NAME, "groups",
+                                "Set FX Return Name...", "name", bus_type="fx_return")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # FX Return Color
             elif var._name == GuiConstants.TEXT_FX_RETURN_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_fx_return_color = True
+                action = Action(GuiConstants.TEXT_FX_RETURN_COLOR, "groups",
+                                "Set FX Return Color...", "color", bus_type="fx_return")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
     if check_box_reaper:
-        actions = actions + 1
+        actions = increment_actions(actions)
         cb_reaper = True
     else:
         cb_reaper = False
@@ -915,191 +948,19 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     root.update()
 
     if cb_write_to_console:
-        if cb_names:
-            handle_channels_parameter("Set Names to channels...", output, sheet.get_channel_model(),
-                                      action="name")
-            progress(actions)
-            root.update()
+        for action in action_list:
+            if action.get_sheet_tab() == "channels":
+                handle_channels_parameter(action.get_message(), output, sheet.get_channel_model(),
+                                          action.get_action())
 
-        if cb_color:
-            handle_channels_parameter("Set Colors to channels...", output, sheet.get_channel_model(),
-                                      action="color")
-            progress(actions)
-            root.update()
+            elif action.get_sheet_tab() == "sockets":
+                handle_socket_parameter(action.get_message(), output, sheet.get_socket_model(),
+                                        action.get_action())
 
-        if cb_mute:
-            handle_channels_parameter("Set Mutes to channels...", output, sheet.get_channel_model(),
-                                      action="mute")
-            progress(actions)
-            root.update()
+            elif action.get_sheet_tab() == "groups":
+                handle_groups_parameter(action.get_message(), output, sheet.get_group_model(),
+                                        action.get_action(), action.get_bus_type())
 
-        if cb_hpf_on:
-            handle_channels_parameter("Set HPF On to channels...", output, sheet.get_channel_model(),
-                                      action="hpf_on")
-            progress(actions)
-            root.update()
-
-        if cb_hpf_value:
-            handle_channels_parameter("Set HPF Value to channels...", output, sheet.get_channel_model(),
-                                      action="hpf_value")
-            progress(actions)
-            root.update()
-
-        if cb_fader_level:
-            handle_channels_parameter("Set Fader Level to channels...", output, sheet.get_channel_model(),
-                                      action="fader_level")
-            progress(actions)
-            root.update()
-
-        if cb_dca:
-            handle_channels_parameter("Set DCA Assignments to channels...", output, sheet.get_channel_model(),
-                                      action="dca")
-            progress(actions)
-            root.update()
-
-        if cb_mg:
-            handle_channels_parameter("Set Mute Group Assignments to channels...", output,
-                                      sheet.get_channel_model(),
-                                      action="mg")
-            progress(actions)
-            root.update()
-
-        if cb_phantom:
-            handle_socket_parameter("Set Phantom Power to channels...", output,
-                                    sheet.get_socket_model(),
-                                    action="phantom")
-            progress(actions)
-            root.update()
-
-        if cb_pad:
-            handle_socket_parameter("Set Pad to channels...", output, sheet.get_socket_model(),
-                                    action="pad")
-            progress(actions)
-            root.update()
-
-        if cb_gain:
-            handle_socket_parameter("Set Gain to channels...", output, sheet.get_socket_model(),
-                                    action="gain")
-            progress(actions)
-            root.update()
-
-        if cb_dca_name:
-            handle_groups_parameter("Set Name to DCAs...", output, sheet.get_group_model(),
-                                    action="name", bus_type="dca")
-            progress(actions)
-            root.update()
-
-        if cb_dca_color:
-            handle_groups_parameter("Set Color to DCAs...", output, sheet.get_group_model(),
-                                    action="color", bus_type="dca")
-            progress(actions)
-            root.update()
-
-        if cb_aux_mono_name:
-            handle_groups_parameter("Set Name to Mono Auxes...", output, sheet.get_group_model(),
-                                    action="name", bus_type="aux_mono")
-            progress(actions)
-            root.update()
-
-        if cb_aux_mono_color:
-            handle_groups_parameter("Set Color to Mono Auxes...", output, sheet.get_group_model(),
-                                    action="color", bus_type="aux_mono")
-            progress(actions)
-            root.update()
-
-        if cb_aux_stereo_name:
-            handle_groups_parameter("Set Name to Mono Auxes...", output, sheet.get_group_model(),
-                                    action="name", bus_type="aux_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_aux_stereo_color:
-            handle_groups_parameter("Set Color to Mono Auxes...", output, sheet.get_group_model(),
-                                    action="color", bus_type="aux_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_group_mono_name:
-            handle_groups_parameter("Set Name to Mono Groups...", output, sheet.get_group_model(),
-                                    action="name", bus_type="group_mono")
-            progress(actions)
-            root.update()
-
-        if cb_group_mono_color:
-            handle_groups_parameter("Set Color to Mono Groups...", output, sheet.get_group_model(),
-                                    action="color", bus_type="group_mono")
-            progress(actions)
-            root.update()
-
-        if cb_group_stereo_name:
-            handle_groups_parameter("Set Name to Stereo Groups...", output, sheet.get_group_model(),
-                                    action="name", bus_type="group_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_group_stereo_color:
-            handle_groups_parameter("Set Color to Stereo Groups...", output, sheet.get_group_model(),
-                                    action="color", bus_type="group_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_matrix_mono_name:
-            handle_groups_parameter("Set Name to Mono Matrices...", output, sheet.get_group_model(),
-                                    action="name", bus_type="matrix_mono")
-            progress(actions)
-            root.update()
-
-        if cb_matrix_mono_color:
-            handle_groups_parameter("Set Color to Mono Matrices...", output, sheet.get_group_model(),
-                                    action="color", bus_type="matrix_mono")
-            progress(actions)
-            root.update()
-
-        if cb_matrix_stereo_name:
-            handle_groups_parameter("Set Name to Mono Matrices...", output, sheet.get_group_model(),
-                                    action="name", bus_type="matrix_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_matrix_stereo_color:
-            handle_groups_parameter("Set Color to Mono Matrices...", output, sheet.get_group_model(),
-                                    action="color", bus_type="matrix_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_fx_send_mono_name:
-            handle_groups_parameter("Set Name to Mono FX Send...", output, sheet.get_group_model(),
-                                    action="name", bus_type="fx_send_mono")
-            progress(actions)
-            root.update()
-
-        if cb_fx_send_mono_color:
-            handle_groups_parameter("Set Color to Mono FX Send...", output, sheet.get_group_model(),
-                                    action="color", bus_type="fx_send_mono")
-            progress(actions)
-            root.update()
-
-        if cb_fx_send_stereo_name:
-            handle_groups_parameter("Set Name to Stereo FX Send...", output, sheet.get_group_model(),
-                                    action="name", bus_type="fx_send_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_fx_send_stereo_color:
-            handle_groups_parameter("Set Color to Stereo FX Send...", output, sheet.get_group_model(),
-                                    action="color", bus_type="fx_send_stereo")
-            progress(actions)
-            root.update()
-
-        if cb_fx_return_name:
-            handle_groups_parameter("Set Name to FX Return...", output, sheet.get_group_model(),
-                                    action="name", bus_type="fx_return")
-            progress(actions)
-            root.update()
-
-        if cb_fx_return_color:
-            handle_groups_parameter("Set Color to FX Return...", output, sheet.get_group_model(),
-                                    action="color", bus_type="fx_return")
             progress(actions)
             root.update()
 
@@ -1128,6 +989,11 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     progress_open_or_close_connection()
     progress_open_or_close_connection()
     root.update()
+
+
+def increment_actions(actions):
+    actions = actions + 1
+    return actions
 
 
 def read_current_ui_ip_address():
@@ -1444,27 +1310,26 @@ def read_persisted_midi_port():
 
 
 def reset_ip_field_to_default_ip():
-    ip_byte0.delete(0, END)
-    ip_byte0.insert(0, "192")
-    ip_byte1.delete(0, END)
-    ip_byte1.insert(0, "168")
-    ip_byte2.delete(0, END)
-    ip_byte2.insert(0, "1")
-    ip_byte3.delete(0, END)
-    ip_byte3.insert(0, "70")
-    logging.info("Default ip: " + dliveConstants.ip + " was set.")
+    default_ip = dliveConstants.ip
+    set_ip_fields(default_ip)
+    logging.info("Default ip: " + default_ip + " was set.")
 
 
 def set_ip_field_to_local_director_ip():
+    director_ip = "127.0.0.1"
+    set_ip_fields(director_ip)
+    logging.info("Director ip: " + director_ip + " was set.")
+
+
+def set_ip_fields(ip_to_set):
     ip_byte0.delete(0, END)
-    ip_byte0.insert(0, "127")
+    ip_byte0.insert(0, ip_to_set.split(".")[0])
     ip_byte1.delete(0, END)
-    ip_byte1.insert(0, "0")
+    ip_byte1.insert(0, ip_to_set.split(".")[1])
     ip_byte2.delete(0, END)
-    ip_byte2.insert(0, "0")
+    ip_byte2.insert(0, ip_to_set.split(".")[2])
     ip_byte3.delete(0, END)
-    ip_byte3.insert(0, "1")
-    logging.info("Director ip: 127.0.0.1 was set.")
+    ip_byte3.insert(0, ip_to_set.split(".")[3])
 
 
 def remove_tick(var_name):
@@ -1474,19 +1339,12 @@ def remove_tick(var_name):
 
 
 def disable_avantis_checkboxes():
+    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS]
     for checkbox in grid.checkboxes:
-        if checkbox.__getitem__("text") == GuiConstants.TEXT_HPF_ON:
-            remove_tick(GuiConstants.TEXT_HPF_ON)
+        current_cb = checkbox.__getitem__("text")
+        if current_cb in cb_to_disable:
+            remove_tick(current_cb)
             checkbox.config(state="disabled")
-            continue
-        if checkbox.__getitem__("text") == GuiConstants.TEXT_HPF_VALUE:
-            remove_tick(GuiConstants.TEXT_HPF_VALUE)
-            checkbox.config(state="disabled")
-            continue
-        if checkbox.__getitem__("text") == GuiConstants.TEXT_MUTE_GROUPS:
-            remove_tick(GuiConstants.TEXT_MUTE_GROUPS)
-            checkbox.config(state="disabled")
-            continue
 
 
 def reactivate_avantis_checkboxes():

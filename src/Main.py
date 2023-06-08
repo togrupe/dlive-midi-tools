@@ -483,7 +483,7 @@ def gain_socket(output, item, socket_type):
         time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def handle_socket_parameter(message, output, socket_list_entries, action):
+def handle_sockets_parameter(message, output, socket_list_entries, action):
     logging.info(message)
     current_action_label["text"] = message
 
@@ -708,8 +708,9 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     if cb_write_to_console:
         for var in grid.vars:
-            # Name
             logging.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
+
+            # Name
             if var._name == GuiConstants.TEXT_NAME and var.get() is True:
                 action = Action(GuiConstants.TEXT_NAME, "channels",
                                 "Set Names to channels...", "name")
@@ -954,8 +955,8 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
                                           action.get_action())
 
             elif action.get_sheet_tab() == "sockets":
-                handle_socket_parameter(action.get_message(), output, sheet.get_socket_model(),
-                                        action.get_action())
+                handle_sockets_parameter(action.get_message(), output, sheet.get_socket_model(),
+                                         action.get_action())
 
             elif action.get_sheet_tab() == "groups":
                 handle_groups_parameter(action.get_message(), output, sheet.get_group_model(),

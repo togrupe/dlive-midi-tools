@@ -97,7 +97,7 @@ the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the
 
 ![Phantom](doc/reaper/reaper_demo.png)
 
-## Settings on the dlive console
+## Settings on the console
 The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to : `12 to 16`, which is default.
 
 If you want to change the preconfigured Midi port, you can change it in the Graphical User Interface according to your dlive settings. 
@@ -126,6 +126,7 @@ Prerequisites:
 
 3. Run the script with the following command: 
 
+`cd src`
 `python3 Main.py`
 
 4. (Optional) If you want to make a binary out of it, please do the following: 
@@ -163,7 +164,7 @@ Afterwards the following window appears.
 
 8. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) 
-   You can also use the tool to create only the Reaper session file, in case you use a different console. 
+   You can also use the tool to create only the Reaper session file, in case you use a different audio console. 
 
 9. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards the selected action(s) start automatically.
    

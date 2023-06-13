@@ -126,7 +126,7 @@ Prerequisites:
 
 3. Run the script with the following command: 
 
-`cd src`
+`cd src` <br>
 `python3 Main.py`
 
 4. (Optional) If you want to make a binary out of it, please do the following: 

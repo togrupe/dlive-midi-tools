@@ -1,3 +1,4 @@
+# coding=utf-8
 ####################################################
 # Session Creator
 #
@@ -6,9 +7,7 @@
 ####################################################
 
 import logging
-
 from reathon.nodes import Project, Track
-
 from dawsession import ReaperConstants
 
 
@@ -79,9 +78,9 @@ def create_reaper_session(sheet, reaper_output_dir, prefix):
             track.props = [
                 ["NAME", track_name_combined],
                 ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
-                ["REC", generate_rec_item(item.get_channel_dlive(), item.get_record_arm())],
+                ["REC", generate_rec_item(item.get_channel_console(), item.get_record_arm())],
                 ["TRACKHEIGHT", "40 0 0 0 0 0"],
-                ["HWOUT", generate_hwout_item(item.get_channel_dlive())]
+                ["HWOUT", generate_hwout_item(item.get_channel_console())]
             ]
             project.add(track)
 
@@ -89,7 +88,3 @@ def create_reaper_session(sheet, reaper_output_dir, prefix):
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)
 
     project.write(reaper_outputfile)
-
-
-if __name__ == '__main__':
-    create_reaper_session()

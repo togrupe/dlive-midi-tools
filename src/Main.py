@@ -1,10 +1,10 @@
+# coding=utf-8
 ####################################################
 # Main Script
 #
 # Author: Tobias Grupe
 #
 ####################################################
-# coding=utf-8
 import ipaddress
 import json
 import logging
@@ -22,18 +22,20 @@ import numpy
 import pandas as pd
 from mido.sockets import connect
 
-import dliveConstants
 import Toolinfo
+import dliveConstants
 from dawsession import SessionCreator
-from gui import GuiConstants
+import GuiConstants
 from gui.AboutDialog import AboutDialog
+from model.Action import Action
+
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
-from model.DcaListEntry import DcaListEntry
+from model.GroupSetup import GroupSetup
+from model.GroupsListEntry import GroupsListEntry
 from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
-from model.MuteGroupListEntry import MuteGroupListEntry
-from model.PhantomListEntry import PhantomListEntry
+from model.SocketListEntry import SocketListEntry
 from model.Sheet import Sheet
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
@@ -42,7 +44,10 @@ LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
 DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.01
 DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001
 
-logging.basicConfig(filename='main.log', level=logging.DEBUG)
+LOG_FILE = 'main.log'
+CONFIG_FILE = 'config.json'
+
+logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
 
 is_network_communication_allowed = dliveConstants.allow_network_communication
 
@@ -109,7 +114,7 @@ def get_name_channel(output):
             time.sleep(.1)
 
 
-def name_channel(output, item):
+def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     # Trim name if length of name > dliveConstants.trim_after_x_charactors
     if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
         trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
@@ -130,23 +135,26 @@ def name_channel(output, item):
         if len(str(character)) != 0:
             value = ord(character)
             if value > 127:
-                error_msg = "One of the characters in Channel " + str(
-                    item.get_channel_dlive() + 1) + " is not supported. Characters like ä, ö, ü are not supported."
+                error_msg = "One of the characters in " + str(bus_type) + ": channel " + str(
+                    item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü, é are not supported."
                 logging.error(error_msg)
                 showerror(message=error_msg)
+                reset_current_action_label()
+                reset_progress_bar()
+                output.close()
                 exit(1)
             else:
                 payload.append(value)
 
-    prefix = [root.midi_channel, dliveConstants.sysex_message_set_channel_name,
-              item.get_channel_dlive()]
+    prefix = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_name,
+              channel_offset + item.get_channel_console()]
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
     if is_network_communication_allowed:
         output.send(message)
         time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def color_channel(output, item):
+def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
     if lower_color == "blue":
@@ -169,7 +177,8 @@ def color_channel(output, item):
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
 
-    payload_array = [root.midi_channel, dliveConstants.sysex_message_set_channel_colour, item.get_channel_dlive(),
+    payload_array = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour,
+                     channel_offset + item.get_channel_console(),
                      colour]
 
     message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
@@ -182,7 +191,7 @@ def mute_on_channel(output, item):
     midi_channel_tmp = root.midi_channel
 
     lower_mute_on = item.get_mute().lower()
-    channel = item.get_channel_dlive()
+    channel = item.get_channel_console()
 
     if lower_mute_on == "yes":
         message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_on)
@@ -259,7 +268,7 @@ def hpf_on_channel(output, item):
 
     if is_network_communication_allowed:
         output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_on))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=res))
@@ -267,15 +276,20 @@ def hpf_on_channel(output, item):
 
 
 def calculate_vv(hpf_value):
-    return int(127 * ((4608 * numpy.log10(float(hpf_value) / 4) / numpy.log10(2)) - 10699) / 41314)
+    return int(27.58 * numpy.log(float(hpf_value)) - 82.622)
 
 
 def hpf_value_channel(output, item):
-    value_freq = calculate_vv(item.get_hpf_value())
+    hpf_value = item.get_hpf_value()
+    if int(hpf_value) < 20 or int(hpf_value) > 2000:
+        showerror(message="Highpass filter value of CH: " + str(item.get_channel()) +
+                          " only allows values between 20 and 2000 Hz.")
+
+    value_freq = calculate_vv(hpf_value)
 
     if is_network_communication_allowed:
         output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_hpf_frequency))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=value_freq))
@@ -306,7 +320,7 @@ def fader_level_channel(output, item):
 
     if is_network_communication_allowed:
         output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_dlive()))
+            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
                                  value=dliveConstants.nrpn_parameter_id_fader_level))
         output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=int(fader_level)))
@@ -315,12 +329,25 @@ def fader_level_channel(output, item):
 
 def handle_channels_parameter(message, output, channel_list_entries, action):
     logging.info(message)
+    current_action_label["text"] = message
+
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        max_count_dsp_channels = 64
+    else:
+        max_count_dsp_channels = 128
+
     for item in channel_list_entries:
-        logging.info("Processing " + action + " for channel: " + str(item.get_channel_dlive() + 1))
+        if item.get_channel_console() > max_count_dsp_channels - 1:
+            logging.warning("Skipping Channel...current channel number: " + str(item.get_channel()) +
+                            " is bigger than the console supports.")
+            continue
+        logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
-            name_channel(output, item)
+            name_channel(output, item, dliveConstants.midi_channel_offset_channels,
+                         dliveConstants.channel_offset_channels, "Input Channels")
         elif action == "color":
-            color_channel(output, item)
+            color_channel(output, item, dliveConstants.midi_channel_offset_channels,
+                          dliveConstants.channel_offset_channels)
         elif action == "mute":
             mute_on_channel(output, item)
         elif action == "fader_level":
@@ -329,6 +356,10 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             hpf_on_channel(output, item)
         elif action == "hpf_value":
             hpf_value_channel(output, item)
+        elif action == "dca":
+            dca_channel(output, item)
+        elif action == "mute_group":
+            mg_channel(output, item)
 
 
 def pad_socket(output, item, socket_type):
@@ -452,9 +483,11 @@ def gain_socket(output, item, socket_type):
         time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def handle_phantom_and_pad_parameter(message, output, phantom_list_entries, action):
+def handle_sockets_parameter(message, output, socket_list_entries, action):
     logging.info(message)
-    for item in phantom_list_entries:
+    current_action_label["text"] = message
+
+    for item in socket_list_entries:
         logging.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
         if action == "phantom":
             if root.console == dliveConstants.console_drop_down_dlive:
@@ -491,17 +524,8 @@ def assign_dca(output, channel, dca_value):
         time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
 
 
-def assign_mg(output, channel, mg_value):
-    if is_network_communication_allowed:
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_mg_assign))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
-        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
-
-
 def dca_channel(output, item):
-    channel = item.get_channel_dlive()
+    channel = item.get_channel_console()
 
     for dca_index in range(0, 24):
 
@@ -517,8 +541,17 @@ def dca_channel(output, item):
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
 
 
+def assign_mg(output, channel, mg_value):
+    if is_network_communication_allowed:
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_mg_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
+        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
+
+
 def mg_channel(output, item):
-    channel = item.get_channel_dlive()
+    channel = item.get_channel_console()
 
     for mg_index in range(0, 8):
 
@@ -531,21 +564,106 @@ def mg_channel(output, item):
             assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
 
 
-def handle_dca_mg_parameter(message, output, content_list, action):
-    logging.info(message)
-    for item in content_list:
-        if action == "dca":
-            dca_channel(output, item)
-        elif action == "mg":
-            mg_channel(output, item)
-
-
 def is_valid_ip_address(ip_address):
     try:
         ipaddress.IPv4Address(ip_address)
         return True
     except ipaddress.AddressValueError:
         return False
+
+
+def handle_groups_parameter(message, output, groups_model, action, bus_type):
+    logging.info(message)
+    current_action_label["text"] = message
+
+    if bus_type == "dca":
+        for item in groups_model.get_dca_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca,
+                             bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
+
+    if bus_type == "aux_mono":
+        for item in groups_model.get_auxes_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                             dliveConstants.channel_offset_auxes_mono, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                              dliveConstants.channel_offset_auxes_mono)
+
+    if bus_type == "aux_stereo":
+        for item in groups_model.get_auxes_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                             dliveConstants.channel_offset_auxes_stereo, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                              dliveConstants.channel_offset_auxes_stereo)
+
+    if bus_type == "group_mono":
+        for item in groups_model.get_group_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                             dliveConstants.channel_offset_groups_mono, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                              dliveConstants.channel_offset_groups_mono)
+
+    if bus_type == "group_stereo":
+        for item in groups_model.get_group_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                             dliveConstants.channel_offset_groups_stereo, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                              dliveConstants.channel_offset_groups_stereo)
+
+    if bus_type == "matrix_mono":
+        for item in groups_model.get_matrix_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                             dliveConstants.channel_offset_matrices_mono, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                              dliveConstants.channel_offset_matrices_mono)
+
+    if bus_type == "matrix_stereo":
+        for item in groups_model.get_matrix_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                             dliveConstants.channel_offset_matrices_stereo, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                              dliveConstants.channel_offset_matrices_stereo)
+
+    if bus_type == "fx_send_mono":
+        for item in groups_model.get_fx_send_mono_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
+                             dliveConstants.channel_offset_fx_send_mono, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
+                              dliveConstants.channel_offset_fx_send_mono)
+
+    if bus_type == "fx_send_stereo":
+        for item in groups_model.get_fx_send_stereo_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
+                             dliveConstants.channel_offset_fx_send_stereo, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
+                              dliveConstants.channel_offset_fx_send_stereo)
+
+    if bus_type == "fx_return":
+        for item in groups_model.get_fx_return_config():
+            if action == "name":
+                name_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
+                             dliveConstants.channel_offset_fx_return, bus_type)
+            elif action == "color":
+                color_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
+                              dliveConstants.channel_offset_fx_return)
 
 
 def read_document(filename, check_box_reaper, check_box_write_to_console):
@@ -555,7 +673,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '6'
+    latest_spreadsheet_version = '7'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -569,47 +687,15 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         return root.quit()
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_phantom_pad_model(create_phantom_pad_content(pd.read_excel(filename, sheet_name="48V & Pad")))
-    sheet.set_dca_model(create_dca_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_mg_model(create_mg_content(pd.read_excel(filename, sheet_name="Channels")))
-
-    if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
-        mix_rack_ip_tmp = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-
-        if not is_valid_ip_address(mix_rack_ip_tmp):
-            error_msg_invalid_ip = "Given ip: " + mix_rack_ip_tmp + " " + "is invalid. Ip has to be in the following " \
-                                                                          "format: e.g. 192.168.1.70. Each ip subpart can " \
-                                                                          "only be between 0-255"
-            logging.error(error_msg_invalid_ip)
-            showerror(message=error_msg_invalid_ip)
-            reset_progress_bar()
-            return
-
-        logging.info("Open connection to dlive on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
-        try:
-            output = connect(mix_rack_ip_tmp, dliveConstants.port)
-            logging.info("Connection successful.")
-        except socket.timeout:
-            connect_err_message = "Connection to given ip: " + mix_rack_ip_tmp + " " + "could not be " \
-                                                                                       "established. " \
-                                                                                       "Are you in the same " \
-                                                                                       "subnet?"
-
-            logging.error(connect_err_message)
-            showerror(message=connect_err_message)
-            reset_progress_bar()
-            return
-    else:
-        output = None
-    progress_open_or_close_connection()
-    root.update()
+    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets")))
+    sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
     root.console = determine_console_id(var_console.get())
 
     actions = 0
 
-    if check_box_write_to_console.__getitem__(0):
+    if check_box_write_to_console:
         cb_write_to_console = True
     else:
         cb_write_to_console = False
@@ -618,154 +704,272 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         disable_avantis_checkboxes()
         root.update()
 
-    cb_names = False
-    cb_color = False
-    cb_fader_level = False
-    cb_mute = False
-    cb_hpf_on = False
-    cb_hpf_value = False
-    cb_dca = False
-    cb_mg = False
-    cb_phantom = False
-    cb_pad = False
-    cb_gain = False
+    action_list = []
 
     if cb_write_to_console:
         for var in grid.vars:
-            # Name
             logging.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
+
+            # Name
             if var._name == GuiConstants.TEXT_NAME and var.get() is True:
-                actions = actions + 1
-                cb_names = True
+                action = Action(GuiConstants.TEXT_NAME, "channels",
+                                "Set Names to channels...", "name")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Color
             elif var._name == GuiConstants.TEXT_COLOR and var.get() is True:
-                actions = actions + 1
-                cb_color = True
+                action = Action(GuiConstants.TEXT_COLOR, "channels",
+                                "Set Color to channels...", "color")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Mute
             elif var._name == GuiConstants.TEXT_MUTE and var.get() is True:
-                actions = actions + 1
-                cb_mute = True
+                action = Action(GuiConstants.TEXT_MUTE, "channels",
+                                "Set Mute to channels...", "mute")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Fader Level
             elif var._name == GuiConstants.TEXT_FADER_LEVEL and var.get() is True:
-                actions = actions + 1
-                cb_fader_level = True
+                action = Action(GuiConstants.TEXT_FADER_LEVEL, "channels",
+                                "Set Fader Level to channels...", "fader_level")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # HPF On
             elif var._name == GuiConstants.TEXT_HPF_ON and var.get() is True:
-                actions = actions + 1
-                cb_hpf_on = True
+                action = Action(GuiConstants.TEXT_HPF_ON, "channels",
+                                "Set HPF On to channels...", "hpf_on")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # HPF value
             elif var._name == GuiConstants.TEXT_HPF_VALUE and var.get() is True:
-                actions = actions + 1
-                cb_hpf_value = True
+                action = Action(GuiConstants.TEXT_HPF_VALUE, "channels",
+                                "Set HPF Value to channels...", "hpf_value")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # DCAs
             elif var._name == GuiConstants.TEXT_DCA and var.get() is True:
-                actions = actions + 1
-                cb_dca = True
+                action = Action(GuiConstants.TEXT_DCA, "channels",
+                                "Set DCA Assignments to channels...", "dca")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Mute Groups
             elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
-                actions = actions + 1
-                cb_mg = True
+                action = Action(GuiConstants.TEXT_MUTE_GROUPS, "channels",
+                                "Set Mute Group Assignments to channels...", "mute_group")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Phantom
             elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
-                actions = actions + 1
-                cb_phantom = True
+                action = Action(GuiConstants.TEXT_PHANTOM, "sockets",
+                                "Set Phantom Power to sockets...", "phantom")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Pad
             elif var._name == GuiConstants.TEXT_PAD and var.get() is True:
-                actions = actions + 1
-                cb_pad = True
+                action = Action(GuiConstants.TEXT_PAD, "sockets",
+                                "Set Pad to sockets...", "pad")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
             # Gain
             elif var._name == GuiConstants.TEXT_GAIN and var.get() is True:
-                actions = actions + 1
-                cb_gain = True
+                action = Action(GuiConstants.TEXT_GAIN, "sockets",
+                                "Set Gain to sockets...", "gain")
+                action_list.append(action)
+                actions = increment_actions(actions)
 
-    if check_box_reaper.__getitem__(0):
-        actions = actions + 1
+            # DCA Name
+            elif var._name == GuiConstants.TEXT_DCA_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_DCA_NAME, "groups",
+                                "Set DCA Names...", "name", bus_type="dca")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # DCA Color
+            elif var._name == GuiConstants.TEXT_DCA_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_DCA_COLOR, "groups",
+                                "Set DCA Color...", "color", bus_type="dca")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Aux Mono Name
+            elif var._name == GuiConstants.TEXT_AUX_MONO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_AUX_MONO_NAME, "groups",
+                                "Set Aux Mono Name...", "name", bus_type="aux_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Aux Mono Color
+            elif var._name == GuiConstants.TEXT_AUX_MONO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_AUX_MONO_COLOR, "groups",
+                                "Set Aux Mono Color...", "color", bus_type="aux_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Aux Stereo Name
+            elif var._name == GuiConstants.TEXT_AUX_STEREO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_AUX_STEREO_NAME, "groups",
+                                "Set Aux Stereo Name...", "name", bus_type="aux_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Aux Stereo Color
+            elif var._name == GuiConstants.TEXT_AUX_STERE0_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_AUX_STERE0_COLOR, "groups",
+                                "Set Aux Stereo Color...", "color", bus_type="aux_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Group Mono Name
+            elif var._name == GuiConstants.TEXT_GRP_MONO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_GRP_MONO_NAME, "groups",
+                                "Set Group Mono Name...", "name", bus_type="group_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Group Mono Color
+            elif var._name == GuiConstants.TEXT_GRP_MONO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_GRP_MONO_COLOR, "groups",
+                                "Set Group Mono Color...", "color", bus_type="group_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Group Stereo Name
+            elif var._name == GuiConstants.TEXT_GRP_STEREO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_GRP_STEREO_NAME, "groups",
+                                "Set Group Stereo Name...", "name", bus_type="group_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Group Stereo Color
+            elif var._name == GuiConstants.TEXT_GRP_STEREO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_GRP_STEREO_COLOR, "groups",
+                                "Set Group Stereo Color...", "color", bus_type="group_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Matrix Mono Name
+            elif var._name == GuiConstants.TEXT_MTX_MONO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_MTX_MONO_NAME, "groups",
+                                "Set Matrix Mono Name...", "name", bus_type="matrix_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Matrix Mono Color
+            elif var._name == GuiConstants.TEXT_MTX_MONO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_MTX_MONO_COLOR, "groups",
+                                "Set Matrix Mono Color...", "color", bus_type="matrix_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Matrix Stereo Name
+            elif var._name == GuiConstants.TEXT_MTX_STEREO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_MTX_STEREO_NAME, "groups",
+                                "Set Matrix Stereo Name...", "name", bus_type="matrix_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Matrix Stereo Color
+            elif var._name == GuiConstants.TEXT_MTX_STEREO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_MTX_STEREO_COLOR, "groups",
+                                "Set Matrix Stereo Color...", "color", bus_type="matrix_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # FX Send Mono Name
+            elif var._name == GuiConstants.TEXT_FX_SEND_MONO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_FX_SEND_MONO_NAME, "groups",
+                                "Set FX Send Mono Name...", "name", bus_type="fx_send_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # FX Send Mono Color
+            elif var._name == GuiConstants.TEXT_FX_SEND_MONO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_FX_SEND_MONO_COLOR, "groups",
+                                "Set FX Send Mono Color...", "color", bus_type="fx_send_mono")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # FX Send Stereo Name
+            elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_FX_SEND_STEREO_NAME, "groups",
+                                "Set FX Send Stereo Name...", "name", bus_type="fx_send_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # FX Send Stereo Color
+            elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_FX_SEND_STEREO_COLOR, "groups",
+                                "Set FX Send Stereo Color...", "color", bus_type="fx_send_stereo")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # FX Return Name
+            elif var._name == GuiConstants.TEXT_FX_RETURN_NAME and var.get() is True:
+                action = Action(GuiConstants.TEXT_FX_RETURN_NAME, "groups",
+                                "Set FX Return Name...", "name", bus_type="fx_return")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # FX Return Color
+            elif var._name == GuiConstants.TEXT_FX_RETURN_COLOR and var.get() is True:
+                action = Action(GuiConstants.TEXT_FX_RETURN_COLOR, "groups",
+                                "Set FX Return Color...", "color", bus_type="fx_return")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+    if check_box_reaper:
+        actions = increment_actions(actions)
         cb_reaper = True
     else:
         cb_reaper = False
 
-    logging.info("Start Processing...")
+    if check_box_write_to_console and actions == 0:
+        showinfo(message="No spreadsheet column(s) selected. Please select at least one column")
+        return
+
+    action = "Start Processing..."
+    logging.info(action)
+    current_action_label["text"] = action
+
+    if is_network_communication_allowed & check_box_write_to_console:
+        output = connect_to_console(read_current_ui_ip_address())
+    else:
+        output = None
+    progress_open_or_close_connection()
+    root.update()
 
     if cb_write_to_console:
-        if cb_names:
-            handle_channels_parameter("Set Name to channels...", output, sheet.get_channel_model(),
-                                      action="name")
-            progress(actions)
-            root.update()
+        for action in action_list:
+            if action.get_sheet_tab() == "channels":
+                handle_channels_parameter(action.get_message(), output, sheet.get_channel_model(),
+                                          action.get_action())
 
-        if cb_color:
-            handle_channels_parameter("Set Colors to channels...", output, sheet.get_channel_model(),
-                                      action="color")
-            progress(actions)
-            root.update()
+            elif action.get_sheet_tab() == "sockets":
+                handle_sockets_parameter(action.get_message(), output, sheet.get_socket_model(),
+                                         action.get_action())
 
-        if cb_mute:
-            handle_channels_parameter("Set Mute to channels...", output, sheet.get_channel_model(),
-                                      action="mute")
-            progress(actions)
-            root.update()
+            elif action.get_sheet_tab() == "groups":
+                handle_groups_parameter(action.get_message(), output, sheet.get_group_model(),
+                                        action.get_action(), action.get_bus_type())
 
-        if cb_phantom:
-            handle_phantom_and_pad_parameter("Set Phantom Power to channels...", output,
-                                             sheet.get_phantom_pad_model(),
-                                             action="phantom")
-            progress(actions)
-            root.update()
-
-        if cb_pad:
-            handle_phantom_and_pad_parameter("Set Pad to channels...", output, sheet.get_phantom_pad_model(),
-                                             action="pad")
-            progress(actions)
-            root.update()
-
-        if cb_hpf_on:
-            handle_channels_parameter("Set HPF On to the channels...", output, sheet.get_channel_model(),
-                                      action="hpf_on")
-            progress(actions)
-            root.update()
-
-        if cb_hpf_value:
-            handle_channels_parameter("Set HPF Value to the channels...", output, sheet.get_channel_model(),
-                                      action="hpf_value")
-            progress(actions)
-            root.update()
-
-        if cb_fader_level:
-            handle_channels_parameter("Set Fader Level to the channels...", output, sheet.get_channel_model(),
-                                      action="fader_level")
-            progress(actions)
-            root.update()
-
-        if cb_dca:
-            handle_dca_mg_parameter("Set DCA Assignments to the channels...", output, sheet.get_dca_model(),
-                                    action="dca")
-            progress(actions)
-            root.update()
-
-        if cb_mg:
-            handle_dca_mg_parameter("Set Mute Group Assignments to the channels...", output, sheet.get_mg_model(),
-                                    action="mg")
-            progress(actions)
-            root.update()
-
-        if cb_gain:
-            handle_phantom_and_pad_parameter("Set Gain to the channels...", output, sheet.get_phantom_pad_model(),
-                                             action="gain")
             progress(actions)
             root.update()
 
     if cb_reaper:
-        logging.info("Creating Reaper Recording Session Template file...")
+        action = "Creating Reaper Recording Session Template file..."
+        logging.info(action)
+        current_action_label["text"] = action
+
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
         logging.info("Reaper Recording Session Template created")
 
@@ -776,13 +980,25 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         progress(actions)
         root.update()
 
-    logging.info("Processing done")
+    action = "Processing done"
+    logging.info(action)
+    current_action_label["text"] = ""
 
-    if is_network_communication_allowed & check_box_write_to_console.__getitem__(0):
-        output.close()
+    if is_network_communication_allowed & check_box_write_to_console:
+        if output is not None:
+            output.close()
     progress_open_or_close_connection()
     progress_open_or_close_connection()
     root.update()
+
+
+def increment_actions(actions):
+    actions = actions + 1
+    return actions
+
+
+def read_current_ui_ip_address():
+    return ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
 
 
 def create_channel_list_content(sheet_channels):
@@ -790,6 +1006,19 @@ def create_channel_list_content(sheet_channels):
     index = 0
 
     for channel in sheet_channels['Channel']:
+
+        dca_array = []
+        for dca_number in range(1, 25):
+            dca_array.append(str(sheet_channels["DCA" + str(dca_number)].__getitem__(index)))
+
+        dca_config_tmp = DcaConfig(dca_array)
+
+        mg_array = []
+        for mg_number in range(1, 9):
+            mg_array.append(str(sheet_channels["Mute" + str(mg_number)].__getitem__(index)))
+
+        mg_config_tmp = MuteGroupConfig(mg_array)
+
         cle = ChannelListEntry(channel,
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
@@ -798,7 +1027,9 @@ def create_channel_list_content(sheet_channels):
                                str(sheet_channels['Fader Level'].__getitem__(index)),
                                str(sheet_channels['Mute'].__getitem__(index)),
                                str(sheet_channels['Recording'].__getitem__(index)),
-                               str(sheet_channels['Record Arm'].__getitem__(index))
+                               str(sheet_channels['Record Arm'].__getitem__(index)),
+                               dca_config_tmp,
+                               mg_config_tmp
                                )
         channel_list_entries.append(cle)
         index = index + 1
@@ -817,63 +1048,85 @@ def create_misc_content(sheet_misc):
     return misc
 
 
-def create_dca_content(sheet_dcas):
+def create_socket_list_content(sheet_sockets):
+    socket_list_entries = []
+    index = 0
+
+    for socket in sheet_sockets['Socket Number']:
+        ple = SocketListEntry(socket,
+                              str(sheet_sockets['Local Phantom'].__getitem__(index)),
+                              str(sheet_sockets['DX1 Phantom'].__getitem__(index)),
+                              str(sheet_sockets['DX3 Phantom'].__getitem__(index)),
+                              str(sheet_sockets['Local Pad'].__getitem__(index)),
+                              str(sheet_sockets['DX1 Pad'].__getitem__(index)),
+                              str(sheet_sockets['DX3 Pad'].__getitem__(index)),
+                              str(sheet_sockets['Slink Phantom'].__getitem__(index)),
+                              str(sheet_sockets['Slink Pad'].__getitem__(index)),
+                              str(sheet_sockets['Local Gain'].__getitem__(index)),
+                              str(sheet_sockets['DX1 Gain'].__getitem__(index)),
+                              str(sheet_sockets['DX3 Gain'].__getitem__(index)),
+                              str(sheet_sockets['Slink Gain'].__getitem__(index)),
+                              )
+
+        socket_list_entries.append(ple)
+        index = index + 1
+    return socket_list_entries
+
+
+def create_groups_list_content(sheet_groups):
     dca_list_entries = []
+    extract_data(dca_list_entries, sheet_groups, 'DCA', 'DCA Name', 'DCA Color')
+
+    aux_mono_list_entries = []
+    extract_data(aux_mono_list_entries, sheet_groups, 'Mono Auxes', 'Aux Name', 'Aux Color')
+
+    aux_stereo_list_entries = []
+    extract_data(aux_stereo_list_entries, sheet_groups, 'Stereo Auxes', 'StAux Name', 'StAux Color')
+
+    grp_mono_list_entries = []
+    extract_data(grp_mono_list_entries, sheet_groups, 'Mono Group', 'Group Name', 'Group Color')
+
+    grp_stereo_list_entries = []
+    extract_data(grp_stereo_list_entries, sheet_groups, 'Stereo Group', 'StGroup Name', 'StGroup Color')
+
+    mtx_mono_list_entries = []
+    extract_data(mtx_mono_list_entries, sheet_groups, 'Mono Matrix', 'Matrix Name', 'Matrix Color')
+
+    mtx_stereo_list_entries = []
+    extract_data(mtx_stereo_list_entries, sheet_groups, 'Stereo Matrix', 'StMatrix Name', 'StMatrix Color')
+
+    fx_send_mono_list_entries = []
+    extract_data(fx_send_mono_list_entries, sheet_groups, 'Mono FX Send', 'FX Name', 'FX Color')
+
+    fx_send_stereo_list_entries = []
+    extract_data(fx_send_stereo_list_entries, sheet_groups, 'Stereo FX Send', 'StFX Name', 'StFX Color')
+
+    fx_return_list_entries = []
+    extract_data(fx_return_list_entries, sheet_groups, 'FX Return', 'FX Return Name', 'FX Return Color')
+
+    return GroupsListEntry(dca_list_entries,
+                           aux_mono_list_entries,
+                           aux_stereo_list_entries,
+                           grp_mono_list_entries,
+                           grp_stereo_list_entries,
+                           mtx_mono_list_entries,
+                           mtx_stereo_list_entries,
+                           fx_send_mono_list_entries,
+                           fx_send_stereo_list_entries,
+                           fx_return_list_entries)
+
+
+def extract_data(list_entries, sheet_groups, type_name, name, color):
     index = 0
+    for item in sheet_groups[type_name]:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups[name].__getitem__(index)),
+                             str(sheet_groups[color].__getitem__(index))
+                             )
 
-    for channel in sheet_dcas['Channel']:
-        dca_array = []
-        for dca_number in range(1, 25):
-            dca_array.append(str(sheet_dcas["DCA" + str(dca_number)].__getitem__(index)))
-
-        dca_config_tmp = DcaConfig(dca_array)
-
-        dle = DcaListEntry(channel, dca_config_tmp)
-        dca_list_entries.append(dle)
-        index = index + 1
-    return dca_list_entries
-
-
-def create_mg_content(sheet_mg):
-    mg_list_entries = []
-    index = 0
-
-    for channel in sheet_mg['Channel']:
-        mg_array = []
-        for mg_number in range(1, 9):
-            mg_array.append(str(sheet_mg["Mute" + str(mg_number)].__getitem__(index)))
-
-        mg_config_tmp = MuteGroupConfig(mg_array)
-
-        mgle = MuteGroupListEntry(channel, mg_config_tmp)
-        mg_list_entries.append(mgle)
-        index = index + 1
-    return mg_list_entries
-
-
-def create_phantom_pad_content(sheet_48V_and_pad):
-    phantom_and_pad_list_entries = []
-    index = 0
-
-    for socket in sheet_48V_and_pad['Socket Number']:
-        ple = PhantomListEntry(socket,
-                               str(sheet_48V_and_pad['Local Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX1 Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Local Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX1 Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Phantom'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Pad'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Local Gain'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX1 Gain'].__getitem__(index)),
-                               str(sheet_48V_and_pad['DX3 Gain'].__getitem__(index)),
-                               str(sheet_48V_and_pad['Slink Gain'].__getitem__(index)),
-                               )
-
-        phantom_and_pad_list_entries.append(ple)
-        index = index + 1
-    return phantom_and_pad_list_entries
+            list_entries.append(gse)
+            index = index + 1
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):
@@ -903,16 +1156,61 @@ def determine_console_id(selected_console_as_string):
 
 
 def reset_progress_bar():
-    pb['value'] = 0
+    pb['value'] = 0.0
+    value_label['text'] = update_progress_label()
     root.update()
 
 
 def browse_files():
     reset_progress_bar()
-    input_file_path = filedialog.askopenfilename()
-    root.reaper_output_dir = os.path.dirname(input_file_path)
-    root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
-    read_document(input_file_path, get_reaper_state(), get_dlive_write_state())
+
+    cb_reaper = var_write_reaper.get()
+    cb_console_write = var_write_to_console.get()
+
+    if cb_reaper or cb_console_write:
+        input_file_path = filedialog.askopenfilename()
+        if input_file_path == "":
+            # Nothing to do
+            return
+
+        root.reaper_output_dir = os.path.dirname(input_file_path)
+        root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
+        try:
+            read_document(input_file_path, cb_reaper, cb_console_write)
+        except TypeError as exc:
+
+            error_message = "An error happened, probably an empty line could be the issue. " \
+                            "Empty lines in spreadsheet are not supported."
+
+            showerror(message=error_message)
+
+            logging.error(error_message)
+            logging.error(exc)
+
+            reset_progress_bar()
+            reset_current_action_label()
+
+            exit(1)
+
+        except ValueError as exc:
+
+            error_message = "One of the following columns have unexpected characters. " \
+                            "(Mono Auxes, Stereo Auxes, Mono Groups, Stereo Group, \n" \
+                            "Mono Matrix, Stereo Matrix, \n" \
+                            "Mono FX Send, Stereo FX Send, FX Return), the should only contain integer numbers. \n" \
+                            "Please use the Name columns."
+
+            showerror(message=error_message)
+            logging.error(error_message)
+            logging.error(exc)
+
+            reset_progress_bar()
+            reset_current_action_label()
+
+            exit(1)
+
+    else:
+        showerror(message="Nothing to do, please select at least one output option.")
 
 
 def trigger_background_process():
@@ -920,30 +1218,8 @@ def trigger_background_process():
     bg_thread.start()
 
 
-class Checkbar(Frame):
-    def __init__(self, parent=None, picks=[], side=LEFT, anchor=W):
-        Frame.__init__(self, parent)
-        self.vars = []
-        for pick in picks:
-            var = IntVar()
-            chk = Checkbutton(self, text=pick, variable=var)
-            chk.pack(side=side, anchor=anchor, expand=YES)
-            self.vars.append(var)
-
-    def state(self):
-        return map((lambda var: var.get()), self.vars)
-
-
-def get_reaper_state():
-    return list(reaper.state())
-
-
-def get_dlive_write_state():
-    return list(write_to_dlive.state())
-
-
 def save_current_ui_settings():
-    file = dliveConstants.config_file
+    file = CONFIG_FILE
     current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
 
     data = {
@@ -962,9 +1238,9 @@ def save_current_ui_settings():
 
 
 def read_persisted_ip():
-    filename = dliveConstants.config_file
+    filename = CONFIG_FILE
     if os.path.exists(filename):
-        logging.info("Try to read persisted ip from " + dliveConstants.config_file + " file.")
+        logging.info("Try to read persisted ip from " + str(filename) + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
             try:
@@ -985,9 +1261,9 @@ def read_persisted_ip():
 
 
 def read_persisted_console():
-    filename = dliveConstants.config_file
+    filename = CONFIG_FILE
     if os.path.exists(filename):
-        logging.info("Try to read persisted console from " + dliveConstants.config_file + " file.")
+        logging.info("Try to read persisted console from " + str(filename) + " file.")
         with open(filename, 'r') as file:
             data = json.load(file)
             try:
@@ -1010,7 +1286,7 @@ def read_persisted_console():
 
 
 def read_persisted_midi_port():
-    filename = dliveConstants.config_file
+    filename = CONFIG_FILE
     if os.path.exists(filename):
         logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
         with open(filename, 'r') as file:
@@ -1035,27 +1311,26 @@ def read_persisted_midi_port():
 
 
 def reset_ip_field_to_default_ip():
-    ip_byte0.delete(0, END)
-    ip_byte0.insert(0, "192")
-    ip_byte1.delete(0, END)
-    ip_byte1.insert(0, "168")
-    ip_byte2.delete(0, END)
-    ip_byte2.insert(0, "1")
-    ip_byte3.delete(0, END)
-    ip_byte3.insert(0, "70")
-    logging.info("Default ip: " + dliveConstants.ip + " was set.")
+    default_ip = dliveConstants.ip
+    set_ip_fields(default_ip)
+    logging.info("Default ip: " + default_ip + " was set.")
 
 
 def set_ip_field_to_local_director_ip():
+    director_ip = "127.0.0.1"
+    set_ip_fields(director_ip)
+    logging.info("Director ip: " + director_ip + " was set.")
+
+
+def set_ip_fields(ip_to_set):
     ip_byte0.delete(0, END)
-    ip_byte0.insert(0, "127")
+    ip_byte0.insert(0, ip_to_set.split(".")[0])
     ip_byte1.delete(0, END)
-    ip_byte1.insert(0, "0")
+    ip_byte1.insert(0, ip_to_set.split(".")[1])
     ip_byte2.delete(0, END)
-    ip_byte2.insert(0, "0")
+    ip_byte2.insert(0, ip_to_set.split(".")[2])
     ip_byte3.delete(0, END)
-    ip_byte3.insert(0, "1")
-    logging.info("Director ip: 127.0.0.1 was set.")
+    ip_byte3.insert(0, ip_to_set.split(".")[3])
 
 
 def remove_tick(var_name):
@@ -1065,24 +1340,27 @@ def remove_tick(var_name):
 
 
 def disable_avantis_checkboxes():
+    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS]
     for checkbox in grid.checkboxes:
-        if checkbox.__getitem__("text") == GuiConstants.TEXT_HPF_ON:
-            remove_tick(GuiConstants.TEXT_HPF_ON)
+        current_cb = checkbox.__getitem__("text")
+        if current_cb in cb_to_disable:
+            remove_tick(current_cb)
             checkbox.config(state="disabled")
-            continue
-        if checkbox.__getitem__("text") == GuiConstants.TEXT_HPF_VALUE:
-            remove_tick(GuiConstants.TEXT_HPF_VALUE)
-            checkbox.config(state="disabled")
-            continue
-        if checkbox.__getitem__("text") == GuiConstants.TEXT_MUTE_GROUPS:
-            remove_tick(GuiConstants.TEXT_MUTE_GROUPS)
-            checkbox.config(state="disabled")
-            continue
 
 
 def reactivate_avantis_checkboxes():
     for checkbox in grid.checkboxes:
         checkbox.config(state="normal")
+
+
+def select_all_checkboxes():
+    for var in grid.vars:
+        var.set(True)
+
+
+def clear_all_checkboxes():
+    for var in grid.vars:
+        var.set(False)
 
 
 def on_console_selected(*args):
@@ -1115,13 +1393,13 @@ def progress(actions=None):
         if pb['value'] < 100:
             pb['value'] += 90 / actions
             value_label['text'] = update_progress_label()
-        else:
-            showinfo(message='Writing completed!')
 
 
 def progress_open_or_close_connection():
-    if pb['value'] < 100:
-        pb['value'] += 5
+    if round(pb['value']) < 100.0:
+        pb['value'] += 5.0
+        if pb['value'] > 100.0:
+            pb['value'] = 100.0
         value_label['text'] = update_progress_label()
     else:
         showinfo(message='Writing completed!')
@@ -1166,6 +1444,7 @@ class CheckboxGrid(Frame):
 
 root = Tk()
 ip_address_label = StringVar(root)
+current_action_label = StringVar(root)
 
 
 def about_dialog():
@@ -1174,9 +1453,69 @@ def about_dialog():
     about.mainloop()
 
 
+def update_current_action():
+    current_action_label['text'] = update_current_action_label()
+
+
+def reset_current_action_label():
+    current_action_label['text'] = ""
+    root.update()
+
+
+def update_current_action_label():
+    return f"Current Action:"
+
+
+def connect_to_console(mix_rack_ip_tmp, test=False):
+    logging.info("Open connection to console on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
+    try:
+        output = connect(mix_rack_ip_tmp, dliveConstants.port)
+        if test:
+            action = "Connection Test Successful"
+        else:
+            action = "Connection successful"
+        logging.info(action)
+        current_action_label["text"] = action
+        return output
+    except socket.timeout:
+        connect_err_message = "Connection to IP-Address: " + mix_rack_ip_tmp + " " + "could not be " \
+                                                                                     "established. " \
+                                                                                     "Are you in the same " \
+                                                                                     "subnet?"
+        action = "Connection failed"
+        logging.error(action)
+        current_action_label["text"] = action
+
+        logging.error(connect_err_message)
+        showerror(message=connect_err_message)
+        reset_progress_bar()
+        return None
+
+
+def disconnect_from_console(output):
+    output.close()
+
+
+def test_ip_connection():
+    reset_current_action_label()
+    test_ip = read_current_ui_ip_address()
+    logging.info("Test connection to " + str(test_ip))
+    try:
+        ret = connect_to_console(test_ip, test=True)
+
+        if ret is not None:
+            disconnect_from_console(ret)
+            showinfo(message="Connection Test successful")
+    except OSError:
+        action = "Connection Test failed"
+        logging.error(action)
+        current_action_label["text"] = action
+        showerror(message=action)
+
+
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('900x550')
+    root.geometry('1300x750')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1185,7 +1524,7 @@ if __name__ == '__main__':
     file_menu = Menu(menu_bar, tearoff=0)
     file_menu.add_command(label="About", command=about_dialog)
     file_menu.add_separator()
-    file_menu.add_command(label="Exit", command=root.destroy)
+    file_menu.add_command(label="Close", command=root.destroy)
 
     # Add the file menu to the menu bar
     menu_bar.add_cascade(label="Help", menu=file_menu)
@@ -1204,8 +1543,17 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    write_to_dlive = Checkbar(root, ['Write to console'])
-    reaper = Checkbar(root, ['Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)'])
+    output_option_frame = LabelFrame(root, text="Output Option")
+    var_write_to_console = BooleanVar(value=True)
+    write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
+                                   var=var_write_to_console)
+    var_write_reaper = BooleanVar(value=False)
+    reaper = Checkbutton(output_option_frame,
+                         text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                         var=var_write_reaper)
+
+    write_to_console.grid(row=0, column=0, sticky="W")
+    reaper.grid(row=1, column=0, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1221,23 +1569,63 @@ if __name__ == '__main__':
     reaper_file_prefix = ""
 
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from the given spreadsheet which column you want to write.").pack(side=TOP)
+    Label(root, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
 
-    headers = ["Channel", "Preamp", "Processing", "Attribute"]
-    labels = [[GuiConstants.TEXT_NAME, GuiConstants.TEXT_COLOR],
-              [GuiConstants.TEXT_PHANTOM, GuiConstants.TEXT_PAD, GuiConstants.TEXT_GAIN],
-              [GuiConstants.TEXT_MUTE, GuiConstants.TEXT_FADER_LEVEL, GuiConstants.TEXT_HPF_ON,
-               GuiConstants.TEXT_HPF_VALUE],
-              [GuiConstants.TEXT_DCA, GuiConstants.TEXT_MUTE_GROUPS]]
+    headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
+    labels = [
+        [GuiConstants.TEXT_NAME,
+         GuiConstants.TEXT_COLOR,
+         GuiConstants.TEXT_HPF_ON,
+         GuiConstants.TEXT_HPF_VALUE,
+         GuiConstants.TEXT_MUTE,
+         GuiConstants.TEXT_FADER_LEVEL,
+         GuiConstants.TEXT_DCA,
+         GuiConstants.TEXT_MUTE_GROUPS
+         ],
+        [GuiConstants.TEXT_PHANTOM,
+         GuiConstants.TEXT_PAD,
+         GuiConstants.TEXT_GAIN
+         ],
+        [GuiConstants.TEXT_AUX_MONO_NAME,
+         GuiConstants.TEXT_AUX_MONO_COLOR,
+         GuiConstants.TEXT_AUX_STEREO_NAME,
+         GuiConstants.TEXT_AUX_STERE0_COLOR,
+         GuiConstants.TEXT_GRP_MONO_NAME,
+         GuiConstants.TEXT_GRP_MONO_COLOR,
+         GuiConstants.TEXT_GRP_STEREO_NAME,
+         GuiConstants.TEXT_GRP_STEREO_COLOR
+         ],
+        [GuiConstants.TEXT_DCA_NAME,
+         GuiConstants.TEXT_DCA_COLOR,
+         GuiConstants.TEXT_MTX_MONO_NAME,
+         GuiConstants.TEXT_MTX_MONO_COLOR,
+         GuiConstants.TEXT_MTX_STEREO_NAME,
+         GuiConstants.TEXT_MTX_STEREO_COLOR
+         ],
+        [GuiConstants.TEXT_FX_SEND_MONO_NAME,
+         GuiConstants.TEXT_FX_SEND_MONO_COLOR,
+         GuiConstants.TEXT_FX_SEND_STEREO_NAME,
+         GuiConstants.TEXT_FX_SEND_STEREO_COLOR,
+         GuiConstants.TEXT_FX_RETURN_NAME,
+         GuiConstants.TEXT_FX_RETURN_COLOR
+         ]
+    ]
+
     grid = CheckboxGrid(root, headers, labels)
     grid.pack(side=TOP)
 
+    global_select_frame = Frame(root)
+
+    button_select_all = Button(global_select_frame, text='Select All', command=select_all_checkboxes, width=8)
+    button_select_all.grid(row=0, column=0)
+    button_clear_all = Button(global_select_frame, text='Clear', command=clear_all_checkboxes, width=8)
+    button_clear_all.grid(row=0, column=1)
+
+    global_select_frame.pack(side=TOP)
+
     Label(root, text=" ").pack(side=TOP)
     Label(root, text=" ").pack(side=TOP)
-    write_to_dlive.pack(side=TOP, fill=X)
-    write_to_dlive.config(bd=2)
-    reaper.pack(side=TOP, fill=X)
-    reaper.config(bd=2)
+    output_option_frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())
 
@@ -1273,6 +1661,7 @@ if __name__ == '__main__':
     Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
     Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
     Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
+    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
     ip_field.pack(side=RIGHT)
 
     var_midi_channel.set(read_persisted_midi_port())  # default value
@@ -1308,20 +1697,25 @@ if __name__ == '__main__':
         row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
+    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
+    current_action_label.grid(row=2)
+    Label(bottom_frame, text=" ", width=30).grid(row=3)
+
     pb = ttk.Progressbar(
         bottom_frame,
         orient='horizontal',
         mode='determinate',
-        length=850
+        length=1250
     )
 
-    pb.grid(row=2)
+    pb.grid(row=4)
 
     # label to show current value in percent
     value_label = ttk.Label(bottom_frame, text=update_progress_label())
-    value_label.grid(row=3)
+    value_label.grid(row=5)
 
-    Button(bottom_frame, text='Quit', command=root.destroy).grid(row=4)
+    Button(bottom_frame, text='Close', command=root.destroy).grid(row=6)
+    Label(bottom_frame, text=" ", width=30).grid(row=7)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)

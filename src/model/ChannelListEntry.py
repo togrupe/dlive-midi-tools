@@ -1,5 +1,12 @@
+# coding=utf-8
+####################################################
+# Represents channel with its attributes.
+#
+# Author: Tobias Grupe
+#
+####################################################
 class ChannelListEntry:
-    def __init__(self, channel, name, color, hpf_on, hpf_value, fader_level, mute, recording, record_arm):
+    def __init__(self, channel, name, color, hpf_on, hpf_value, fader_level, mute, recording, record_arm, dca_config, mg_config):
         self.channel = channel
         self.name = name
         self.color = color
@@ -9,11 +16,13 @@ class ChannelListEntry:
         self.mute = mute
         self.recording = recording
         self.record_arm = record_arm
+        self.dca_config = dca_config
+        self.mg_config = mg_config
 
     def get_channel(self):
         return self.channel
 
-    def get_channel_dlive(self):
+    def get_channel_console(self):
         return self.get_channel() - 1
 
     def get_name(self):
@@ -39,3 +48,9 @@ class ChannelListEntry:
 
     def get_record_arm(self):
         return self.record_arm
+
+    def get_dca_config(self):
+        return self.dca_config
+
+    def get_mg_config(self):
+        return self.mg_config

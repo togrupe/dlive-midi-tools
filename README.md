@@ -91,6 +91,12 @@ More details to the `Sockets` columns can be found [here](doc/sockets/README.md)
 
 More details to the `Groups` columns can be found [here](doc/groups/README.md)
 
+### Mixer Config
+This is a report of used busses. It does not change the "Mixer Config". <br> Please have a look at the yellow box. <br>
+It can help you to set the "Mixer Config" properly.
+
+![mixerconfig](doc/mixerconfig/excel_mixerconfig.png)
+
 # Example Generated Reaper Recording Session
 If you select the "Generate Reaper Recording Session" checkbox, 
 the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the template generation process. 

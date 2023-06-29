@@ -50,8 +50,8 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | Date       | OS                 | Download                                                                                         | Release Notes |
 |---------|------------|--------------------|--------------------------------------------------------------------------------------------------|---------------|
-| v2.4.0  |            | MacOS (x86_64)     |                                                                                                  | [Link](#v240) | 
-|         |            | Windows (x86_64)   |                                                                                                  |               |
+| v2.4.0  | 29.06.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_0/dmt-v2_4_0-macos.zip)           | [Link](#v240) | 
+|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_0/dmt-v2_4_0-windows.zip)         |               |
 | v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
 |         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
 | v2.2.0  | 29.04.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
@@ -206,6 +206,7 @@ Feature & Maintenance Release
 - Channels > 64 skipped for Avantis
 - UI Error Handling improved
 - Repository reorganized
+- Spreadsheet improved (Mixer Config report, DCA names) 
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.

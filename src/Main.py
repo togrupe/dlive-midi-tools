@@ -1629,7 +1629,7 @@ if __name__ == '__main__':
 
     var_console.set(read_persisted_console())
 
-    Label(console_frame, text="Console:", width=25).pack(side=LEFT)
+    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
 
     dropdown_console = OptionMenu(console_frame, var_console,
                                   dliveConstants.console_drop_down_dlive,

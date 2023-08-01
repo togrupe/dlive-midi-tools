@@ -187,20 +187,14 @@ Have fun!
 
 ### v2.4.1
 
-Maintenance Release
-
-#### New Features
-
-#### Improvements
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
+Bugfix Release
 
 #### Issues fixed
 - spreadsheet template formula fixed
 
-#### Known issues
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
 
 ### v2.4.0
 

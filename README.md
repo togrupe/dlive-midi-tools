@@ -200,7 +200,7 @@ Maintenance Release
 - HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
 
 #### Issues fixed
-- Excel Template formula fixed
+- spreadsheet template formula fixed
 
 #### Known issues
 

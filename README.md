@@ -187,7 +187,7 @@ Have fun!
 
 ### v2.4.1
 
-Bugfix Release
+Maintenance Release
 
 #### Issues fixed
 - spreadsheet template formula fixed

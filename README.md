@@ -190,7 +190,7 @@ Have fun!
 Maintenance Release
 
 #### Issues fixed
-- spreadsheet template formula fixed
+- spreadsheet template formula fixed at cell AT2
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.

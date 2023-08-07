@@ -246,8 +246,11 @@ def phantom_socket(output, item, socket_type):
         return
     elif lower_phantom == "yes":
         res = dliveConstants.phantom_power_on
-    else:
+    elif lower_phantom == "no":
         res = dliveConstants.phantom_power_off
+    else:
+        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
+        return
 
     # TODO Currently required because value of socket cannot be higher than 127
     if socket > 127:
@@ -405,8 +408,11 @@ def pad_socket(output, item, socket_type):
         return
     elif lower_pad == "yes":
         res = dliveConstants.pad_on
-    else:
+    elif lower_pad == "no":
         res = dliveConstants.pad_off
+    else:
+        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
+        return
 
     # TODO Currently required because value of socket cannot be higher than 127
     if socket > 127:
@@ -457,6 +463,10 @@ def gain_socket(output, item, socket_type):
 
     # TODO Currently required because value of socket cannot be higher than 127
     if socket > 127:
+        return
+
+    if gain_sheet_lower == 'nan':
+        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
         return
 
     switcher = {

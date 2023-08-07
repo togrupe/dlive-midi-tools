@@ -241,7 +241,10 @@ def phantom_socket(output, item, socket_type):
         else:
             return
 
-    if lower_phantom == "yes":
+    if lower_phantom == "-":
+        logging.info("Don´t care flag found, skipping socket: " + str(socket))
+        return
+    elif lower_phantom == "yes":
         res = dliveConstants.phantom_power_on
     else:
         res = dliveConstants.phantom_power_off
@@ -397,7 +400,10 @@ def pad_socket(output, item, socket_type):
         else:
             return
 
-    if lower_pad == "yes":
+    if lower_pad == "-":
+        logging.info("Don´t care flag found, skipping socket: " + str(socket))
+        return
+    elif lower_pad == "yes":
         res = dliveConstants.pad_on
     else:
         res = dliveConstants.pad_off
@@ -420,31 +426,31 @@ def gain_socket(output, item, socket_type):
 
     if socket_type == "local":
         if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            gain_sheet_lower = str(float(str(item.get_local_gain())))
+            gain_sheet_lower = str(item.get_local_gain())
             socket = socket_dlive_tmp
         elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            gain_sheet_lower = str(float(str(item.get_local_gain())))
+            gain_sheet_lower = str(item.get_local_gain())
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
         if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(float(str(item.get_dx1_gain())))
+            gain_sheet_lower = str(item.get_dx1_gain())
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
         if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(float(str(item.get_dx3_gain())))
+            gain_sheet_lower = str(item.get_dx3_gain())
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
         if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(float(str(item.get_slink_gain())))
+            gain_sheet_lower = str(item.get_slink_gain())
             socket = socket_dlive_tmp + 64
         else:
             return
@@ -454,20 +460,25 @@ def gain_socket(output, item, socket_type):
         return
 
     switcher = {
-        "60.0": dliveConstants.gain_level_plus60,
-        "55.0": dliveConstants.gain_level_plus55,
-        "50.0": dliveConstants.gain_level_plus50,
-        "45.0": dliveConstants.gain_level_plus45,
-        "40.0": dliveConstants.gain_level_plus40,
-        "35.0": dliveConstants.gain_level_plus35,
-        "30.0": dliveConstants.gain_level_plus30,
-        "25.0": dliveConstants.gain_level_plus25,
-        "20.0": dliveConstants.gain_level_plus20,
-        "15.0": dliveConstants.gain_level_plus15,
-        "10.0": dliveConstants.gain_level_plus10,
-        "5.0": dliveConstants.gain_level_plus5
+        "60": dliveConstants.gain_level_plus60,
+        "55": dliveConstants.gain_level_plus55,
+        "50": dliveConstants.gain_level_plus50,
+        "45": dliveConstants.gain_level_plus45,
+        "40": dliveConstants.gain_level_plus40,
+        "35": dliveConstants.gain_level_plus35,
+        "30": dliveConstants.gain_level_plus30,
+        "25": dliveConstants.gain_level_plus25,
+        "20": dliveConstants.gain_level_plus20,
+        "15": dliveConstants.gain_level_plus15,
+        "10": dliveConstants.gain_level_plus10,
+        "5": dliveConstants.gain_level_plus5,
+        "-": -1
     }
     gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
+
+    if gain_level == -1:
+        logging.info("Don´t care flag found, skipping socket: " + str(socket))
+        return
 
     if is_network_communication_allowed:
         logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) + " to socket: " + str(
@@ -673,7 +684,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '7'
+    latest_spreadsheet_version = '8'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -687,7 +698,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         return root.quit()
 
     sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets")))
+    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets", dtype=str)))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
@@ -1053,7 +1064,7 @@ def create_socket_list_content(sheet_sockets):
     index = 0
 
     for socket in sheet_sockets['Socket Number']:
-        ple = SocketListEntry(socket,
+        ple = SocketListEntry(int(socket),
                               str(sheet_sockets['Local Phantom'].__getitem__(index)),
                               str(sheet_sockets['DX1 Phantom'].__getitem__(index)),
                               str(sheet_sockets['DX3 Phantom'].__getitem__(index)),

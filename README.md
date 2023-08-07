@@ -191,10 +191,10 @@ Have fun!
 Feature & Maintenance Release
 
 #### New Features
-- Don´t care feature for sockets sheet added
+- "Don´t care" feature for sockets sheet added
 
 #### Improvements
-- Gain Value Mapping improved 
+- Gain Value Mapping improved - gain value are now more accurate.
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.

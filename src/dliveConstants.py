@@ -79,15 +79,15 @@ fader_level_minus_inf = 0x00
 
 # Gain levels
 gain_level_plus60 = 0x7F
-gain_level_plus55 = 0x74 # corrected from spec, old: 0x73
-gain_level_plus50 = 0x68 # corrected from spec, old: 0x67
-gain_level_plus45 = 0x5D # corrected from spec, old: 0x5C
-gain_level_plus40 = 0x51 # corrected from spec, old: 0x50
-gain_level_plus35 = 0x46 # corrected from spec, old: 0x45
+gain_level_plus55 = 0x74 # corrected from V1.9 spec, old: 0x73
+gain_level_plus50 = 0x68 # corrected from V1.9 spec, old: 0x67
+gain_level_plus45 = 0x5D # corrected from V1.9 spec, old: 0x5C
+gain_level_plus40 = 0x51 # corrected from V1.9 spec, old: 0x50
+gain_level_plus35 = 0x46 # corrected from V1.9 spec, old: 0x45
 gain_level_plus30 = 0x3A
-gain_level_plus25 = 0x2F # corrected from spec, old: 0x2E
-gain_level_plus20 = 0x23 # corrected from spec, old: 0x22
-gain_level_plus15 = 0x18 # corrected from spec, old: 0x17
+gain_level_plus25 = 0x2F # corrected from V1.9 spec, old: 0x2E
+gain_level_plus20 = 0x23 # corrected from V1.9 spec, old: 0x22
+gain_level_plus15 = 0x18 # corrected from V1.9 spec, old: 0x17
 gain_level_plus10 = 0x0C
 gain_level_plus5 = 0x0
 

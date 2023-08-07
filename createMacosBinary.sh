@@ -11,6 +11,8 @@ mkdir out
 cp ./dist/${basename} out
 cp dLiveChannelList.xlsx out
 cp dLiveChannelList.ods out
+cp testing/dLiveChannelListTesting.xlsx out
+cp testing/dLiveChannelListTesting.ods out
 echo ${replaced_tag}
 cd out
 zip -r ${basename}.zip .

@@ -192,6 +192,7 @@ Feature & Maintenance Release
 
 #### New Features
 - "Don´t care" feature for sockets sheet added
+- "Don´t care" feature for channels cheet added
 
 #### Improvements
 - Gain Value Mapping improved - gain values are now more accurate.

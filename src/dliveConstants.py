@@ -20,9 +20,11 @@ lcd_color_white = 0x07
 phantom_power_off = 0x00
 phantom_power_on = 0x7F
 
-# The HPF on values
+# The HPF related values
 hpf_off = 0x00
 hpf_on = 0x7F
+hpf_min_frequency = 20
+hpf_max_frequency = 2000
 
 # The PAD  values
 pad_off = 0x00

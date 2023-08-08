@@ -304,16 +304,22 @@ def calculate_vv(hpf_value):
     return int(27.58 * numpy.log(float(hpf_value)) - 82.622)
 
 
+def clamp(value, lower_limit, upper_limit):
+    return max(lower_limit, min(value, upper_limit))
+
+
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
-    if hpf_value == 'nan':
+    if hpf_value == 'nan' or hpf_value == '-':
         logging.info("Don´t care flag found, skipping channel")
         return
-    if int(hpf_value) < 20 or int(hpf_value) > 2000:
+    if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
         showerror(message="Highpass filter value of CH: " + str(item.get_channel()) +
-                          " only allows values between 20 and 2000 Hz.")
+                          " only allows values between " + str(dliveConstants.hpf_min_frequency) + " and "
+                          + str(dliveConstants.hpf_max_frequency) + " Hz. Given value: " + hpf_value +
+                          " has been clipped to the lower or upper limit.")
 
-    value_freq = calculate_vv(hpf_value)
+    value_freq = calculate_vv(clamp(int(hpf_value), 20, 2000))
 
     if is_network_communication_allowed:
         output.send(
@@ -1683,7 +1689,7 @@ if __name__ == '__main__':
 
     var_console.set(read_persisted_console())
 
-    Label(console_frame, text="Console:", width=25).pack(side=LEFT)
+    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
 
     dropdown_console = OptionMenu(console_frame, var_console,
                                   dliveConstants.console_drop_down_dlive,

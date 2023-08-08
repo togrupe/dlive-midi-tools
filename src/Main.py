@@ -193,12 +193,21 @@ def mute_on_channel(output, item):
     lower_mute_on = item.get_mute().lower()
     channel = item.get_channel_console()
 
-    if lower_mute_on == "yes":
+    if lower_mute_on == "-":
+        logging.info("Don´t care flag found, skipping channel")
+        return
+    elif lower_mute_on == "yes":
         message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_on)
         message_off = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.note_off)
-    else:
+    elif lower_mute_on == "no":
         message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_off)
         message_off = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.note_off)
+    elif lower_mute_on == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
+    else:
+        logging.warning("Unexpected input value found")
+        return
 
     if is_network_communication_allowed:
         output.send(message_on)
@@ -267,10 +276,20 @@ def phantom_socket(output, item, socket_type):
 
 def hpf_on_channel(output, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
-    if lower_hpf_on == "yes":
+
+    if lower_hpf_on == "-":
+        logging.info("Don´t care flag found, skipping channel")
+        return
+    elif lower_hpf_on == "yes":
         res = dliveConstants.hpf_on
-    else:
+    elif lower_hpf_on == "no":
         res = dliveConstants.hpf_off
+    elif lower_hpf_on == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
+    else:
+        logging.warning("Unexpected input value found")
+        return
 
     if is_network_communication_allowed:
         output.send(
@@ -287,6 +306,9 @@ def calculate_vv(hpf_value):
 
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
+    if hpf_value == 'nan':
+        logging.info("Don´t care flag found, skipping channel")
+        return
     if int(hpf_value) < 20 or int(hpf_value) > 2000:
         showerror(message="Highpass filter value of CH: " + str(item.get_channel()) +
                           " only allows values between 20 and 2000 Hz.")
@@ -303,24 +325,32 @@ def hpf_value_channel(output, item):
 
 
 def fader_level_channel(output, item):
-    lower_fader_level = str(float(str(item.get_fader_level())))
+    lower_fader_level = str(item.get_fader_level())
+
+    if lower_fader_level == 'nan':
+        return
 
     switcher = {
-        "10.0": dliveConstants.fader_level_plus10,
-        "5.0": dliveConstants.fader_level_plus5,
-        "0.0": dliveConstants.fader_level_zero,
-        "-5.0": dliveConstants.fader_level_minus5,
-        "-10.0": dliveConstants.fader_level_minus10,
-        "-15.0": dliveConstants.fader_level_minus15,
-        "-20.0": dliveConstants.fader_level_minus20,
-        "-25.0": dliveConstants.fader_level_minus25,
-        "-30.0": dliveConstants.fader_level_minus30,
-        "-35.0": dliveConstants.fader_level_minus35,
-        "-40.0": dliveConstants.fader_level_minus40,
-        "-45.0": dliveConstants.fader_level_minus45,
-        "-99.0": dliveConstants.fader_level_minus_inf
+        "10": dliveConstants.fader_level_plus10,
+        "5": dliveConstants.fader_level_plus5,
+        "0": dliveConstants.fader_level_zero,
+        "-5": dliveConstants.fader_level_minus5,
+        "-10": dliveConstants.fader_level_minus10,
+        "-15": dliveConstants.fader_level_minus15,
+        "-20": dliveConstants.fader_level_minus20,
+        "-25": dliveConstants.fader_level_minus25,
+        "-30": dliveConstants.fader_level_minus30,
+        "-35": dliveConstants.fader_level_minus35,
+        "-40": dliveConstants.fader_level_minus40,
+        "-45": dliveConstants.fader_level_minus45,
+        "-99": dliveConstants.fader_level_minus_inf,
+        "-": -1
     }
     fader_level = switcher.get(lower_fader_level, "Invalid Fader level")
+
+    if fader_level == -1:
+        logging.info("Don´t care flag found, skipping channel")
+        return
 
     logging.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))
 
@@ -410,8 +440,11 @@ def pad_socket(output, item, socket_type):
         res = dliveConstants.pad_on
     elif lower_pad == "no":
         res = dliveConstants.pad_off
-    else:
+    elif lower_pad == 'nan':
         logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
+        return
+    else:
+        logging.warning("unexpected input value found")
         return
 
     # TODO Currently required because value of socket cannot be higher than 127
@@ -707,7 +740,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         showerror(message=error_msg)
         return root.quit()
 
-    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
+    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels", dtype=str)))
     sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets", dtype=str)))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
@@ -1040,7 +1073,7 @@ def create_channel_list_content(sheet_channels):
 
         mg_config_tmp = MuteGroupConfig(mg_array)
 
-        cle = ChannelListEntry(channel,
+        cle = ChannelListEntry(int(channel),
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
                                str(sheet_channels['HPF On'].__getitem__(index)),

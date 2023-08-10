@@ -195,7 +195,7 @@ Feature & Maintenance Release
 - "Don´t care" feature for channels cheet added
 
 #### Improvements
-- Gain Value Mapping improved - gain values are now more accurate.
+- Gain value mapping improved - gain values are now more accurate.
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.

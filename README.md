@@ -42,7 +42,12 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * mido - Midi Library
 * pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
+* xlrd
+* odfpy
+* openpyxl
 * pyinstaller - Binary creator
+
+see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 ## Overview
 ![Overview](doc/overview.drawio.png)

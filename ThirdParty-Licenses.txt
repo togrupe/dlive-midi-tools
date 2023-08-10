@@ -1,6 +1,7 @@
 This file contains all Licenses from used 3rd Party Software
 
 >> mido
+https://github.com/mido/mido/blob/main/LICENSE
 ============================================
 The MIT License
 
@@ -26,6 +27,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 >> openpyxl
+https://github.com/fluidware/openpyxl/blob/master/LICENCE
 ============================================
 This software is under the MIT Licence
 ======================================
@@ -64,6 +66,7 @@ Note: backport changes by Raymond were originally distributed under MIT
 
 
 >> pandas
+https://github.com/pandas-dev/pandas/blob/main/LICENSE
 ============================================
 BSD 3-Clause License
 
@@ -75,6 +78,7 @@ Copyright (c) 2011-2023, Open source contributors.
 
 
 >> xlrd
+https://github.com/python-excel/xlrd/blob/master/LICENSE
 ============================================
 There are two licenses associated with xlrd. This one relates to the bulk of
 the work done on the library::
@@ -154,6 +158,7 @@ This one covers some earlier work::
      */
 
 >> odfpy
+https://github.com/eea/odfpy/blob/master/GPL-LICENSE-2.txt
 ============================================
 
 		    GNU GENERAL PUBLIC LICENSE
@@ -167,6 +172,7 @@ This one covers some earlier work::
 
 
  >> reathon
+ https://github.com/jamesb93/reathon/blob/main/LICENSE.txt
  ============================================
  GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -177,6 +183,7 @@ This one covers some earlier work::
 
 
 >> pyinstaller
+https://github.com/pyinstaller/pyinstaller/blob/develop/COPYING.txt
 ============================================
 
 Copyright (c) 2010-2023, PyInstaller Development Team

@@ -352,10 +352,17 @@ def fader_level_channel(output, item):
         "-99": dliveConstants.fader_level_minus_inf,
         "-": -1
     }
-    fader_level = switcher.get(lower_fader_level, "Invalid Fader level")
+    fader_level = switcher.get(lower_fader_level, -2)
 
     if fader_level == -1:
         logging.info("Don´t care flag found, skipping channel")
+        return
+
+    if fader_level == -2:
+        errormsg = "Invalid fader level: " + lower_fader_level + " at channel: " + \
+                   str(item.get_channel()) + ". Please use the dropdown values. Channel will be skipped"
+        logging.info(errormsg)
+        showerror(message=errormsg)
         return
 
     logging.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))

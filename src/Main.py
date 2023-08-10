@@ -355,7 +355,7 @@ def fader_level_channel(output, item):
     fader_level = switcher.get(lower_fader_level, -2)
 
     if fader_level == -1:
-        logging.info("Don´t care flag found, skipping channel")
+        logging.info("Don´t care flag found, skipping fader level for channel: " + str(item.get_channel()))
         return
 
     if fader_level == -2:

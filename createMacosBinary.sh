@@ -13,6 +13,8 @@ cp dLiveChannelList.xlsx out
 cp dLiveChannelList.ods out
 cp testing/dLiveChannelListTesting.xlsx out
 cp testing/dLiveChannelListTesting.ods out
+cp ThirdParty-Licenses.txt out
+cp LICENSE out
 echo ${replaced_tag}
 cd out
 zip -r ${basename}.zip .

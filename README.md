@@ -42,7 +42,12 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * mido - Midi Library
 * pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
+* xlrd
+* odfpy
+* openpyxl
 * pyinstaller - Binary creator
+
+see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 ## Overview
 ![Overview](doc/overview.drawio.png)
@@ -50,6 +55,8 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | Date       | OS                 | Download                                                                                         | Release Notes |
 |---------|------------|--------------------|--------------------------------------------------------------------------------------------------|---------------|
+| v2.5.0  |            | MacOS (x86_64)     |                                                                                                  | [Link](#v250) | 
+|         |            | Windows (x86_64)   |                                                                                                  |               
 | v2.4.1  | 01.08.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
 |         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
 | v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
@@ -184,6 +191,25 @@ Have fun!
 
 
 ## Release Notes
+### v2.5.0
+
+Feature & Maintenance Release
+
+#### New Features
+- "Don´t care" feature for sockets sheet added
+- "Don´t care" feature for channels cheet added
+
+#### Improvements
+- Gain value mapping improved - gain values are now more accurate.
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
+
+#### Issues fixed
+
+#### Known issues
+
 
 ### v2.4.1
 

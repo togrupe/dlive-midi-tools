@@ -177,7 +177,7 @@ Afterwards the following window appears.
 
 8. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
-You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1) and continue with Step 9 (2).
+   You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1) and continue with Step 9 (2).
 
 <img alt="onlyreapter" src="doc/reaper_only.png" width="500"/>
 
@@ -199,7 +199,7 @@ Feature & Maintenance Release
 
 #### New Features
 - "Don´t care" feature for sockets sheet added
-- "Don´t care" feature for channels cheet added
+- "Don´t care" feature for channels sheet added
 
 #### Improvements
 - Gain value mapping improved - gain values are now more accurate.

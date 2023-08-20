@@ -1047,7 +1047,8 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         logging.info(action)
         current_action_label["text"] = action
 
-        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
+        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                             var_reaper_track_prefix.get())
         logging.info("Reaper Recording Session Template created")
 
         progress(actions)
@@ -1629,8 +1630,14 @@ if __name__ == '__main__':
                          text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
                          var=var_write_reaper)
 
+    var_reaper_track_prefix = BooleanVar(value=False)
+    cb_reaper_track_prefix = Checkbutton(output_option_frame,
+                                         text="Disable Default Track Numbering",
+                                         var=var_reaper_track_prefix)
+
     write_to_console.grid(row=0, column=0, sticky="W")
     reaper.grid(row=1, column=0, sticky="W")
+    cb_reaper_track_prefix.grid(row=1, column=1, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)

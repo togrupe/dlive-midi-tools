@@ -53,7 +53,7 @@ def generate_hwout_item(channel):
     return ret
 
 
-def create_reaper_session(sheet, reaper_output_dir, prefix):
+def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering):
     project = Project()
 
     project.props = [
@@ -74,7 +74,10 @@ def create_reaper_session(sheet, reaper_output_dir, prefix):
             else:
                 track_name_raw = name
 
-            track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
+            if disable_default_track_numbering:
+                track_name_combined = track_name_raw
+            else:
+                track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
             track.props = [
                 ["NAME", track_name_combined],
                 ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
@@ -84,7 +87,7 @@ def create_reaper_session(sheet, reaper_output_dir, prefix):
             ]
             project.add(track)
 
-    reaper_outputfile = reaper_output_dir + "/" + prefix + "-" + "recording-template.rpp"
+    reaper_outputfile = reaper_output_dir + "/" + file_prefix + "-" + "recording-template.rpp"
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)
 
     project.write(reaper_outputfile)

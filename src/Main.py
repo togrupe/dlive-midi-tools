@@ -157,7 +157,10 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
 def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
-    if lower_color == "blue":
+    if lower_color == "-":
+        logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
+        return
+    elif lower_color == "blue":
         colour = dliveConstants.lcd_color_blue
     elif lower_color == "red":
         colour = dliveConstants.lcd_color_red
@@ -173,6 +176,9 @@ def color_channel(output, item, midi_channel_offset, channel_offset):
         colour = dliveConstants.lcd_color_black
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
+    elif lower_color == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
     else:
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black

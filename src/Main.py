@@ -124,6 +124,10 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     else:
         trimmed_name = str(item.get_name())
 
+    if trimmed_name == '-':
+        logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
+        return
+
     if trimmed_name == 'nan':
         characters = [' ', ' ', ' ', ' ', ' ', ' ', '']
     else:

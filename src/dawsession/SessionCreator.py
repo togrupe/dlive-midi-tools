@@ -29,6 +29,8 @@ def convert_sheet_color_to_reaper_color(color):
         colour = ReaperConstants.reaper_color_black
     elif lower_color == 'white':
         colour = ReaperConstants.reaper_color_white
+    elif lower_color == 'orange':
+        colour = ReaperConstants.reaper_color_orange
     else:
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = ReaperConstants.reaper_color_black
@@ -53,7 +55,12 @@ def generate_hwout_item(channel):
     return ret
 
 
-def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix, additional_prefix):
+def extract_first_channel(master_recording_patch_string):
+    return int(master_recording_patch_string.split("-")[0]) - 1
+
+
+def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
+                          additional_prefix, has_master_recording_tracks, master_recording_patch_string):
     project = Project()
 
     project.props = [
@@ -92,6 +99,29 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
                 ["HWOUT", generate_hwout_item(item.get_channel_console())]
             ]
             project.add(track)
+
+    if has_master_recording_tracks:
+        master_recording_patch = extract_first_channel(master_recording_patch_string)
+
+        master_track_l = Track()
+        master_track_l.props = [
+            ["NAME", "MasterL"],
+            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange")],
+            ["REC", generate_rec_item(master_recording_patch, "yes")],
+            ["TRACKHEIGHT", "40 0 0 0 0 0"],
+            ["HWOUT", generate_hwout_item(master_recording_patch)]
+        ]
+        project.add(master_track_l)
+
+        master_track_r = Track()
+        master_track_r.props = [
+            ["NAME", "MasterR"],
+            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange")],
+            ["REC", generate_rec_item(master_recording_patch + 1, "yes")],
+            ["TRACKHEIGHT", "40 0 0 0 0 0"],
+            ["HWOUT", generate_hwout_item(master_recording_patch + 1)]
+        ]
+        project.add(master_track_r)
 
     reaper_outputfile = reaper_output_dir + "/" + file_prefix + "-" + "recording-template.rpp"
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)

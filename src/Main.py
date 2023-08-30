@@ -16,6 +16,7 @@ import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
+from tkinter.ttk import Combobox
 
 import mido
 import numpy
@@ -1048,9 +1049,16 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         logging.info(action)
         current_action_label["text"] = action
 
+        if var_reaper_additional_master_tracks and var_master_recording_patch.get() == "Select DAW Input":
+            progress(actions)
+            root.update()
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
+
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
                                              var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
-                                             additional_track_prefix.get())
+                                             additional_track_prefix.get(), var_reaper_additional_master_tracks,
+                                             var_master_recording_patch.get())
         logging.info("Reaper Recording Session Template created")
 
         progress(actions)
@@ -1634,7 +1642,7 @@ if __name__ == '__main__':
 
     var_disable_track_numbering = BooleanVar(value=False)
     cb_reaper_track_prefix = Checkbutton(output_option_frame,
-                                         text="Disable Default Track Numbering",
+                                         text="Disable Track Numbering",
                                          var=var_disable_track_numbering)
 
     var_reaper_additional_prefix = BooleanVar(value=False)
@@ -1645,11 +1653,24 @@ if __name__ == '__main__':
     additional_track_prefix = Entry(output_option_frame, width=20)
     additional_track_prefix = Entry(output_option_frame, width=20)
 
+    var_reaper_additional_master_tracks = BooleanVar(value=False)
+    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
+                                              text="Add 2 Additional Master-tracks",
+                                              var=var_reaper_additional_master_tracks)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128") # workaround
+    var_master_recording_patch = StringVar()
+    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
+    combobox_master_track.set("Select DAW Input")
+
     write_to_console.grid(row=0, column=0, sticky="W")
     reaper.grid(row=1, column=0, sticky="W")
     cb_reaper_track_prefix.grid(row=1, column=1, sticky="W")
     cb_reaper_additional_prefix.grid(row=2, column=1, sticky="W")
     additional_track_prefix.grid(row=2, column=2, sticky="W")
+    cb_reaper_additional_master_tracks.grid(row=3, column=1, sticky="W")
+    combobox_master_track.grid(row=3, column=2, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)

@@ -1645,6 +1645,8 @@ if __name__ == '__main__':
                                          text="Disable Track Numbering",
                                          var=var_disable_track_numbering)
 
+    track_prefix_label = Label(output_option_frame, text="Example: Band_Date_City", width=30)
+
     var_reaper_additional_prefix = BooleanVar(value=False)
     cb_reaper_additional_prefix = Checkbutton(output_option_frame,
                                               text="Add Custom Track Prefix",
@@ -1669,6 +1671,7 @@ if __name__ == '__main__':
     cb_reaper_track_prefix.grid(row=1, column=1, sticky="W")
     cb_reaper_additional_prefix.grid(row=2, column=1, sticky="W")
     additional_track_prefix.grid(row=2, column=2, sticky="W")
+    track_prefix_label.grid(row=2, column=3, sticky="W")
     cb_reaper_additional_master_tracks.grid(row=3, column=1, sticky="W")
     combobox_master_track.grid(row=3, column=2, sticky="W")
 

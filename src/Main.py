@@ -1744,7 +1744,6 @@ if __name__ == '__main__':
     global_select_frame.pack(side=TOP)
 
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text=" ").pack(side=TOP)
     output_option_frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())

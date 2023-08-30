@@ -53,7 +53,7 @@ def generate_hwout_item(channel):
     return ret
 
 
-def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering):
+def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix, additional_prefix):
     project = Project()
 
     project.props = [
@@ -75,9 +75,15 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
                 track_name_raw = name
 
             if disable_default_track_numbering:
-                track_name_combined = track_name_raw
+                if has_additional_prefix:
+                    track_name_combined = additional_prefix + "_" + track_name_raw
+                else:
+                    track_name_combined = track_name_raw
             else:
-                track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
+                if has_additional_prefix:
+                    track_name_combined = "{}_{:0>3d}_{}".format(additional_prefix, item.get_channel(), track_name_raw)
+                else:
+                    track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
             track.props = [
                 ["NAME", track_name_combined],
                 ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],

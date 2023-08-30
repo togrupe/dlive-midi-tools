@@ -124,7 +124,7 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     else:
         trimmed_name = str(item.get_name())
 
-    if trimmed_name == '-':
+    if trimmed_name == '-' or trimmed_name == 'byp':
         logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
         return
 
@@ -161,7 +161,7 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
 def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
-    if lower_color == "-":
+    if lower_color == "-" or lower_color == 'byp':
         logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
         return
     elif lower_color == "blue":
@@ -203,7 +203,7 @@ def mute_on_channel(output, item):
     lower_mute_on = item.get_mute().lower()
     channel = item.get_channel_console()
 
-    if lower_mute_on == "-":
+    if lower_mute_on == "-" or lower_mute_on == "byp":
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_mute_on == "yes":
@@ -260,7 +260,7 @@ def phantom_socket(output, item, socket_type):
         else:
             return
 
-    if lower_phantom == "-":
+    if lower_phantom == "-" or lower_phantom == "byp":
         logging.info("Don´t care flag found, skipping socket: " + str(socket))
         return
     elif lower_phantom == "yes":
@@ -287,7 +287,7 @@ def phantom_socket(output, item, socket_type):
 def hpf_on_channel(output, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
 
-    if lower_hpf_on == "-":
+    if lower_hpf_on == "-" or lower_hpf_on == "byp":
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_hpf_on == "yes":
@@ -320,7 +320,7 @@ def clamp(value, lower_limit, upper_limit):
 
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
-    if hpf_value == 'nan' or hpf_value == '-':
+    if hpf_value == 'nan' or hpf_value == '-' or hpf_value == 'byp':
         logging.info("Don´t care flag found, skipping channel")
         return
     if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
@@ -360,7 +360,8 @@ def fader_level_channel(output, item):
         "-40": dliveConstants.fader_level_minus40,
         "-45": dliveConstants.fader_level_minus45,
         "-99": dliveConstants.fader_level_minus_inf,
-        "-": -1
+        "-": -1,
+        "byp": -1
     }
     fader_level = switcher.get(lower_fader_level, -2)
 
@@ -1048,7 +1049,8 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         current_action_label["text"] = action
 
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
-                                             var_reaper_track_prefix.get())
+                                             var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                             additional_track_prefix.get())
         logging.info("Reaper Recording Session Template created")
 
         progress(actions)
@@ -1630,14 +1632,24 @@ if __name__ == '__main__':
                          text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
                          var=var_write_reaper)
 
-    var_reaper_track_prefix = BooleanVar(value=False)
+    var_disable_track_numbering = BooleanVar(value=False)
     cb_reaper_track_prefix = Checkbutton(output_option_frame,
                                          text="Disable Default Track Numbering",
-                                         var=var_reaper_track_prefix)
+                                         var=var_disable_track_numbering)
+
+    var_reaper_additional_prefix = BooleanVar(value=False)
+    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
+                                              text="Add Custom Track Prefix",
+                                              var=var_reaper_additional_prefix)
+
+    additional_track_prefix = Entry(output_option_frame, width=20)
+    additional_track_prefix = Entry(output_option_frame, width=20)
 
     write_to_console.grid(row=0, column=0, sticky="W")
     reaper.grid(row=1, column=0, sticky="W")
     cb_reaper_track_prefix.grid(row=1, column=1, sticky="W")
+    cb_reaper_additional_prefix.grid(row=2, column=1, sticky="W")
+    additional_track_prefix.grid(row=2, column=2, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)

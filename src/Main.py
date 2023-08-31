@@ -1049,7 +1049,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         logging.info(action)
         current_action_label["text"] = action
 
-        if var_reaper_additional_master_tracks and var_master_recording_patch.get() == "Select DAW Input":
+        if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
             progress(actions)
             root.update()
             showerror(message="DAW Inputs for additional master tracks must to be chosen.")

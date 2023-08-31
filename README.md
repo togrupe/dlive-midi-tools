@@ -45,6 +45,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * xlrd
 * odfpy
 * openpyxl
+* numpy
 * pyinstaller - Binary creator
 
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
@@ -175,14 +176,17 @@ Afterwards the following window appears.
    `Clear` removes all ticks.
 
 
-8. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
-   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
-   You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1+2) and continue with Step 9 (3).<br><br>
+8. If you also want to create a Reaper session template, set the corresponding tick. The Reaper session file `<input-spreadsheet-file>-recording-template.rpp` 
+   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
    
-   The default track numbering can also be disabled.
-   
+   The following Reaper based options are available: <br>
+   * Track numbering can also be disabled.<br>
+   * An additional custom track prefix can also be added.<br>
+   * Add two additional mono busses to record your mixing sum.
 
-<img alt="onlyreapter" src="doc/reaper_only.png" width="500"/>
+   You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1+2) and continue with Step 9 (3).<br><br>
+
+<img alt="onlyreaper" src="doc/reaper_only.png" width="700"/>
 
 9. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards the selected action(s) start automatically.
    
@@ -201,9 +205,10 @@ Have fun!
 Feature & Maintenance Release
 
 #### New Features
-- "Don´t care" feature for sockets sheet added
-- "Don´t care" feature for channels sheet added
-- Possibility to disable default track numbering 
+- Bypass feature for sockets and channels sheet added
+- Possibility to disable track numbering
+- Possibility to add two additional master-tracks
+- Possibility to add a custom track prefix
 
 #### Improvements
 - Gain value mapping improved - gain values are now more accurate.

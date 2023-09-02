@@ -523,7 +523,7 @@ def gain_socket(output, item, socket_type):
     if socket > 127:
         return
 
-    if gain_sheet_lower == 'nan':
+    if gain_sheet_lower == 'nan' or gain_sheet_lower == 'byp':
         logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
         return
 

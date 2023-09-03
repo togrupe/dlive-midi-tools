@@ -42,10 +42,10 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * mido - Midi Library
 * pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
-* xlrd
-* odfpy
-* openpyxl
-* numpy
+* xlrd - supports xls format
+* odfpy - support odf format
+* openpyxl - supports xlsx format
+* numpy - array computing
 * pyinstaller - Binary creator
 
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
@@ -125,7 +125,7 @@ Please make sure that your ethernet or Wi-Fi interface has an ip address in the 
 
 ## Usage
 Prerequisites: 
-* Python >= 3.8
+* Python >= 3.11
 * dlive Firmware: >= 1.97
 * Avantis Firmware: >= 1.25
 * Reaper >= 6.75
@@ -205,7 +205,7 @@ Have fun!
 Feature & Maintenance Release
 
 #### New Features
-- Bypass feature for sockets and channels sheet added
+- Bypass feature on channels, sockets and groups sheet added
 - Possibility to disable track numbering
 - Possibility to add two additional master-tracks
 - Possibility to add a custom track prefix

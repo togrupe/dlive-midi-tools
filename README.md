@@ -42,7 +42,13 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * mido - Midi Library
 * pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
+* xlrd - supports xls format
+* odfpy - support odf format
+* openpyxl - supports xlsx format
+* numpy - array computing
 * pyinstaller - Binary creator
+
+see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 ## Overview
 ![Overview](doc/overview.drawio.png)
@@ -50,6 +56,8 @@ By using this software, you acknowledge and agree that you do so at your own ris
 ## Download
 | Version | Date       | OS                 | Download                                                                                         | Release Notes |
 |---------|------------|--------------------|--------------------------------------------------------------------------------------------------|---------------|
+| v2.5.0  | 15.09.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
+|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
 | v2.4.1  | 01.08.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
 |         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
 | v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
@@ -117,7 +125,7 @@ Please make sure that your ethernet or Wi-Fi interface has an ip address in the 
 
 ## Usage
 Prerequisites: 
-* Python >= 3.8
+* Python >= 3.11
 * dlive Firmware: >= 1.97
 * Avantis Firmware: >= 1.25
 * Reaper >= 6.75
@@ -143,7 +151,7 @@ Prerequisites:
 
     4.2 Create a onefile binary (works for Windows and MacOS)
 
-    `pyinstaller.exe --onefile -w Main.py`
+    `pyinstaller -y --onefile -w ./src/Main.py`
 
 
 Afterwards the following window appears. 
@@ -168,11 +176,17 @@ Afterwards the following window appears.
    `Clear` removes all ticks.
 
 
-8. If you also want to create a Reaper template session, set the corresponding tick. The Reaper session file `<input-spread-sheet-file>-recording-template.rpp` 
-   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` Tab, you can configure, which channel shall be recorded, and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
-You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1) and continue with Step 9 (2).
+8. If you also want to create a Reaper session template, set the corresponding tick. The Reaper session file `<input-spreadsheet-file>-recording-template.rpp` 
+   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
+   
+   The following Reaper based options are available: <br>
+   * Track numbering can also be disabled.<br>
+   * An additional custom track prefix can also be added.<br>
+   * Add two additional mono busses to record your mixing sum.
 
-<img alt="onlyreapter" src="doc/reaper_only.png" width="500"/>
+   You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1+2) and continue with Step 9 (3).<br><br>
+
+<img alt="onlyreaper" src="doc/reaper_only.png" width="700"/>
 
 9. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards the selected action(s) start automatically.
    
@@ -186,6 +200,27 @@ Have fun!
 
 
 ## Release Notes
+### v2.5.0
+
+Feature & Maintenance Release
+
+#### New Features
+- Bypass feature on channels, sockets and groups sheet added
+- Possibility to disable track numbering
+- Possibility to add two additional master-tracks
+- Possibility to add a custom track prefix
+
+#### Improvements
+- Gain value mapping improved - gain values are now more accurate.
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
+
+#### Issues fixed
+
+#### Known issues
+
 
 ### v2.4.1
 

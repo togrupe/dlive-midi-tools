@@ -16,6 +16,7 @@ import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
+from tkinter.ttk import Combobox
 
 import mido
 import numpy
@@ -124,6 +125,10 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     else:
         trimmed_name = str(item.get_name())
 
+    if trimmed_name == '-' or trimmed_name == 'byp':
+        logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
+        return
+
     if trimmed_name == 'nan':
         characters = [' ', ' ', ' ', ' ', ' ', ' ', '']
     else:
@@ -157,7 +162,10 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
 def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
-    if lower_color == "blue":
+    if lower_color == "-" or lower_color == 'byp':
+        logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
+        return
+    elif lower_color == "blue":
         colour = dliveConstants.lcd_color_blue
     elif lower_color == "red":
         colour = dliveConstants.lcd_color_red
@@ -173,6 +181,9 @@ def color_channel(output, item, midi_channel_offset, channel_offset):
         colour = dliveConstants.lcd_color_black
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
+    elif lower_color == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
     else:
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
@@ -193,12 +204,21 @@ def mute_on_channel(output, item):
     lower_mute_on = item.get_mute().lower()
     channel = item.get_channel_console()
 
-    if lower_mute_on == "yes":
+    if lower_mute_on == "-" or lower_mute_on == "byp":
+        logging.info("Don´t care flag found, skipping channel")
+        return
+    elif lower_mute_on == "yes":
         message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_on)
         message_off = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.note_off)
-    else:
+    elif lower_mute_on == "no":
         message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_off)
         message_off = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.note_off)
+    elif lower_mute_on == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
+    else:
+        logging.warning("Unexpected input value found")
+        return
 
     if is_network_communication_allowed:
         output.send(message_on)
@@ -241,10 +261,16 @@ def phantom_socket(output, item, socket_type):
         else:
             return
 
-    if lower_phantom == "yes":
+    if lower_phantom == "-" or lower_phantom == "byp":
+        logging.info("Don´t care flag found, skipping socket: " + str(socket))
+        return
+    elif lower_phantom == "yes":
         res = dliveConstants.phantom_power_on
-    else:
+    elif lower_phantom == "no":
         res = dliveConstants.phantom_power_off
+    else:
+        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
+        return
 
     # TODO Currently required because value of socket cannot be higher than 127
     if socket > 127:
@@ -261,10 +287,20 @@ def phantom_socket(output, item, socket_type):
 
 def hpf_on_channel(output, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
-    if lower_hpf_on == "yes":
+
+    if lower_hpf_on == "-" or lower_hpf_on == "byp":
+        logging.info("Don´t care flag found, skipping channel")
+        return
+    elif lower_hpf_on == "yes":
         res = dliveConstants.hpf_on
-    else:
+    elif lower_hpf_on == "no":
         res = dliveConstants.hpf_off
+    elif lower_hpf_on == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
+    else:
+        logging.warning("Unexpected input value found")
+        return
 
     if is_network_communication_allowed:
         output.send(
@@ -279,13 +315,22 @@ def calculate_vv(hpf_value):
     return int(27.58 * numpy.log(float(hpf_value)) - 82.622)
 
 
+def clamp(value, lower_limit, upper_limit):
+    return max(lower_limit, min(value, upper_limit))
+
+
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
-    if int(hpf_value) < 20 or int(hpf_value) > 2000:
+    if hpf_value == 'nan' or hpf_value == '-' or hpf_value == 'byp':
+        logging.info("Don´t care flag found, skipping channel")
+        return
+    if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
         showerror(message="Highpass filter value of CH: " + str(item.get_channel()) +
-                          " only allows values between 20 and 2000 Hz.")
+                          " only allows values between " + str(dliveConstants.hpf_min_frequency) + " and "
+                          + str(dliveConstants.hpf_max_frequency) + " Hz. Given value: " + hpf_value +
+                          " has been clipped to the lower or upper limit.")
 
-    value_freq = calculate_vv(hpf_value)
+    value_freq = calculate_vv(clamp(int(hpf_value), 20, 2000))
 
     if is_network_communication_allowed:
         output.send(
@@ -297,24 +342,40 @@ def hpf_value_channel(output, item):
 
 
 def fader_level_channel(output, item):
-    lower_fader_level = str(float(str(item.get_fader_level())))
+    lower_fader_level = str(item.get_fader_level())
+
+    if lower_fader_level == 'nan':
+        return
 
     switcher = {
-        "10.0": dliveConstants.fader_level_plus10,
-        "5.0": dliveConstants.fader_level_plus5,
-        "0.0": dliveConstants.fader_level_zero,
-        "-5.0": dliveConstants.fader_level_minus5,
-        "-10.0": dliveConstants.fader_level_minus10,
-        "-15.0": dliveConstants.fader_level_minus15,
-        "-20.0": dliveConstants.fader_level_minus20,
-        "-25.0": dliveConstants.fader_level_minus25,
-        "-30.0": dliveConstants.fader_level_minus30,
-        "-35.0": dliveConstants.fader_level_minus35,
-        "-40.0": dliveConstants.fader_level_minus40,
-        "-45.0": dliveConstants.fader_level_minus45,
-        "-99.0": dliveConstants.fader_level_minus_inf
+        "10": dliveConstants.fader_level_plus10,
+        "5": dliveConstants.fader_level_plus5,
+        "0": dliveConstants.fader_level_zero,
+        "-5": dliveConstants.fader_level_minus5,
+        "-10": dliveConstants.fader_level_minus10,
+        "-15": dliveConstants.fader_level_minus15,
+        "-20": dliveConstants.fader_level_minus20,
+        "-25": dliveConstants.fader_level_minus25,
+        "-30": dliveConstants.fader_level_minus30,
+        "-35": dliveConstants.fader_level_minus35,
+        "-40": dliveConstants.fader_level_minus40,
+        "-45": dliveConstants.fader_level_minus45,
+        "-99": dliveConstants.fader_level_minus_inf,
+        "-": -1,
+        "byp": -1
     }
-    fader_level = switcher.get(lower_fader_level, "Invalid Fader level")
+    fader_level = switcher.get(lower_fader_level, -2)
+
+    if fader_level == -1:
+        logging.info("Don´t care flag found, skipping fader level for channel: " + str(item.get_channel()))
+        return
+
+    if fader_level == -2:
+        errormsg = "Invalid fader level: " + lower_fader_level + " at channel: " + \
+                   str(item.get_channel()) + ". Please use the dropdown values. Channel will be skipped"
+        logging.info(errormsg)
+        showerror(message=errormsg)
+        return
 
     logging.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))
 
@@ -397,10 +458,19 @@ def pad_socket(output, item, socket_type):
         else:
             return
 
-    if lower_pad == "yes":
+    if lower_pad == "-":
+        logging.info("Don´t care flag found, skipping socket: " + str(socket))
+        return
+    elif lower_pad == "yes":
         res = dliveConstants.pad_on
-    else:
+    elif lower_pad == "no":
         res = dliveConstants.pad_off
+    elif lower_pad == 'nan':
+        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
+        return
+    else:
+        logging.warning("unexpected input value found")
+        return
 
     # TODO Currently required because value of socket cannot be higher than 127
     if socket > 127:
@@ -420,31 +490,31 @@ def gain_socket(output, item, socket_type):
 
     if socket_type == "local":
         if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            gain_sheet_lower = str(float(str(item.get_local_gain())))
+            gain_sheet_lower = str(item.get_local_gain())
             socket = socket_dlive_tmp
         elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            gain_sheet_lower = str(float(str(item.get_local_gain())))
+            gain_sheet_lower = str(item.get_local_gain())
             socket = socket_dlive_tmp
         else:
             return
 
     elif socket_type == "DX1":
         if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(float(str(item.get_dx1_gain())))
+            gain_sheet_lower = str(item.get_dx1_gain())
             socket = socket_dlive_tmp + 64
         else:
             return
 
     elif socket_type == "DX3":
         if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(float(str(item.get_dx3_gain())))
+            gain_sheet_lower = str(item.get_dx3_gain())
             socket = socket_dlive_tmp + 96
         else:
             return
 
     elif socket_type == "Slink":
         if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(float(str(item.get_slink_gain())))
+            gain_sheet_lower = str(item.get_slink_gain())
             socket = socket_dlive_tmp + 64
         else:
             return
@@ -453,21 +523,30 @@ def gain_socket(output, item, socket_type):
     if socket > 127:
         return
 
+    if gain_sheet_lower == 'nan' or gain_sheet_lower == 'byp':
+        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
+        return
+
     switcher = {
-        "60.0": dliveConstants.gain_level_plus60,
-        "55.0": dliveConstants.gain_level_plus55,
-        "50.0": dliveConstants.gain_level_plus50,
-        "45.0": dliveConstants.gain_level_plus45,
-        "40.0": dliveConstants.gain_level_plus40,
-        "35.0": dliveConstants.gain_level_plus35,
-        "30.0": dliveConstants.gain_level_plus30,
-        "25.0": dliveConstants.gain_level_plus25,
-        "20.0": dliveConstants.gain_level_plus20,
-        "15.0": dliveConstants.gain_level_plus15,
-        "10.0": dliveConstants.gain_level_plus10,
-        "5.0": dliveConstants.gain_level_plus5
+        "60": dliveConstants.gain_level_plus60,
+        "55": dliveConstants.gain_level_plus55,
+        "50": dliveConstants.gain_level_plus50,
+        "45": dliveConstants.gain_level_plus45,
+        "40": dliveConstants.gain_level_plus40,
+        "35": dliveConstants.gain_level_plus35,
+        "30": dliveConstants.gain_level_plus30,
+        "25": dliveConstants.gain_level_plus25,
+        "20": dliveConstants.gain_level_plus20,
+        "15": dliveConstants.gain_level_plus15,
+        "10": dliveConstants.gain_level_plus10,
+        "5": dliveConstants.gain_level_plus5,
+        "-": -1
     }
     gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
+
+    if gain_level == -1:
+        logging.info("Don´t care flag found, skipping socket: " + str(socket))
+        return
 
     if is_network_communication_allowed:
         logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) + " to socket: " + str(
@@ -673,7 +752,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '7'
+    latest_spreadsheet_version = '8'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -686,8 +765,8 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         showerror(message=error_msg)
         return root.quit()
 
-    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels")))
-    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets")))
+    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels", dtype=str)))
+    sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets", dtype=str)))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
     root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
@@ -970,7 +1049,16 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         logging.info(action)
         current_action_label["text"] = action
 
-        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
+        if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
+            progress(actions)
+            root.update()
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
+
+        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                             var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                             entry_additional_track_prefix.get(), var_reaper_additional_master_tracks.get(),
+                                             var_master_recording_patch.get())
         logging.info("Reaper Recording Session Template created")
 
         progress(actions)
@@ -1019,7 +1107,7 @@ def create_channel_list_content(sheet_channels):
 
         mg_config_tmp = MuteGroupConfig(mg_array)
 
-        cle = ChannelListEntry(channel,
+        cle = ChannelListEntry(int(channel),
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
                                str(sheet_channels['HPF On'].__getitem__(index)),
@@ -1053,7 +1141,7 @@ def create_socket_list_content(sheet_sockets):
     index = 0
 
     for socket in sheet_sockets['Socket Number']:
-        ple = SocketListEntry(socket,
+        ple = SocketListEntry(int(socket),
                               str(sheet_sockets['Local Phantom'].__getitem__(index)),
                               str(sheet_sockets['DX1 Phantom'].__getitem__(index)),
                               str(sheet_sockets['DX3 Phantom'].__getitem__(index)),
@@ -1382,6 +1470,31 @@ def on_console_selected(*args):
         root.update()
 
 
+def enable_reaper_options_ui_elements():
+    cb_reaper_disable_numbering.config(state="normal")
+    cb_reaper_additional_prefix.config(state="normal")
+    label_track_prefix.config(state="normal")
+    cb_reaper_additional_master_tracks.config(state="normal")
+    entry_additional_track_prefix.config(state="normal")
+    combobox_master_track.config(state="normal")
+
+
+def disable_reaper_options_ui_elements():
+    cb_reaper_disable_numbering.config(state="disabled")
+    cb_reaper_additional_prefix.config(state="disabled")
+    label_track_prefix.config(state="disabled")
+    cb_reaper_additional_master_tracks.config(state="disabled")
+    entry_additional_track_prefix.config(state="disabled")
+    combobox_master_track.config(state="disabled")
+
+
+def on_reaper_write_changed():
+    if var_write_reaper.get() == 1:
+        enable_reaper_options_ui_elements()
+    else:
+        disable_reaper_options_ui_elements()
+
+
 def update_progress_label():
     return f"Current Progress: {round(pb['value'], 1)} %"
 
@@ -1548,12 +1661,45 @@ if __name__ == '__main__':
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
     var_write_reaper = BooleanVar(value=False)
-    reaper = Checkbutton(output_option_frame,
-                         text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
-                         var=var_write_reaper)
+    cb_reaper_write = Checkbutton(output_option_frame,
+                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                  var=var_write_reaper, command=on_reaper_write_changed)
+
+    var_disable_track_numbering = BooleanVar(value=False)
+    cb_reaper_disable_numbering = Checkbutton(output_option_frame,
+                                              text="Disable Track Numbering",
+                                              var=var_disable_track_numbering)
+
+    label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
+
+    var_reaper_additional_prefix = BooleanVar(value=False)
+    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
+                                              text="Add Custom Track Prefix",
+                                              var=var_reaper_additional_prefix)
+
+    entry_additional_track_prefix = Entry(output_option_frame, width=20)
+
+    var_reaper_additional_master_tracks = BooleanVar(value=False)
+    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
+                                                     text="Add 2 Additional Master-tracks",
+                                                     var=var_reaper_additional_master_tracks)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_master_recording_patch = StringVar()
+    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
+    combobox_master_track.set("Select DAW Input")
+
+    disable_reaper_options_ui_elements()
 
     write_to_console.grid(row=0, column=0, sticky="W")
-    reaper.grid(row=1, column=0, sticky="W")
+    cb_reaper_write.grid(row=1, column=0, sticky="W")
+    cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
+    cb_reaper_additional_prefix.grid(row=2, column=1, sticky="W")
+    entry_additional_track_prefix.grid(row=2, column=2, sticky="W")
+    label_track_prefix.grid(row=2, column=3, sticky="W")
+    cb_reaper_additional_master_tracks.grid(row=3, column=1, sticky="W")
+    combobox_master_track.grid(row=3, column=2, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1624,12 +1770,11 @@ if __name__ == '__main__':
     global_select_frame.pack(side=TOP)
 
     Label(root, text=" ").pack(side=TOP)
-    Label(root, text=" ").pack(side=TOP)
     output_option_frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())
 
-    Label(console_frame, text="Console:", width=25).pack(side=LEFT)
+    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
 
     dropdown_console = OptionMenu(console_frame, var_console,
                                   dliveConstants.console_drop_down_dlive,

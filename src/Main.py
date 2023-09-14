@@ -1057,7 +1057,7 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
 
         SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
                                              var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
-                                             entry_additional_track_prefix.get(), var_reaper_additional_master_tracks,
+                                             entry_additional_track_prefix.get(), var_reaper_additional_master_tracks.get(),
                                              var_master_recording_patch.get())
         logging.info("Reaper Recording Session Template created")
 

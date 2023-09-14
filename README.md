@@ -43,7 +43,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
 * xlrd - supports xls format
-* odfpy - support odf format
+* odfpy - supports odf format
 * openpyxl - supports xlsx format
 * numpy - array computing
 * pyinstaller - Binary creator

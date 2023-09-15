@@ -16,6 +16,7 @@ import time
 from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
+from tkinter.ttk import Combobox
 
 import mido
 import numpy
@@ -124,6 +125,10 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     else:
         trimmed_name = str(item.get_name())
 
+    if trimmed_name == '-' or trimmed_name == 'byp':
+        logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
+        return
+
     if trimmed_name == 'nan':
         characters = [' ', ' ', ' ', ' ', ' ', ' ', '']
     else:
@@ -157,7 +162,10 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
 def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
-    if lower_color == "blue":
+    if lower_color == "-" or lower_color == 'byp':
+        logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
+        return
+    elif lower_color == "blue":
         colour = dliveConstants.lcd_color_blue
     elif lower_color == "red":
         colour = dliveConstants.lcd_color_red
@@ -173,6 +181,9 @@ def color_channel(output, item, midi_channel_offset, channel_offset):
         colour = dliveConstants.lcd_color_black
     elif lower_color == 'white':
         colour = dliveConstants.lcd_color_white
+    elif lower_color == 'nan':
+        logging.info("Empty cell found, treating as don´t care, skipping channel")
+        return
     else:
         logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
@@ -193,7 +204,7 @@ def mute_on_channel(output, item):
     lower_mute_on = item.get_mute().lower()
     channel = item.get_channel_console()
 
-    if lower_mute_on == "-":
+    if lower_mute_on == "-" or lower_mute_on == "byp":
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_mute_on == "yes":
@@ -250,7 +261,7 @@ def phantom_socket(output, item, socket_type):
         else:
             return
 
-    if lower_phantom == "-":
+    if lower_phantom == "-" or lower_phantom == "byp":
         logging.info("Don´t care flag found, skipping socket: " + str(socket))
         return
     elif lower_phantom == "yes":
@@ -277,7 +288,7 @@ def phantom_socket(output, item, socket_type):
 def hpf_on_channel(output, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
 
-    if lower_hpf_on == "-":
+    if lower_hpf_on == "-" or lower_hpf_on == "byp":
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_hpf_on == "yes":
@@ -310,7 +321,7 @@ def clamp(value, lower_limit, upper_limit):
 
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
-    if hpf_value == 'nan' or hpf_value == '-':
+    if hpf_value == 'nan' or hpf_value == '-' or hpf_value == 'byp':
         logging.info("Don´t care flag found, skipping channel")
         return
     if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
@@ -350,7 +361,8 @@ def fader_level_channel(output, item):
         "-40": dliveConstants.fader_level_minus40,
         "-45": dliveConstants.fader_level_minus45,
         "-99": dliveConstants.fader_level_minus_inf,
-        "-": -1
+        "-": -1,
+        "byp": -1
     }
     fader_level = switcher.get(lower_fader_level, -2)
 
@@ -511,7 +523,7 @@ def gain_socket(output, item, socket_type):
     if socket > 127:
         return
 
-    if gain_sheet_lower == 'nan':
+    if gain_sheet_lower == 'nan' or gain_sheet_lower == 'byp':
         logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
         return
 
@@ -1037,7 +1049,16 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
         logging.info(action)
         current_action_label["text"] = action
 
-        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix)
+        if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
+            progress(actions)
+            root.update()
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
+
+        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                             var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                             entry_additional_track_prefix.get(), var_reaper_additional_master_tracks.get(),
+                                             var_master_recording_patch.get())
         logging.info("Reaper Recording Session Template created")
 
         progress(actions)
@@ -1449,6 +1470,31 @@ def on_console_selected(*args):
         root.update()
 
 
+def enable_reaper_options_ui_elements():
+    cb_reaper_disable_numbering.config(state="normal")
+    cb_reaper_additional_prefix.config(state="normal")
+    label_track_prefix.config(state="normal")
+    cb_reaper_additional_master_tracks.config(state="normal")
+    entry_additional_track_prefix.config(state="normal")
+    combobox_master_track.config(state="normal")
+
+
+def disable_reaper_options_ui_elements():
+    cb_reaper_disable_numbering.config(state="disabled")
+    cb_reaper_additional_prefix.config(state="disabled")
+    label_track_prefix.config(state="disabled")
+    cb_reaper_additional_master_tracks.config(state="disabled")
+    entry_additional_track_prefix.config(state="disabled")
+    combobox_master_track.config(state="disabled")
+
+
+def on_reaper_write_changed():
+    if var_write_reaper.get() == 1:
+        enable_reaper_options_ui_elements()
+    else:
+        disable_reaper_options_ui_elements()
+
+
 def update_progress_label():
     return f"Current Progress: {round(pb['value'], 1)} %"
 
@@ -1615,12 +1661,45 @@ if __name__ == '__main__':
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
     var_write_reaper = BooleanVar(value=False)
-    reaper = Checkbutton(output_option_frame,
-                         text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
-                         var=var_write_reaper)
+    cb_reaper_write = Checkbutton(output_option_frame,
+                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                  var=var_write_reaper, command=on_reaper_write_changed)
+
+    var_disable_track_numbering = BooleanVar(value=False)
+    cb_reaper_disable_numbering = Checkbutton(output_option_frame,
+                                              text="Disable Track Numbering",
+                                              var=var_disable_track_numbering)
+
+    label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
+
+    var_reaper_additional_prefix = BooleanVar(value=False)
+    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
+                                              text="Add Custom Track Prefix",
+                                              var=var_reaper_additional_prefix)
+
+    entry_additional_track_prefix = Entry(output_option_frame, width=20)
+
+    var_reaper_additional_master_tracks = BooleanVar(value=False)
+    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
+                                                     text="Add 2 Additional Master-tracks",
+                                                     var=var_reaper_additional_master_tracks)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_master_recording_patch = StringVar()
+    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
+    combobox_master_track.set("Select DAW Input")
+
+    disable_reaper_options_ui_elements()
 
     write_to_console.grid(row=0, column=0, sticky="W")
-    reaper.grid(row=1, column=0, sticky="W")
+    cb_reaper_write.grid(row=1, column=0, sticky="W")
+    cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
+    cb_reaper_additional_prefix.grid(row=2, column=1, sticky="W")
+    entry_additional_track_prefix.grid(row=2, column=2, sticky="W")
+    label_track_prefix.grid(row=2, column=3, sticky="W")
+    cb_reaper_additional_master_tracks.grid(row=3, column=1, sticky="W")
+    combobox_master_track.grid(row=3, column=2, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1690,7 +1769,6 @@ if __name__ == '__main__':
 
     global_select_frame.pack(side=TOP)
 
-    Label(root, text=" ").pack(side=TOP)
     Label(root, text=" ").pack(side=TOP)
     output_option_frame.pack(side=TOP, fill=X)
 

@@ -1681,7 +1681,7 @@ if __name__ == '__main__':
 
     var_reaper_additional_master_tracks = BooleanVar(value=False)
     cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
-                                                     text="Add 2 Additional Master-tracks",
+                                                     text="Add 2 Additional Master-Tracks",
                                                      var=var_reaper_additional_master_tracks)
 
     values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]

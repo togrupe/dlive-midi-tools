@@ -16,3 +16,4 @@ reaper_color_purple = 30371836
 reaper_color_ltblue = 33541222
 reaper_color_white = 33554431
 reaper_color_orange = 17334525
+reaper_color_default = 0

@@ -11,29 +11,32 @@ from reathon.nodes import Project, Track
 from dawsession import ReaperConstants
 
 
-def convert_sheet_color_to_reaper_color(color):
-    lower_color = color.lower()
-    if lower_color == "blue":
-        colour = ReaperConstants.reaper_color_blue
-    elif lower_color == "red":
-        colour = ReaperConstants.reaper_color_red
-    elif lower_color == "light blue":
-        colour = ReaperConstants.reaper_color_ltblue
-    elif lower_color == 'purple':
-        colour = ReaperConstants.reaper_color_purple
-    elif lower_color == 'green':
-        colour = ReaperConstants.reaper_color_green
-    elif lower_color == 'yellow':
-        colour = ReaperConstants.reaper_color_yellow
-    elif lower_color == 'black':
-        colour = ReaperConstants.reaper_color_black
-    elif lower_color == 'white':
-        colour = ReaperConstants.reaper_color_white
-    elif lower_color == 'orange':
-        colour = ReaperConstants.reaper_color_orange
+def convert_sheet_color_to_reaper_color(color, disable_track_coloring):
+    if disable_track_coloring:
+        colour = ReaperConstants.reaper_color_default
     else:
-        logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
-        colour = ReaperConstants.reaper_color_black
+        lower_color = color.lower()
+        if lower_color == "blue":
+            colour = ReaperConstants.reaper_color_blue
+        elif lower_color == "red":
+            colour = ReaperConstants.reaper_color_red
+        elif lower_color == "light blue":
+            colour = ReaperConstants.reaper_color_ltblue
+        elif lower_color == 'purple':
+            colour = ReaperConstants.reaper_color_purple
+        elif lower_color == 'green':
+            colour = ReaperConstants.reaper_color_green
+        elif lower_color == 'yellow':
+            colour = ReaperConstants.reaper_color_yellow
+        elif lower_color == 'black':
+            colour = ReaperConstants.reaper_color_black
+        elif lower_color == 'white':
+            colour = ReaperConstants.reaper_color_white
+        elif lower_color == 'orange':
+            colour = ReaperConstants.reaper_color_orange
+        else:
+            logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
+            colour = ReaperConstants.reaper_color_black
     return colour
 
 
@@ -60,7 +63,7 @@ def extract_first_channel(master_recording_patch_string):
 
 
 def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
-                          additional_prefix, has_master_recording_tracks, master_recording_patch_string):
+                          additional_prefix, has_master_recording_tracks, master_recording_patch_string, disable_track_coloring):
     project = Project()
 
     project.props = [
@@ -93,7 +96,7 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
                     track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
             track.props = [
                 ["NAME", track_name_combined],
-                ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color())],
+                ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color(), disable_track_coloring)],
                 ["REC", generate_rec_item(item.get_channel_console(), item.get_record_arm())],
                 ["TRACKHEIGHT", "40 0 0 0 0 0"],
                 ["HWOUT", generate_hwout_item(item.get_channel_console())]

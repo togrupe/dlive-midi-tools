@@ -54,18 +54,21 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                 | Download                                                                                         | Release Notes |
-|---------|------------|--------------------|--------------------------------------------------------------------------------------------------|---------------|
-| v2.5.0  | 15.09.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
-|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
-| v2.4.1  | 01.08.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
-|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
-| v2.3.0  | 19.05.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
-|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
-| v2.2.0  | 29.04.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
-|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |               |
-| v2.1.0  | 31.03.2023 | MacOS (x86_64)     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |               |
-|         |            | Windows (x86_64)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |               |
+| Version | Date       | OS                             | Download                                                                                         | Release Notes |
+|---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|
+| v2.6.0  |            | MacOS (x86_64 - Intel)         |                                                                                                  | [Link](#v260) | 
+|         |            | Windows (x86_64)               |                                                                                                  |               |
+| v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
+| v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
+|         |            | MacOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)        |               |
+|         |            | Windows (x86_64 - Intel)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
+| v2.3.0  | 19.05.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
+| v2.2.0  | 29.04.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |               |
+| v2.1.0  | 31.03.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |               |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |               |
 
 ## Input file / The Spreadsheet Template
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
@@ -200,6 +203,25 @@ Have fun!
 
 
 ## Release Notes
+### v2.6.0
+
+Feature & Maintenance Release
+
+#### New Features
+- Possibility to disable track coloring
+
+
+#### Improvements
+
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
+
+#### Issues fixed
+
+#### Known issues
+
 ### v2.5.0
 
 Feature & Maintenance Release

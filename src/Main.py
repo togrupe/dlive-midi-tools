@@ -13,7 +13,7 @@ import re
 import socket
 import threading
 import time
-from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
+from tkinter import filedialog, Button, Tk, Checkbutton, Frame, LEFT, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
 from tkinter.ttk import Combobox
@@ -23,21 +23,20 @@ import numpy
 import pandas as pd
 from mido.sockets import connect
 
+import GuiConstants
 import Toolinfo
 import dliveConstants
-from dawsession import SessionCreator
-import GuiConstants
+from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from model.Action import Action
-
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.GroupSetup import GroupSetup
 from model.GroupsListEntry import GroupsListEntry
 from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
-from model.SocketListEntry import SocketListEntry
 from model.Sheet import Sheet
+from model.SocketListEntry import SocketListEntry
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
@@ -745,7 +744,7 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
                               dliveConstants.channel_offset_fx_return)
 
 
-def read_document(filename, check_box_reaper, check_box_write_to_console):
+def read_document(filename, check_box_reaper, check_box_trackslive, check_box_write_to_console):
     logging.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
@@ -1012,6 +1011,12 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     else:
         cb_reaper = False
 
+    if check_box_trackslive:
+        actions = increment_actions(actions)
+        cb_trackslive = True
+    else:
+        cb_trackslive = False
+
     if check_box_write_to_console and actions == 0:
         showinfo(message="No spreadsheet column(s) selected. Please select at least one column")
         return
@@ -1055,11 +1060,33 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             showerror(message="DAW Inputs for additional master tracks must to be chosen.")
             return
 
-        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
-                                             var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
-                                             entry_additional_track_prefix.get(), var_reaper_additional_master_tracks.get(),
-                                             var_master_recording_patch.get(), var_disable_track_coloring.get())
+        ReaperSessionCreator.create_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                            var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                            entry_additional_track_prefix.get(),
+                                            var_reaper_additional_master_tracks.get(),
+                                            var_master_recording_patch.get(), var_disable_track_coloring.get())
         logging.info("Reaper Recording Session Template created")
+
+        progress(actions)
+        root.update()
+
+    if cb_trackslive:
+        action = "Creating Tracks Live Recording Session Template file..."
+        logging.info(action)
+        current_action_label["text"] = action
+
+        if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
+            progress(actions)
+            root.update()
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
+
+        TracksLiveSessionCreator.create_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                                var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                                entry_additional_track_prefix.get(),
+                                                var_reaper_additional_master_tracks.get(),
+                                                var_master_recording_patch.get(), var_disable_track_coloring.get())
+        logging.info("Tracks Live Recording Session Template created")
 
         progress(actions)
         root.update()
@@ -1253,9 +1280,10 @@ def browse_files():
     reset_progress_bar()
 
     cb_reaper = var_write_reaper.get()
+    cb_trackslive = var_write_trackslive.get()
     cb_console_write = var_write_to_console.get()
 
-    if cb_reaper or cb_console_write:
+    if cb_reaper or cb_trackslive or cb_console_write:
         input_file_path = filedialog.askopenfilename()
         if input_file_path == "":
             # Nothing to do
@@ -1264,7 +1292,7 @@ def browse_files():
         root.reaper_output_dir = os.path.dirname(input_file_path)
         root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
         try:
-            read_document(input_file_path, cb_reaper, cb_console_write)
+            read_document(input_file_path, cb_reaper, cb_trackslive, cb_console_write)
         except TypeError as exc:
 
             error_message = "An error happened, probably an empty line could be the issue. " \
@@ -1491,7 +1519,7 @@ def disable_reaper_options_ui_elements():
 
 
 def on_reaper_write_changed():
-    if var_write_reaper.get() == 1:
+    if var_write_reaper.get() == 1 or var_write_trackslive.get():
         enable_reaper_options_ui_elements()
     else:
         disable_reaper_options_ui_elements()
@@ -1667,6 +1695,11 @@ if __name__ == '__main__':
                                   text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
                                   var=var_write_reaper, command=on_reaper_write_changed)
 
+    var_write_trackslive = BooleanVar(value=False)
+    cb_trackslive_write = Checkbutton(output_option_frame,
+                                      text="Generate Tracks Live Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                      var=var_write_trackslive, command=on_reaper_write_changed)
+
     var_disable_track_numbering = BooleanVar(value=False)
     cb_reaper_disable_numbering = Checkbutton(output_option_frame,
                                               text="Disable Track Numbering",
@@ -1674,8 +1707,8 @@ if __name__ == '__main__':
 
     var_disable_track_coloring = BooleanVar(value=False)
     cb_reaper_disable_track_coloring = Checkbutton(output_option_frame,
-                                              text="Disable Track Coloring",
-                                              var=var_disable_track_coloring)
+                                                   text="Disable Track Coloring",
+                                                   var=var_disable_track_coloring)
 
     label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
 
@@ -1708,6 +1741,7 @@ if __name__ == '__main__':
     label_track_prefix.grid(row=3, column=3, sticky="W")
     cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
     combobox_master_track.grid(row=4, column=2, sticky="W")
+    cb_trackslive_write.grid(row=2, column=0, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)

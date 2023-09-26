@@ -62,7 +62,7 @@ def extract_first_channel(master_recording_patch_string):
     return int(master_recording_patch_string.split("-")[0]) - 1
 
 
-def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
+def create_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
                           additional_prefix, has_master_recording_tracks, master_recording_patch_string, disable_track_coloring):
     project = Project()
 
@@ -75,6 +75,8 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
         if lower_recording == 'nan':
             continue
         if lower_recording == 'yes':
+
+            logging.info("Processing reaper channel:" + str(item.get_channel()) + " name: " + item.get_name())
 
             track = Track()
             name = item.get_name()
@@ -106,20 +108,24 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
     if has_master_recording_tracks:
         master_recording_patch = extract_first_channel(master_recording_patch_string)
 
+        logging.info("Processing MasterL channel")
+
         master_track_l = Track()
         master_track_l.props = [
             ["NAME", "MasterL"],
-            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange")],
+            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange", disable_track_coloring)],
             ["REC", generate_rec_item(master_recording_patch, "yes")],
             ["TRACKHEIGHT", "40 0 0 0 0 0"],
             ["HWOUT", generate_hwout_item(master_recording_patch)]
         ]
         project.add(master_track_l)
 
+        logging.info("Processing MasterR channel")
+
         master_track_r = Track()
         master_track_r.props = [
             ["NAME", "MasterR"],
-            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange")],
+            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange", disable_track_coloring)],
             ["REC", generate_rec_item(master_recording_patch + 1, "yes")],
             ["TRACKHEIGHT", "40 0 0 0 0 0"],
             ["HWOUT", generate_hwout_item(master_recording_patch + 1)]

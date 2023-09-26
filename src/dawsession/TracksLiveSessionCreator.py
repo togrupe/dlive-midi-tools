@@ -43,8 +43,10 @@ def convert_sheet_color_to_trackslive_color(color, disable_track_coloring=False)
 def calulate_track_id(get_channel_console):
     return str(1000 + int(get_channel_console))
 
+
 def extract_first_channel(master_recording_patch_string):
     return int(master_recording_patch_string.split("-")[0]) - 1
+
 
 def create_session(sheet, output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
                    additional_prefix, has_master_recording_tracks, master_recording_patch_string,
@@ -119,7 +121,7 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
 
             # Handling of playlist
             template_playlist_to_update = copy.deepcopy(template_playlist_org)
-            template_playlist_to_update.set("id", str(int(trackid_local)+1000))
+            template_playlist_to_update.set("id", str(int(trackid_local) + 1000))
             template_playlist_to_update.set("name", track_name_combined)
             template_playlist_to_update.set("orig-track-id", trackid_local)
             playlists.append(template_playlist_to_update)
@@ -127,7 +129,9 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
             # Handling of UI
             template_GUIObjectState_route_to_update = copy.deepcopy(template_GUIObjectState_route_org)
             template_GUIObjectState_route_to_update.set("id", "route " + trackid_local)
-            template_GUIObjectState_route_to_update.set("color", convert_sheet_color_to_trackslive_color(item.get_color(), disable_track_coloring))
+            template_GUIObjectState_route_to_update.set("color",
+                                                        convert_sheet_color_to_trackslive_color(item.get_color(),
+                                                                                                disable_track_coloring))
 
             template_GUIObjectState_rtav_to_update = copy.deepcopy(template_GUIObjectState_rtav_org)
             template_GUIObjectState_rtav_to_update.set("id", "rtav " + trackid_local)
@@ -142,9 +146,6 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
     #     logging.info("Processing MasterL channel")
     #
     #     logging.info("Processing MasterR channel")
-
-
-
 
     routes.remove(template_route_org)
     playlists.remove(template_playlist_org)

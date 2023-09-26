@@ -63,8 +63,6 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
     template_GUIObjectState_route_org = root.find('Extra/UI/GUIObjectState/Object[@id="route 29"]')
     template_GUIObjectState_rtav_org = root.find('Extra/UI/GUIObjectState/Object[@id="rtav 29"]')
 
-    print("stop")
-
     for item in sheet.get_channel_model():
         lower_recording = str(item.get_recording()).lower()
         if lower_recording == 'nan':
@@ -152,4 +150,3 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
 
     tree.write(output_dir + "/" + file_prefix + '-tracklive.template')
 
-    print("Stop")

@@ -155,7 +155,7 @@
           <Automation/>
         </Pannable>
       </Processor>
-      <Controllable name="recenable" id="130" flags="Toggle" value="0.000000000000"/>
+      <Controllable name="recenable" id="130" flags="Toggle" value="1.000000000000"/>
       <Diskstream flags="Recordable" playlist="template_channel" name="template_channel" id="132" speed="1.000000" capture-alignment="Automatic" record-safe="no" channels="1"/>
     </Route>
   </Routes>

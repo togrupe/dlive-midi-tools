@@ -5,10 +5,11 @@
 # Author: Tobias Grupe
 #
 ####################################################
+import base64
 import copy
 import logging
 import xml.etree.ElementTree as ET
-from dawsession import TracksLiveConstants
+from dawsession import TracksLiveConstants, TracksLiveBase64Template
 
 
 def convert_sheet_color_to_trackslive_color(color, disable_track_coloring=False):
@@ -51,8 +52,11 @@ def extract_first_channel(master_recording_patch_string):
 def create_session(sheet, output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
                    additional_prefix, has_master_recording_tracks, master_recording_patch_string,
                    disable_track_coloring):
-    tree = ET.parse('tracks-live-template.xml')
-    root = tree.getroot()
+
+    decoded_bytes = base64.b64decode(TracksLiveBase64Template.trackslive_template_base64_encoded)
+    decoded_string = decoded_bytes.decode('utf-8')
+
+    root = ET.fromstring(decoded_string)
 
     routes = root.find('Routes')
     playlists = root.find('Playlists')
@@ -160,6 +164,7 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
     routes.remove(template_route_org)
     playlists.remove(template_playlist_org)
 
+    tree = ET.ElementTree(root)
     tree.write(output_dir + "/" + file_prefix + '-trackslive.template')
 
 

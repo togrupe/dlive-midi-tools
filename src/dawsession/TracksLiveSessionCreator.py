@@ -45,7 +45,7 @@ def calulate_track_id(get_channel_console):
 
 
 def extract_first_channel(master_recording_patch_string):
-    return int(master_recording_patch_string.split("-")[0]) - 1
+    return int(master_recording_patch_string.split("-")[0])
 
 
 def create_session(sheet, output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
@@ -138,15 +138,80 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
             GUIObjectStates.append(template_GUIObjectState_route_to_update)
             GUIObjectStates.append(template_GUIObjectState_rtav_to_update)
 
-    # if has_master_recording_tracks:
-    #     master_recording_patch = extract_first_channel(master_recording_patch_string)
-    #
-    #     logging.info("Processing MasterL channel")
-    #
-    #     logging.info("Processing MasterR channel")
+    if has_master_recording_tracks:
+        master_recording_patch = extract_first_channel(master_recording_patch_string)
+
+        logging.info("Processing MasterL channel")
+
+        track_name_combined = "MasterL"
+
+        handle_master_channel(GUIObjectStates, disable_track_coloring, master_recording_patch, playlists, routes,
+                              template_GUIObjectState_route_org, template_GUIObjectState_rtav_org,
+                              template_playlist_org, template_route_org, track_name_combined, str(int(trackid_local)+1))
+
+        logging.info("Processing MasterR channel")
+
+        track_name_combined = "MasterR"
+
+        handle_master_channel(GUIObjectStates, disable_track_coloring, master_recording_patch+1, playlists, routes,
+                              template_GUIObjectState_route_org, template_GUIObjectState_rtav_org,
+                              template_playlist_org, template_route_org, track_name_combined, str(int(trackid_local)+2))
 
     routes.remove(template_route_org)
     playlists.remove(template_playlist_org)
 
     tree.write(output_dir + "/" + file_prefix + '-tracklive.template')
+
+
+def handle_master_channel(GUIObjectStates, disable_track_coloring, master_recording_patch, playlists, routes,
+                          template_GUIObjectState_route_org, template_GUIObjectState_rtav_org, template_playlist_org,
+                          template_route_org, track_name_combined, trackid_local):
+    # Handling of Route
+    template_route_to_update = copy.deepcopy(template_route_org)
+    template_route_to_update.set("id", trackid_local)
+    template_route_to_update.set("name", track_name_combined)
+
+    input = template_route_to_update.find('IO[@id="119"]')
+    input.set("name", track_name_combined)
+
+    input_port = template_route_to_update.find('IO[@id="119"]/Port')
+    input_port.set("name", track_name_combined + "/audio_in " + str(master_recording_patch))
+
+    output = template_route_to_update.find('IO[@id="120"]')
+    output.set("name", track_name_combined)
+
+    output_port1 = template_route_to_update.find('IO[@id="120"]/Port')
+    output_port1.set("name", track_name_combined + "/audio_out 1")
+
+    output_port2 = template_route_to_update.findall('IO[@id="120"]/Port')[1]
+    output_port2.set("name", track_name_combined + "/audio_out 2")
+
+    processor = template_route_to_update.find('Processor[@id="128"]')
+    processor.set("name", track_name_combined)
+    processor.set("output", track_name_combined)
+
+    diskstream = template_route_to_update.find('Diskstream[@id="132"]')
+    diskstream.set("name", track_name_combined)
+    diskstream.set("playlist", track_name_combined)
+
+    routes.append(template_route_to_update)
+
+    # Handling of playlist
+    template_playlist_to_update = copy.deepcopy(template_playlist_org)
+    template_playlist_to_update.set("id", str(int(trackid_local) + 3000))
+    template_playlist_to_update.set("name", track_name_combined)
+    template_playlist_to_update.set("orig-track-id", trackid_local)
+    playlists.append(template_playlist_to_update)
+
+    # Handling of UI
+    template_GUIObjectState_route_to_update = copy.deepcopy(template_GUIObjectState_route_org)
+    template_GUIObjectState_route_to_update.set("id", "route " + trackid_local)
+    template_GUIObjectState_route_to_update.set("color",
+                                                convert_sheet_color_to_trackslive_color("orange",
+                                                                                        disable_track_coloring))
+    template_GUIObjectState_rtav_to_update = copy.deepcopy(template_GUIObjectState_rtav_org)
+    template_GUIObjectState_rtav_to_update.set("id", "rtav " + trackid_local)
+    template_GUIObjectState_rtav_to_update.set("visible", "1")
+    GUIObjectStates.append(template_GUIObjectState_route_to_update)
+    GUIObjectStates.append(template_GUIObjectState_rtav_to_update)
 

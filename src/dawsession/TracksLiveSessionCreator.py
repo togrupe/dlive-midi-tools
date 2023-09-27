@@ -115,6 +115,13 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
             processor.set("name", track_name_combined)
             processor.set("output", track_name_combined)
 
+            controllable = template_route_to_update.find('Controllable[@id="130"]')
+            armed = item.get_record_arm().lower()
+            if armed == "yes":
+                controllable.set("value", "1.000000000000")
+            else:
+                controllable.set("value", "0.000000000000")
+
             diskstream = template_route_to_update.find('Diskstream[@id="132"]')
             diskstream.set("name", track_name_combined)
             diskstream.set("playlist", track_name_combined)
@@ -194,6 +201,9 @@ def handle_master_channel(GUIObjectStates, disable_track_coloring, master_record
     processor = template_route_to_update.find('Processor[@id="128"]')
     processor.set("name", track_name_combined)
     processor.set("output", track_name_combined)
+
+    controllable = template_route_to_update.find('Controllable[@id="130"]')
+    controllable.set("value", "1.000000000000")
 
     diskstream = template_route_to_update.find('Diskstream[@id="132"]')
     diskstream.set("name", track_name_combined)

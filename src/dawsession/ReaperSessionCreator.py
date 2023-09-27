@@ -41,8 +41,8 @@ def convert_sheet_color_to_reaper_color(color, disable_track_coloring):
 
 
 def generate_rec_item(channel, arm):
-    arm_color = arm.lower()
-    if arm_color == "yes":
+    armed = arm.lower()
+    if armed == "yes":
         arm_set = '1 '
     else:
         arm_set = '0 '

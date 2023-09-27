@@ -1,6 +1,6 @@
 # dlive-midi-tools
 ## Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive & Avantis. Based on a spreadsheet the following parameters can be preconfigured and in one or more steps be written into real dlive systems or into dLive Director via midi/tcp. Additionally from the same spreadsheet a DAW recording session for Reaper can be generated. 
+Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive & Avantis. Based on a spreadsheet the following parameters can be preconfigured and in one or more steps be written into real dlive systems or into dLive Director via midi/tcp. Additionally from the same spreadsheet a DAW recording session for Reaper or Tracks Live can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
@@ -112,7 +112,14 @@ It can help you to set the "Mixer Config" properly.
 If you select the "Generate Reaper Recording Session" checkbox, 
 the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the template generation process. 
 
-![Phantom](doc/reaper/reaper_demo.png)
+![Reaper](doc/reaper/reaper_demo.png)
+
+# Example Generated Trackslive Template ´
+If you select the "Generate Tracks Live Recording Session" checkbox, 
+the columns `Name`, `Color`, `Recording` are considered for the template generation process. 
+
+![Trackslive](doc/trackslive/trackslive_demo.png)
+
 
 ## Settings on the console
 The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to : `12 to 16`, which is default.
@@ -179,7 +186,7 @@ Afterwards the following window appears.
    `Clear` removes all ticks.
 
 
-8. If you also want to create a Reaper session template, set the corresponding tick. The Reaper session file `<input-spreadsheet-file>-recording-template.rpp` 
+8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-recording-template.rpp` / `<input-spreadsheet-file>-trackslive.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
    
    The following Reaper based options are available: <br>
@@ -187,7 +194,7 @@ Afterwards the following window appears.
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-   You can also use the tool to create only the Reaper session file, in case you use a different audio console. In this case use the following settings (1+2) and continue with Step 9 (3).<br><br>
+   You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case use the following settings (1+2) and continue with Step 9 (3).<br><br>
 
 <img alt="onlyreaper" src="doc/reaper_only.png" width="700"/>
 
@@ -208,6 +215,7 @@ Have fun!
 Feature & Maintenance Release
 
 #### New Features
+- Tracks Live Support (Template Generation)
 - Possibility to disable track coloring
 
 

@@ -15,6 +15,7 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Matrices Name & Color
 - FX Sends Name & Color
 - FX Returns Name & Color
+- Main Mix Assignments
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
@@ -228,6 +229,7 @@ Feature & Maintenance Release
 #### New Features
 - Tracks Live Support (Template Generation)
 - Possibility to disable track coloring
+- Channel to Main Mix Assignments
 
 
 #### Improvements

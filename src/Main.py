@@ -420,6 +420,8 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             dca_channel(output, item)
         elif action == "mute_group":
             mg_channel(output, item)
+        elif action == "assign_main_mix":
+            assign_mainmix_channel(output, item)
 
 
 def pad_socket(output, item, socket_type):
@@ -602,6 +604,15 @@ def assign_dca(output, channel, dca_value):
         time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
 
 
+def assign_mainmix(output, channel, mainmix_value):
+    if is_network_communication_allowed:
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_mainmix_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mainmix_value))
+        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
+
+
 def dca_channel(output, item):
     channel = item.get_channel_console()
 
@@ -617,6 +628,19 @@ def dca_channel(output, item):
             assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
         else:
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
+
+
+def assign_mainmix_channel(output, item):
+    channel = item.get_channel_console()
+    mainmix_value = item.get_assign_mainmix()
+
+    if mainmix_value == 'nan' or mainmix_value == '-':
+        return
+
+    if mainmix_value.lower() == "yes":
+        assign_mainmix(output, channel, dliveConstants.mainmix_on)
+    else:
+        assign_mainmix(output, channel, dliveConstants.mainmix_off)
 
 
 def assign_mg(output, channel, mg_value):
@@ -751,7 +775,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '8'
+    latest_spreadsheet_version = '9'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -841,6 +865,13 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
             elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
                 action = Action(GuiConstants.TEXT_MUTE_GROUPS, "channels",
                                 "Set Mute Group Assignments to channels...", "mute_group")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Assign to Main Mix
+            elif var._name == GuiConstants.TEXT_MAINMIX and var.get() is True:
+                action = Action(GuiConstants.TEXT_MAINMIX, "channels",
+                                "Set Main Mix Assignments to channels...", "assign_main_mix")
                 action_list.append(action)
                 actions = increment_actions(actions)
 
@@ -1144,7 +1175,8 @@ def create_channel_list_content(sheet_channels):
                                str(sheet_channels['Recording'].__getitem__(index)),
                                str(sheet_channels['Record Arm'].__getitem__(index)),
                                dca_config_tmp,
-                               mg_config_tmp
+                               mg_config_tmp,
+                               str(sheet_channels['Main Mix'].__getitem__(index))
                                )
         channel_list_entries.append(cle)
         index = index + 1
@@ -1658,7 +1690,7 @@ def test_ip_connection():
 
 if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x750')
+    root.geometry('1300x800')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1768,7 +1800,8 @@ if __name__ == '__main__':
          GuiConstants.TEXT_MUTE,
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
-         GuiConstants.TEXT_MUTE_GROUPS
+         GuiConstants.TEXT_MUTE_GROUPS,
+         GuiConstants.TEXT_MAINMIX
          ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,

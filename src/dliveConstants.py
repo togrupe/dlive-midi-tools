@@ -48,6 +48,8 @@ nrpn_parameter_id_hpf_frequency = 0x30
 nrpn_parameter_id_fader_level = 0x17
 nrpn_parameter_id_dca_assign = 0x40
 nrpn_parameter_id_mg_assign = 0x40
+nrpn_parameter_id_mainmix_assign = 0x18
+
 
 # Note
 note_off = 0x00
@@ -63,6 +65,10 @@ mg_off_base_address = 0x18
 # Mute
 mute_on = 0x7F
 mute_off = 0x3F
+
+# Channel Assignment to Main Mix
+mainmix_on = 0x7F
+mainmix_off = 0x3F
 
 # Fader levels
 fader_level_plus10 = 0x7F

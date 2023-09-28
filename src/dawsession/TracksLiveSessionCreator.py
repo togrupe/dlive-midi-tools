@@ -177,7 +177,7 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
     playlists.remove(template_playlist_org)
 
     tree = ET.ElementTree(root)
-    tree.write(output_dir + "/" + file_prefix + '-trackslive.template')
+    tree.write(output_dir + "/" + file_prefix + '-trackslive-recording.template')
 
 
 def handle_master_channel(GUIObjectStates, disable_track_coloring, master_recording_patch, playlists, routes,

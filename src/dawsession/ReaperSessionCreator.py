@@ -132,7 +132,7 @@ def create_session(sheet, reaper_output_dir, file_prefix, disable_default_track_
         ]
         project.add(master_track_r)
 
-    reaper_outputfile = reaper_output_dir + "/" + file_prefix + "-" + "recording-template.rpp"
+    reaper_outputfile = reaper_output_dir + "/" + file_prefix + "-" + "reaper-recording-template.rpp"
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)
 
     project.write(reaper_outputfile)

@@ -197,7 +197,7 @@ Afterwards the following window appears.
    `Clear` removes all ticks.
 
 
-8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-recording-template.rpp` / `<input-spreadsheet-file>-trackslive.template` 
+8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
    
    The following Reaper based options are available: <br>

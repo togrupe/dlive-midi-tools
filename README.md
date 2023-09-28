@@ -57,6 +57,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 | Version | Date       | OS                             | Download                                                                                         | Release Notes |
 |---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|
 | v2.6.0  |            | MacOS (x86_64 - Intel)         |                                                                                                  | [Link](#v260) | 
+|         |            | MacOS (arm_64 - Apple Silicon) |                                                                                                  |               |                                                                                              |               |
 |         |            | Windows (x86_64)               |                                                                                                  |               |
 | v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
@@ -114,11 +115,17 @@ the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the
 
 ![Reaper](doc/reaper/reaper_demo.png)
 
-# Example Generated Trackslive Template ´
-If you select the "Generate Tracks Live Recording Session" checkbox, 
-the columns `Name`, `Color`, `Recording` are considered for the template generation process. 
+# Example Generated Tracks Live Template ´
+If you select the "Generate Tracks Live Template" checkbox, 
+the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the template generation process.
 
 ![Trackslive](doc/trackslive/trackslive_demo.png)
+
+The tool generates a track live template (*.template), which can be used to create a recording session in Tracks Live
+
+![Trackslive](doc/trackslive/trackslive_open_template.png)
+
+Click on `Open Template` and select the generated file.
 
 
 ## Settings on the console
@@ -126,21 +133,24 @@ The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` shoul
 
 If you want to change the preconfigured Midi port, you can change it in the Graphical User Interface according to your dlive settings. 
 
-## Default ip and port
+## Default IP-Address
 The default dlive mixrack ip-address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
 change it, you can edit the field `ip` in the file: dliveConstants.py or during runtime within the Graphical User Interface.  
 
-Please make sure that your ethernet or Wi-Fi interface has an ip address in the same subnet. e.g. Ip: 192.168.1.10 / Subnet: 255.255.255.0
+Please make sure that your Ethernet or Wi-Fi interface has an ip address in the same subnet. e.g. IP: 192.168.1.10 / Subnet: 255.255.255.0
  
 
 ## Usage
 Prerequisites: 
-* Python >= 3.11
+* Windows 10
+* MacOS >= BigSur (Intel based)
+* Python 3.11
 * dlive Firmware: >= 1.97
 * Avantis Firmware: >= 1.25
-* Reaper >= 6.75
-* Windows 10
-* MacOS >= BigSur
+* Reaper >= 6.75 (Optional)
+* Tracks Live 1.3 (Optional)
+* Microsoft Excel or Libreoffice Calc Spreadsheet
+
 
 1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 
@@ -190,13 +200,14 @@ Afterwards the following window appears.
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
    
    The following Reaper based options are available: <br>
-   * Track numbering can also be disabled.<br>
+   * Disable Track Numbering <br>
+   * Disable Track Coloring <br>
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-   You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case use the following settings (1+2) and continue with Step 9 (3).<br><br>
+   You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
 
-<img alt="onlyreaper" src="doc/reaper_only.png" width="700"/>
+<img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
 
 9. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards the selected action(s) start automatically.
    

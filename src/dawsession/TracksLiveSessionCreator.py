@@ -1,6 +1,6 @@
 # coding=utf-8
 ####################################################
-# Session Creator
+# Tracks Live Template Creator
 #
 # Author: Tobias Grupe
 #
@@ -72,6 +72,9 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
         if lower_recording == 'nan':
             continue
         if lower_recording == 'yes':
+
+            logging.info("Processing Tracks Live channel:" + str(item.get_channel()) + " name: " + item.get_name())
+
             name_local = item.get_name()
             trackid_local = calulate_track_id(item.get_channel())
 
@@ -150,6 +153,8 @@ def create_session(sheet, output_dir, file_prefix, disable_default_track_numberi
             GUIObjectStates.append(template_GUIObjectState_rtav_to_update)
 
     if has_master_recording_tracks:
+        logging.info("Additional Master tracks are gonna be generated.")
+
         master_recording_patch = extract_first_channel(master_recording_patch_string)
 
         logging.info("Processing MasterL channel")

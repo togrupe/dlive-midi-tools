@@ -1697,7 +1697,7 @@ if __name__ == '__main__':
 
     var_write_trackslive = BooleanVar(value=False)
     cb_trackslive_write = Checkbutton(output_option_frame,
-                                      text="Generate Tracks Live Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
                                       var=var_write_trackslive, command=on_reaper_write_changed)
 
     var_disable_track_numbering = BooleanVar(value=False)

@@ -50,7 +50,6 @@ nrpn_parameter_id_dca_assign = 0x40
 nrpn_parameter_id_mg_assign = 0x40
 nrpn_parameter_id_mainmix_assign = 0x18
 
-
 # Note
 note_off = 0x00
 

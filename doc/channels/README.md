@@ -64,4 +64,11 @@ By putting an "x" into the relevant cell, the channel will be assigned to the pa
 #### Mute1-8
 By putting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
 
+#### Main Mix
+yes - Assigns the channel to Main-Mix <br>
+no - Removes the assignment from Main Mix <br>
+"-" - Don´t care. Ignore the cell. <br>
+
+Empty cells are interpreted as **Don´t care**.
+
 [back](../../README.md)

@@ -233,11 +233,12 @@ Feature & Maintenance Release
 
 
 #### Improvements
+- Support for spaces in track names for Reaper
 
 
 #### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation on API not possible.
+- HPF on, HPF value and Mute Groups for Avantis due to technical limitation on API currently not possible.
 
 #### Issues fixed
 

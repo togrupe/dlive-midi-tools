@@ -96,8 +96,9 @@ def create_session(sheet, reaper_output_dir, file_prefix, disable_default_track_
                     track_name_combined = "{}_{:0>3d}_{}".format(additional_prefix, item.get_channel(), track_name_raw)
                 else:
                     track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
+
             track.props = [
-                ["NAME", track_name_combined],
+                ["NAME", '"' + track_name_combined + '"'],
                 ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color(), disable_track_coloring)],
                 ["REC", generate_rec_item(item.get_channel_console(), item.get_record_arm())],
                 ["TRACKHEIGHT", "40 0 0 0 0 0"],

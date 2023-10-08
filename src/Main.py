@@ -634,7 +634,8 @@ def assign_mainmix_channel(output, item):
     channel = item.get_channel_console()
     mainmix_value = item.get_assign_mainmix()
 
-    if mainmix_value == 'nan' or mainmix_value == '-':
+    if mainmix_value == 'nan' or mainmix_value == '-' or mainmix_value == 'byp':
+        logging.info("Don´t care flag found, skipping channel")
         return
 
     if mainmix_value.lower() == "yes":

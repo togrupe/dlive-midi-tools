@@ -1,10 +1,11 @@
 # dlive-midi-tools
 ## Description
-Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive & Avantis. Based on a spreadsheet the following parameters can be preconfigured and in one or more steps be written into real dlive systems or into dLive Director via midi/tcp. Additionally from the same spreadsheet a DAW recording session for Reaper or Tracks Live can be generated. 
+Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dlive & Avantis. Based on a spreadsheet the following parameters can be preconfigured and in one or more steps be written into real dlive/Avantis systems or into dLive/Avantis Director via midi/tcp. Additionally from the same spreadsheet a DAW recording session for Reaper or Tracks Live can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
 - Fader Level
+- Main Mix Assignments
 - DCA Assignments
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
@@ -15,7 +16,6 @@ Python and midi/tcp based tool to prepare channel lists for Allen &amp; Heath dl
 - Matrices Name & Color
 - FX Sends Name & Color
 - FX Returns Name & Color
-- Main Mix Assignments
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
@@ -64,7 +64,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
 | v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
 |         |            | MacOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)        |               |
-|         |            | Windows (x86_64 - Intel)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
 | v2.3.0  | 19.05.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
 | v2.2.0  | 29.04.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
@@ -124,7 +124,7 @@ the columns `Name`, `Color`, `Recording` and `Record Arm` are considered for the
 
 The tool generates a track live template (*.template), which can be used to create a recording session in Tracks Live
 
-![Trackslive](doc/trackslive/trackslive_open_template.png)
+![TracksliveOpenTemplate](doc/trackslive/trackslive_open_template.png)
 
 Click on `Open Template` and select the generated file.
 
@@ -200,7 +200,7 @@ Afterwards the following window appears.
 8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
    
-   The following Reaper based options are available: <br>
+   The following DAW based options are available: <br>
    * Disable Track Numbering <br>
    * Disable Track Coloring <br>
    * An additional custom track prefix can also be added.<br>

@@ -146,7 +146,7 @@ Prerequisites:
 * Windows 10
 * MacOS >= BigSur (Intel-based)
 * Python 3.11
-* dLive Firmware: >= 1.97
+* dLive Firmware: >= 1.98
 * Avantis Firmware: >= 1.25
 * Reaper >= 6.75 (Optional)
 * Tracks Live 1.3 (Optional)

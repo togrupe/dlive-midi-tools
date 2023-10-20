@@ -41,8 +41,8 @@ def convert_sheet_color_to_reaper_color(color, disable_track_coloring):
 
 
 def generate_rec_item(channel, arm):
-    arm_color = arm.lower()
-    if arm_color == "yes":
+    armed = arm.lower()
+    if armed == "yes":
         arm_set = '1 '
     else:
         arm_set = '0 '
@@ -62,7 +62,7 @@ def extract_first_channel(master_recording_patch_string):
     return int(master_recording_patch_string.split("-")[0]) - 1
 
 
-def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
+def create_session(sheet, reaper_output_dir, file_prefix, disable_default_track_numbering, has_additional_prefix,
                           additional_prefix, has_master_recording_tracks, master_recording_patch_string, disable_track_coloring):
     project = Project()
 
@@ -75,6 +75,8 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
         if lower_recording == 'nan':
             continue
         if lower_recording == 'yes':
+
+            logging.info("Processing reaper channel:" + str(item.get_channel()) + " name: " + item.get_name())
 
             track = Track()
             name = item.get_name()
@@ -94,8 +96,9 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
                     track_name_combined = "{}_{:0>3d}_{}".format(additional_prefix, item.get_channel(), track_name_raw)
                 else:
                     track_name_combined = "{:0>3d}_{}".format(item.get_channel(), track_name_raw)
+
             track.props = [
-                ["NAME", track_name_combined],
+                ["NAME", '"' + track_name_combined + '"'],
                 ["PEAKCOL", convert_sheet_color_to_reaper_color(item.get_color(), disable_track_coloring)],
                 ["REC", generate_rec_item(item.get_channel_console(), item.get_record_arm())],
                 ["TRACKHEIGHT", "40 0 0 0 0 0"],
@@ -106,27 +109,31 @@ def create_reaper_session(sheet, reaper_output_dir, file_prefix, disable_default
     if has_master_recording_tracks:
         master_recording_patch = extract_first_channel(master_recording_patch_string)
 
+        logging.info("Processing MasterL channel")
+
         master_track_l = Track()
         master_track_l.props = [
             ["NAME", "MasterL"],
-            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange")],
+            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange", disable_track_coloring)],
             ["REC", generate_rec_item(master_recording_patch, "yes")],
             ["TRACKHEIGHT", "40 0 0 0 0 0"],
             ["HWOUT", generate_hwout_item(master_recording_patch)]
         ]
         project.add(master_track_l)
 
+        logging.info("Processing MasterR channel")
+
         master_track_r = Track()
         master_track_r.props = [
             ["NAME", "MasterR"],
-            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange")],
+            ["PEAKCOL", convert_sheet_color_to_reaper_color("orange", disable_track_coloring)],
             ["REC", generate_rec_item(master_recording_patch + 1, "yes")],
             ["TRACKHEIGHT", "40 0 0 0 0 0"],
             ["HWOUT", generate_hwout_item(master_recording_patch + 1)]
         ]
         project.add(master_track_r)
 
-    reaper_outputfile = reaper_output_dir + "/" + file_prefix + "-" + "recording-template.rpp"
+    reaper_outputfile = reaper_output_dir + "/" + file_prefix + "-" + "reaper-recording-template.rpp"
     logging.info("Reaper template will be generated into folder:" + reaper_outputfile)
 
     project.write(reaper_outputfile)

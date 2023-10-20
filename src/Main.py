@@ -1690,6 +1690,7 @@ def test_ip_connection():
 
 
 if __name__ == '__main__':
+    logging.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('1300x800')
     root.resizable(False, False)

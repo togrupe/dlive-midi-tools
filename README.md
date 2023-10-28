@@ -224,6 +224,9 @@ If you find any issues, please let me know. New ideas are welcome.
 
 Have fun! 
 
+## Feedback
+If you want to send feedback, please use the following mail address: <br>
+dmt@liveworks-vt.de
 
 ## Release Notes
 ### v2.6.0

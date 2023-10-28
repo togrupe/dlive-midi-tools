@@ -153,10 +153,9 @@ Prerequisites:
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 
 To run the tool, you have two options:<br>
-A: Use an available [download](##Download)<br>
+A: Use an available download (see above) <br>
 or<br>
 B: Build it your own from scratch, using the following steps.<br>
-
 
 1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 

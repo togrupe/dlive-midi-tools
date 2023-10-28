@@ -152,6 +152,11 @@ Prerequisites:
 * Tracks Live 1.3 (Optional)
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 
+To run the tool, you have two options:<br>
+A: Use an available [download](##Download)<br>
+or<br>
+B: Build it your own from scratch, using the following steps.<br>
+
 
 1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 
@@ -175,7 +180,7 @@ Prerequisites:
     `pyinstaller -y --onefile -w ./src/Main.py`
 
 
-Afterwards, the following window appears. 
+Afterwards, the following window appears. This can take a couple of seconds.
 
 ![Gui](doc/gui.png)
 

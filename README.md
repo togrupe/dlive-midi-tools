@@ -225,7 +225,7 @@ If you find any issues, please let me know. New ideas are welcome.
 Have fun! 
 
 ## Feedback
-If you want to send feedback, please use the following mail address: <br>
+If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
 dmt@liveworks-vt.de
 
 ## Release Notes

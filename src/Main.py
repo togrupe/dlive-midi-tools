@@ -1452,7 +1452,7 @@ def read_persisted_midi_port():
     else:
         logging.info("No config file found, using default midi-port: " +
                      dliveConstants.midi_channel_drop_down_string_default +
-                     "from dliveConstants instead.")
+                     " from dliveConstants instead.")
 
         midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
 

@@ -68,14 +68,14 @@ Empty cells are interpreted as **no**
 #### DCA1-24
 By putting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
 
-Empty cells are interpreted as **no**
+Empty cells are interpreted as not being assigned.
 
 "-" - Don´t care. Ignore the cell. <br>
 
 #### Mute1-8
 By putting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
 
-Empty cells are interpreted as **no**
+Empty cells are interpreted as not being assigned.
 
 "-" - Don´t care. Ignore the cell. <br>
 

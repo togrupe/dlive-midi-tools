@@ -237,6 +237,7 @@ Feature & Maintenance Release
 - Tracks Live Support (Template Generation)
 - Possibility to disable track coloring
 - Channel to Main Mix Assignments
+- Bypass feature for DCAs and Mute Groups added
 
 
 #### Improvements

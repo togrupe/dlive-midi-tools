@@ -624,7 +624,11 @@ def dca_channel(output, item):
         dca_config = item.get_dca_config()
         dca_array = dca_config.get_dca_array()
 
-        if dca_array.__getitem__(dca_index).lower() == "x":
+        dca_array_item_lower = dca_array.__getitem__(dca_index).lower()
+
+        if dca_array_item_lower == '-' or dca_array_item_lower == 'byp':
+            continue
+        elif dca_array.__getitem__(dca_index).lower() == "x":
             assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
         else:
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
@@ -661,7 +665,10 @@ def mg_channel(output, item):
         mg_config = item.get_mg_config()
         mg_array = mg_config.get_mg_array()
 
-        if mg_array.__getitem__(mg_index).lower() == "x":
+        mg_array_item_lower = mg_array.__getitem__(mg_index).lower()
+        if mg_array_item_lower == '-' or mg_array_item_lower == 'byp':
+            continue
+        elif mg_array_item_lower == "x":
             assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
         else:
             assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
@@ -776,7 +783,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '9'
+    latest_spreadsheet_version = '10'
 
     read_version = sheet.get_misc_model().get_version()
 

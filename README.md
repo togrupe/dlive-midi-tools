@@ -147,7 +147,7 @@ Prerequisites:
 * MacOS >= BigSur (Intel-based)
 * Python 3.11
 * dLive Firmware: 1.9x
-* Avantis Firmware: >= 1.25
+* Avantis Firmware: 1.30
 * Reaper 6.xx (Optional)
 * Tracks Live 1.3 (Optional)
 * Microsoft Excel or LibreOffice Calc Spreadsheet

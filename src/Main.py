@@ -1614,7 +1614,7 @@ class CheckboxGrid(Frame):
 
     def create_group_checkbox(self, parent, group_vars):
         group_var = BooleanVar()
-        group_checkbox = Checkbutton(parent, text="Select all", variable=group_var,
+        group_checkbox = Checkbutton(parent, text="Select All", variable=group_var,
                                      command=lambda: self.toggle_group(group_vars, group_var.get()))
         group_checkbox.grid(row=0, column=1, sticky="e")
         for var in group_vars:

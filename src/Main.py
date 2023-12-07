@@ -1733,12 +1733,12 @@ if __name__ == '__main__':
                                    var=var_write_to_console)
     var_write_reaper = BooleanVar(value=False)
     cb_reaper_write = Checkbutton(output_option_frame,
-                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                  text="Generate Reaper (v6.xx) Recording Session with Name & Color (In & Out 1:1 Patch)",
                                   var=var_write_reaper, command=on_reaper_write_changed)
 
     var_write_trackslive = BooleanVar(value=False)
     cb_trackslive_write = Checkbutton(output_option_frame,
-                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
+                                      text="Generate Tracks Live (v1.3) Template with Name & Color (In & Out 1:1 Patch)",
                                       var=var_write_trackslive, command=on_reaper_write_changed)
 
     var_disable_track_numbering = BooleanVar(value=False)

@@ -57,9 +57,8 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Download
 | Version | Date       | OS                             | Download                                                                                         | Release Notes |
 |---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|
-| v2.6.0  |            | MacOS (x86_64 - Intel)         |                                                                                                  | [Link](#v260) | 
-|         |            | MacOS (arm_64 - Apple Silicon) |                                                                                                  |               |                                                                                              |               |
-|         |            | Windows (x86_64)               |                                                                                                  |               |
+| v2.6.0  | 15.12.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)     | [Link](#v260) |                                                                                              |               |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)         |               |
 | v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
 | v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 

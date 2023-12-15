@@ -13,7 +13,7 @@ import re
 import socket
 import threading
 import time
-from tkinter import filedialog, Button, Tk, Checkbutton, IntVar, W, Frame, LEFT, YES, TOP, X, RIGHT, Label, \
+from tkinter import filedialog, Button, Tk, Checkbutton, Frame, LEFT, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
 from tkinter.ttk import Combobox
@@ -23,21 +23,20 @@ import numpy
 import pandas as pd
 from mido.sockets import connect
 
+import GuiConstants
 import Toolinfo
 import dliveConstants
-from dawsession import SessionCreator
-import GuiConstants
+from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from model.Action import Action
-
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.GroupSetup import GroupSetup
 from model.GroupsListEntry import GroupsListEntry
 from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
-from model.SocketListEntry import SocketListEntry
 from model.Sheet import Sheet
+from model.SocketListEntry import SocketListEntry
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
@@ -421,6 +420,8 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             dca_channel(output, item)
         elif action == "mute_group":
             mg_channel(output, item)
+        elif action == "assign_main_mix":
+            assign_mainmix_channel(output, item)
 
 
 def pad_socket(output, item, socket_type):
@@ -603,6 +604,15 @@ def assign_dca(output, channel, dca_value):
         time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
 
 
+def assign_mainmix(output, channel, mainmix_value):
+    if is_network_communication_allowed:
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
+                                 value=dliveConstants.nrpn_parameter_id_mainmix_assign))
+        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mainmix_value))
+        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
+
+
 def dca_channel(output, item):
     channel = item.get_channel_console()
 
@@ -614,10 +624,28 @@ def dca_channel(output, item):
         dca_config = item.get_dca_config()
         dca_array = dca_config.get_dca_array()
 
-        if dca_array.__getitem__(dca_index).lower() == "x":
+        dca_array_item_lower = dca_array.__getitem__(dca_index).lower()
+
+        if dca_array_item_lower == '-' or dca_array_item_lower == 'byp':
+            continue
+        elif dca_array.__getitem__(dca_index).lower() == "x":
             assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
         else:
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
+
+
+def assign_mainmix_channel(output, item):
+    channel = item.get_channel_console()
+    mainmix_value = item.get_assign_mainmix()
+
+    if mainmix_value == 'nan' or mainmix_value == '-' or mainmix_value == 'byp':
+        logging.info("Don´t care flag found, skipping channel")
+        return
+
+    if mainmix_value.lower() == "yes":
+        assign_mainmix(output, channel, dliveConstants.mainmix_on)
+    else:
+        assign_mainmix(output, channel, dliveConstants.mainmix_off)
 
 
 def assign_mg(output, channel, mg_value):
@@ -637,7 +665,10 @@ def mg_channel(output, item):
         mg_config = item.get_mg_config()
         mg_array = mg_config.get_mg_array()
 
-        if mg_array.__getitem__(mg_index).lower() == "x":
+        mg_array_item_lower = mg_array.__getitem__(mg_index).lower()
+        if mg_array_item_lower == '-' or mg_array_item_lower == 'byp':
+            continue
+        elif mg_array_item_lower == "x":
             assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
         else:
             assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
@@ -745,14 +776,14 @@ def handle_groups_parameter(message, output, groups_model, action, bus_type):
                               dliveConstants.channel_offset_fx_return)
 
 
-def read_document(filename, check_box_reaper, check_box_write_to_console):
+def read_document(filename, check_box_reaper, check_box_trackslive, check_box_write_to_console):
     logging.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '8'
+    latest_spreadsheet_version = '10'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -842,6 +873,13 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
                 action = Action(GuiConstants.TEXT_MUTE_GROUPS, "channels",
                                 "Set Mute Group Assignments to channels...", "mute_group")
+                action_list.append(action)
+                actions = increment_actions(actions)
+
+            # Assign to Main Mix
+            elif var._name == GuiConstants.TEXT_MAINMIX and var.get() is True:
+                action = Action(GuiConstants.TEXT_MAINMIX, "channels",
+                                "Set Main Mix Assignments to channels...", "assign_main_mix")
                 action_list.append(action)
                 actions = increment_actions(actions)
 
@@ -1012,6 +1050,12 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
     else:
         cb_reaper = False
 
+    if check_box_trackslive:
+        actions = increment_actions(actions)
+        cb_trackslive = True
+    else:
+        cb_trackslive = False
+
     if check_box_write_to_console and actions == 0:
         showinfo(message="No spreadsheet column(s) selected. Please select at least one column")
         return
@@ -1055,11 +1099,33 @@ def read_document(filename, check_box_reaper, check_box_write_to_console):
             showerror(message="DAW Inputs for additional master tracks must to be chosen.")
             return
 
-        SessionCreator.create_reaper_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
-                                             var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
-                                             entry_additional_track_prefix.get(), var_reaper_additional_master_tracks.get(),
-                                             var_master_recording_patch.get())
+        ReaperSessionCreator.create_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                            var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                            entry_additional_track_prefix.get(),
+                                            var_reaper_additional_master_tracks.get(),
+                                            var_master_recording_patch.get(), var_disable_track_coloring.get())
         logging.info("Reaper Recording Session Template created")
+
+        progress(actions)
+        root.update()
+
+    if cb_trackslive:
+        action = "Creating Tracks Live Recording Session Template file..."
+        logging.info(action)
+        current_action_label["text"] = action
+
+        if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
+            progress(actions)
+            root.update()
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
+
+        TracksLiveSessionCreator.create_session(sheet, root.reaper_output_dir, root.reaper_file_prefix,
+                                                var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                                entry_additional_track_prefix.get(),
+                                                var_reaper_additional_master_tracks.get(),
+                                                var_master_recording_patch.get(), var_disable_track_coloring.get())
+        logging.info("Tracks Live Recording Session Template created")
 
         progress(actions)
         root.update()
@@ -1117,7 +1183,8 @@ def create_channel_list_content(sheet_channels):
                                str(sheet_channels['Recording'].__getitem__(index)),
                                str(sheet_channels['Record Arm'].__getitem__(index)),
                                dca_config_tmp,
-                               mg_config_tmp
+                               mg_config_tmp,
+                               str(sheet_channels['Main Mix'].__getitem__(index))
                                )
         channel_list_entries.append(cle)
         index = index + 1
@@ -1253,9 +1320,10 @@ def browse_files():
     reset_progress_bar()
 
     cb_reaper = var_write_reaper.get()
+    cb_trackslive = var_write_trackslive.get()
     cb_console_write = var_write_to_console.get()
 
-    if cb_reaper or cb_console_write:
+    if cb_reaper or cb_trackslive or cb_console_write:
         input_file_path = filedialog.askopenfilename()
         if input_file_path == "":
             # Nothing to do
@@ -1264,7 +1332,7 @@ def browse_files():
         root.reaper_output_dir = os.path.dirname(input_file_path)
         root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
         try:
-            read_document(input_file_path, cb_reaper, cb_console_write)
+            read_document(input_file_path, cb_reaper, cb_trackslive, cb_console_write)
         except TypeError as exc:
 
             error_message = "An error happened, probably an empty line could be the issue. " \
@@ -1385,13 +1453,13 @@ def read_persisted_midi_port():
             except KeyError:
                 logging.info("Use default midi-port: " +
                              dliveConstants.midi_channel_drop_down_string_default +
-                             "from dliveConstants instead.")
+                             " from dliveConstants instead.")
 
                 midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
     else:
         logging.info("No config file found, using default midi-port: " +
                      dliveConstants.midi_channel_drop_down_string_default +
-                     "from dliveConstants instead.")
+                     " from dliveConstants instead.")
 
         midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
 
@@ -1472,6 +1540,7 @@ def on_console_selected(*args):
 
 def enable_reaper_options_ui_elements():
     cb_reaper_disable_numbering.config(state="normal")
+    cb_reaper_disable_track_coloring.config(state="normal")
     cb_reaper_additional_prefix.config(state="normal")
     label_track_prefix.config(state="normal")
     cb_reaper_additional_master_tracks.config(state="normal")
@@ -1481,6 +1550,7 @@ def enable_reaper_options_ui_elements():
 
 def disable_reaper_options_ui_elements():
     cb_reaper_disable_numbering.config(state="disabled")
+    cb_reaper_disable_track_coloring.config(state="disabled")
     cb_reaper_additional_prefix.config(state="disabled")
     label_track_prefix.config(state="disabled")
     cb_reaper_additional_master_tracks.config(state="disabled")
@@ -1489,7 +1559,7 @@ def disable_reaper_options_ui_elements():
 
 
 def on_reaper_write_changed():
-    if var_write_reaper.get() == 1:
+    if var_write_reaper.get() == 1 or var_write_trackslive.get():
         enable_reaper_options_ui_elements()
     else:
         disable_reaper_options_ui_elements()
@@ -1544,7 +1614,7 @@ class CheckboxGrid(Frame):
 
     def create_group_checkbox(self, parent, group_vars):
         group_var = BooleanVar()
-        group_checkbox = Checkbutton(parent, text="Select all", variable=group_var,
+        group_checkbox = Checkbutton(parent, text="Select All", variable=group_var,
                                      command=lambda: self.toggle_group(group_vars, group_var.get()))
         group_checkbox.grid(row=0, column=1, sticky="e")
         for var in group_vars:
@@ -1627,8 +1697,9 @@ def test_ip_connection():
 
 
 if __name__ == '__main__':
+    logging.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x750')
+    root.geometry('1300x800')
     root.resizable(False, False)
 
     menu_bar = Menu(root)
@@ -1665,10 +1736,20 @@ if __name__ == '__main__':
                                   text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
                                   var=var_write_reaper, command=on_reaper_write_changed)
 
+    var_write_trackslive = BooleanVar(value=False)
+    cb_trackslive_write = Checkbutton(output_option_frame,
+                                      text="Generate Tracks Live (v1.3) Template with Name & Color (In & Out 1:1 Patch)",
+                                      var=var_write_trackslive, command=on_reaper_write_changed)
+
     var_disable_track_numbering = BooleanVar(value=False)
     cb_reaper_disable_numbering = Checkbutton(output_option_frame,
                                               text="Disable Track Numbering",
                                               var=var_disable_track_numbering)
+
+    var_disable_track_coloring = BooleanVar(value=False)
+    cb_reaper_disable_track_coloring = Checkbutton(output_option_frame,
+                                                   text="Disable Track Coloring",
+                                                   var=var_disable_track_coloring)
 
     label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
 
@@ -1695,11 +1776,13 @@ if __name__ == '__main__':
     write_to_console.grid(row=0, column=0, sticky="W")
     cb_reaper_write.grid(row=1, column=0, sticky="W")
     cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
-    cb_reaper_additional_prefix.grid(row=2, column=1, sticky="W")
-    entry_additional_track_prefix.grid(row=2, column=2, sticky="W")
-    label_track_prefix.grid(row=2, column=3, sticky="W")
-    cb_reaper_additional_master_tracks.grid(row=3, column=1, sticky="W")
-    combobox_master_track.grid(row=3, column=2, sticky="W")
+    cb_reaper_disable_track_coloring.grid(row=2, column=1, sticky="W")
+    cb_reaper_additional_prefix.grid(row=3, column=1, sticky="W")
+    entry_additional_track_prefix.grid(row=3, column=2, sticky="W")
+    label_track_prefix.grid(row=3, column=3, sticky="W")
+    cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
+    combobox_master_track.grid(row=4, column=2, sticky="W")
+    cb_trackslive_write.grid(row=2, column=0, sticky="W")
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
@@ -1726,7 +1809,8 @@ if __name__ == '__main__':
          GuiConstants.TEXT_MUTE,
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
-         GuiConstants.TEXT_MUTE_GROUPS
+         GuiConstants.TEXT_MUTE_GROUPS,
+         GuiConstants.TEXT_MAINMIX
          ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,

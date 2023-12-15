@@ -141,3 +141,6 @@ config.json
 *.zip
 
 out/*
+
+#Tracks-live
+*.template

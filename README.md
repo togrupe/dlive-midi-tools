@@ -57,9 +57,8 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Download
 | Version | Date       | OS                             | Download                                                                                         | Release Notes |
 |---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|
-| v2.6.0  |            | MacOS (x86_64 - Intel)         |                                                                                                  | [Link](#v260) | 
-|         |            | MacOS (arm_64 - Apple Silicon) |                                                                                                  |               |                                                                                              |               |
-|         |            | Windows (x86_64)               |                                                                                                  |               |
+| v2.6.0  | 15.12.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)     | [Link](#v260) |                                                                                              |               |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)         |               |
 | v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
 | v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
@@ -147,11 +146,15 @@ Prerequisites:
 * MacOS >= BigSur (Intel-based)
 * Python 3.11
 * dLive Firmware: 1.9x
-* Avantis Firmware: >= 1.25
-* Reaper 6.xx (Optional)
-* Tracks Live 1.3 (Optional)
+* Avantis Firmware: 1.30
+* Reaper (Optional)
+* Tracks Live v1.3 (Optional)
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 
+To run the tool, you have two options:<br>
+A: Use an available download (see above) <br>
+or<br>
+B: Build it your own from scratch, using the following steps.<br>
 
 1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 
@@ -175,7 +178,7 @@ Prerequisites:
     `pyinstaller -y --onefile -w ./src/Main.py`
 
 
-Afterwards, the following window appears. 
+Afterwards, the following window appears. This can take a couple of seconds.
 
 ![Gui](doc/gui.png)
 
@@ -220,6 +223,9 @@ If you find any issues, please let me know. New ideas are welcome.
 
 Have fun! 
 
+## Feedback
+If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
+dmt@liveworks-vt.de
 
 ## Release Notes
 ### v2.6.0
@@ -230,6 +236,7 @@ Feature & Maintenance Release
 - Tracks Live Support (Template Generation)
 - Possibility to disable track coloring
 - Channel to Main Mix Assignments
+- Bypass feature for DCAs and Mute Groups added
 
 
 #### Improvements

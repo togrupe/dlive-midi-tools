@@ -624,7 +624,11 @@ def dca_channel(output, item):
         dca_config = item.get_dca_config()
         dca_array = dca_config.get_dca_array()
 
-        if dca_array.__getitem__(dca_index).lower() == "x":
+        dca_array_item_lower = dca_array.__getitem__(dca_index).lower()
+
+        if dca_array_item_lower == '-' or dca_array_item_lower == 'byp':
+            continue
+        elif dca_array.__getitem__(dca_index).lower() == "x":
             assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
         else:
             assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
@@ -661,7 +665,10 @@ def mg_channel(output, item):
         mg_config = item.get_mg_config()
         mg_array = mg_config.get_mg_array()
 
-        if mg_array.__getitem__(mg_index).lower() == "x":
+        mg_array_item_lower = mg_array.__getitem__(mg_index).lower()
+        if mg_array_item_lower == '-' or mg_array_item_lower == 'byp':
+            continue
+        elif mg_array_item_lower == "x":
             assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
         else:
             assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
@@ -776,7 +783,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '9'
+    latest_spreadsheet_version = '10'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -1446,13 +1453,13 @@ def read_persisted_midi_port():
             except KeyError:
                 logging.info("Use default midi-port: " +
                              dliveConstants.midi_channel_drop_down_string_default +
-                             "from dliveConstants instead.")
+                             " from dliveConstants instead.")
 
                 midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
     else:
         logging.info("No config file found, using default midi-port: " +
                      dliveConstants.midi_channel_drop_down_string_default +
-                     "from dliveConstants instead.")
+                     " from dliveConstants instead.")
 
         midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
 
@@ -1607,7 +1614,7 @@ class CheckboxGrid(Frame):
 
     def create_group_checkbox(self, parent, group_vars):
         group_var = BooleanVar()
-        group_checkbox = Checkbutton(parent, text="Select all", variable=group_var,
+        group_checkbox = Checkbutton(parent, text="Select All", variable=group_var,
                                      command=lambda: self.toggle_group(group_vars, group_var.get()))
         group_checkbox.grid(row=0, column=1, sticky="e")
         for var in group_vars:
@@ -1690,6 +1697,7 @@ def test_ip_connection():
 
 
 if __name__ == '__main__':
+    logging.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('1300x800')
     root.resizable(False, False)
@@ -1730,7 +1738,7 @@ if __name__ == '__main__':
 
     var_write_trackslive = BooleanVar(value=False)
     cb_trackslive_write = Checkbutton(output_option_frame,
-                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
+                                      text="Generate Tracks Live (v1.3) Template with Name & Color (In & Out 1:1 Patch)",
                                       var=var_write_trackslive, command=on_reaper_write_changed)
 
     var_disable_track_numbering = BooleanVar(value=False)

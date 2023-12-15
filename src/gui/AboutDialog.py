@@ -16,7 +16,7 @@ class AboutDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("About")
-        self.geometry('600x520')
+        self.geometry('600x540')
         self.resizable(False, False)
         self.create_widgets()
 
@@ -30,6 +30,7 @@ class AboutDialog(tk.Toplevel):
         space_label4 = tk.Label(content_frame, text="")
         space_label5 = tk.Label(content_frame, text="")
         space_label6 = tk.Label(content_frame, text="")
+        space_label7 = tk.Label(content_frame, text="")
 
         # create labels for the about dialog
         toolname_label = tk.Label(content_frame, text="Toolname:")
@@ -59,6 +60,9 @@ class AboutDialog(tk.Toplevel):
         team4_value = tk.Label(content_frame, text="Tim-Lukas Arold")
 
         opensource_label = tk.Label(content_frame, text="Powered by Open Source")
+
+        contact_email_label = tk.Label(content_frame, text="Contact/Feedback:")
+        contact_email_value = tk.Label(content_frame, text="dmt@liveworks-vt.de")
 
         python_modules_label = tk.Label(content_frame, text="Used Python Modules:")
         python_modules_value0 = tk.Label(content_frame, text="mido")
@@ -107,6 +111,11 @@ class AboutDialog(tk.Toplevel):
         python_modules_value3.grid(row=19, column=1, sticky=tk.W)
         python_modules_value4.grid(row=20, column=1, sticky=tk.W)
         python_modules_value5.grid(row=21, column=1, sticky=tk.W)
+
+        space_label6.grid(row=22, column=0, sticky=tk.W)
+
+        contact_email_label.grid(row=23, column=0, sticky=tk.W)
+        contact_email_value.grid(row=23, column=1, sticky=tk.W)
 
         content_frame.pack(side=TOP)
 

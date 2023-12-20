@@ -72,7 +72,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 | v2.1.0  | 31.03.2023 | MacOS (x86_64 - Intel)            | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |               |                                  |
 |         |            | Windows (x86_64)                  | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |               |                                  |
 
-Hint for Apple-Silicon: in combination with Rosetta also compatible for Apple-Silicon (M1/M2)
+(*) Hint for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2)
 
 ## Input file / The Spreadsheet Template
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 

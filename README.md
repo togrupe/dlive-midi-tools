@@ -208,8 +208,8 @@ __Recommendation__: Please back up your current show file, just to be on the saf
    * Add two additional mono busses to record your mixing sum.
 
 
-   <br><br>
-   > **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
+<br><br>
+> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
 
    <img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
 

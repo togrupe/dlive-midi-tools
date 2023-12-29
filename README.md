@@ -178,7 +178,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 
 ![Gui](doc/gui.png)
 
-Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
+__Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
 
 1. Select the console: `dLive` or `Avantis`
 
@@ -207,6 +207,8 @@ Recommendation: Please back up your current show file, just to be on the safe si
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
+
+   __Note__:<br><br>
    You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
 
 <img alt="onlyreaper" src="doc/daw_only.png" width="700"/>

@@ -142,45 +142,43 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 
 ## Usage
 Prerequisites: 
-* Windows 10
-* MacOS >= BigSur (Intel-based)
-* Python 3.11
+* Windows 10 / MacOS >= BigSur
 * dLive Firmware: 1.9x
 * Avantis Firmware: 1.30
+* Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
 * Tracks Live v1.3 (Optional)
-* Microsoft Excel or LibreOffice Calc Spreadsheet
+* Python 3.11 (Optional, if you want to build the software yourself)
 
-To run the tool, you have two options:<br>
-A: Use an available download (see above) <br>
-or<br>
+To run the tool, you have two options:<br><br>
+A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4 <br>
 B: Build it your own from scratch, using the following steps.<br>
 
-1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
-
-2. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
+B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
 
 `pip install -r dependencies.txt`
 
-3. Run the script with the following command: 
+B2. Run the script with the following command: 
 
 `cd src` <br>
 `python3 Main.py`
 
-4. (Optional) If you want to make a binary out of it, please do the following: 
+B3. (Optional) If you want to make a binary out of it, please do the following: 
 
-    4.1 Installation of pyinstaller
+    B3.1 Installation of pyinstaller
 
     `pip install pyinstaller`
 
-    4.2 Create a onefile binary (works for Windows and MacOS)
+    B3.2 Create a onefile binary (works for Windows and MacOS)
 
     `pyinstaller -y --onefile -w ./src/Main.py`
 
 
-Afterwards, the following window appears. This can take a couple of seconds.
+4. Afterwards, the following window appears. This can take a couple of seconds.
 
 ![Gui](doc/gui.png)
+
+Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
 
 1. Select the console: `dLive` or `Avantis`
 

@@ -55,21 +55,21 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                             | Download                                                                                         | Release Notes |
-|---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|
-| v2.6.0  | 15.12.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)     | [Link](#v260) |                                                                                              |               |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)         |               |
-| v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) | 
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |
-| v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) | 
-|         |            | MacOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)        |               |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |
-| v2.3.0  | 19.05.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-macos.zip)           | [Link](#v230) | 
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_3_0/dmt-v2_3_0-windows.zip)         |               |
-| v2.2.0  | 29.04.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-macos.zip)           | [Link](#v220) |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_2_0/dmt-v2_2_0-windows.zip)         |               |
-| v2.1.0  | 31.03.2023 | MacOS (x86_64 - Intel)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/macos/dmt-v2_1_0-macos.zip)     |               |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_1_0/windows/dmt-v2_1_0-windows.zip) |               |
+| Version | Date       | OS                             | Download                                                                                         | Release Notes | MD5 Checksum                     |
+|---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|----------------------------------|
+| v2.6.0  | 15.12.2023 | MacOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)     | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |                                                                                              |               |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)         |               | 6e3d3adf822604d49708a434274c438f |
+| v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) |                                  | 
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |                                  |
+| v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) |                                  | 
+|         |            | MacOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)        |               |                                  |
+|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |                                  |
+
+(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2), Newer vesion of MacOS should have it installed by default. 
+    Keep in mind that the first start can take a while.
+
+Older versions see [archive](doc/download-archive.md)
+
 
 ## Input file / The Spreadsheet Template
 An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
@@ -142,45 +142,43 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 
 ## Usage
 Prerequisites: 
-* Windows 10
-* MacOS >= BigSur (Intel-based)
-* Python 3.11
+* Windows 10 / MacOS >= BigSur
 * dLive Firmware: 1.9x
 * Avantis Firmware: 1.30
+* Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
 * Tracks Live v1.3 (Optional)
-* Microsoft Excel or LibreOffice Calc Spreadsheet
+* Python 3.11 (Optional, if you want to build the software yourself)
 
-To run the tool, you have two options:<br>
-A: Use an available download (see above) <br>
-or<br>
+To run the tool, you have two options:<br><br>
+A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4 <br>
 B: Build it your own from scratch, using the following steps.<br>
 
-1. Recommendation: Please back up your current show file, just to be on the safe side if something goes wrong.
-
-2. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
+B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
 
 `pip install -r dependencies.txt`
 
-3. Run the script with the following command: 
+B2. Run the script with the following command: 
 
 `cd src` <br>
 `python3 Main.py`
 
-4. (Optional) If you want to make a binary out of it, please do the following: 
+B3. (Optional) If you want to make a binary out of it, please do the following: 
 
-    4.1 Installation of pyinstaller
+    B3.1 Installation of pyinstaller
 
     `pip install pyinstaller`
 
-    4.2 Create a onefile binary (works for Windows and MacOS)
+    B3.2 Create a onefile binary (works for Windows and MacOS)
 
     `pyinstaller -y --onefile -w ./src/Main.py`
 
 
-Afterwards, the following window appears. This can take a couple of seconds.
+4. Afterwards, the following window appears. This can take a couple of seconds.
 
 ![Gui](doc/gui.png)
+
+__Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
 
 1. Select the console: `dLive` or `Avantis`
 
@@ -209,9 +207,11 @@ Afterwards, the following window appears. This can take a couple of seconds.
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-   You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
 
-<img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
+<br><br>
+> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
+
+   <img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
 
 9. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
    

@@ -75,10 +75,10 @@ def convert_return_value_to_readable_color(in_message):
     return color_ret
 
 
-def get_color_channel(output, startChannel, endChannel):
+def get_color_channel(output, start_channel, end_channel):
     color = []
 
-    for channel in range(startChannel, endChannel):
+    for channel in range(start_channel, end_channel):
         prefix = [determine_technical_midi_port(var_midi_channel.get()),
                   dliveConstants.sysex_message_get_channel_colour, channel]
 
@@ -110,8 +110,8 @@ def extractName(original_array):
     return ascii_string.rstrip()
 
 
-def get_name_channel(output, data_color, startChannel, endChannel):
-    for channel in range(startChannel, endChannel):
+def get_name_channel(output, data_color, start_channel, end_channel):
+    for channel in range(start_channel, end_channel):
         prefix = [determine_technical_midi_port(var_midi_channel.get()), dliveConstants.sysex_message_get_channel_name,
                   channel]
 

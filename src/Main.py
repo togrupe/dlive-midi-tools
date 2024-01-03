@@ -1821,7 +1821,7 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    output_option_frame = LabelFrame(root, text="Output Option")
+    output_option_frame = LabelFrame(root, text="Spreadsheet to Console - Output Option")
     var_write_to_console = BooleanVar(value=True)
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)

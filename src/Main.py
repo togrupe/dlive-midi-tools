@@ -102,7 +102,7 @@ def get_color_channel(output, start_channel, end_channel):
     return color
 
 
-def extractName(original_array):
+def extract_name(original_array):
     name = original_array.data[10:]
 
     ascii_string = ''.join(chr(num) for num in name if num != 0)
@@ -119,7 +119,7 @@ def get_name_channel(output, data_color, start_channel, end_channel):
         if is_network_communication_allowed:
             output.send(message)
 
-            channel_name = extractName(output.receive())
+            channel_name = extract_name(output.receive())
 
             for item in data_color:
                 if item['technicalChannel'] == channel:

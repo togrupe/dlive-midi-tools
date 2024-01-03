@@ -179,7 +179,7 @@ def get_data_from_console():
         root.update()
         logging.info(text)
 
-        print(data_fin)
+        showinfo(message='Reading from Console done, Sessions created!')
     else:
         output = None
 

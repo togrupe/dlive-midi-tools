@@ -131,23 +131,53 @@ def get_name_channel(output, data_color, startChannel, endChannel):
 
 
 def get_data_from_console():
+    reset_current_action_label()
+    reset_progress_bar()
     if is_network_communication_allowed:
         output = connect_to_console(read_current_ui_ip_address())
-        startChannel = 0
-        endChannel = 64
-        data_color = get_color_channel(output, startChannel, endChannel)
-        data_fin = get_name_channel(output, data_color, startChannel, endChannel)
+        start_channel = int(var_current_console_startChannel.get())-1
+        end_channel = int(var_current_console_endChannel.get())
+        if start_channel > end_channel:
+            error_msg = "Start Channel: " + str(start_channel) + " is greater than End Channel: " + str(end_channel)
+            logging.error(error_msg)
+            showerror(message=error_msg)
+            return
+        current_action_label["text"] = "Reading channel name from console"
+        root.update()
+        data_color = get_color_channel(output, start_channel, end_channel)
+        current_action_label["text"] = "Reading channel color from console"
+        root.update()
+        data_fin = get_name_channel(output, data_color, start_channel, end_channel)
 
         sheet = Sheet()
 
         sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
 
-        ReaperSessionCreator.create_session(sheet, ".", "test",
+        current_action_label["text"] = "Generating Reaper Session..."
+        root.update()
+        ReaperSessionCreator.create_session(sheet, ".", "current-console",
                                             var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
                                             entry_additional_track_prefix.get(),
                                             var_reaper_additional_master_tracks.get(),
                                             var_master_recording_patch.get(), var_disable_track_coloring.get())
-        logging.info("Reaper Recording Session Template created")
+        text = "Reaper Recording Session Template created"
+
+        current_action_label["text"] = text
+        root.update()
+        logging.info(text)
+
+        current_action_label["text"] = "Generating Tracks Live Template..."
+        root.update()
+        TracksLiveSessionCreator.create_session(sheet, ".", "current-console",
+                                                var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                                entry_additional_track_prefix.get(),
+                                                var_reaper_additional_master_tracks.get(),
+                                                var_master_recording_patch.get(), var_disable_track_coloring.get())
+        text = "Tracks Live Recording Session Template created"
+
+        current_action_label["text"] = text
+        root.update()
+        logging.info(text)
 
         print(data_fin)
     else:
@@ -1987,20 +2017,41 @@ if __name__ == '__main__':
     bottom_frame = Frame(root)
 
     Button(bottom_frame, text='Open spreadsheet and start writing process', command=trigger_background_process).grid(
-        row=0)
+        row=0, column=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
-    Button(bottom_frame, text='Generate Recording Session from current console settings',
-           command=get_data_from_console).grid(
-        row=2)
-    Label(bottom_frame, text=" ", width=30).grid(row=3)
+    bottom2_frame = LabelFrame(root, text="Console to DAW")
 
-    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
-    current_action_label.grid(row=4)
-    Label(bottom_frame, text=" ", width=30).grid(row=5)
+    Button(bottom2_frame, text='Generate DAW sessions from current console settings',
+           command=get_data_from_console).grid(
+        row=2, column=0)
+
+    values_start = [f"{i}" for i in range(1, 129)]
+    var_current_console_startChannel = StringVar()
+    combobox_start = Combobox(bottom2_frame, textvariable=var_current_console_startChannel, values=values_start, width=3)
+    combobox_start.set("1")
+
+    Label(bottom2_frame, text="Channel Start").grid(row=2, column=1)
+    combobox_start.grid(row=2, column=2)
+
+    values_end = [f"{i}" for i in range(1, 129)]
+    var_current_console_endChannel = StringVar()
+    combobox_end = Combobox(bottom2_frame, textvariable=var_current_console_endChannel,
+                                     values=values_end, width=3)
+    combobox_end.set("128")
+    Label(bottom2_frame, text="End").grid(row=2, column=3)
+    combobox_end.grid(row=2, column=4)
+
+    # Label(bottom_frame, text=" ", width=30).grid(row=3)
+
+    bottom3_frame = Frame(root)
+
+    current_action_label = ttk.Label(bottom3_frame, text=current_action_label.get())
+    current_action_label.grid(row=3)
+    Label(bottom3_frame, text=" ", width=30).grid(row=5)
 
     pb = ttk.Progressbar(
-        bottom_frame,
+        bottom3_frame,
         orient='horizontal',
         mode='determinate',
         length=1250
@@ -2009,11 +2060,14 @@ if __name__ == '__main__':
     pb.grid(row=4)
 
     # label to show current value in percent
-    value_label = ttk.Label(bottom_frame, text=update_progress_label())
+    value_label = ttk.Label(bottom3_frame, text=update_progress_label())
     value_label.grid(row=5)
 
-    Button(bottom_frame, text='Close', command=root.destroy).grid(row=6)
-    Label(bottom_frame, text=" ", width=30).grid(row=7)
+    Button(bottom3_frame, text='Close', command=root.destroy).grid(row=6)
+    Label(bottom3_frame, text=" ", width=30).grid(row=7)
+
+    bottom3_frame.pack(side=BOTTOM)
+    bottom2_frame.pack(side=BOTTOM)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)

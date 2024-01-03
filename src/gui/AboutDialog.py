@@ -16,7 +16,7 @@ class AboutDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("About")
-        self.geometry('600x540')
+        self.geometry('600x560')
         self.resizable(False, False)
         self.create_widgets()
 
@@ -58,6 +58,7 @@ class AboutDialog(tk.Toplevel):
         team2_value = tk.Label(content_frame, text="Tobias Grupe")
         team3_value = tk.Label(content_frame, text="Zac Paton")
         team4_value = tk.Label(content_frame, text="Tim-Lukas Arold")
+        team5_value = tk.Label(content_frame, text="Nathan May")
 
         opensource_label = tk.Label(content_frame, text="Powered by Open Source")
 
@@ -87,9 +88,10 @@ class AboutDialog(tk.Toplevel):
         space_label3.grid(row=11, column=0, sticky=tk.W)
         space_label4.grid(row=12, column=0, sticky=tk.W)
         space_label5.grid(row=13, column=0, sticky=tk.W)
-        opensource_label.grid(row=14, column=0, sticky=tk.W)
-        space_label6.grid(row=15, column=0, sticky=tk.W)
-        python_modules_label.grid(row=16, column=0, sticky=tk.W)
+        space_label7.grid(row=14, column=0, sticky=tk.W)
+        opensource_label.grid(row=16, column=0, sticky=tk.W)
+        space_label6.grid(row=17, column=0, sticky=tk.W)
+        python_modules_label.grid(row=18, column=0, sticky=tk.W)
 
         # set the grid layout for the values
         toolname_value.grid(row=1, column=1, sticky=tk.W)
@@ -104,18 +106,19 @@ class AboutDialog(tk.Toplevel):
         team2_value.grid(row=10, column=1, sticky=tk.W)
         team3_value.grid(row=11, column=1, sticky=tk.W)
         team4_value.grid(row=12, column=1, sticky=tk.W)
+        team5_value.grid(row=13, column=1, sticky=tk.W)
 
-        python_modules_value0.grid(row=16, column=1, sticky=tk.W)
-        python_modules_value1.grid(row=17, column=1, sticky=tk.W)
-        python_modules_value2.grid(row=18, column=1, sticky=tk.W)
-        python_modules_value3.grid(row=19, column=1, sticky=tk.W)
-        python_modules_value4.grid(row=20, column=1, sticky=tk.W)
-        python_modules_value5.grid(row=21, column=1, sticky=tk.W)
+        python_modules_value0.grid(row=18, column=1, sticky=tk.W)
+        python_modules_value1.grid(row=19, column=1, sticky=tk.W)
+        python_modules_value2.grid(row=20, column=1, sticky=tk.W)
+        python_modules_value3.grid(row=21, column=1, sticky=tk.W)
+        python_modules_value4.grid(row=22, column=1, sticky=tk.W)
+        python_modules_value5.grid(row=23, column=1, sticky=tk.W)
 
-        space_label6.grid(row=22, column=0, sticky=tk.W)
+        space_label6.grid(row=24, column=0, sticky=tk.W)
 
-        contact_email_label.grid(row=23, column=0, sticky=tk.W)
-        contact_email_value.grid(row=23, column=1, sticky=tk.W)
+        contact_email_label.grid(row=25, column=0, sticky=tk.W)
+        contact_email_value.grid(row=25, column=1, sticky=tk.W)
 
         content_frame.pack(side=TOP)
 

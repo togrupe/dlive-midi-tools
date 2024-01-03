@@ -53,7 +53,7 @@ is_network_communication_allowed = dliveConstants.allow_network_communication
 
 
 def convert_return_value_to_readable_color(in_message):
-    color = in_message[11]
+    color = in_message.data[10]
     color_ret = "black"
 
     if color == dliveConstants.lcd_color_blue:
@@ -75,43 +75,107 @@ def convert_return_value_to_readable_color(in_message):
     return color_ret
 
 
-def get_color_channel(output):
-    # TODO: Not yet implemented fully
+def get_color_channel(output, startChannel, endChannel):
     color = []
 
-    for channel in range(0, 127):
-        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_colour, channel]
+    for channel in range(startChannel, endChannel):
+        prefix = [determine_technical_midi_port(var_midi_channel.get()),
+                  dliveConstants.sysex_message_get_channel_colour, channel]
 
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
-            color.append(output.send(message))
+            output.send(message)
 
-            inport = mido.open_input()
-            in_message = inport.receive()
+            response = output.receive()
 
             thisdict = {
-                "channel": channel,
-                "color": convert_return_value_to_readable_color(in_message)
+                "dliveChannel": channel + 1,
+                "technicalChannel": channel,
+                "color": convert_return_value_to_readable_color(response),
+                "name": None
             }
 
             color.append(thisdict)
 
-            print(in_message)
-            time.sleep(.1)
+            time.sleep(.01)
+
     return color
 
 
-def get_name_channel(output):
-    # TODO: Not yet implemented fully
-    names = []
+def extractName(original_array):
+    name = original_array.data[10:]
 
-    for channel in range(0, 127):
-        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_name, channel]
+    ascii_string = ''.join(chr(num) for num in name if num != 0)
+
+    return ascii_string.rstrip()
+
+
+def get_name_channel(output, data_color, startChannel, endChannel):
+    for channel in range(startChannel, endChannel):
+        prefix = [determine_technical_midi_port(var_midi_channel.get()), dliveConstants.sysex_message_get_channel_name,
+                  channel]
 
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
-            names.append(output.send(message))
-            time.sleep(.1)
+            output.send(message)
+
+            channel_name = extractName(output.receive())
+
+            for item in data_color:
+                if item['technicalChannel'] == channel:
+                    item['name'] = channel_name
+                    break
+
+            time.sleep(.01)
+    return data_color
+
+
+def get_data_from_console():
+    if is_network_communication_allowed:
+        output = connect_to_console(read_current_ui_ip_address())
+        startChannel = 0
+        endChannel = 64
+        data_color = get_color_channel(output, startChannel, endChannel)
+        data_fin = get_name_channel(output, data_color, startChannel, endChannel)
+
+        sheet = Sheet()
+
+        sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
+
+        ReaperSessionCreator.create_session(sheet, ".", "test",
+                                            var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                            entry_additional_track_prefix.get(),
+                                            var_reaper_additional_master_tracks.get(),
+                                            var_master_recording_patch.get(), var_disable_track_coloring.get())
+        logging.info("Reaper Recording Session Template created")
+
+        print(data_fin)
+    else:
+        output = None
+
+
+def create_channel_list_content_from_console(data_fin):
+    channel_list_entries = []
+    index = 0
+
+    for item in data_fin:
+        cle = ChannelListEntry(item['dliveChannel'],
+                               item['name'],
+                               item['color'],
+                               None,
+                               None,
+                               None,
+                               None,
+                               'yes',
+                               'yes',
+                               None,
+                               None,
+                               None)
+
+        channel_list_entries.append(cle)
+        index = index + 1
+
+    return channel_list_entries
 
 
 def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
@@ -1926,9 +1990,14 @@ if __name__ == '__main__':
         row=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
-    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
-    current_action_label.grid(row=2)
+    Button(bottom_frame, text='Generate Recording Session from current console settings',
+           command=get_data_from_console).grid(
+        row=2)
     Label(bottom_frame, text=" ", width=30).grid(row=3)
+
+    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
+    current_action_label.grid(row=4)
+    Label(bottom_frame, text=" ", width=30).grid(row=5)
 
     pb = ttk.Progressbar(
         bottom_frame,

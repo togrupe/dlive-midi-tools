@@ -138,7 +138,7 @@ def get_data_from_console():
         start_channel = int(var_current_console_startChannel.get())-1
         end_channel = int(var_current_console_endChannel.get())
         if start_channel > end_channel:
-            error_msg = "Start Channel: " + str(start_channel) + " is greater than End Channel: " + str(end_channel)
+            error_msg = "Start Channel: " + str(start_channel+1) + " is greater than End Channel: " + str(end_channel)
             logging.error(error_msg)
             showerror(message=error_msg)
             return

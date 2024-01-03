@@ -155,25 +155,39 @@ def get_data_from_console():
 
         current_action_label["text"] = "Generating Reaper Session..."
         root.update()
-        ReaperSessionCreator.create_session(sheet, ".", "current-console",
-                                            var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
-                                            entry_additional_track_prefix.get(),
-                                            var_reaper_additional_master_tracks.get(),
-                                            var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
-        text = "Reaper Recording Session Template created"
 
-        current_action_label["text"] = text
+        current_action_label["text"] = "Choose a directory..."
         root.update()
-        logging.info(text)
 
-        current_action_label["text"] = "Generating Tracks Live Template..."
-        root.update()
-        TracksLiveSessionCreator.create_session(sheet, ".", "current-console",
+        try:
+            directory_path = filedialog.askdirectory(title="Please select a directory")
+
+            ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
                                                 var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
                                                 entry_additional_track_prefix.get(),
                                                 var_reaper_additional_master_tracks.get(),
                                                 var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
-        text = "Tracks Live Recording Session Template created"
+            text = "Reaper Recording Session Template created"
+
+            current_action_label["text"] = text
+            root.update()
+            logging.info(text)
+
+            current_action_label["text"] = "Generating Tracks Live Template..."
+            root.update()
+            TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                    var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
+                                                    entry_additional_track_prefix.get(),
+                                                    var_reaper_additional_master_tracks.get(),
+                                                    var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
+            text = "Tracks Live Recording Session Template created"
+
+        except OSError:
+            error = "Some thing went wrong during store, please choose a folder where you have write rights."
+            logging.error(error)
+            current_action_label["text"] = error
+            showerror(message=error)
+            return
 
         current_action_label["text"] = text
         root.update()

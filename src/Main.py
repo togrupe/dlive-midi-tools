@@ -156,10 +156,10 @@ def get_data_from_console():
         current_action_label["text"] = "Generating Reaper Session..."
         root.update()
         ReaperSessionCreator.create_session(sheet, ".", "current-console",
-                                            var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                            var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
                                             entry_additional_track_prefix.get(),
                                             var_reaper_additional_master_tracks.get(),
-                                            var_master_recording_patch.get(), var_disable_track_coloring.get())
+                                            var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
         text = "Reaper Recording Session Template created"
 
         current_action_label["text"] = text
@@ -169,10 +169,10 @@ def get_data_from_console():
         current_action_label["text"] = "Generating Tracks Live Template..."
         root.update()
         TracksLiveSessionCreator.create_session(sheet, ".", "current-console",
-                                                var_disable_track_numbering.get(), var_reaper_additional_prefix.get(),
+                                                var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
                                                 entry_additional_track_prefix.get(),
                                                 var_reaper_additional_master_tracks.get(),
-                                                var_master_recording_patch.get(), var_disable_track_coloring.get())
+                                                var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
         text = "Tracks Live Recording Session Template created"
 
         current_action_label["text"] = text
@@ -1821,7 +1821,7 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    output_option_frame = LabelFrame(root, text="Spreadsheet to Console - Output Option")
+    output_option_frame = LabelFrame(root, text="Spreadsheet to Console / DAW - Output Options")
     var_write_to_console = BooleanVar(value=True)
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
@@ -2041,6 +2041,20 @@ if __name__ == '__main__':
     combobox_end.set("128")
     Label(bottom2_frame, text="End").grid(row=2, column=3)
     combobox_end.grid(row=2, column=4)
+
+    var_disable_track_numbering_daw = BooleanVar(value=False)
+    cb_reaper_disable_numbering_daw = Checkbutton(bottom2_frame,
+                                              text="Disable Track Numbering",
+                                              var=var_disable_track_numbering_daw)
+
+    var_disable_track_coloring_daw = BooleanVar(value=False)
+    cb_reaper_disable_track_coloring_daw = Checkbutton(bottom2_frame,
+                                                   text="Disable Track Coloring",
+                                                   var=var_disable_track_coloring_daw)
+
+    cb_reaper_disable_numbering_daw.grid(row=2, column=5)
+    cb_reaper_disable_track_coloring_daw.grid(row=2, column=6)
+
 
     # Label(bottom_frame, text=" ", width=30).grid(row=3)
 

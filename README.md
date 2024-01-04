@@ -65,7 +65,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 |         |            | MacOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)        |               |                                  |
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |                                  |
 
-(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2), Newer vesion of MacOS should have it installed by default. 
+(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2), Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.
 
 Older versions see [archive](doc/download-archive.md)
@@ -225,7 +225,7 @@ Have fun!
 
 ## Feedback
 If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
-dmt@liveworks-vt.de
+dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-midi-tools/discussions)
 
 ## Release Notes
 ### v2.6.0

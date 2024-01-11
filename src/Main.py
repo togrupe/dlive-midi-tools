@@ -145,10 +145,10 @@ def get_data_from_console():
 
     if is_network_communication_allowed:
         output = connect_to_console(read_current_ui_ip_address())
-        start_channel = int(var_current_console_startChannel.get())-1
+        start_channel = int(var_current_console_startChannel.get()) - 1
         end_channel = int(var_current_console_endChannel.get())
         if start_channel > end_channel:
-            error_msg = "Start Channel: " + str(start_channel+1) + " is greater than End Channel: " + str(end_channel)
+            error_msg = "Start Channel: " + str(start_channel + 1) + " is greater than End Channel: " + str(end_channel)
             logging.error(error_msg)
             showerror(message=error_msg)
             return
@@ -172,7 +172,8 @@ def get_data_from_console():
             progress(actions)
             root.update()
             ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
-                                                var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
+                                                var_disable_track_numbering_daw.get(),
+                                                var_reaper_additional_prefix.get(),
                                                 entry_additional_track_prefix.get(),
                                                 var_reaper_additional_master_tracks.get(),
                                                 var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
@@ -185,10 +186,12 @@ def get_data_from_console():
             progress(actions)
             root.update()
             TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
-                                                    var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
+                                                    var_disable_track_numbering_daw.get(),
+                                                    var_reaper_additional_prefix.get(),
                                                     entry_additional_track_prefix.get(),
                                                     var_reaper_additional_master_tracks.get(),
-                                                    var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
+                                                    var_master_recording_patch.get(),
+                                                    var_disable_track_coloring_daw.get())
             text = "Tracks Live Recording Session Template created"
             current_action_label["text"] = text
             root.update()
@@ -1918,8 +1921,7 @@ if __name__ == '__main__':
 
     # Label(root, text=" ").pack(side=TOP)
 
-    parameter_lf = LabelFrame(root, text="Choose from given spreadsheet which column you want to write",)
-    #Label(parameter_lf, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
+    parameter_lf = LabelFrame(root, text="Choose from given spreadsheet which column you want to write", )
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [
@@ -2083,9 +2085,6 @@ if __name__ == '__main__':
 
     cb_reaper_disable_numbering_daw.grid(row=2, column=5)
     cb_reaper_disable_track_coloring_daw.grid(row=2, column=6)
-
-
-    # Label(bottom_frame, text=" ", width=30).grid(row=3)
 
     bottom3_frame = Frame(root)
 

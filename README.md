@@ -239,7 +239,7 @@ Feature & Maintenance Release
 
 
 #### Improvements
-- New GUI
+- Small GUI refactoring
 
 
 #### Technical Limitations

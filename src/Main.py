@@ -133,6 +133,16 @@ def get_name_channel(output, data_color, start_channel, end_channel):
 def get_data_from_console():
     reset_current_action_label()
     reset_progress_bar()
+    progress_open_or_close_connection()
+    root.update()
+    actions = 4
+    current_action_label["text"] = "Choose a directory..."
+    root.update()
+    directory_path = filedialog.askdirectory(title="Please select a directory")
+
+    if directory_path.__len__() == 0:
+        return
+
     if is_network_communication_allowed:
         output = connect_to_console(read_current_ui_ip_address())
         start_channel = int(var_current_console_startChannel.get())-1
@@ -142,10 +152,14 @@ def get_data_from_console():
             logging.error(error_msg)
             showerror(message=error_msg)
             return
-        current_action_label["text"] = "Reading channel name from console"
+
+        current_action_label["text"] = "Reading channel color from console"
+        progress(actions)
         root.update()
         data_color = get_color_channel(output, start_channel, end_channel)
-        current_action_label["text"] = "Reading channel color from console"
+
+        current_action_label["text"] = "Reading channel name from console"
+        progress(actions)
         root.update()
         data_fin = get_name_channel(output, data_color, start_channel, end_channel)
 
@@ -153,27 +167,22 @@ def get_data_from_console():
 
         sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
 
-        current_action_label["text"] = "Generating Reaper Session..."
-        root.update()
-
-        current_action_label["text"] = "Choose a directory..."
-        root.update()
-
         try:
-            directory_path = filedialog.askdirectory(title="Please select a directory")
-
+            current_action_label["text"] = "Generating Reaper Session..."
+            progress(actions)
+            root.update()
             ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
                                                 var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
                                                 entry_additional_track_prefix.get(),
                                                 var_reaper_additional_master_tracks.get(),
                                                 var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
             text = "Reaper Recording Session Template created"
-
             current_action_label["text"] = text
             root.update()
             logging.info(text)
 
             current_action_label["text"] = "Generating Tracks Live Template..."
+            progress(actions)
             root.update()
             TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
                                                     var_disable_track_numbering_daw.get(), var_reaper_additional_prefix.get(),
@@ -181,6 +190,12 @@ def get_data_from_console():
                                                     var_reaper_additional_master_tracks.get(),
                                                     var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
             text = "Tracks Live Recording Session Template created"
+            current_action_label["text"] = text
+            root.update()
+            logging.info(text)
+
+            output.close()
+            progress_open_or_close_connection()
 
         except OSError:
             error = "Some thing went wrong during store, please choose a folder where you have write rights."
@@ -188,10 +203,6 @@ def get_data_from_console():
             current_action_label["text"] = error
             showerror(message=error)
             return
-
-        current_action_label["text"] = text
-        root.update()
-        logging.info(text)
 
         showinfo(message='Reading from Console done, Sessions created!')
     else:
@@ -1824,11 +1835,11 @@ if __name__ == '__main__':
     # Display the menu bar
     root.config(menu=menu_bar)
 
-    config_frame = Frame(root)
+    config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)
     console_frame = Frame(config_frame)
     console_frame.grid(row=1, column=0, sticky="W")
-    Label(config_frame, text="       ").grid(row=0, column=0)
+    # Label(config_frame, text="       ").grid(row=0, column=0)
     ip_frame.grid(row=2, column=0, sticky="W")
     midi_channel_frame = Frame(config_frame)
     midi_channel_frame.grid(row=3, column=0, sticky="W")
@@ -1905,8 +1916,10 @@ if __name__ == '__main__':
     reaper_output_dir = ""
     reaper_file_prefix = ""
 
-    Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
+    # Label(root, text=" ").pack(side=TOP)
+
+    parameter_lf = LabelFrame(root, text="Choose from given spreadsheet which column you want to write",)
+    #Label(parameter_lf, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [
@@ -1949,15 +1962,17 @@ if __name__ == '__main__':
          ]
     ]
 
-    grid = CheckboxGrid(root, headers, labels)
+    grid = CheckboxGrid(parameter_lf, headers, labels)
     grid.pack(side=TOP)
 
-    global_select_frame = Frame(root)
+    global_select_frame = Frame(parameter_lf)
 
     button_select_all = Button(global_select_frame, text='Select All', command=select_all_checkboxes, width=8)
     button_select_all.grid(row=0, column=0)
     button_clear_all = Button(global_select_frame, text='Clear', command=clear_all_checkboxes, width=8)
     button_clear_all.grid(row=0, column=1)
+
+    parameter_lf.pack(pady=10, side=TOP)
 
     global_select_frame.pack(side=TOP)
 

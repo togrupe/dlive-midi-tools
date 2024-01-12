@@ -227,13 +227,14 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
    ![consoletodaw](doc/console-to-daw.png)   
 
-   10.1 Choose `Start` and `End` channel to be used for DAW generation.
+Options:
+   * Choose `Start` and `End` channel to be used for DAW generation.
 
-   10.2 `Disable Track Numbering` Tracks aren´t generated with channel number prefixes
+   * `Disable Track Numbering` Tracks aren´t generated with channel number prefixes
 
-   10.3 `Disable Track Coloring` Generates grey colored tracks
+   * `Disable Track Coloring` Generates grey colored tracks
 
-   10.4 Click `Generate DAW Sessions from current console settings`
+Click `Generate DAW Sessions from current console settings`
 
 11. If something goes wrong, please check the Python console or the `main.log`
 

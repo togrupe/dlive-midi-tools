@@ -1,6 +1,9 @@
 # dlive-midi-tools
 ## Description
-Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet, a DAW recording session for Reaper or Tracks Live can be generated. 
+Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
+Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
+dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet, 
+a DAW recording session for Reaper or Tracks Live can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
@@ -29,6 +32,7 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
+* Generate DAW sessions from current console settings.
 
 ## Software Liability Warning
 
@@ -219,7 +223,19 @@ __Recommendation__: Please back up your current show file, just to be on the saf
    
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
-10. If something goes wrong, please check the Python console or the `main.log`
+10. Console to DAW - Generates a DAW session from the current console settings
+
+   ![consoletodaw](doc/console-to-daw.png)   
+
+   10.1 Choose `Start` and `End` channel to be used for DAW generation.
+
+   10.2 `Disable Track Numbering` Tracks aren´t generated with channel number prefixes
+
+   10.3 `Disable Track Coloring` Generates grey colored tracks
+
+   10.4 Click `Generate DAW Sessions from current console settings`
+
+11. If something goes wrong, please check the Python console or the `main.log`
 
 If you find any issues, please let me know. New ideas are welcome. 
 

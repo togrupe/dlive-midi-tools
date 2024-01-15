@@ -37,6 +37,7 @@ from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
 from model.Sheet import Sheet
 from model.SocketListEntry import SocketListEntry
+from spreadsheet import SpreadsheetConstants
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
@@ -54,24 +55,24 @@ is_network_communication_allowed = dliveConstants.allow_network_communication
 
 def convert_return_value_to_readable_color(in_message):
     color = in_message.data[10]
-    color_ret = "black"
+    color_ret = SpreadsheetConstants.spreadsheet_color_black
 
     if color == dliveConstants.lcd_color_blue:
-        color_ret = "blue"
+        color_ret = SpreadsheetConstants.spreadsheet_color_blue
     elif color == dliveConstants.lcd_color_ltblue:
-        color_ret = "light blue"
+        color_ret = SpreadsheetConstants.spreadsheet_color_light_blue
     elif color == dliveConstants.lcd_color_red:
-        color_ret = "red"
+        color_ret = SpreadsheetConstants.spreadsheet_color_red
     elif color == dliveConstants.lcd_color_yellow:
-        color_ret = "yellow"
+        color_ret = SpreadsheetConstants.spreadsheet_color_yellow
     elif color == dliveConstants.lcd_color_green:
-        color_ret = "green"
+        color_ret = SpreadsheetConstants.spreadsheet_color_green
     elif color == dliveConstants.lcd_color_purple:
-        color_ret = "purple"
+        color_ret = SpreadsheetConstants.spreadsheet_color_purple
     elif color == dliveConstants.lcd_color_black:
-        color_ret = "black"
+        color_ret = SpreadsheetConstants.spreadsheet_color_black
     elif color == dliveConstants.lcd_color_white:
-        color_ret = "white"
+        color_ret = SpreadsheetConstants.spreadsheet_color_white
     return color_ret
 
 
@@ -246,7 +247,7 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     else:
         trimmed_name = str(item.get_name())
 
-    if trimmed_name == '-' or trimmed_name == 'byp':
+    if trimmed_name == SpreadsheetConstants.spreadsheet_bypass_sign or trimmed_name == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
         return
 
@@ -283,24 +284,24 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
 def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
-    if lower_color == "-" or lower_color == 'byp':
+    if lower_color == SpreadsheetConstants.spreadsheet_bypass_sign or lower_color == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
         return
-    elif lower_color == "blue":
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_blue:
         colour = dliveConstants.lcd_color_blue
-    elif lower_color == "red":
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_red:
         colour = dliveConstants.lcd_color_red
-    elif lower_color == "light blue":
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_light_blue:
         colour = dliveConstants.lcd_color_ltblue
-    elif lower_color == 'purple':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_purple:
         colour = dliveConstants.lcd_color_purple
-    elif lower_color == 'green':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_green:
         colour = dliveConstants.lcd_color_green
-    elif lower_color == 'yellow':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_yellow:
         colour = dliveConstants.lcd_color_yellow
-    elif lower_color == 'black':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_black:
         colour = dliveConstants.lcd_color_black
-    elif lower_color == 'white':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_white:
         colour = dliveConstants.lcd_color_white
     elif lower_color == 'nan':
         logging.info("Empty cell found, treating as don´t care, skipping channel")
@@ -325,7 +326,7 @@ def mute_on_channel(output, item):
     lower_mute_on = item.get_mute().lower()
     channel = item.get_channel_console()
 
-    if lower_mute_on == "-" or lower_mute_on == "byp":
+    if lower_mute_on == SpreadsheetConstants.spreadsheet_bypass_sign or lower_mute_on == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_mute_on == "yes":
@@ -382,7 +383,7 @@ def phantom_socket(output, item, socket_type):
         else:
             return
 
-    if lower_phantom == "-" or lower_phantom == "byp":
+    if lower_phantom == SpreadsheetConstants.spreadsheet_bypass_sign or lower_phantom == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping socket: " + str(socket))
         return
     elif lower_phantom == "yes":
@@ -409,7 +410,7 @@ def phantom_socket(output, item, socket_type):
 def hpf_on_channel(output, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
 
-    if lower_hpf_on == "-" or lower_hpf_on == "byp":
+    if lower_hpf_on == SpreadsheetConstants.spreadsheet_bypass_sign or lower_hpf_on == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_hpf_on == "yes":
@@ -442,7 +443,7 @@ def clamp(value, lower_limit, upper_limit):
 
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
-    if hpf_value == 'nan' or hpf_value == '-' or hpf_value == 'byp':
+    if hpf_value == 'nan' or hpf_value == SpreadsheetConstants.spreadsheet_bypass_sign or hpf_value == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
     if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
@@ -482,8 +483,8 @@ def fader_level_channel(output, item):
         "-40": dliveConstants.fader_level_minus40,
         "-45": dliveConstants.fader_level_minus45,
         "-99": dliveConstants.fader_level_minus_inf,
-        "-": -1,
-        "byp": -1
+        SpreadsheetConstants.spreadsheet_bypass_sign: -1,
+        SpreadsheetConstants.spreadsheet_bypass_string: -1
     }
     fader_level = switcher.get(lower_fader_level, -2)
 
@@ -581,7 +582,7 @@ def pad_socket(output, item, socket_type):
         else:
             return
 
-    if lower_pad == "-":
+    if lower_pad == SpreadsheetConstants.spreadsheet_bypass_sign:
         logging.info("Don´t care flag found, skipping socket: " + str(socket))
         return
     elif lower_pad == "yes":
@@ -663,7 +664,7 @@ def gain_socket(output, item, socket_type):
         "15": dliveConstants.gain_level_plus15,
         "10": dliveConstants.gain_level_plus10,
         "5": dliveConstants.gain_level_plus5,
-        "-": -1
+        SpreadsheetConstants.spreadsheet_bypass_sign: -1
     }
     gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
 
@@ -748,7 +749,7 @@ def dca_channel(output, item):
 
         dca_array_item_lower = dca_array.__getitem__(dca_index).lower()
 
-        if dca_array_item_lower == '-' or dca_array_item_lower == 'byp':
+        if dca_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_sign or dca_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_string:
             continue
         elif dca_array.__getitem__(dca_index).lower() == "x":
             assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
@@ -760,7 +761,7 @@ def assign_mainmix_channel(output, item):
     channel = item.get_channel_console()
     mainmix_value = item.get_assign_mainmix()
 
-    if mainmix_value == 'nan' or mainmix_value == '-' or mainmix_value == 'byp':
+    if mainmix_value == 'nan' or mainmix_value == SpreadsheetConstants.spreadsheet_bypass_sign or mainmix_value == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
 
@@ -788,7 +789,7 @@ def mg_channel(output, item):
         mg_array = mg_config.get_mg_array()
 
         mg_array_item_lower = mg_array.__getitem__(mg_index).lower()
-        if mg_array_item_lower == '-' or mg_array_item_lower == 'byp':
+        if mg_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_sign or mg_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_string:
             continue
         elif mg_array_item_lower == "x":
             assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)

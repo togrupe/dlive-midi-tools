@@ -71,7 +71,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 |         |            | macOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)    |               |                                  |
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)     |               |                                  |
 
-(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2), Newer versions of macOS should have it installed by default. 
+(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.
 
 Older versions see [archive](doc/download-archive.md)
@@ -225,7 +225,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
    
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
-10. Console to DAW - Generates a DAW session from the current console settings
+10. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
 
    ![consoletodaw](doc/console-to-daw.png)   
 

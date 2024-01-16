@@ -2106,8 +2106,6 @@ if __name__ == '__main__':
     Button(bottom2_frame, text='Generate DAW sessions from current console settings',
            command=get_data_from_console).pack(side=BOTTOM)
 
-    Label(bottom2_frame, text=" ").pack(side=BOTTOM)
-
     #----------------- Status Area-------------------
 
     bottom3_frame = LabelFrame(root, text="Status")

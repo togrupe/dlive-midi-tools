@@ -1839,18 +1839,31 @@ if __name__ == '__main__':
     # Display the menu bar
     root.config(menu=menu_bar)
 
+    tab_control = ttk.Notebook(root)
+
+    # Tab 1 erstellen
+    tab1 = ttk.Frame(tab_control)
+    tab_control.add(tab1, text='Spreadsheet to Console / DAW')
+
+    # Tab 2 erstellen
+    tab2 = ttk.Frame(tab_control)
+    tab_control.add(tab2, text='Console to DAW')
+
+    tab1_frame = LabelFrame(tab1, text='Spreadsheet to Console / DAW')
+    tab2_frame = LabelFrame(tab2, text='Console to DAW')
+
     config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)
     console_frame = Frame(config_frame)
     console_frame.grid(row=1, column=0, sticky="W")
-    # Label(config_frame, text="       ").grid(row=0, column=0)
+
     ip_frame.grid(row=2, column=0, sticky="W")
     midi_channel_frame = Frame(config_frame)
     midi_channel_frame.grid(row=3, column=0, sticky="W")
 
     config_frame.pack(side=TOP)
 
-    output_option_frame = LabelFrame(root, text="Spreadsheet to Console / DAW - Output Options")
+    output_option_frame = LabelFrame(tab1, text="Output Options")
     var_write_to_console = BooleanVar(value=True)
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
@@ -1920,9 +1933,7 @@ if __name__ == '__main__':
     reaper_output_dir = ""
     reaper_file_prefix = ""
 
-    # Label(root, text=" ").pack(side=TOP)
-
-    parameter_lf = LabelFrame(root, text="Choose from given spreadsheet which column you want to write", )
+    parameter_lf = LabelFrame(tab1, text="Choose from given spreadsheet which column you want to write", )
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [
@@ -1979,7 +1990,6 @@ if __name__ == '__main__':
 
     global_select_frame.pack(side=TOP)
 
-    Label(root, text=" ").pack(side=TOP)
     output_option_frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())
@@ -2046,48 +2056,61 @@ if __name__ == '__main__':
     ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
     ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
-    bottom_frame = Frame(root)
+    bottom_frame = Frame(tab1)
 
     Button(bottom_frame, text='Open spreadsheet and start writing process', command=trigger_background_process).grid(
         row=0, column=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
-    bottom2_frame = LabelFrame(root, text="Console to DAW")
+    # ----------------- Console to DAW Area-------------------
 
-    Button(bottom2_frame, text='Generate DAW sessions from current console settings',
-           command=get_data_from_console).grid(
-        row=2, column=0)
+    console_to_daw_settings_lf = LabelFrame(tab2, text="Settings")
+
+    console_to_daw_settings_lf.pack(side=TOP)
+
+    start_end_channel_frame = Frame(console_to_daw_settings_lf)
 
     values_start = [f"{i}" for i in range(1, 129)]
     var_current_console_startChannel = StringVar()
-    combobox_start = Combobox(bottom2_frame, textvariable=var_current_console_startChannel, values=values_start, width=3)
+    combobox_start = Combobox(start_end_channel_frame, textvariable=var_current_console_startChannel, values=values_start, width=3)
     combobox_start.set("1")
 
-    Label(bottom2_frame, text="Channel Start").grid(row=2, column=1)
-    combobox_start.grid(row=2, column=2)
+    Label(start_end_channel_frame, text="Channel Start").grid(row=0, column=0, sticky="w")
+    combobox_start.grid(row=0, column=1)
 
     values_end = [f"{i}" for i in range(1, 129)]
     var_current_console_endChannel = StringVar()
-    combobox_end = Combobox(bottom2_frame, textvariable=var_current_console_endChannel,
-                                     values=values_end, width=3)
+    combobox_end = Combobox(start_end_channel_frame, textvariable=var_current_console_endChannel,
+                            values=values_end, width=3)
     combobox_end.set("128")
-    Label(bottom2_frame, text="End").grid(row=2, column=3)
-    combobox_end.grid(row=2, column=4)
+    Label(start_end_channel_frame, text="End").grid(row=0, column=2)
+    combobox_end.grid(row=0, column=3)
+
+    start_end_channel_frame.grid(row=0)
 
     var_disable_track_numbering_daw = BooleanVar(value=False)
-    cb_reaper_disable_numbering_daw = Checkbutton(bottom2_frame,
-                                              text="Disable Track Numbering",
-                                              var=var_disable_track_numbering_daw)
+    cb_reaper_disable_numbering_daw = Checkbutton(console_to_daw_settings_lf,
+                                                  text="Disable Track Numbering",
+                                                  var=var_disable_track_numbering_daw)
 
     var_disable_track_coloring_daw = BooleanVar(value=False)
-    cb_reaper_disable_track_coloring_daw = Checkbutton(bottom2_frame,
-                                                   text="Disable Track Coloring",
-                                                   var=var_disable_track_coloring_daw)
+    cb_reaper_disable_track_coloring_daw = Checkbutton(console_to_daw_settings_lf,
+                                                       text="Disable Track Coloring",
+                                                       var=var_disable_track_coloring_daw)
 
-    cb_reaper_disable_numbering_daw.grid(row=2, column=5)
-    cb_reaper_disable_track_coloring_daw.grid(row=2, column=6)
+    cb_reaper_disable_numbering_daw.grid(row=1, sticky="w")
+    cb_reaper_disable_track_coloring_daw.grid(row=2, sticky="w")
 
-    bottom3_frame = Frame(root)
+    bottom2_frame = Frame(tab2)
+
+    Button(bottom2_frame, text='Generate DAW sessions from current console settings',
+           command=get_data_from_console).pack(side=BOTTOM)
+
+    Label(bottom2_frame, text=" ").pack(side=BOTTOM)
+
+    #----------------- Status Area-------------------
+
+    bottom3_frame = LabelFrame(root, text="Status")
 
     current_action_label = ttk.Label(bottom3_frame, text=current_action_label.get())
     current_action_label.grid(row=3)
@@ -2106,13 +2129,20 @@ if __name__ == '__main__':
     value_label = ttk.Label(bottom3_frame, text=update_progress_label())
     value_label.grid(row=5)
 
-    Button(bottom3_frame, text='Close', command=root.destroy).grid(row=6)
-    Label(bottom3_frame, text=" ", width=30).grid(row=7)
+    bottom4_frame = Frame(root)
 
+    Button(bottom4_frame, text='Close', command=root.destroy).grid(row=6)
+    Label(bottom4_frame, text=" ", width=30).grid(row=7)
+
+    bottom4_frame.pack(side=BOTTOM)
     bottom3_frame.pack(side=BOTTOM)
-    bottom2_frame.pack(side=BOTTOM)
+    bottom2_frame.pack(side=TOP)
     bottom_frame.pack(side=BOTTOM)
 
+
+
     var_console.trace("w", on_console_selected)
+
+    tab_control.pack(expand=1, fill='both', side=TOP)
 
     root.mainloop()

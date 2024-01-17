@@ -215,7 +215,7 @@ def get_data_from_console():
                     root.update()
                     logging.info(text)
 
-                output.close()
+                disconnect_from_console(output)
                 progress_open_or_close_connection()
 
             except OSError:

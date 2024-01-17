@@ -205,8 +205,9 @@ The tool has currently to modes:
 * Spreadsheet to Console / DAW (Continue with next Step)
 * Console to DAW (Continue with Step 10)
 
-Choose which mode you want to use.
-![consoletodaw](doc/tabs.png)
+Choose which mode you want to use:
+
+<img alt="tabs" src="doc/tabs.png" width="250"/>
 
 7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
    

@@ -235,7 +235,7 @@ Choose which mode you want to use:
 
 10. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
 
-   ![consoletodaw](doc/console-to-daw.png)   
+<img alt="consoletodaw" src="doc/console-to-daw.png" width="300"/>
 
 Options:
    * Choose `Start` and `End` channel to be used for DAW generation.

@@ -67,9 +67,6 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)     |               | 6e3d3adf822604d49708a434274c438f |
 | v2.5.0  | 15.09.2023 | macOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)       | [Link](#v250) |                                  | 
 |         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)     |               |                                  |
-| v2.4.1  | 01.08.2023 | macOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)       | [Link](#v241) |                                  | 
-|         |            | macOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)    |               |                                  |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)     |               |                                  |
 
 (*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.

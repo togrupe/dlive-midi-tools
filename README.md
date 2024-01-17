@@ -243,7 +243,7 @@ Options:
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-Click `Generate DAW Session(s) from current console settings`
+Click `Generate DAW session(s) from current console settings`
 
 11. If something goes wrong, please check the Python console or the `main.log`
 

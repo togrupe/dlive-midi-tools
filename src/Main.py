@@ -37,6 +37,7 @@ from model.Misc import Misc
 from model.MuteGroupConfig import MuteGroupConfig
 from model.Sheet import Sheet
 from model.SocketListEntry import SocketListEntry
+from spreadsheet import SpreadsheetConstants
 
 LABEL_IPADDRESS_AVANTIS = "IP-Address:"
 LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
@@ -53,65 +54,206 @@ is_network_communication_allowed = dliveConstants.allow_network_communication
 
 
 def convert_return_value_to_readable_color(in_message):
-    color = in_message[11]
-    color_ret = "black"
+    color = in_message.data[10]
+    color_ret = SpreadsheetConstants.spreadsheet_color_black
 
     if color == dliveConstants.lcd_color_blue:
-        color_ret = "blue"
+        color_ret = SpreadsheetConstants.spreadsheet_color_blue
     elif color == dliveConstants.lcd_color_ltblue:
-        color_ret = "light blue"
+        color_ret = SpreadsheetConstants.spreadsheet_color_light_blue
     elif color == dliveConstants.lcd_color_red:
-        color_ret = "red"
+        color_ret = SpreadsheetConstants.spreadsheet_color_red
     elif color == dliveConstants.lcd_color_yellow:
-        color_ret = "yellow"
+        color_ret = SpreadsheetConstants.spreadsheet_color_yellow
     elif color == dliveConstants.lcd_color_green:
-        color_ret = "green"
+        color_ret = SpreadsheetConstants.spreadsheet_color_green
     elif color == dliveConstants.lcd_color_purple:
-        color_ret = "purple"
+        color_ret = SpreadsheetConstants.spreadsheet_color_purple
     elif color == dliveConstants.lcd_color_black:
-        color_ret = "black"
+        color_ret = SpreadsheetConstants.spreadsheet_color_black
     elif color == dliveConstants.lcd_color_white:
-        color_ret = "white"
+        color_ret = SpreadsheetConstants.spreadsheet_color_white
     return color_ret
 
 
-def get_color_channel(output):
-    # TODO: Not yet implemented fully
+def get_color_channel(output, start_channel, end_channel):
     color = []
 
-    for channel in range(0, 127):
-        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_colour, channel]
+    for channel in range(start_channel, end_channel):
+        prefix = [determine_technical_midi_port(var_midi_channel.get()),
+                  dliveConstants.sysex_message_get_channel_colour, channel]
 
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
-            color.append(output.send(message))
+            output.send(message)
 
-            inport = mido.open_input()
-            in_message = inport.receive()
+            response = output.receive()
 
             thisdict = {
-                "channel": channel,
-                "color": convert_return_value_to_readable_color(in_message)
+                "dliveChannel": channel + 1,
+                "technicalChannel": channel,
+                "color": convert_return_value_to_readable_color(response),
+                "name": None
             }
 
             color.append(thisdict)
 
-            print(in_message)
-            time.sleep(.1)
+            time.sleep(.01)
+
     return color
 
 
-def get_name_channel(output):
-    # TODO: Not yet implemented fully
-    names = []
+def extract_name(original_array):
+    name = original_array.data[10:]
 
-    for channel in range(0, 127):
-        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_name, channel]
+    ascii_string = ''.join(chr(num) for num in name if num != 0)
+
+    return ascii_string.rstrip()
+
+
+def get_name_channel(output, data_color, start_channel, end_channel):
+    for channel in range(start_channel, end_channel):
+        prefix = [determine_technical_midi_port(var_midi_channel.get()), dliveConstants.sysex_message_get_channel_name,
+                  channel]
 
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
         if is_network_communication_allowed:
-            names.append(output.send(message))
-            time.sleep(.1)
+            output.send(message)
+
+            channel_name = extract_name(output.receive())
+
+            for item in data_color:
+                if item['technicalChannel'] == channel:
+                    item['name'] = channel_name
+                    break
+
+            time.sleep(.01)
+    return data_color
+
+
+def get_data_from_console():
+    if var_console_to_daw_reaper.get() or var_console_to_daw_trackslive.get():
+
+        if var_console_to_daw_additional_master_tracks.get() and var_console_to_daw_master_recording_patch.get() == "Select DAW Input":
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
+
+        reset_current_action_label()
+        reset_progress_bar()
+        progress_open_or_close_connection()
+        root.update()
+        actions = 2
+
+        if var_console_to_daw_reaper.get():
+            actions = increment_actions(actions)
+
+        if var_console_to_daw_trackslive.get():
+            actions = increment_actions(actions)
+
+        current_action_label["text"] = "Choose a directory..."
+        root.update()
+        directory_path = filedialog.askdirectory(title="Please select a directory")
+
+        if directory_path.__len__() == 0:
+            return
+
+        if is_network_communication_allowed:
+            output = connect_to_console(read_current_ui_ip_address())
+            start_channel = int(var_current_console_startChannel.get()) - 1
+            end_channel = int(var_current_console_endChannel.get())
+            if start_channel > end_channel:
+                error_msg = "Start Channel: " + str(start_channel + 1) + " is greater than End Channel: " + str(
+                    end_channel)
+                logging.error(error_msg)
+                showerror(message=error_msg)
+                return
+
+            current_action_label["text"] = "Reading channel color from console"
+            progress(actions)
+            root.update()
+            data_color = get_color_channel(output, start_channel, end_channel)
+
+            current_action_label["text"] = "Reading channel name from console"
+            progress(actions)
+            root.update()
+            data_fin = get_name_channel(output, data_color, start_channel, end_channel)
+
+            sheet = Sheet()
+
+            sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
+
+            try:
+                if var_console_to_daw_reaper.get():
+                    current_action_label["text"] = "Generating Reaper Session..."
+                    progress(actions)
+                    root.update()
+                    ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                        var_console_to_daw_disable_track_numbering_daw.get(),
+                                                        var_console_to_daw_reaper_additional_prefix.get(),
+                                                        entry_console_to_daw_additional_track_prefix.get(),
+                                                        var_console_to_daw_additional_master_tracks.get(),
+                                                        var_console_to_daw_master_recording_patch.get(),
+                                                        var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Reaper Recording Session Template created"
+                    current_action_label["text"] = text
+                    root.update()
+                    logging.info(text)
+
+                if var_console_to_daw_trackslive.get():
+                    current_action_label["text"] = "Generating Tracks Live Template..."
+                    progress(actions)
+                    root.update()
+                    TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                            var_console_to_daw_disable_track_numbering_daw.get(),
+                                                            var_console_to_daw_reaper_additional_prefix.get(),
+                                                            entry_console_to_daw_additional_track_prefix.get(),
+                                                            var_console_to_daw_additional_master_tracks.get(),
+                                                            var_console_to_daw_master_recording_patch.get(),
+                                                            var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Tracks Live Recording Session Template created"
+                    current_action_label["text"] = text
+                    root.update()
+                    logging.info(text)
+
+                disconnect_from_console(output)
+                progress_open_or_close_connection()
+
+            except OSError:
+                error = "Some thing went wrong during store, please choose a folder where you have write rights."
+                logging.error(error)
+                current_action_label["text"] = error
+                showerror(message=error)
+                return
+
+            showinfo(message='Reading from console done, session(s) created!')
+        else:
+            output = None
+    else:
+        showerror(message="Nothing to do, please select at least one output option.")
+
+
+def create_channel_list_content_from_console(data_fin):
+    channel_list_entries = []
+    index = 0
+
+    for item in data_fin:
+        cle = ChannelListEntry(item['dliveChannel'],
+                               item['name'],
+                               item['color'],
+                               None,
+                               None,
+                               None,
+                               None,
+                               'yes',
+                               'yes',
+                               None,
+                               None,
+                               None)
+
+        channel_list_entries.append(cle)
+        index = index + 1
+
+    return channel_list_entries
 
 
 def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
@@ -124,7 +266,7 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
     else:
         trimmed_name = str(item.get_name())
 
-    if trimmed_name == '-' or trimmed_name == 'byp':
+    if trimmed_name == SpreadsheetConstants.spreadsheet_bypass_sign or trimmed_name == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
         return
 
@@ -161,24 +303,24 @@ def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
 def color_channel(output, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
-    if lower_color == "-" or lower_color == 'byp':
+    if lower_color == SpreadsheetConstants.spreadsheet_bypass_sign or lower_color == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
         return
-    elif lower_color == "blue":
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_blue:
         colour = dliveConstants.lcd_color_blue
-    elif lower_color == "red":
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_red:
         colour = dliveConstants.lcd_color_red
-    elif lower_color == "light blue":
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_light_blue:
         colour = dliveConstants.lcd_color_ltblue
-    elif lower_color == 'purple':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_purple:
         colour = dliveConstants.lcd_color_purple
-    elif lower_color == 'green':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_green:
         colour = dliveConstants.lcd_color_green
-    elif lower_color == 'yellow':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_yellow:
         colour = dliveConstants.lcd_color_yellow
-    elif lower_color == 'black':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_black:
         colour = dliveConstants.lcd_color_black
-    elif lower_color == 'white':
+    elif lower_color == SpreadsheetConstants.spreadsheet_color_white:
         colour = dliveConstants.lcd_color_white
     elif lower_color == 'nan':
         logging.info("Empty cell found, treating as don´t care, skipping channel")
@@ -203,7 +345,7 @@ def mute_on_channel(output, item):
     lower_mute_on = item.get_mute().lower()
     channel = item.get_channel_console()
 
-    if lower_mute_on == "-" or lower_mute_on == "byp":
+    if lower_mute_on == SpreadsheetConstants.spreadsheet_bypass_sign or lower_mute_on == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_mute_on == "yes":
@@ -260,7 +402,7 @@ def phantom_socket(output, item, socket_type):
         else:
             return
 
-    if lower_phantom == "-" or lower_phantom == "byp":
+    if lower_phantom == SpreadsheetConstants.spreadsheet_bypass_sign or lower_phantom == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping socket: " + str(socket))
         return
     elif lower_phantom == "yes":
@@ -287,7 +429,7 @@ def phantom_socket(output, item, socket_type):
 def hpf_on_channel(output, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
 
-    if lower_hpf_on == "-" or lower_hpf_on == "byp":
+    if lower_hpf_on == SpreadsheetConstants.spreadsheet_bypass_sign or lower_hpf_on == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
     elif lower_hpf_on == "yes":
@@ -320,7 +462,7 @@ def clamp(value, lower_limit, upper_limit):
 
 def hpf_value_channel(output, item):
     hpf_value = item.get_hpf_value()
-    if hpf_value == 'nan' or hpf_value == '-' or hpf_value == 'byp':
+    if hpf_value == 'nan' or hpf_value == SpreadsheetConstants.spreadsheet_bypass_sign or hpf_value == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
     if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
@@ -360,8 +502,8 @@ def fader_level_channel(output, item):
         "-40": dliveConstants.fader_level_minus40,
         "-45": dliveConstants.fader_level_minus45,
         "-99": dliveConstants.fader_level_minus_inf,
-        "-": -1,
-        "byp": -1
+        SpreadsheetConstants.spreadsheet_bypass_sign: -1,
+        SpreadsheetConstants.spreadsheet_bypass_string: -1
     }
     fader_level = switcher.get(lower_fader_level, -2)
 
@@ -459,7 +601,7 @@ def pad_socket(output, item, socket_type):
         else:
             return
 
-    if lower_pad == "-":
+    if lower_pad == SpreadsheetConstants.spreadsheet_bypass_sign:
         logging.info("Don´t care flag found, skipping socket: " + str(socket))
         return
     elif lower_pad == "yes":
@@ -541,7 +683,7 @@ def gain_socket(output, item, socket_type):
         "15": dliveConstants.gain_level_plus15,
         "10": dliveConstants.gain_level_plus10,
         "5": dliveConstants.gain_level_plus5,
-        "-": -1
+        SpreadsheetConstants.spreadsheet_bypass_sign: -1
     }
     gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
 
@@ -626,7 +768,7 @@ def dca_channel(output, item):
 
         dca_array_item_lower = dca_array.__getitem__(dca_index).lower()
 
-        if dca_array_item_lower == '-' or dca_array_item_lower == 'byp':
+        if dca_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_sign or dca_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_string:
             continue
         elif dca_array.__getitem__(dca_index).lower() == "x":
             assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
@@ -638,7 +780,7 @@ def assign_mainmix_channel(output, item):
     channel = item.get_channel_console()
     mainmix_value = item.get_assign_mainmix()
 
-    if mainmix_value == 'nan' or mainmix_value == '-' or mainmix_value == 'byp':
+    if mainmix_value == 'nan' or mainmix_value == SpreadsheetConstants.spreadsheet_bypass_sign or mainmix_value == SpreadsheetConstants.spreadsheet_bypass_string:
         logging.info("Don´t care flag found, skipping channel")
         return
 
@@ -666,7 +808,7 @@ def mg_channel(output, item):
         mg_array = mg_config.get_mg_array()
 
         mg_array_item_lower = mg_array.__getitem__(mg_index).lower()
-        if mg_array_item_lower == '-' or mg_array_item_lower == 'byp':
+        if mg_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_sign or mg_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_string:
             continue
         elif mg_array_item_lower == "x":
             assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
@@ -1559,10 +1701,42 @@ def disable_reaper_options_ui_elements():
 
 
 def on_reaper_write_changed():
-    if var_write_reaper.get() == 1 or var_write_trackslive.get():
+    if var_write_reaper.get() or var_write_trackslive.get():
         enable_reaper_options_ui_elements()
     else:
         disable_reaper_options_ui_elements()
+
+
+def enable_console_to_daw_prefix_ui_elements():
+    entry_console_to_daw_additional_track_prefix.config(state="normal")
+    label_console_to_daw_track_prefix.config(state="normal")
+
+
+def disable_console_to_daw_prefix_ui_elements():
+    entry_console_to_daw_additional_track_prefix.config(state="disabled")
+    label_console_to_daw_track_prefix.config(state="disabled")
+
+
+def on_console_to_daw_prefix_changed():
+    if var_console_to_daw_reaper_additional_prefix.get():
+        enable_console_to_daw_prefix_ui_elements()
+    else:
+        disable_console_to_daw_prefix_ui_elements()
+
+
+def enable_console_to_daw_mastertracks_ui_elements():
+    combobox_console_to_daw_master_track.config(state="normal")
+
+
+def disable_console_to_daw_mastertracks_ui_elements():
+    combobox_console_to_daw_master_track.config(state="disabled")
+
+
+def on_console_to_daw_mastertracks_changed():
+    if var_console_to_daw_additional_master_tracks.get():
+        enable_console_to_daw_mastertracks_ui_elements()
+    else:
+        disable_console_to_daw_mastertracks_ui_elements()
 
 
 def update_progress_label():
@@ -1716,18 +1890,31 @@ if __name__ == '__main__':
     # Display the menu bar
     root.config(menu=menu_bar)
 
-    config_frame = Frame(root)
+    tab_control = ttk.Notebook(root)
+
+    # Tab 1 erstellen
+    tab1 = ttk.Frame(tab_control)
+    tab_control.add(tab1, text='Spreadsheet to Console / DAW')
+
+    # Tab 2 erstellen
+    tab2 = ttk.Frame(tab_control)
+    tab_control.add(tab2, text='Console to DAW')
+
+    tab1_frame = LabelFrame(tab1, text='Spreadsheet to Console / DAW')
+    tab2_frame = LabelFrame(tab2, text='Console to DAW')
+
+    config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)
     console_frame = Frame(config_frame)
     console_frame.grid(row=1, column=0, sticky="W")
-    Label(config_frame, text="       ").grid(row=0, column=0)
+
     ip_frame.grid(row=2, column=0, sticky="W")
     midi_channel_frame = Frame(config_frame)
     midi_channel_frame.grid(row=3, column=0, sticky="W")
 
     config_frame.pack(side=TOP)
 
-    output_option_frame = LabelFrame(root, text="Output Option")
+    output_option_frame = LabelFrame(tab1, text="Output Options")
     var_write_to_console = BooleanVar(value=True)
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
@@ -1797,8 +1984,7 @@ if __name__ == '__main__':
     reaper_output_dir = ""
     reaper_file_prefix = ""
 
-    Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
+    parameter_lf = LabelFrame(tab1, text="Choose from given spreadsheet which column you want to write", )
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
     labels = [
@@ -1841,19 +2027,20 @@ if __name__ == '__main__':
          ]
     ]
 
-    grid = CheckboxGrid(root, headers, labels)
+    grid = CheckboxGrid(parameter_lf, headers, labels)
     grid.pack(side=TOP)
 
-    global_select_frame = Frame(root)
+    global_select_frame = Frame(parameter_lf)
 
     button_select_all = Button(global_select_frame, text='Select All', command=select_all_checkboxes, width=8)
     button_select_all.grid(row=0, column=0)
     button_clear_all = Button(global_select_frame, text='Clear', command=clear_all_checkboxes, width=8)
     button_clear_all.grid(row=0, column=1)
 
+    parameter_lf.pack(pady=10, side=TOP)
+
     global_select_frame.pack(side=TOP)
 
-    Label(root, text=" ").pack(side=TOP)
     output_option_frame.pack(side=TOP, fill=X)
 
     var_console.set(read_persisted_console())
@@ -1920,18 +2107,119 @@ if __name__ == '__main__':
     ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
     ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
-    bottom_frame = Frame(root)
+    bottom_frame = Frame(tab1)
 
     Button(bottom_frame, text='Open spreadsheet and start writing process', command=trigger_background_process).grid(
-        row=0)
+        row=0, column=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
-    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
-    current_action_label.grid(row=2)
-    Label(bottom_frame, text=" ", width=30).grid(row=3)
+    # ----------------- Console to DAW Area-------------------
+
+    console_to_daw_settings_lf = LabelFrame(tab2, text="Settings")
+
+    console_to_daw_settings_lf.pack(side=TOP)
+
+    start_end_channel_frame = Frame(console_to_daw_settings_lf)
+
+    values_start = [f"{i}" for i in range(1, 129)]
+    var_current_console_startChannel = StringVar()
+    combobox_start = Combobox(start_end_channel_frame, textvariable=var_current_console_startChannel,
+                              values=values_start, width=3)
+    combobox_start.set("1")
+
+    Label(start_end_channel_frame, text="Channel Start").grid(row=0, column=0, sticky="w")
+    combobox_start.grid(row=0, column=1)
+
+    values_end = [f"{i}" for i in range(1, 129)]
+    var_current_console_endChannel = StringVar()
+    combobox_end = Combobox(start_end_channel_frame, textvariable=var_current_console_endChannel,
+                            values=values_end, width=3)
+    combobox_end.set("128")
+    Label(start_end_channel_frame, text="End").grid(row=0, column=2)
+    combobox_end.grid(row=0, column=3)
+
+    start_end_channel_frame.grid(row=0)
+
+    var_console_to_daw_disable_track_numbering_daw = BooleanVar(value=False)
+    cb_console_to_daw_disable_track_numbering_daw = Checkbutton(console_to_daw_settings_lf,
+                                                                text="Disable Track Numbering",
+                                                                var=var_console_to_daw_disable_track_numbering_daw)
+
+    var_console_to_daw_disable_track_coloring_daw = BooleanVar(value=False)
+    cb_console_to_daw_disable_track_coloring_daw = Checkbutton(console_to_daw_settings_lf,
+                                                               text="Disable Track Coloring",
+                                                               var=var_console_to_daw_disable_track_coloring_daw)
+
+    var_console_to_daw_reaper_additional_prefix = BooleanVar(value=False)
+    cb_console_to_daw_reaper_additional_prefix = Checkbutton(console_to_daw_settings_lf,
+                                                             text="Add Custom Track Prefix",
+                                                             var=var_console_to_daw_reaper_additional_prefix,
+                                                             command=on_console_to_daw_prefix_changed)
+
+    entry_console_to_daw_additional_track_prefix = Entry(console_to_daw_settings_lf, width=20)
+
+    label_console_to_daw_track_prefix = Label(console_to_daw_settings_lf, text="Example: Band_Date_City", width=25)
+
+    var_console_to_daw_additional_master_tracks = BooleanVar(value=False)
+    cb_console_to_daw_additional_master_tracks = Checkbutton(console_to_daw_settings_lf,
+                                                             text="Add 2 Additional Master-Tracks",
+                                                             var=var_console_to_daw_additional_master_tracks,
+                                                             command=on_console_to_daw_mastertracks_changed)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_console_to_daw_master_recording_patch = StringVar()
+    combobox_console_to_daw_master_track = Combobox(console_to_daw_settings_lf,
+                                                    textvariable=var_console_to_daw_master_recording_patch,
+                                                    values=values)
+    combobox_console_to_daw_master_track.set("Select DAW Input")
+
+    disable_console_to_daw_prefix_ui_elements()
+    disable_console_to_daw_mastertracks_ui_elements()
+
+    console_to_daw_output_options_lf = LabelFrame(tab2, text="Output Options")
+
+    var_console_to_daw_reaper = BooleanVar(value=False)
+    cb_console_to_daw_reaper = Checkbutton(console_to_daw_output_options_lf,
+                                           text="Generate Reaper Session",
+                                           var=var_console_to_daw_reaper)
+
+    var_console_to_daw_trackslive = BooleanVar(value=False)
+    cb_console_to_daw_trackslive = Checkbutton(console_to_daw_output_options_lf,
+                                               text="Generate Tracks Live Template",
+                                               var=var_console_to_daw_trackslive)
+
+    label_space = Label(console_to_daw_output_options_lf, width=48)
+
+    cb_console_to_daw_reaper.grid(row=0, column=0, sticky="w")
+    label_space.grid(row=0, column=1, sticky="w")
+    cb_console_to_daw_trackslive.grid(row=1, sticky="w")
+
+    console_to_daw_output_options_lf.pack(side=TOP)
+
+    cb_console_to_daw_disable_track_numbering_daw.grid(row=1, sticky="w")
+    cb_console_to_daw_disable_track_coloring_daw.grid(row=2, sticky="w")
+    cb_console_to_daw_reaper_additional_prefix.grid(row=3, column=0, sticky="w")
+    entry_console_to_daw_additional_track_prefix.grid(row=3, column=1, sticky="w")
+    label_console_to_daw_track_prefix.grid(row=3, column=2)
+    cb_console_to_daw_additional_master_tracks.grid(row=4, column=0, sticky="w")
+    combobox_console_to_daw_master_track.grid(row=4, column=1, sticky="w")
+
+    button_frame = Frame(tab2)
+
+    Button(button_frame, text='Generate DAW session(s) from current console settings',
+           command=get_data_from_console).pack(side=BOTTOM)
+
+    # ----------------- Status Area-------------------
+
+    bottom3_frame = LabelFrame(root, text="Status")
+
+    current_action_label = ttk.Label(bottom3_frame, text=current_action_label.get())
+    current_action_label.grid(row=3)
+    Label(bottom3_frame, text=" ", width=30).grid(row=5)
 
     pb = ttk.Progressbar(
-        bottom_frame,
+        bottom3_frame,
         orient='horizontal',
         mode='determinate',
         length=1250
@@ -1940,13 +2228,21 @@ if __name__ == '__main__':
     pb.grid(row=4)
 
     # label to show current value in percent
-    value_label = ttk.Label(bottom_frame, text=update_progress_label())
+    value_label = ttk.Label(bottom3_frame, text=update_progress_label())
     value_label.grid(row=5)
 
-    Button(bottom_frame, text='Close', command=root.destroy).grid(row=6)
-    Label(bottom_frame, text=" ", width=30).grid(row=7)
+    bottom4_frame = Frame(root)
+
+    Button(bottom4_frame, text='Close', command=root.destroy).grid(row=6)
+    Label(bottom4_frame, text=" ", width=30).grid(row=7)
+
+    bottom4_frame.pack(side=BOTTOM)
+    bottom3_frame.pack(side=BOTTOM)
+    button_frame.pack(side=TOP)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)
+
+    tab_control.pack(expand=1, fill='both', side=TOP)
 
     root.mainloop()

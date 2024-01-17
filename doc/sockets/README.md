@@ -1,4 +1,4 @@
-**Attention** <br> The following settings are for the corresponding **sockets** and **NOT** for channels.
+> **Note** <br> The following settings are for the corresponding **sockets** and **NOT** for channels.
 
 The following columns are grouped by **Ports**
 

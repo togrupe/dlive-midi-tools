@@ -16,15 +16,5 @@ spreadsheet_color_green = "green"
 spreadsheet_color_purple = "purple"
 spreadsheet_color_white = "white"
 
-
 spreadsheet_bypass_sign = "-"
 spreadsheet_bypass_string = "byp"
-
-
-
-
-
-
-
-
-

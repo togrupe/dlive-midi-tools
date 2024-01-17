@@ -188,6 +188,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 
 __Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
 
+
 1. Select the console: `dLive` or `Avantis`
 
 2. Check the (Mixrack-) IP and Midi Port. 
@@ -200,11 +201,17 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
+The tool has currently to modes:
+* Spreadsheet to Console / DAW (Continue with next Step)
+* Console to DAW (Continue with Step 10)
+
+Choose which mode you want to use.
+![consoletodaw](doc/tabs.png)
+
 7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
    
    `Select All` selects all checkboxes.
    `Clear` removes all ticks.
-
 
 8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
@@ -231,12 +238,12 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 Options:
    * Choose `Start` and `End` channel to be used for DAW generation.
+   * Disable Track Numbering <br>
+   * Disable Track Coloring <br>
+   * An additional custom track prefix can also be added.<br>
+   * Add two additional mono busses to record your mixing sum.
 
-   * `Disable Track Numbering` Tracks aren´t generated with channel number prefixes
-
-   * `Disable Track Coloring` Generates grey colored tracks
-
-Click `Generate DAW Sessions from current console settings`
+Click `Generate DAW Session(s) from current console settings`
 
 11. If something goes wrong, please check the Python console or the `main.log`
 

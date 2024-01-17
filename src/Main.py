@@ -150,7 +150,6 @@ def get_data_from_console():
         if var_console_to_daw_trackslive.get():
             actions = increment_actions(actions)
 
-
         current_action_label["text"] = "Choose a directory..."
         root.update()
         directory_path = filedialog.askdirectory(title="Please select a directory")
@@ -185,7 +184,6 @@ def get_data_from_console():
 
             try:
                 if var_console_to_daw_reaper.get():
-
                     current_action_label["text"] = "Generating Reaper Session..."
                     progress(actions)
                     root.update()
@@ -202,7 +200,6 @@ def get_data_from_console():
                     logging.info(text)
 
                 if var_console_to_daw_trackslive.get():
-
                     current_action_label["text"] = "Generating Tracks Live Template..."
                     progress(actions)
                     root.update()
@@ -2193,7 +2190,6 @@ if __name__ == '__main__':
                                                var=var_console_to_daw_trackslive)
 
     label_space = Label(console_to_daw_output_options_lf, width=48)
-
 
     cb_console_to_daw_reaper.grid(row=0, column=0, sticky="w")
     label_space.grid(row=0, column=1, sticky="w")

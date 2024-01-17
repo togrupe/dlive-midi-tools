@@ -265,7 +265,7 @@ Feature & Maintenance Release
 
 
 #### Improvements
-- Smaller GUI refactoring
+- Switched to tab based GUI
 
 
 #### Technical Limitations

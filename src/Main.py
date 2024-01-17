@@ -1892,16 +1892,14 @@ if __name__ == '__main__':
 
     tab_control = ttk.Notebook(root)
 
-    # Tab 1 erstellen
     tab1 = ttk.Frame(tab_control)
     tab_control.add(tab1, text='Spreadsheet to Console / DAW')
 
-    # Tab 2 erstellen
     tab2 = ttk.Frame(tab_control)
     tab_control.add(tab2, text='Console to DAW')
 
-    tab1_frame = LabelFrame(tab1, text='Spreadsheet to Console / DAW')
-    tab2_frame = LabelFrame(tab2, text='Console to DAW')
+    tab3 = ttk.Frame(tab_control)
+    tab_control.add(tab3, text='Theatre')
 
     config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)

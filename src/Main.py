@@ -132,85 +132,107 @@ def get_name_channel(output, data_color, start_channel, end_channel):
 
 
 def get_data_from_console():
-    reset_current_action_label()
-    reset_progress_bar()
-    progress_open_or_close_connection()
-    root.update()
-    actions = 4
-    current_action_label["text"] = "Choose a directory..."
-    root.update()
-    directory_path = filedialog.askdirectory(title="Please select a directory")
+    if var_console_to_daw_reaper.get() or var_console_to_daw_trackslive.get():
 
-    if directory_path.__len__() == 0:
-        return
-
-    if is_network_communication_allowed:
-        output = connect_to_console(read_current_ui_ip_address())
-        start_channel = int(var_current_console_startChannel.get()) - 1
-        end_channel = int(var_current_console_endChannel.get())
-        if start_channel > end_channel:
-            error_msg = "Start Channel: " + str(start_channel + 1) + " is greater than End Channel: " + str(end_channel)
-            logging.error(error_msg)
-            showerror(message=error_msg)
+        if var_console_to_daw_additional_master_tracks.get() and var_console_to_daw_master_recording_patch.get() == "Select DAW Input":
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
             return
 
-        current_action_label["text"] = "Reading channel color from console"
-        progress(actions)
+        reset_current_action_label()
+        reset_progress_bar()
+        progress_open_or_close_connection()
         root.update()
-        data_color = get_color_channel(output, start_channel, end_channel)
+        actions = 2
 
-        current_action_label["text"] = "Reading channel name from console"
-        progress(actions)
+        if var_console_to_daw_reaper.get():
+            actions = increment_actions(actions)
+
+        if var_console_to_daw_trackslive.get():
+            actions = increment_actions(actions)
+
+
+        current_action_label["text"] = "Choose a directory..."
         root.update()
-        data_fin = get_name_channel(output, data_color, start_channel, end_channel)
+        directory_path = filedialog.askdirectory(title="Please select a directory")
 
-        sheet = Sheet()
-
-        sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
-
-        try:
-            current_action_label["text"] = "Generating Reaper Session..."
-            progress(actions)
-            root.update()
-            ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
-                                                var_disable_track_numbering_daw.get(),
-                                                var_reaper_additional_prefix.get(),
-                                                entry_additional_track_prefix.get(),
-                                                var_reaper_additional_master_tracks.get(),
-                                                var_master_recording_patch.get(), var_disable_track_coloring_daw.get())
-            text = "Reaper Recording Session Template created"
-            current_action_label["text"] = text
-            root.update()
-            logging.info(text)
-
-            current_action_label["text"] = "Generating Tracks Live Template..."
-            progress(actions)
-            root.update()
-            TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
-                                                    var_disable_track_numbering_daw.get(),
-                                                    var_reaper_additional_prefix.get(),
-                                                    entry_additional_track_prefix.get(),
-                                                    var_reaper_additional_master_tracks.get(),
-                                                    var_master_recording_patch.get(),
-                                                    var_disable_track_coloring_daw.get())
-            text = "Tracks Live Recording Session Template created"
-            current_action_label["text"] = text
-            root.update()
-            logging.info(text)
-
-            output.close()
-            progress_open_or_close_connection()
-
-        except OSError:
-            error = "Some thing went wrong during store, please choose a folder where you have write rights."
-            logging.error(error)
-            current_action_label["text"] = error
-            showerror(message=error)
+        if directory_path.__len__() == 0:
             return
 
-        showinfo(message='Reading from Console done, Sessions created!')
+        if is_network_communication_allowed:
+            output = connect_to_console(read_current_ui_ip_address())
+            start_channel = int(var_current_console_startChannel.get()) - 1
+            end_channel = int(var_current_console_endChannel.get())
+            if start_channel > end_channel:
+                error_msg = "Start Channel: " + str(start_channel + 1) + " is greater than End Channel: " + str(
+                    end_channel)
+                logging.error(error_msg)
+                showerror(message=error_msg)
+                return
+
+            current_action_label["text"] = "Reading channel color from console"
+            progress(actions)
+            root.update()
+            data_color = get_color_channel(output, start_channel, end_channel)
+
+            current_action_label["text"] = "Reading channel name from console"
+            progress(actions)
+            root.update()
+            data_fin = get_name_channel(output, data_color, start_channel, end_channel)
+
+            sheet = Sheet()
+
+            sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
+
+            try:
+                if var_console_to_daw_reaper.get():
+
+                    current_action_label["text"] = "Generating Reaper Session..."
+                    progress(actions)
+                    root.update()
+                    ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                        var_console_to_daw_disable_track_numbering_daw.get(),
+                                                        var_console_to_daw_reaper_additional_prefix.get(),
+                                                        entry_console_to_daw_additional_track_prefix.get(),
+                                                        var_console_to_daw_additional_master_tracks.get(),
+                                                        var_console_to_daw_master_recording_patch.get(),
+                                                        var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Reaper Recording Session Template created"
+                    current_action_label["text"] = text
+                    root.update()
+                    logging.info(text)
+
+                if var_console_to_daw_trackslive.get():
+
+                    current_action_label["text"] = "Generating Tracks Live Template..."
+                    progress(actions)
+                    root.update()
+                    TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                            var_console_to_daw_disable_track_numbering_daw.get(),
+                                                            var_console_to_daw_reaper_additional_prefix.get(),
+                                                            entry_console_to_daw_additional_track_prefix.get(),
+                                                            var_console_to_daw_additional_master_tracks.get(),
+                                                            var_console_to_daw_master_recording_patch.get(),
+                                                            var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Tracks Live Recording Session Template created"
+                    current_action_label["text"] = text
+                    root.update()
+                    logging.info(text)
+
+                output.close()
+                progress_open_or_close_connection()
+
+            except OSError:
+                error = "Some thing went wrong during store, please choose a folder where you have write rights."
+                logging.error(error)
+                current_action_label["text"] = error
+                showerror(message=error)
+                return
+
+            showinfo(message='Reading from console done, session(s) created!')
+        else:
+            output = None
     else:
-        output = None
+        showerror(message="Nothing to do, please select at least one output option.")
 
 
 def create_channel_list_content_from_console(data_fin):
@@ -1682,10 +1704,42 @@ def disable_reaper_options_ui_elements():
 
 
 def on_reaper_write_changed():
-    if var_write_reaper.get() == 1 or var_write_trackslive.get():
+    if var_write_reaper.get() or var_write_trackslive.get():
         enable_reaper_options_ui_elements()
     else:
         disable_reaper_options_ui_elements()
+
+
+def enable_console_to_daw_prefix_ui_elements():
+    entry_console_to_daw_additional_track_prefix.config(state="normal")
+    label_console_to_daw_track_prefix.config(state="normal")
+
+
+def disable_console_to_daw_prefix_ui_elements():
+    entry_console_to_daw_additional_track_prefix.config(state="disabled")
+    label_console_to_daw_track_prefix.config(state="disabled")
+
+
+def on_console_to_daw_prefix_changed():
+    if var_console_to_daw_reaper_additional_prefix.get():
+        enable_console_to_daw_prefix_ui_elements()
+    else:
+        disable_console_to_daw_prefix_ui_elements()
+
+
+def enable_console_to_daw_mastertracks_ui_elements():
+    combobox_console_to_daw_master_track.config(state="normal")
+
+
+def disable_console_to_daw_mastertracks_ui_elements():
+    combobox_console_to_daw_master_track.config(state="disabled")
+
+
+def on_console_to_daw_mastertracks_changed():
+    if var_console_to_daw_additional_master_tracks.get():
+        enable_console_to_daw_mastertracks_ui_elements()
+    else:
+        disable_console_to_daw_mastertracks_ui_elements()
 
 
 def update_progress_label():
@@ -2072,7 +2126,8 @@ if __name__ == '__main__':
 
     values_start = [f"{i}" for i in range(1, 129)]
     var_current_console_startChannel = StringVar()
-    combobox_start = Combobox(start_end_channel_frame, textvariable=var_current_console_startChannel, values=values_start, width=3)
+    combobox_start = Combobox(start_end_channel_frame, textvariable=var_current_console_startChannel,
+                              values=values_start, width=3)
     combobox_start.set("1")
 
     Label(start_end_channel_frame, text="Channel Start").grid(row=0, column=0, sticky="w")
@@ -2088,25 +2143,78 @@ if __name__ == '__main__':
 
     start_end_channel_frame.grid(row=0)
 
-    var_disable_track_numbering_daw = BooleanVar(value=False)
-    cb_reaper_disable_numbering_daw = Checkbutton(console_to_daw_settings_lf,
-                                                  text="Disable Track Numbering",
-                                                  var=var_disable_track_numbering_daw)
+    var_console_to_daw_disable_track_numbering_daw = BooleanVar(value=False)
+    cb_console_to_daw_disable_track_numbering_daw = Checkbutton(console_to_daw_settings_lf,
+                                                                text="Disable Track Numbering",
+                                                                var=var_console_to_daw_disable_track_numbering_daw)
 
-    var_disable_track_coloring_daw = BooleanVar(value=False)
-    cb_reaper_disable_track_coloring_daw = Checkbutton(console_to_daw_settings_lf,
-                                                       text="Disable Track Coloring",
-                                                       var=var_disable_track_coloring_daw)
+    var_console_to_daw_disable_track_coloring_daw = BooleanVar(value=False)
+    cb_console_to_daw_disable_track_coloring_daw = Checkbutton(console_to_daw_settings_lf,
+                                                               text="Disable Track Coloring",
+                                                               var=var_console_to_daw_disable_track_coloring_daw)
 
-    cb_reaper_disable_numbering_daw.grid(row=1, sticky="w")
-    cb_reaper_disable_track_coloring_daw.grid(row=2, sticky="w")
+    var_console_to_daw_reaper_additional_prefix = BooleanVar(value=False)
+    cb_console_to_daw_reaper_additional_prefix = Checkbutton(console_to_daw_settings_lf,
+                                                             text="Add Custom Track Prefix",
+                                                             var=var_console_to_daw_reaper_additional_prefix,
+                                                             command=on_console_to_daw_prefix_changed)
 
-    bottom2_frame = Frame(tab2)
+    entry_console_to_daw_additional_track_prefix = Entry(console_to_daw_settings_lf, width=20)
 
-    Button(bottom2_frame, text='Generate DAW sessions from current console settings',
+    label_console_to_daw_track_prefix = Label(console_to_daw_settings_lf, text="Example: Band_Date_City", width=25)
+
+    var_console_to_daw_additional_master_tracks = BooleanVar(value=False)
+    cb_console_to_daw_additional_master_tracks = Checkbutton(console_to_daw_settings_lf,
+                                                             text="Add 2 Additional Master-Tracks",
+                                                             var=var_console_to_daw_additional_master_tracks,
+                                                             command=on_console_to_daw_mastertracks_changed)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_console_to_daw_master_recording_patch = StringVar()
+    combobox_console_to_daw_master_track = Combobox(console_to_daw_settings_lf,
+                                                    textvariable=var_console_to_daw_master_recording_patch,
+                                                    values=values)
+    combobox_console_to_daw_master_track.set("Select DAW Input")
+
+    disable_console_to_daw_prefix_ui_elements()
+    disable_console_to_daw_mastertracks_ui_elements()
+
+    console_to_daw_output_options_lf = LabelFrame(tab2, text="Output Options")
+
+    var_console_to_daw_reaper = BooleanVar(value=False)
+    cb_console_to_daw_reaper = Checkbutton(console_to_daw_output_options_lf,
+                                           text="Generate Reaper Session",
+                                           var=var_console_to_daw_reaper)
+
+    var_console_to_daw_trackslive = BooleanVar(value=False)
+    cb_console_to_daw_trackslive = Checkbutton(console_to_daw_output_options_lf,
+                                               text="Generate Tracks Live Template",
+                                               var=var_console_to_daw_trackslive)
+
+    label_space = Label(console_to_daw_output_options_lf, width=48)
+
+
+    cb_console_to_daw_reaper.grid(row=0, column=0, sticky="w")
+    label_space.grid(row=0, column=1, sticky="w")
+    cb_console_to_daw_trackslive.grid(row=1, sticky="w")
+
+    console_to_daw_output_options_lf.pack(side=TOP)
+
+    cb_console_to_daw_disable_track_numbering_daw.grid(row=1, sticky="w")
+    cb_console_to_daw_disable_track_coloring_daw.grid(row=2, sticky="w")
+    cb_console_to_daw_reaper_additional_prefix.grid(row=3, column=0, sticky="w")
+    entry_console_to_daw_additional_track_prefix.grid(row=3, column=1, sticky="w")
+    label_console_to_daw_track_prefix.grid(row=3, column=2)
+    cb_console_to_daw_additional_master_tracks.grid(row=4, column=0, sticky="w")
+    combobox_console_to_daw_master_track.grid(row=4, column=1, sticky="w")
+
+    button_frame = Frame(tab2)
+
+    Button(button_frame, text='Generate DAW session(s) from current console settings',
            command=get_data_from_console).pack(side=BOTTOM)
 
-    #----------------- Status Area-------------------
+    # ----------------- Status Area-------------------
 
     bottom3_frame = LabelFrame(root, text="Status")
 
@@ -2134,10 +2242,8 @@ if __name__ == '__main__':
 
     bottom4_frame.pack(side=BOTTOM)
     bottom3_frame.pack(side=BOTTOM)
-    bottom2_frame.pack(side=TOP)
+    button_frame.pack(side=TOP)
     bottom_frame.pack(side=BOTTOM)
-
-
 
     var_console.trace("w", on_console_selected)
 

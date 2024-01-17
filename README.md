@@ -207,7 +207,7 @@ The tool has currently to modes:
 
 Choose which mode you want to use:
 
-<img alt="tabs" src="doc/tabs.png" width="250"/>
+<img alt="tabs" src="doc/tabs.png" width="300"/>
 
 7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
    

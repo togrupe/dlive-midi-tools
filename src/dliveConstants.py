@@ -165,3 +165,6 @@ trim_after_x_charactors = 8
 # dlive Mixrack ip and port for midi/tcp. Please use 127.0.0.1 for dLive Director.
 ip = '192.168.1.70'
 port = 51325
+
+DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.01
+DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001

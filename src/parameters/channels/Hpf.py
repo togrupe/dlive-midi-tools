@@ -1,10 +1,16 @@
-import time
-from tkinter.messagebox import showerror
+# coding=utf-8
+####################################################
+# High Pass Filter Functions
+#
+# Author: Tobias Grupe
+#
+####################################################
 
+import time
 import mido
 import numpy
-
 import dliveConstants
+from tkinter.messagebox import showerror
 from spreadsheet import SpreadsheetConstants
 
 

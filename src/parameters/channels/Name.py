@@ -1,3 +1,11 @@
+# coding=utf-8
+####################################################
+# Name Functions
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 import re
 import time
 import mido

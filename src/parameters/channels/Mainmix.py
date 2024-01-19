@@ -1,7 +1,13 @@
+# coding=utf-8
+####################################################
+# Assign to Mainmix Functions
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 import time
-
 import mido
-
 import dliveConstants
 from spreadsheet import SpreadsheetConstants
 

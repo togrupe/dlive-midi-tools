@@ -1,3 +1,11 @@
+# coding=utf-8
+####################################################
+# DCA Functions
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 import time
 import mido
 import dliveConstants

@@ -43,7 +43,7 @@ from parameters.sockets.Phantom import phantom_socket
 from parameters.channels.Mainmix import assign_mainmix_channel
 from persistence.Persistence import read_persisted_console, read_persisted_midi_port, read_persisted_ip
 from spreadsheet.Spreadsheet import create_channel_list_content, create_socket_list_content, create_groups_list_content, \
-    create_misc_content
+    create_misc_content, create_channel_list_content_from_console
 
 LOG_FILE = 'main.log'
 CONFIG_FILE = 'config.json'
@@ -826,8 +826,13 @@ def browse_files():
         showerror(message="Nothing to do, please select at least one output option.")
 
 
-def trigger_background_process():
+def trigger_background_process_spread_to_console():
     bg_thread = threading.Thread(target=browse_files)
+    bg_thread.start()
+
+
+def trigger_background_process_console_to_daw():
+    bg_thread = threading.Thread(target=get_data_from_console)
     bg_thread.start()
 
 
@@ -1370,7 +1375,8 @@ if __name__ == '__main__':
 
     bottom_frame = Frame(tab1)
 
-    Button(bottom_frame, text='Open spreadsheet and start writing process', command=trigger_background_process).grid(
+    Button(bottom_frame, text='Open spreadsheet and start writing process',
+           command=trigger_background_process_spread_to_console).grid(
         row=0, column=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
@@ -1469,7 +1475,7 @@ if __name__ == '__main__':
     button_frame = Frame(tab2)
 
     Button(button_frame, text='Generate DAW session(s) from current console settings',
-           command=get_data_from_console).pack(side=BOTTOM)
+           command=trigger_background_process_console_to_daw).pack(side=BOTTOM)
 
     # ----------------- Status Area-------------------
 

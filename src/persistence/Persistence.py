@@ -1,3 +1,11 @@
+# coding=utf-8
+####################################################
+# Methods for persistence handling
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 import json
 import os
 

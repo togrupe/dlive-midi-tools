@@ -1,3 +1,11 @@
+# coding=utf-8
+####################################################
+# Methods for spreadsheet handling
+#
+# Author: Tobias Grupe
+#
+####################################################
+
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.GroupSetup import GroupSetup

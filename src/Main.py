@@ -913,10 +913,23 @@ def set_limit_console_to_daw_end_channel(param):
     root.update()
 
 
+def set_limit_console_to_daw_start_channel(param):
+    combobox_start.set(str(param))
+    root.update()
+
+
 def on_endchannel_selected(*args):
-    if var_console.get() == dliveConstants.console_drop_down_avantis and int(var_current_console_endChannel.get()) > 64:
-        showerror(message="Avantis supports up to 64 Channels")
-        set_limit_console_to_daw_end_channel(64)
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(
+            var_current_console_endChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS:
+        showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+        set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+
+def on_startchannel_selected(*args):
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(
+            var_current_console_startChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS:
+        showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+        set_limit_console_to_daw_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
 
 
 def on_console_selected(*args):
@@ -931,13 +944,13 @@ def on_console_selected(*args):
                     '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
                     '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
-        set_limit_console_to_daw_end_channel(64)
+        set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
         root.update()
 
     elif var_console.get() == dliveConstants.console_drop_down_dlive:
         label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
         reactivate_avantis_checkboxes()
-        set_limit_console_to_daw_end_channel(128)
+        set_limit_console_to_daw_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
         root.update()
 
 
@@ -1527,6 +1540,7 @@ if __name__ == '__main__':
 
     var_console.trace("w", on_console_selected)
     var_current_console_endChannel.trace("w", on_endchannel_selected)
+    var_current_console_startChannel.trace("w", on_startchannel_selected)
 
     tab_control.pack(expand=1, fill='both', side=TOP)
 

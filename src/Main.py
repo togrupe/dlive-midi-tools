@@ -1259,62 +1259,7 @@ if __name__ == '__main__':
 
     config_frame.pack(side=TOP)
 
-    output_option_frame = LabelFrame(tab1, text="Output Options")
-    var_write_to_console = BooleanVar(value=True)
-    write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
-                                   var=var_write_to_console)
-    var_write_reaper = BooleanVar(value=False)
-    cb_reaper_write = Checkbutton(output_option_frame,
-                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
-                                  var=var_write_reaper, command=on_reaper_write_changed)
-
-    var_write_trackslive = BooleanVar(value=False)
-    cb_trackslive_write = Checkbutton(output_option_frame,
-                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
-                                      var=var_write_trackslive, command=on_reaper_write_changed)
-
-    var_disable_track_numbering = BooleanVar(value=False)
-    cb_reaper_disable_numbering = Checkbutton(output_option_frame,
-                                              text="Disable Track Numbering",
-                                              var=var_disable_track_numbering)
-
-    var_disable_track_coloring = BooleanVar(value=False)
-    cb_reaper_disable_track_coloring = Checkbutton(output_option_frame,
-                                                   text="Disable Track Coloring",
-                                                   var=var_disable_track_coloring)
-
-    label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
-
-    var_reaper_additional_prefix = BooleanVar(value=False)
-    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
-                                              text="Add Custom Track Prefix",
-                                              var=var_reaper_additional_prefix)
-
-    entry_additional_track_prefix = Entry(output_option_frame, width=20)
-
-    var_reaper_additional_master_tracks = BooleanVar(value=False)
-    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
-                                                     text="Add 2 Additional Master-Tracks",
-                                                     var=var_reaper_additional_master_tracks)
-
-    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
-    values.append("127-128")  # workaround
-    var_master_recording_patch = StringVar()
-    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
-    combobox_master_track.set("Select DAW Input")
-
-    disable_reaper_options_ui_elements()
-
-    write_to_console.grid(row=0, column=0, sticky="W")
-    cb_reaper_write.grid(row=1, column=0, sticky="W")
-    cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
-    cb_reaper_disable_track_coloring.grid(row=2, column=1, sticky="W")
-    cb_reaper_additional_prefix.grid(row=3, column=1, sticky="W")
-    entry_additional_track_prefix.grid(row=3, column=2, sticky="W")
-    label_track_prefix.grid(row=3, column=3, sticky="W")
-    cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
-    combobox_master_track.grid(row=4, column=2, sticky="W")
-    cb_trackslive_write.grid(row=2, column=0, sticky="W")
+    # ----------------- Spreadsheet to Console / DAW Area-------------------
 
     parameter_lf = LabelFrame(tab1, text="Choose from given spreadsheet which column you want to write", )
 
@@ -1372,6 +1317,63 @@ if __name__ == '__main__':
     parameter_lf.pack(pady=10, side=TOP)
 
     global_select_frame.pack(side=TOP)
+
+    output_option_frame = LabelFrame(tab1, text="Output Options")
+    var_write_to_console = BooleanVar(value=True)
+    write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
+                                   var=var_write_to_console)
+    var_write_reaper = BooleanVar(value=False)
+    cb_reaper_write = Checkbutton(output_option_frame,
+                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                  var=var_write_reaper, command=on_reaper_write_changed)
+
+    var_write_trackslive = BooleanVar(value=False)
+    cb_trackslive_write = Checkbutton(output_option_frame,
+                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
+                                      var=var_write_trackslive, command=on_reaper_write_changed)
+
+    var_disable_track_numbering = BooleanVar(value=False)
+    cb_reaper_disable_numbering = Checkbutton(output_option_frame,
+                                              text="Disable Track Numbering",
+                                              var=var_disable_track_numbering)
+
+    var_disable_track_coloring = BooleanVar(value=False)
+    cb_reaper_disable_track_coloring = Checkbutton(output_option_frame,
+                                                   text="Disable Track Coloring",
+                                                   var=var_disable_track_coloring)
+
+    label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
+
+    var_reaper_additional_prefix = BooleanVar(value=False)
+    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
+                                              text="Add Custom Track Prefix",
+                                              var=var_reaper_additional_prefix)
+
+    entry_additional_track_prefix = Entry(output_option_frame, width=20)
+
+    var_reaper_additional_master_tracks = BooleanVar(value=False)
+    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
+                                                     text="Add 2 Additional Master-Tracks",
+                                                     var=var_reaper_additional_master_tracks)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_master_recording_patch = StringVar()
+    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
+    combobox_master_track.set("Select DAW Input")
+
+    disable_reaper_options_ui_elements()
+
+    write_to_console.grid(row=0, column=0, sticky="W")
+    cb_reaper_write.grid(row=1, column=0, sticky="W")
+    cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
+    cb_reaper_disable_track_coloring.grid(row=2, column=1, sticky="W")
+    cb_reaper_additional_prefix.grid(row=3, column=1, sticky="W")
+    entry_additional_track_prefix.grid(row=3, column=2, sticky="W")
+    label_track_prefix.grid(row=3, column=3, sticky="W")
+    cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
+    combobox_master_track.grid(row=4, column=2, sticky="W")
+    cb_trackslive_write.grid(row=2, column=0, sticky="W")
 
     output_option_frame.pack(side=TOP, fill=X)
 

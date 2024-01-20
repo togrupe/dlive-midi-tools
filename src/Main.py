@@ -1050,6 +1050,10 @@ class CheckboxGrid(Frame):
 root = Tk()
 ip_address_label = StringVar(root)
 current_action_label = StringVar(root)
+var_midi_channel = StringVar(root)
+var_console = StringVar(root)
+reaper_output_dir = ""
+reaper_file_prefix = ""
 
 
 def about_dialog():
@@ -1127,6 +1131,7 @@ def test_ip_connection():
 
 
 if __name__ == '__main__':
+
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     logger_instance = logging.getLogger(__name__)
     context = Context(logger_instance, None, None,
@@ -1177,6 +1182,75 @@ if __name__ == '__main__':
     ip_frame.grid(row=2, column=0, sticky="W")
     midi_channel_frame = Frame(config_frame)
     midi_channel_frame.grid(row=3, column=0, sticky="W")
+
+    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
+
+    dropdown_console = OptionMenu(console_frame, var_console,
+                                  dliveConstants.console_drop_down_dlive,
+                                  dliveConstants.console_drop_down_avantis,
+                                  )
+
+    dropdown_console.pack(side=RIGHT)
+
+    var_console.set(read_persisted_console(context))
+
+    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
+        root.update()
+        root.focus()
+    elif var_console.get() == dliveConstants.console_drop_down_dlive:
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
+        root.update()
+        root.focus()
+    label_ip_address_text.pack(side=LEFT)
+
+    ip_field = Frame(ip_frame)
+    ip_byte0 = Entry(ip_field, width=3)
+    ip_byte1 = Entry(ip_field, width=3)
+    ip_byte2 = Entry(ip_field, width=3)
+    ip_byte3 = Entry(ip_field, width=3)
+
+    ip_byte0.grid(row=0, column=0)
+    Label(ip_field, text=".").grid(row=0, column=1)
+    ip_byte1.grid(row=0, column=2)
+    Label(ip_field, text=".").grid(row=0, column=3)
+    ip_byte2.grid(row=0, column=4)
+    Label(ip_field, text=".").grid(row=0, column=5)
+    ip_byte3.grid(row=0, column=6)
+    Label(ip_field, text="     ").grid(row=0, column=7)
+    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
+    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
+    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
+    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
+    ip_field.pack(side=RIGHT)
+
+    var_midi_channel.set(read_persisted_midi_port(context))  # default value
+
+    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
+
+    dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
+                                       dliveConstants.midi_channel_drop_down_string_1,
+                                       dliveConstants.midi_channel_drop_down_string_2,
+                                       dliveConstants.midi_channel_drop_down_string_3,
+                                       dliveConstants.midi_channel_drop_down_string_4,
+                                       dliveConstants.midi_channel_drop_down_string_5,
+                                       dliveConstants.midi_channel_drop_down_string_6,
+                                       dliveConstants.midi_channel_drop_down_string_7,
+                                       dliveConstants.midi_channel_drop_down_string_8,
+                                       dliveConstants.midi_channel_drop_down_string_9,
+                                       dliveConstants.midi_channel_drop_down_string_10,
+                                       dliveConstants.midi_channel_drop_down_string_11,
+                                       dliveConstants.midi_channel_drop_down_string_12)
+    dropdown_midi_channel.pack(side=RIGHT)
+
+    ip = read_persisted_ip(context)
+    ip_from_config_file = ip.split(".")
+
+    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
+    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
+    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
+    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
     config_frame.pack(side=TOP)
 
@@ -1237,19 +1311,6 @@ if __name__ == '__main__':
     combobox_master_track.grid(row=4, column=2, sticky="W")
     cb_trackslive_write.grid(row=2, column=0, sticky="W")
 
-    ip_field = Frame(ip_frame)
-    ip_byte0 = Entry(ip_field, width=3)
-    ip_byte1 = Entry(ip_field, width=3)
-    ip_byte2 = Entry(ip_field, width=3)
-    ip_byte3 = Entry(ip_field, width=3)
-    mixrack_ip = ""
-    midi_channel = None
-    var_midi_channel = StringVar(root)
-    var_console = StringVar(root)
-
-    reaper_output_dir = ""
-    reaper_file_prefix = ""
-
     parameter_lf = LabelFrame(tab1, text="Choose from given spreadsheet which column you want to write", )
 
     headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
@@ -1308,70 +1369,6 @@ if __name__ == '__main__':
     global_select_frame.pack(side=TOP)
 
     output_option_frame.pack(side=TOP, fill=X)
-
-    var_console.set(read_persisted_console(context))
-
-    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
-
-    dropdown_console = OptionMenu(console_frame, var_console,
-                                  dliveConstants.console_drop_down_dlive,
-                                  dliveConstants.console_drop_down_avantis,
-                                  )
-    dropdown_console.pack(side=RIGHT)
-
-    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
-    if var_console.get() == dliveConstants.console_drop_down_avantis:
-        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
-        disable_avantis_checkboxes()
-        root.update()
-        root.focus()
-    elif var_console.get() == dliveConstants.console_drop_down_dlive:
-        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
-        reactivate_avantis_checkboxes()
-        root.update()
-        root.focus()
-    label_ip_address_text.pack(side=LEFT)
-
-    ip_byte0.grid(row=0, column=0)
-    Label(ip_field, text=".").grid(row=0, column=1)
-    ip_byte1.grid(row=0, column=2)
-    Label(ip_field, text=".").grid(row=0, column=3)
-    ip_byte2.grid(row=0, column=4)
-    Label(ip_field, text=".").grid(row=0, column=5)
-    ip_byte3.grid(row=0, column=6)
-    Label(ip_field, text="     ").grid(row=0, column=7)
-    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
-    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
-    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
-    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
-    ip_field.pack(side=RIGHT)
-
-    var_midi_channel.set(read_persisted_midi_port(context))  # default value
-
-    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
-
-    dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
-                                       dliveConstants.midi_channel_drop_down_string_1,
-                                       dliveConstants.midi_channel_drop_down_string_2,
-                                       dliveConstants.midi_channel_drop_down_string_3,
-                                       dliveConstants.midi_channel_drop_down_string_4,
-                                       dliveConstants.midi_channel_drop_down_string_5,
-                                       dliveConstants.midi_channel_drop_down_string_6,
-                                       dliveConstants.midi_channel_drop_down_string_7,
-                                       dliveConstants.midi_channel_drop_down_string_8,
-                                       dliveConstants.midi_channel_drop_down_string_9,
-                                       dliveConstants.midi_channel_drop_down_string_10,
-                                       dliveConstants.midi_channel_drop_down_string_11,
-                                       dliveConstants.midi_channel_drop_down_string_12)
-    dropdown_midi_channel.pack(side=RIGHT)
-
-    ip = read_persisted_ip(context)
-    ip_from_config_file = ip.split(".")
-
-    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
-    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
-    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
-    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
     bottom_frame = Frame(tab1)
 

@@ -48,6 +48,9 @@ from parameters.sockets.Gain import gain_socket
 from parameters.sockets.Pad import pad_socket
 from parameters.sockets.Phantom import phantom_socket
 from parameters.channels.Mainmix import assign_mainmix_channel
+from persistence.Persistence import read_persisted_console, read_persisted_midi_port, read_persisted_ip
+from spreadsheet.Spreadsheet import create_channel_list_content, create_socket_list_content, create_groups_list_content, \
+    create_misc_content
 
 LOG_FILE = 'main.log'
 CONFIG_FILE = 'config.json'
@@ -166,159 +169,6 @@ def get_data_from_console():
             output = None
     else:
         showerror(message="Nothing to do, please select at least one output option.")
-
-
-def extract_data(list_entries, sheet_groups, type_name, name, color):
-    index = 0
-    for item in sheet_groups[type_name]:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups[name].__getitem__(index)),
-                             str(sheet_groups[color].__getitem__(index))
-                             )
-
-            list_entries.append(gse)
-            index = index + 1
-
-
-def create_channel_list_content(sheet_channels):
-    channel_list_entries = []
-    index = 0
-
-    for channel in sheet_channels['Channel']:
-
-        dca_array = []
-        for dca_number in range(1, 25):
-            dca_array.append(str(sheet_channels["DCA" + str(dca_number)].__getitem__(index)))
-
-        dca_config_tmp = DcaConfig(dca_array)
-
-        mg_array = []
-        for mg_number in range(1, 9):
-            mg_array.append(str(sheet_channels["Mute" + str(mg_number)].__getitem__(index)))
-
-        mg_config_tmp = MuteGroupConfig(mg_array)
-
-        cle = ChannelListEntry(int(channel),
-                               str(sheet_channels['Name'].__getitem__(index)),
-                               str(sheet_channels['Color'].__getitem__(index)),
-                               str(sheet_channels['HPF On'].__getitem__(index)),
-                               str(sheet_channels['HPF Value'].__getitem__(index)),
-                               str(sheet_channels['Fader Level'].__getitem__(index)),
-                               str(sheet_channels['Mute'].__getitem__(index)),
-                               str(sheet_channels['Recording'].__getitem__(index)),
-                               str(sheet_channels['Record Arm'].__getitem__(index)),
-                               dca_config_tmp,
-                               mg_config_tmp,
-                               str(sheet_channels['Main Mix'].__getitem__(index))
-                               )
-        channel_list_entries.append(cle)
-        index = index + 1
-    return channel_list_entries
-
-
-def create_misc_content(sheet_misc):
-    misc = Misc()
-    sheet_version = None
-    index = 0
-    for property_item in sheet_misc['Property']:
-        if str(property_item).strip() == "Version":
-            sheet_version = str(sheet_misc['Value'].__getitem__(index)).strip()
-
-    misc.set_version(sheet_version)
-    return misc
-
-
-def create_socket_list_content(sheet_sockets):
-    socket_list_entries = []
-    index = 0
-
-    for socket in sheet_sockets['Socket Number']:
-        ple = SocketListEntry(int(socket),
-                              str(sheet_sockets['Local Phantom'].__getitem__(index)),
-                              str(sheet_sockets['DX1 Phantom'].__getitem__(index)),
-                              str(sheet_sockets['DX3 Phantom'].__getitem__(index)),
-                              str(sheet_sockets['Local Pad'].__getitem__(index)),
-                              str(sheet_sockets['DX1 Pad'].__getitem__(index)),
-                              str(sheet_sockets['DX3 Pad'].__getitem__(index)),
-                              str(sheet_sockets['Slink Phantom'].__getitem__(index)),
-                              str(sheet_sockets['Slink Pad'].__getitem__(index)),
-                              str(sheet_sockets['Local Gain'].__getitem__(index)),
-                              str(sheet_sockets['DX1 Gain'].__getitem__(index)),
-                              str(sheet_sockets['DX3 Gain'].__getitem__(index)),
-                              str(sheet_sockets['Slink Gain'].__getitem__(index)),
-                              )
-
-        socket_list_entries.append(ple)
-        index = index + 1
-    return socket_list_entries
-
-
-def create_groups_list_content(sheet_groups):
-    dca_list_entries = []
-    extract_data(dca_list_entries, sheet_groups, 'DCA', 'DCA Name', 'DCA Color')
-
-    aux_mono_list_entries = []
-    extract_data(aux_mono_list_entries, sheet_groups, 'Mono Auxes', 'Aux Name', 'Aux Color')
-
-    aux_stereo_list_entries = []
-    extract_data(aux_stereo_list_entries, sheet_groups, 'Stereo Auxes', 'StAux Name', 'StAux Color')
-
-    grp_mono_list_entries = []
-    extract_data(grp_mono_list_entries, sheet_groups, 'Mono Group', 'Group Name', 'Group Color')
-
-    grp_stereo_list_entries = []
-    extract_data(grp_stereo_list_entries, sheet_groups, 'Stereo Group', 'StGroup Name', 'StGroup Color')
-
-    mtx_mono_list_entries = []
-    extract_data(mtx_mono_list_entries, sheet_groups, 'Mono Matrix', 'Matrix Name', 'Matrix Color')
-
-    mtx_stereo_list_entries = []
-    extract_data(mtx_stereo_list_entries, sheet_groups, 'Stereo Matrix', 'StMatrix Name', 'StMatrix Color')
-
-    fx_send_mono_list_entries = []
-    extract_data(fx_send_mono_list_entries, sheet_groups, 'Mono FX Send', 'FX Name', 'FX Color')
-
-    fx_send_stereo_list_entries = []
-    extract_data(fx_send_stereo_list_entries, sheet_groups, 'Stereo FX Send', 'StFX Name', 'StFX Color')
-
-    fx_return_list_entries = []
-    extract_data(fx_return_list_entries, sheet_groups, 'FX Return', 'FX Return Name', 'FX Return Color')
-
-    return GroupsListEntry(dca_list_entries,
-                           aux_mono_list_entries,
-                           aux_stereo_list_entries,
-                           grp_mono_list_entries,
-                           grp_stereo_list_entries,
-                           mtx_mono_list_entries,
-                           mtx_stereo_list_entries,
-                           fx_send_mono_list_entries,
-                           fx_send_stereo_list_entries,
-                           fx_return_list_entries)
-
-
-def create_channel_list_content_from_console(data_fin):
-    channel_list_entries = []
-    index = 0
-
-    for item in data_fin:
-        cle = ChannelListEntry(item['dliveChannel'],
-                               item['name'],
-                               item['color'],
-                               None,
-                               None,
-                               None,
-                               None,
-                               'yes',
-                               'yes',
-                               None,
-                               None,
-                               None)
-
-        channel_list_entries.append(cle)
-        index = index + 1
-
-    return channel_list_entries
 
 
 def handle_channels_parameter(message, context, channel_list_entries, action):
@@ -1007,79 +857,6 @@ def save_current_ui_settings():
         logging.info("Following data has be persisted: " + str(json_str) + " into file: " + str(file) + ".")
 
 
-def read_persisted_ip():
-    filename = CONFIG_FILE
-    if os.path.exists(filename):
-        logging.info("Try to read persisted ip from " + str(filename) + " file.")
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            try:
-                ip_ret = data['ip']
-                logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
-            except KeyError:
-                logging.error("No key: ip found, using default ip: " +
-                              dliveConstants.ip +
-                              " from dliveConstants instead.")
-                ip_ret = dliveConstants.ip
-    else:
-        logging.info("No config file found, using default ip: "
-                     + dliveConstants.ip +
-                     " from dliveConstants instead")
-        ip_ret = dliveConstants.ip
-
-    return ip_ret
-
-
-def read_persisted_console():
-    filename = CONFIG_FILE
-    if os.path.exists(filename):
-        logging.info("Try to read persisted console from " + str(filename) + " file.")
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            try:
-                console_ret = data['console']
-                logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
-            except KeyError:
-                logging.error("No key: console found, Using default console: " +
-                              dliveConstants.console_drop_down_default +
-                              " from dliveConstants instead.")
-
-                console_ret = dliveConstants.console_drop_down_default
-    else:
-        logging.info("No config file found, using default console: " +
-                     dliveConstants.console_drop_down_default +
-                     " from dliveConstants instead.")
-
-        console_ret = dliveConstants.console_drop_down_default
-
-    return console_ret
-
-
-def read_persisted_midi_port():
-    filename = CONFIG_FILE
-    if os.path.exists(filename):
-        logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            try:
-                midi_port_ret = data['midi-port']
-                logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
-            except KeyError:
-                logging.info("Use default midi-port: " +
-                             dliveConstants.midi_channel_drop_down_string_default +
-                             " from dliveConstants instead.")
-
-                midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
-    else:
-        logging.info("No config file found, using default midi-port: " +
-                     dliveConstants.midi_channel_drop_down_string_default +
-                     " from dliveConstants instead.")
-
-        midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
-
-    return midi_port_ret
-
-
 def reset_ip_field_to_default_ip():
     default_ip = dliveConstants.ip
     set_ip_fields(default_ip)
@@ -1355,7 +1132,7 @@ if __name__ == '__main__':
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     logger_instance = logging.getLogger(__name__)
     context = Context(logger_instance, None, None,
-                      dliveConstants.allow_network_communication)
+                      dliveConstants.allow_network_communication, CONFIG_FILE)
     app_data = AppData(None, None)
     context.set_app_data(app_data)
 
@@ -1534,7 +1311,7 @@ if __name__ == '__main__':
 
     output_option_frame.pack(side=TOP, fill=X)
 
-    var_console.set(read_persisted_console())
+    var_console.set(read_persisted_console(context))
 
     Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
 
@@ -1571,7 +1348,7 @@ if __name__ == '__main__':
     Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
     ip_field.pack(side=RIGHT)
 
-    var_midi_channel.set(read_persisted_midi_port())  # default value
+    var_midi_channel.set(read_persisted_midi_port(context))  # default value
 
     Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
 
@@ -1590,7 +1367,7 @@ if __name__ == '__main__':
                                        dliveConstants.midi_channel_drop_down_string_12)
     dropdown_midi_channel.pack(side=RIGHT)
 
-    ip = read_persisted_ip()
+    ip = read_persisted_ip(context)
     ip_from_config_file = ip.split(".")
 
     ip_byte0.insert(10, ip_from_config_file.__getitem__(0))

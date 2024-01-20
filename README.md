@@ -2,8 +2,8 @@
 ## Description
 Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
 Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
-dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet, 
-a DAW recording session for Reaper or Tracks Live can be generated. 
+dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet 
+or the current console settings a DAW recording session for Reaper or Tracks Live can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
@@ -32,7 +32,7 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
-* Generate DAW sessions from current console settings.
+* Generate DAW sessions from current console settings
 
 ## Software Liability Warning
 
@@ -264,6 +264,8 @@ Feature & Maintenance Release
 
 #### Improvements
 - Switched to tab based GUI
+- Handling of invalid IP-Addresses
+- Repository reorganized
 
 
 #### Technical Limitations

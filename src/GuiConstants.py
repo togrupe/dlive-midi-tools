@@ -46,3 +46,6 @@ TEXT_FX_SEND_STEREO_COLOR = "Stereo FX Send Color"
 
 TEXT_FX_RETURN_NAME = "FX Return Name"
 TEXT_FX_RETURN_COLOR = "FX Return Color"
+
+LABEL_IPADDRESS_AVANTIS = "IP-Address:"
+LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"

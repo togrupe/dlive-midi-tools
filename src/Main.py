@@ -1047,15 +1047,6 @@ class CheckboxGrid(Frame):
             var.set(state)
 
 
-root = Tk()
-ip_address_label = StringVar(root)
-current_action_label = StringVar(root)
-var_midi_channel = StringVar(root)
-var_console = StringVar(root)
-reaper_output_dir = ""
-reaper_file_prefix = ""
-
-
 def about_dialog():
     about = AboutDialog(root)
     about.resizable(False, False)
@@ -1130,6 +1121,14 @@ def test_ip_connection():
         showerror(message=action)
 
 
+root = Tk()
+ip_address_label = StringVar(root)
+current_action_label = StringVar(root)
+var_midi_channel = StringVar(root)
+var_console = StringVar(root)
+reaper_output_dir = ""
+reaper_file_prefix = ""
+
 if __name__ == '__main__':
 
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
@@ -1147,6 +1146,8 @@ if __name__ == '__main__':
     root.geometry('1300x800')
     root.resizable(False, False)
 
+    # ----------------- Menu Area ------------------
+
     menu_bar = Menu(root)
 
     # Create the file menu
@@ -1161,6 +1162,8 @@ if __name__ == '__main__':
     # Display the menu bar
     root.config(menu=menu_bar)
 
+    # ----------------- Tab Area ------------------
+
     tab_control = ttk.Notebook(root)
 
     # Tab 1 erstellen
@@ -1173,6 +1176,8 @@ if __name__ == '__main__':
 
     tab1_frame = LabelFrame(tab1, text='Spreadsheet to Console / DAW')
     tab2_frame = LabelFrame(tab2, text='Console to DAW')
+
+    # ----------------- Global Connection Settings ------------------
 
     config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)

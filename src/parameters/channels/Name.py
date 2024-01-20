@@ -90,5 +90,5 @@ def get_name_channel(context, data_color, start_channel, end_channel):
                     item['name'] = channel_name
                     break
 
-            time.sleep(.01)
+            time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
     return data_color

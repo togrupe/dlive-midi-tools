@@ -350,7 +350,7 @@ def handle_channels_parameter(message, context, channel_list_entries, action):
             assign_mainmix_channel(context, item)
 
 
-def handle_sockets_parameter(message, context, socket_list_entries, action):
+def handle_sockets_parameter(message, socket_list_entries, action):
     log = context.get_logger()
     console = context.get_app_data().get_console()
 
@@ -797,7 +797,7 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
                     reset_progress_bar()
                     exit(1)
             elif action.get_sheet_tab() == "sockets":
-                handle_sockets_parameter(action.get_message(), context, sheet.get_socket_model(),
+                handle_sockets_parameter(action.get_message(), sheet.get_socket_model(),
                                          action.get_action())
 
             elif action.get_sheet_tab() == "groups":

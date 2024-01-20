@@ -264,6 +264,8 @@ Feature & Maintenance Release
 
 #### Improvements
 - Switched to tab based GUI
+- Handling of invalid IP-Addresses
+- Repository reorganized
 
 
 #### Technical Limitations

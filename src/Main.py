@@ -908,6 +908,17 @@ def clear_all_checkboxes():
         var.set(False)
 
 
+def set_limit_console_to_daw_end_channel(param):
+    combobox_end.set(str(param))
+    root.update()
+
+
+def on_endchannel_selected(*args):
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(var_current_console_endChannel.get()) > 64:
+        showerror(message="Avantis supports up to 64 Channels")
+        set_limit_console_to_daw_end_channel(64)
+
+
 def on_console_selected(*args):
     context.get_app_data().set_console(var_console.get())
     print("The selected console is:", var_console.get())
@@ -920,11 +931,13 @@ def on_console_selected(*args):
                     '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
                     '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
+        set_limit_console_to_daw_end_channel(64)
         root.update()
 
     elif var_console.get() == dliveConstants.console_drop_down_dlive:
         label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
         reactivate_avantis_checkboxes()
+        set_limit_console_to_daw_end_channel(128)
         root.update()
 
 
@@ -1513,6 +1526,7 @@ if __name__ == '__main__':
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)
+    var_current_console_endChannel.trace("w", on_endchannel_selected)
 
     tab_control.pack(expand=1, fill='both', side=TOP)
 

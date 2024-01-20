@@ -26,13 +26,13 @@ def assign_mainmix(context, channel, mainmix_value):
 
 
 def assign_mainmix_channel(context, item):
-    logger = context.get_logger()
+    log = context.get_logger()
 
     channel = item.get_channel_console()
     mainmix_value = item.get_assign_mainmix()
 
     if mainmix_value == 'nan' or mainmix_value == SpreadsheetConstants.spreadsheet_bypass_sign or mainmix_value == SpreadsheetConstants.spreadsheet_bypass_string:
-        logger.info("Don´t care flag found, skipping channel")
+        log.info("Don´t care flag found, skipping channel")
         return
 
     if mainmix_value.lower() == "yes":

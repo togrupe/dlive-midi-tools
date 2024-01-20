@@ -1336,16 +1336,16 @@ def test_ip_connection():
 
 if __name__ == '__main__':
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-    context = Context(logger, None, None,
+    logger_instance = logging.getLogger(__name__)
+    context = Context(logger_instance, None, None,
                       dliveConstants.allow_network_communication)
     app_data = AppData(None, None)
     context.set_app_data(app_data)
 
     is_network_communication_allowed = context.get_network_connection_allowed()
 
-    logger = context.get_logger()
-    logger.info("dlive-midi-tool version: " + Toolinfo.version)
+    log = context.get_logger()
+    log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('1300x800')
     root.resizable(False, False)

@@ -15,7 +15,7 @@ from tkinter.messagebox import showerror
 
 
 def name_channel(context, item, midi_channel_offset, channel_offset, bus_type):
-    logger = context.get_logger()
+    log = context.get_logger()
     output = context.get_output()
     midi_channel = context.get_app_data().get_midi_channel()
     is_network_communication_allowed = context.get_network_connection_allowed()
@@ -23,14 +23,14 @@ def name_channel(context, item, midi_channel_offset, channel_offset, bus_type):
     # Trim name if length of name > dliveConstants.trim_after_x_charactors
     if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
         trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
-        logger.info(
+        log.info(
             "Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
                 trimmed_name))
     else:
         trimmed_name = str(item.get_name())
 
     if trimmed_name == SpreadsheetConstants.spreadsheet_bypass_sign or trimmed_name == SpreadsheetConstants.spreadsheet_bypass_string:
-        logger.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
+        log.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
         return
 
     if trimmed_name == 'nan':
@@ -46,7 +46,7 @@ def name_channel(context, item, midi_channel_offset, channel_offset, bus_type):
             if value > 127:
                 error_msg = "One of the characters in " + str(bus_type) + ": channel " + str(
                     item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü, é are not supported."
-                logger.error(error_msg)
+                log.error(error_msg)
                 showerror(message=error_msg)
                 output.close()
                 return 1

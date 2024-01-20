@@ -13,7 +13,7 @@ from spreadsheet import SpreadsheetConstants
 
 
 def color_channel(context, item, midi_channel_offset, channel_offset):
-    logger = context.get_logger()
+    log = context.get_logger()
     output = context.get_output()
     is_network_communication_allowed = context.get_network_connection_allowed()
     midi_channel = context.get_app_data().get_midi_channel()
@@ -21,7 +21,7 @@ def color_channel(context, item, midi_channel_offset, channel_offset):
     lower_color = item.get_color().lower()
 
     if lower_color == SpreadsheetConstants.spreadsheet_bypass_sign or lower_color == SpreadsheetConstants.spreadsheet_bypass_string:
-        logger.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
+        log.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
         return
     elif lower_color == SpreadsheetConstants.spreadsheet_color_blue:
         colour = dliveConstants.lcd_color_blue
@@ -40,10 +40,10 @@ def color_channel(context, item, midi_channel_offset, channel_offset):
     elif lower_color == SpreadsheetConstants.spreadsheet_color_white:
         colour = dliveConstants.lcd_color_white
     elif lower_color == 'nan':
-        logger.info("Empty cell found, treating as don´t care, skipping channel")
+        log.info("Empty cell found, treating as don´t care, skipping channel")
         return
     else:
-        logger.warning("Given color: " + lower_color + " is not supported, setting default color: black")
+        log.warning("Given color: " + lower_color + " is not supported, setting default color: black")
         colour = dliveConstants.lcd_color_black
 
     payload_array = [midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour,

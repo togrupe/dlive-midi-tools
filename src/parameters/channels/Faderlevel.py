@@ -15,7 +15,7 @@ from spreadsheet import SpreadsheetConstants
 
 def fader_level_channel(context, item):
     output = context.get_output()
-    logger = context.get_logger()
+    log = context.get_logger()
 
     lower_fader_level = str(item.get_fader_level())
 
@@ -42,17 +42,17 @@ def fader_level_channel(context, item):
     fader_level = switcher.get(lower_fader_level, -2)
 
     if fader_level == -1:
-        logger.info("Don´t care flag found, skipping faderlevel level for channel: " + str(item.get_channel()))
+        log.info("Don´t care flag found, skipping faderlevel level for channel: " + str(item.get_channel()))
         return
 
     if fader_level == -2:
         errormsg = "Invalid faderlevel level: " + lower_fader_level + " at channel: " + \
                    str(item.get_channel()) + ". Please use the dropdown values. Channel will be skipped"
-        logger.info(errormsg)
+        log.info(errormsg)
         showerror(message=errormsg)
         return
 
-    logger.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))
+    log.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))
 
     if context.get_network_connection_allowed():
         midi_channel = context.get_app_data().get_midi_channel()

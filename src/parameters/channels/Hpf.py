@@ -15,7 +15,7 @@ from spreadsheet import SpreadsheetConstants
 
 
 def hpf_on_channel(context, item):
-    logger = context.get_logger()
+    log = context.get_logger()
     output = context.get_output()
     midi_channel = context.get_app_data().get_midi_channel()
     is_network_communication_allowed = context.get_network_connection_allowed()
@@ -23,17 +23,17 @@ def hpf_on_channel(context, item):
     lower_hpf_on = str(item.get_hpf_on()).lower()
 
     if lower_hpf_on == SpreadsheetConstants.spreadsheet_bypass_sign or lower_hpf_on == SpreadsheetConstants.spreadsheet_bypass_string:
-        logger.info("Don´t care flag found, skipping channel")
+        log.info("Don´t care flag found, skipping channel")
         return
     elif lower_hpf_on == "yes":
         res = dliveConstants.hpf_on
     elif lower_hpf_on == "no":
         res = dliveConstants.hpf_off
     elif lower_hpf_on == 'nan':
-        logger.info("Empty cell found, treating as don´t care, skipping channel")
+        log.info("Empty cell found, treating as don´t care, skipping channel")
         return
     else:
-        logger.warning("Unexpected input value found")
+        log.warning("Unexpected input value found")
         return
 
     if is_network_communication_allowed:

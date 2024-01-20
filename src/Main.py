@@ -5,7 +5,7 @@
 # Author: Tobias Grupe
 #
 ####################################################
-import ipaddress
+
 import json
 import logging
 import os
@@ -25,6 +25,7 @@ import dliveConstants
 
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
+from helper.Networking import is_valid_ip_address
 from model.Action import Action
 from model.AppData import AppData
 from model.ChannelListEntry import ChannelListEntry
@@ -84,7 +85,15 @@ def get_data_from_console():
             return
 
         if is_network_communication_allowed:
-            context.set_output(connect_to_console(read_current_ui_ip_address()))
+            ip_address = read_current_ui_ip_address()
+            if not is_valid_ip_address(ip_address):
+                error_message = "Invalid IP-Address"
+                current_action_label["text"] = error_message
+                root.update()
+                showerror(message=error_message)
+                return
+
+            context.set_output(connect_to_console(ip_address))
             output = context.get_output()
             start_channel = int(var_current_console_startChannel.get()) - 1
             end_channel = int(var_current_console_endChannel.get())
@@ -781,8 +790,16 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
     log.info(action)
     current_action_label["text"] = action
 
+    current_ip = read_current_ui_ip_address()
+
     if is_network_communication_allowed & check_box_write_to_console:
-        context.set_output(connect_to_console(read_current_ui_ip_address()))
+        if not is_valid_ip_address(current_ip):
+            error_message = "Invalid IP-Address"
+            current_action_label["text"] = error_message
+            root.update()
+            showerror(message=error_message)
+            return
+        context.set_output(connect_to_console(current_ip))
     else:
         context.set_output(None)
     progress_open_or_close_connection()
@@ -867,14 +884,6 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
     progress_open_or_close_connection()
     progress_open_or_close_connection()
     root.update()
-
-
-def is_valid_ip_address(ip_address):
-    try:
-        ipaddress.IPv4Address(ip_address)
-        return True
-    except ipaddress.AddressValueError:
-        return False
 
 
 def increment_actions(actions):
@@ -1320,6 +1329,14 @@ def disconnect_from_console(output):
 def test_ip_connection():
     reset_current_action_label()
     test_ip = read_current_ui_ip_address()
+
+    if not is_valid_ip_address(test_ip):
+        error_message = "Invalid IP-Address"
+        current_action_label["text"] = error_message
+        root.update()
+        showerror(message=error_message)
+        return
+
     logging.info("Test connection to " + str(test_ip))
     try:
         ret = connect_to_console(test_ip, test=True)

@@ -15,19 +15,6 @@ from model.MuteGroupConfig import MuteGroupConfig
 from model.SocketListEntry import SocketListEntry
 
 
-def extract_data(list_entries, sheet_groups, type_name, name, color):
-    index = 0
-    for item in sheet_groups[type_name]:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups[name].__getitem__(index)),
-                             str(sheet_groups[color].__getitem__(index))
-                             )
-
-            list_entries.append(gse)
-            index = index + 1
-
-
 def create_channel_list_content(sheet_channels):
     channel_list_entries = []
     index = 0
@@ -99,6 +86,19 @@ def create_socket_list_content(sheet_sockets):
         socket_list_entries.append(ple)
         index = index + 1
     return socket_list_entries
+
+
+def extract_data(list_entries, sheet_groups, type_name, name, color):
+    index = 0
+    for item in sheet_groups[type_name]:
+        if str(item) != 'nan':
+            gse = GroupSetup(int(item),
+                             str(sheet_groups[name].__getitem__(index)),
+                             str(sheet_groups[color].__getitem__(index))
+                             )
+
+            list_entries.append(gse)
+            index = index + 1
 
 
 def create_groups_list_content(sheet_groups):

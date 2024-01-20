@@ -28,15 +28,8 @@ from gui.AboutDialog import AboutDialog
 from helper.Networking import is_valid_ip_address
 from model.Action import Action
 from model.AppData import AppData
-from model.ChannelListEntry import ChannelListEntry
 from model.Context import Context
-from model.DcaConfig import DcaConfig
-from model.GroupSetup import GroupSetup
-from model.GroupsListEntry import GroupsListEntry
-from model.Misc import Misc
-from model.MuteGroupConfig import MuteGroupConfig
 from model.Sheet import Sheet
-from model.SocketListEntry import SocketListEntry
 from parameters.channels.Color import color_channel, get_color_channel
 from parameters.channels.Dca import dca_channel
 from parameters.channels.Faderlevel import fader_level_channel

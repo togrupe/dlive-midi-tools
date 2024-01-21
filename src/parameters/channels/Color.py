@@ -104,6 +104,7 @@ def get_color_channel(context, start_channel, end_channel):
 
             color.append(thisdict)
 
-            time.sleep(.01)
+            time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+
 
     return color

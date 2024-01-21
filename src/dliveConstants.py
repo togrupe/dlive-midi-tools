@@ -134,6 +134,9 @@ DX1_SOCKET_COUNT_MAX = 32
 DX3_SOCKET_COUNT_MAX = 32
 SLINK_SOCKET_COUNT_MAX = 128
 
+DLIVE_MAX_CHANNELS = 128
+AVANTIS_MAX_CHANNELS = 64
+
 # Strings Midi Channel Selector
 midi_channel_drop_down_string_1 = "1 to 5"
 midi_channel_drop_down_string_2 = "2 to 6"

@@ -908,23 +908,52 @@ def clear_all_checkboxes():
         var.set(False)
 
 
+def set_limit_console_to_daw_end_channel(param):
+    combobox_end.set(str(param))
+    root.update()
+
+
+def set_limit_console_to_daw_start_channel(param):
+    combobox_start.set(str(param))
+    root.update()
+
+
+def on_endchannel_selected(*args):
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(
+            var_current_console_endChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS:
+        showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+        set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+
+def on_startchannel_selected(*args):
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(
+            var_current_console_startChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS:
+        showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+        set_limit_console_to_daw_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+
 def on_console_selected(*args):
     context.get_app_data().set_console(var_console.get())
     print("The selected console is:", var_console.get())
     if var_console.get() == dliveConstants.console_drop_down_avantis:
         label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
         root.update()
-        showinfo(
-            message='Info: "' + GuiConstants.TEXT_HPF_ON +
-                    '", "' + GuiConstants.TEXT_HPF_VALUE +
-                    '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
-                    '" are currently not supported by the API of Avantis!')
+
+        if tab_control.index(tab_control.select()) == 0: # = Spreadsheet to Console / DAW
+            showinfo(
+                message='Info: "' + GuiConstants.TEXT_HPF_ON +
+                        '", "' + GuiConstants.TEXT_HPF_VALUE +
+                        '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
+
+                '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
+        set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
         root.update()
 
     elif var_console.get() == dliveConstants.console_drop_down_dlive:
         label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
         reactivate_avantis_checkboxes()
+        set_limit_console_to_daw_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
         root.update()
 
 
@@ -1047,11 +1076,6 @@ class CheckboxGrid(Frame):
             var.set(state)
 
 
-root = Tk()
-ip_address_label = StringVar(root)
-current_action_label = StringVar(root)
-
-
 def about_dialog():
     about = AboutDialog(root)
     about.resizable(False, False)
@@ -1126,7 +1150,16 @@ def test_ip_connection():
         showerror(message=action)
 
 
+root = Tk()
+ip_address_label = StringVar(root)
+current_action_label = StringVar(root)
+var_midi_channel = StringVar(root)
+var_console = StringVar(root)
+reaper_output_dir = ""
+reaper_file_prefix = ""
+
 if __name__ == '__main__':
+
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     logger_instance = logging.getLogger(__name__)
     context = Context(logger_instance, None, None,
@@ -1142,6 +1175,8 @@ if __name__ == '__main__':
     root.geometry('1300x800')
     root.resizable(False, False)
 
+    # ----------------- Menu Area ------------------
+
     menu_bar = Menu(root)
 
     # Create the file menu
@@ -1156,6 +1191,8 @@ if __name__ == '__main__':
     # Display the menu bar
     root.config(menu=menu_bar)
 
+    # ----------------- Tab Area ------------------
+
     tab_control = ttk.Notebook(root)
 
     tab1 = ttk.Frame(tab_control)
@@ -1167,6 +1204,8 @@ if __name__ == '__main__':
     tab3 = ttk.Frame(tab_control)
     tab_control.add(tab3, text='Theatre')
 
+    # ----------------- Global Connection Settings ------------------
+
     config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)
     console_frame = Frame(config_frame)
@@ -1176,77 +1215,78 @@ if __name__ == '__main__':
     midi_channel_frame = Frame(config_frame)
     midi_channel_frame.grid(row=3, column=0, sticky="W")
 
-    config_frame.pack(side=TOP)
+    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
 
-    output_option_frame = LabelFrame(tab1, text="Output Options")
-    var_write_to_console = BooleanVar(value=True)
-    write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
-                                   var=var_write_to_console)
-    var_write_reaper = BooleanVar(value=False)
-    cb_reaper_write = Checkbutton(output_option_frame,
-                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
-                                  var=var_write_reaper, command=on_reaper_write_changed)
+    dropdown_console = OptionMenu(console_frame, var_console,
+                                  dliveConstants.console_drop_down_dlive,
+                                  dliveConstants.console_drop_down_avantis,
+                                  )
 
-    var_write_trackslive = BooleanVar(value=False)
-    cb_trackslive_write = Checkbutton(output_option_frame,
-                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
-                                      var=var_write_trackslive, command=on_reaper_write_changed)
+    dropdown_console.pack(side=RIGHT)
 
-    var_disable_track_numbering = BooleanVar(value=False)
-    cb_reaper_disable_numbering = Checkbutton(output_option_frame,
-                                              text="Disable Track Numbering",
-                                              var=var_disable_track_numbering)
+    var_console.set(read_persisted_console(context))
 
-    var_disable_track_coloring = BooleanVar(value=False)
-    cb_reaper_disable_track_coloring = Checkbutton(output_option_frame,
-                                                   text="Disable Track Coloring",
-                                                   var=var_disable_track_coloring)
-
-    label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
-
-    var_reaper_additional_prefix = BooleanVar(value=False)
-    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
-                                              text="Add Custom Track Prefix",
-                                              var=var_reaper_additional_prefix)
-
-    entry_additional_track_prefix = Entry(output_option_frame, width=20)
-
-    var_reaper_additional_master_tracks = BooleanVar(value=False)
-    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
-                                                     text="Add 2 Additional Master-Tracks",
-                                                     var=var_reaper_additional_master_tracks)
-
-    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
-    values.append("127-128")  # workaround
-    var_master_recording_patch = StringVar()
-    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
-    combobox_master_track.set("Select DAW Input")
-
-    disable_reaper_options_ui_elements()
-
-    write_to_console.grid(row=0, column=0, sticky="W")
-    cb_reaper_write.grid(row=1, column=0, sticky="W")
-    cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
-    cb_reaper_disable_track_coloring.grid(row=2, column=1, sticky="W")
-    cb_reaper_additional_prefix.grid(row=3, column=1, sticky="W")
-    entry_additional_track_prefix.grid(row=3, column=2, sticky="W")
-    label_track_prefix.grid(row=3, column=3, sticky="W")
-    cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
-    combobox_master_track.grid(row=4, column=2, sticky="W")
-    cb_trackslive_write.grid(row=2, column=0, sticky="W")
+    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
+        root.update()
+        root.focus()
+    elif var_console.get() == dliveConstants.console_drop_down_dlive:
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
+        root.update()
+        root.focus()
+    label_ip_address_text.pack(side=LEFT)
 
     ip_field = Frame(ip_frame)
     ip_byte0 = Entry(ip_field, width=3)
     ip_byte1 = Entry(ip_field, width=3)
     ip_byte2 = Entry(ip_field, width=3)
     ip_byte3 = Entry(ip_field, width=3)
-    mixrack_ip = ""
-    midi_channel = None
-    var_midi_channel = StringVar(root)
-    var_console = StringVar(root)
 
-    reaper_output_dir = ""
-    reaper_file_prefix = ""
+    ip_byte0.grid(row=0, column=0)
+    Label(ip_field, text=".").grid(row=0, column=1)
+    ip_byte1.grid(row=0, column=2)
+    Label(ip_field, text=".").grid(row=0, column=3)
+    ip_byte2.grid(row=0, column=4)
+    Label(ip_field, text=".").grid(row=0, column=5)
+    ip_byte3.grid(row=0, column=6)
+    Label(ip_field, text="     ").grid(row=0, column=7)
+    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
+    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
+    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
+    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
+    ip_field.pack(side=RIGHT)
+
+    var_midi_channel.set(read_persisted_midi_port(context))  # default value
+
+    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
+
+    dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
+                                       dliveConstants.midi_channel_drop_down_string_1,
+                                       dliveConstants.midi_channel_drop_down_string_2,
+                                       dliveConstants.midi_channel_drop_down_string_3,
+                                       dliveConstants.midi_channel_drop_down_string_4,
+                                       dliveConstants.midi_channel_drop_down_string_5,
+                                       dliveConstants.midi_channel_drop_down_string_6,
+                                       dliveConstants.midi_channel_drop_down_string_7,
+                                       dliveConstants.midi_channel_drop_down_string_8,
+                                       dliveConstants.midi_channel_drop_down_string_9,
+                                       dliveConstants.midi_channel_drop_down_string_10,
+                                       dliveConstants.midi_channel_drop_down_string_11,
+                                       dliveConstants.midi_channel_drop_down_string_12)
+    dropdown_midi_channel.pack(side=RIGHT)
+
+    ip = read_persisted_ip(context)
+    ip_from_config_file = ip.split(".")
+
+    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
+    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
+    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
+    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
+
+    config_frame.pack(side=TOP)
+
+    # ----------------- Spreadsheet to Console / DAW Area-------------------
 
     parameter_lf = LabelFrame(tab1, text="Choose from given spreadsheet which column you want to write", )
 
@@ -1305,71 +1345,64 @@ if __name__ == '__main__':
 
     global_select_frame.pack(side=TOP)
 
+    output_option_frame = LabelFrame(tab1, text="Output Options")
+    var_write_to_console = BooleanVar(value=True)
+    write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
+                                   var=var_write_to_console)
+    var_write_reaper = BooleanVar(value=False)
+    cb_reaper_write = Checkbutton(output_option_frame,
+                                  text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
+                                  var=var_write_reaper, command=on_reaper_write_changed)
+
+    var_write_trackslive = BooleanVar(value=False)
+    cb_trackslive_write = Checkbutton(output_option_frame,
+                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
+                                      var=var_write_trackslive, command=on_reaper_write_changed)
+
+    var_disable_track_numbering = BooleanVar(value=False)
+    cb_reaper_disable_numbering = Checkbutton(output_option_frame,
+                                              text="Disable Track Numbering",
+                                              var=var_disable_track_numbering)
+
+    var_disable_track_coloring = BooleanVar(value=False)
+    cb_reaper_disable_track_coloring = Checkbutton(output_option_frame,
+                                                   text="Disable Track Coloring",
+                                                   var=var_disable_track_coloring)
+
+    label_track_prefix = Label(output_option_frame, text="Example: Band_Date_City", width=30)
+
+    var_reaper_additional_prefix = BooleanVar(value=False)
+    cb_reaper_additional_prefix = Checkbutton(output_option_frame,
+                                              text="Add Custom Track Prefix",
+                                              var=var_reaper_additional_prefix)
+
+    entry_additional_track_prefix = Entry(output_option_frame, width=20)
+
+    var_reaper_additional_master_tracks = BooleanVar(value=False)
+    cb_reaper_additional_master_tracks = Checkbutton(output_option_frame,
+                                                     text="Add 2 Additional Master-Tracks",
+                                                     var=var_reaper_additional_master_tracks)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_master_recording_patch = StringVar()
+    combobox_master_track = Combobox(output_option_frame, textvariable=var_master_recording_patch, values=values)
+    combobox_master_track.set("Select DAW Input")
+
+    disable_reaper_options_ui_elements()
+
+    write_to_console.grid(row=0, column=0, sticky="W")
+    cb_reaper_write.grid(row=1, column=0, sticky="W")
+    cb_reaper_disable_numbering.grid(row=1, column=1, sticky="W")
+    cb_reaper_disable_track_coloring.grid(row=2, column=1, sticky="W")
+    cb_reaper_additional_prefix.grid(row=3, column=1, sticky="W")
+    entry_additional_track_prefix.grid(row=3, column=2, sticky="W")
+    label_track_prefix.grid(row=3, column=3, sticky="W")
+    cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
+    combobox_master_track.grid(row=4, column=2, sticky="W")
+    cb_trackslive_write.grid(row=2, column=0, sticky="W")
+
     output_option_frame.pack(side=TOP, fill=X)
-
-    var_console.set(read_persisted_console(context))
-
-    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
-
-    dropdown_console = OptionMenu(console_frame, var_console,
-                                  dliveConstants.console_drop_down_dlive,
-                                  dliveConstants.console_drop_down_avantis,
-                                  )
-    dropdown_console.pack(side=RIGHT)
-
-    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
-    if var_console.get() == dliveConstants.console_drop_down_avantis:
-        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
-        disable_avantis_checkboxes()
-        root.update()
-        root.focus()
-    elif var_console.get() == dliveConstants.console_drop_down_dlive:
-        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
-        reactivate_avantis_checkboxes()
-        root.update()
-        root.focus()
-    label_ip_address_text.pack(side=LEFT)
-
-    ip_byte0.grid(row=0, column=0)
-    Label(ip_field, text=".").grid(row=0, column=1)
-    ip_byte1.grid(row=0, column=2)
-    Label(ip_field, text=".").grid(row=0, column=3)
-    ip_byte2.grid(row=0, column=4)
-    Label(ip_field, text=".").grid(row=0, column=5)
-    ip_byte3.grid(row=0, column=6)
-    Label(ip_field, text="     ").grid(row=0, column=7)
-    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
-    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
-    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
-    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
-    ip_field.pack(side=RIGHT)
-
-    var_midi_channel.set(read_persisted_midi_port(context))  # default value
-
-    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
-
-    dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
-                                       dliveConstants.midi_channel_drop_down_string_1,
-                                       dliveConstants.midi_channel_drop_down_string_2,
-                                       dliveConstants.midi_channel_drop_down_string_3,
-                                       dliveConstants.midi_channel_drop_down_string_4,
-                                       dliveConstants.midi_channel_drop_down_string_5,
-                                       dliveConstants.midi_channel_drop_down_string_6,
-                                       dliveConstants.midi_channel_drop_down_string_7,
-                                       dliveConstants.midi_channel_drop_down_string_8,
-                                       dliveConstants.midi_channel_drop_down_string_9,
-                                       dliveConstants.midi_channel_drop_down_string_10,
-                                       dliveConstants.midi_channel_drop_down_string_11,
-                                       dliveConstants.midi_channel_drop_down_string_12)
-    dropdown_midi_channel.pack(side=RIGHT)
-
-    ip = read_persisted_ip(context)
-    ip_from_config_file = ip.split(".")
-
-    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
-    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
-    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
-    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
 
     bottom_frame = Frame(tab1)
 
@@ -1507,6 +1540,8 @@ if __name__ == '__main__':
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)
+    var_current_console_endChannel.trace("w", on_endchannel_selected)
+    var_current_console_startChannel.trace("w", on_startchannel_selected)
 
     tab_control.pack(expand=1, fill='both', side=TOP)
 

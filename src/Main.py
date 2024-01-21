@@ -938,11 +938,14 @@ def on_console_selected(*args):
     if var_console.get() == dliveConstants.console_drop_down_avantis:
         label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
         root.update()
-        showinfo(
-            message='Info: "' + GuiConstants.TEXT_HPF_ON +
-                    '", "' + GuiConstants.TEXT_HPF_VALUE +
-                    '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
-                    '" are currently not supported by the API of Avantis!')
+
+        if tab_control.index(tab_control.select()) == 0: # = Spreadsheet to Console / DAW
+            showinfo(
+                message='Info: "' + GuiConstants.TEXT_HPF_ON +
+                        '", "' + GuiConstants.TEXT_HPF_VALUE +
+                        '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
+
+                '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
         set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
         root.update()

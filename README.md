@@ -59,14 +59,14 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                                      | Download                                                                                      | Release Notes | MD5 Checksum                     |
-|---------|------------|-----------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
-| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) |                                  |                                                                                              |               |
-|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               |                                  |
-| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |                                                                                              |               |
-|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
-| v2.5.0  | 15.09.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)        | [Link](#v250) |                                  | 
-|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)      |               |                                  |
+| Version | Date       | OS                                      | Download                                                                                      | Release Notes | MD5 Checksum                      |
+|---------|------------|-----------------------------------------|-----------------------------------------------------------------------------------------------|---------------|-----------------------------------|
+| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) | 0067242c999b6b44570076fbaed86aa7  |                                                                                              |               |
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               | ba57e67e20ee83c249a773cd762ead98  |
+| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a  |                                                                                              |               |
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f  |
+| v2.5.0  | 15.09.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)        | [Link](#v250) |                                   | 
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)      |               |                                   |
 
 (*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.

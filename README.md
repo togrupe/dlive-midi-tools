@@ -1,6 +1,9 @@
 # dlive-midi-tools
 ## Description
-Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet, a DAW recording session for Reaper or Tracks Live can be generated. 
+Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
+Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
+dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet 
+or the current console settings a DAW recording session for Reaper or Tracks Live can be generated. 
 - Channel Name
 - Channel Color
 - Channel Mute
@@ -29,6 +32,7 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
+* Generate DAW session(s) from current console settings
 
 ## Software Liability Warning
 
@@ -55,17 +59,16 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                             | Download                                                                                         | Release Notes | MD5 Checksum                     |
-|---------|------------|--------------------------------|--------------------------------------------------------------------------------------------------|---------------|----------------------------------|
-| v2.6.0  | 15.12.2023 | MacOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)     | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |                                                                                              |               |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)         |               | 6e3d3adf822604d49708a434274c438f |
-| v2.5.0  | 15.09.2023 | MacOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)           | [Link](#v250) |                                  | 
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)         |               |                                  |
-| v2.4.1  | 01.08.2023 | MacOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos.zip)           | [Link](#v241) |                                  | 
-|         |            | MacOS (arm_64 - Apple Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-macos-m1.zip)        |               |                                  |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_4_1/dmt-v2_4_1-windows.zip)         |               |                                  |
+| Version | Date       | OS                                      | Download                                                                                      | Release Notes | MD5 Checksum                     |
+|---------|------------|-----------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
+| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) |                                  |                                                                                              |               |
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               |                                  |
+| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |                                                                                              |               |
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
+| v2.5.0  | 15.09.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)        | [Link](#v250) |                                  | 
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)      |               |                                  |
 
-(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2), Newer vesion of MacOS should have it installed by default. 
+(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.
 
 Older versions see [archive](doc/download-archive.md)
@@ -87,6 +90,8 @@ Empty lines in between are **not** supported. <br>
 
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write/save the sheets.
 Please make sure that you save your changes in the (*.xlsx or *.ods) format.
+
+> **_NOTE:_**  You can add additional columns, like 'mic stand', 'mic/di', 'subcore patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want you can also reorder the columns to your needs.
 
 ### Channel Overview
 ![Channels](doc/channels/excel_channels.png)
@@ -142,7 +147,7 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 
 ## Usage
 Prerequisites: 
-* Windows 10 / MacOS >= BigSur
+* Windows >= 10 / macOS >= BigSur
 * dLive Firmware: 1.9x
 * Avantis Firmware: 1.30
 * Microsoft Excel or LibreOffice Calc Spreadsheet
@@ -169,7 +174,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 
     `pip install pyinstaller`
 
-    B3.2 Create a onefile binary (works for Windows and MacOS)
+    B3.2 Create a onefile binary (works for Windows and macOS)
 
     `pyinstaller -y --onefile -w ./src/Main.py`
 
@@ -179,6 +184,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 ![Gui](doc/gui.png)
 
 __Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
+
 
 1. Select the console: `dLive` or `Avantis`
 
@@ -192,11 +198,18 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
+The tool has currently to modes:
+* Spreadsheet to Console / DAW (Continue with next Step)
+* Console to DAW (Continue with Step 10)
+
+Choose which mode you want to use:
+
+<img alt="tabs" src="doc/tabs.png" width="300"/>
+
 7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
    
    `Select All` selects all checkboxes.
    `Clear` removes all ticks.
-
 
 8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
@@ -217,7 +230,20 @@ __Recommendation__: Please back up your current show file, just to be on the saf
    
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
-10. If something goes wrong, please check the Python console or the `main.log`
+10. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
+
+<img alt="consoletodaw" src="doc/console-to-daw.png" width="600"/>
+
+Options:
+   * Choose `Start` and `End` channel to be used for DAW generation.
+   * Disable Track Numbering <br>
+   * Disable Track Coloring <br>
+   * An additional custom track prefix can also be added.<br>
+   * Add two additional mono busses to record your mixing sum.
+
+Click `Generate DAW session(s) from current console settings`
+
+11. If something goes wrong, please check the Python console or the `main.log`
 
 If you find any issues, please let me know. New ideas are welcome. 
 
@@ -225,9 +251,31 @@ Have fun!
 
 ## Feedback
 If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
-dmt@liveworks-vt.de
+dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-midi-tools/discussions)
 
 ## Release Notes
+### v2.7.0
+
+Feature & Maintenance Release
+
+#### New Features
+- Console to DAW Recording Session
+
+
+#### Improvements
+- Switched to tab based GUI
+- Handling of invalid IP-Addresses
+- Repository reorganized
+
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
+
 ### v2.6.0
 
 Feature & Maintenance Release

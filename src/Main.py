@@ -5,393 +5,170 @@
 # Author: Tobias Grupe
 #
 ####################################################
-import ipaddress
+
 import json
 import logging
 import os
-import re
 import socket
 import threading
-import time
+import pandas as pd
+from mido.sockets import connect
+
 from tkinter import filedialog, Button, Tk, Checkbutton, Frame, LEFT, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
 from tkinter.ttk import Combobox
 
-import mido
-import numpy
-import pandas as pd
-from mido.sockets import connect
-
 import GuiConstants
 import Toolinfo
 import dliveConstants
+
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
+from helper.Networking import is_valid_ip_address
 from model.Action import Action
-from model.ChannelListEntry import ChannelListEntry
-from model.DcaConfig import DcaConfig
-from model.GroupSetup import GroupSetup
-from model.GroupsListEntry import GroupsListEntry
-from model.Misc import Misc
-from model.MuteGroupConfig import MuteGroupConfig
+from model.AppData import AppData
+from model.Context import Context
 from model.Sheet import Sheet
-from model.SocketListEntry import SocketListEntry
-
-LABEL_IPADDRESS_AVANTIS = "IP-Address:"
-LABEL_IPADDRESS_DLIVE = "Mixrack IP-Address:"
-
-DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.01
-DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001
+from parameters.channels.Color import color_channel, get_color_channel
+from parameters.channels.Dca import dca_channel
+from parameters.channels.Faderlevel import fader_level_channel
+from parameters.channels.Hpf import hpf_on_channel, hpf_value_channel
+from parameters.channels.Mute import mute_on_channel
+from parameters.channels.Mutegroup import mg_channel
+from parameters.channels.Name import get_name_channel, name_channel
+from parameters.sockets.Gain import gain_socket
+from parameters.sockets.Pad import pad_socket
+from parameters.sockets.Phantom import phantom_socket
+from parameters.channels.Mainmix import assign_mainmix_channel
+from persistence.Persistence import read_persisted_console, read_persisted_midi_port, read_persisted_ip
+from spreadsheet.Spreadsheet import create_channel_list_content, create_socket_list_content, create_groups_list_content, \
+    create_misc_content, create_channel_list_content_from_console
 
 LOG_FILE = 'main.log'
 CONFIG_FILE = 'config.json'
 
-logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
 
-is_network_communication_allowed = dliveConstants.allow_network_communication
+def get_data_from_console():
+    log = context.get_logger()
 
+    app_data.set_midi_channel(determine_technical_midi_port(var_midi_channel.get()))
+    context.set_app_data(app_data)
 
-def convert_return_value_to_readable_color(in_message):
-    color = in_message[11]
-    color_ret = "black"
+    if var_console_to_daw_reaper.get() or var_console_to_daw_trackslive.get():
 
-    if color == dliveConstants.lcd_color_blue:
-        color_ret = "blue"
-    elif color == dliveConstants.lcd_color_ltblue:
-        color_ret = "light blue"
-    elif color == dliveConstants.lcd_color_red:
-        color_ret = "red"
-    elif color == dliveConstants.lcd_color_yellow:
-        color_ret = "yellow"
-    elif color == dliveConstants.lcd_color_green:
-        color_ret = "green"
-    elif color == dliveConstants.lcd_color_purple:
-        color_ret = "purple"
-    elif color == dliveConstants.lcd_color_black:
-        color_ret = "black"
-    elif color == dliveConstants.lcd_color_white:
-        color_ret = "white"
-    return color_ret
+        if var_console_to_daw_additional_master_tracks.get() and var_console_to_daw_master_recording_patch.get() == "Select DAW Input":
+            showerror(message="DAW Inputs for additional master tracks must to be chosen.")
+            return
 
+        reset_current_action_label()
+        reset_progress_bar()
+        progress_open_or_close_connection()
+        root.update()
+        actions = 2
 
-def get_color_channel(output):
-    # TODO: Not yet implemented fully
-    color = []
+        if var_console_to_daw_reaper.get():
+            actions = increment_actions(actions)
 
-    for channel in range(0, 127):
-        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_colour, channel]
+        if var_console_to_daw_trackslive.get():
+            actions = increment_actions(actions)
 
-        message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
+        current_action_label["text"] = "Choose a directory..."
+        root.update()
+        directory_path = filedialog.askdirectory(title="Please select a directory")
+
+        if directory_path.__len__() == 0:
+            return
+
         if is_network_communication_allowed:
-            color.append(output.send(message))
+            ip_address = read_current_ui_ip_address()
+            if not is_valid_ip_address(ip_address):
+                error_message = "Invalid IP-Address"
+                current_action_label["text"] = error_message
+                root.update()
+                showerror(message=error_message)
+                return
 
-            inport = mido.open_input()
-            in_message = inport.receive()
-
-            thisdict = {
-                "channel": channel,
-                "color": convert_return_value_to_readable_color(in_message)
-            }
-
-            color.append(thisdict)
-
-            print(in_message)
-            time.sleep(.1)
-    return color
-
-
-def get_name_channel(output):
-    # TODO: Not yet implemented fully
-    names = []
-
-    for channel in range(0, 127):
-        prefix = [root.midi_channel, dliveConstants.sysex_message_get_channel_name, channel]
-
-        message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + dliveConstants.sysexhdrend)
-        if is_network_communication_allowed:
-            names.append(output.send(message))
-            time.sleep(.1)
-
-
-def name_channel(output, item, midi_channel_offset, channel_offset, bus_type):
-    # Trim name if length of name > dliveConstants.trim_after_x_charactors
-    if len(str(item.get_name())) > dliveConstants.trim_after_x_charactors:
-        trimmed_name = str(item.get_name())[0:dliveConstants.trim_after_x_charactors]
-        logging.info(
-            "Channel name will be trimmed to 6 characters, before: " + str(item.get_name()) + " after: " + str(
-                trimmed_name))
-    else:
-        trimmed_name = str(item.get_name())
-
-    if trimmed_name == '-' or trimmed_name == 'byp':
-        logging.info("Don´t care flag found, skipping name for channel: " + str(item.get_channel()))
-        return
-
-    if trimmed_name == 'nan':
-        characters = [' ', ' ', ' ', ' ', ' ', ' ', '']
-    else:
-        characters = re.findall('.?', trimmed_name)
-
-    payload = []
-
-    for character in characters:
-        if len(str(character)) != 0:
-            value = ord(character)
-            if value > 127:
-                error_msg = "One of the characters in " + str(bus_type) + ": channel " + str(
-                    item.get_channel_console() + 1) + " is not supported. Characters like ä, ö, ü, é are not supported."
-                logging.error(error_msg)
+            context.set_output(connect_to_console(ip_address))
+            output = context.get_output()
+            start_channel = int(var_current_console_startChannel.get()) - 1
+            end_channel = int(var_current_console_endChannel.get())
+            if start_channel > end_channel:
+                error_msg = "Start Channel: " + str(start_channel + 1) + " is greater than End Channel: " + str(
+                    end_channel)
+                log.error(error_msg)
                 showerror(message=error_msg)
-                reset_current_action_label()
-                reset_progress_bar()
-                output.close()
-                exit(1)
-            else:
-                payload.append(value)
+                return
 
-    prefix = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_name,
-              channel_offset + item.get_channel_console()]
-    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + payload + dliveConstants.sysexhdrend)
-    if is_network_communication_allowed:
-        output.send(message)
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+            current_action_label["text"] = "Reading channel color from console"
+            progress(actions)
+            root.update()
+            data_color = get_color_channel(context, start_channel, end_channel)
 
+            current_action_label["text"] = "Reading channel name from console"
+            progress(actions)
+            root.update()
+            data_fin = get_name_channel(context, data_color, start_channel, end_channel)
 
-def color_channel(output, item, midi_channel_offset, channel_offset):
-    lower_color = item.get_color().lower()
+            sheet = Sheet()
 
-    if lower_color == "-" or lower_color == 'byp':
-        logging.info("Don´t care flag found, skipping channel color: " + str(item.get_channel()))
-        return
-    elif lower_color == "blue":
-        colour = dliveConstants.lcd_color_blue
-    elif lower_color == "red":
-        colour = dliveConstants.lcd_color_red
-    elif lower_color == "light blue":
-        colour = dliveConstants.lcd_color_ltblue
-    elif lower_color == 'purple':
-        colour = dliveConstants.lcd_color_purple
-    elif lower_color == 'green':
-        colour = dliveConstants.lcd_color_green
-    elif lower_color == 'yellow':
-        colour = dliveConstants.lcd_color_yellow
-    elif lower_color == 'black':
-        colour = dliveConstants.lcd_color_black
-    elif lower_color == 'white':
-        colour = dliveConstants.lcd_color_white
-    elif lower_color == 'nan':
-        logging.info("Empty cell found, treating as don´t care, skipping channel")
-        return
-    else:
-        logging.warning("Given color: " + lower_color + " is not supported, setting default color: black")
-        colour = dliveConstants.lcd_color_black
+            sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
 
-    payload_array = [root.midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour,
-                     channel_offset + item.get_channel_console(),
-                     colour]
+            try:
+                if var_console_to_daw_reaper.get():
+                    current_action_label["text"] = "Generating Reaper Session..."
+                    progress(actions)
+                    root.update()
+                    ReaperSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                        var_console_to_daw_disable_track_numbering_daw.get(),
+                                                        var_console_to_daw_reaper_additional_prefix.get(),
+                                                        entry_console_to_daw_additional_track_prefix.get(),
+                                                        var_console_to_daw_additional_master_tracks.get(),
+                                                        var_console_to_daw_master_recording_patch.get(),
+                                                        var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Reaper Recording Session Template created"
+                    current_action_label["text"] = text
+                    root.update()
+                    log.info(text)
 
-    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
-    if is_network_communication_allowed:
-        output.send(message)
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+                if var_console_to_daw_trackslive.get():
+                    current_action_label["text"] = "Generating Tracks Live Template..."
+                    progress(actions)
+                    root.update()
+                    TracksLiveSessionCreator.create_session(sheet, directory_path, "current-console",
+                                                            var_console_to_daw_disable_track_numbering_daw.get(),
+                                                            var_console_to_daw_reaper_additional_prefix.get(),
+                                                            entry_console_to_daw_additional_track_prefix.get(),
+                                                            var_console_to_daw_additional_master_tracks.get(),
+                                                            var_console_to_daw_master_recording_patch.get(),
+                                                            var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Tracks Live Recording Session Template created"
+                    current_action_label["text"] = text
+                    root.update()
+                    log.info(text)
 
+                disconnect_from_console(output)
+                progress_open_or_close_connection()
 
-def mute_on_channel(output, item):
-    midi_channel_tmp = root.midi_channel
+            except OSError:
+                error = "Some thing went wrong during store, please choose a folder where you have write rights."
+                log.error(error)
+                current_action_label["text"] = error
+                showerror(message=error)
+                return
 
-    lower_mute_on = item.get_mute().lower()
-    channel = item.get_channel_console()
-
-    if lower_mute_on == "-" or lower_mute_on == "byp":
-        logging.info("Don´t care flag found, skipping channel")
-        return
-    elif lower_mute_on == "yes":
-        message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_on)
-        message_off = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.note_off)
-    elif lower_mute_on == "no":
-        message_on = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.mute_off)
-        message_off = mido.Message('note_on', channel=midi_channel_tmp, note=channel, velocity=dliveConstants.note_off)
-    elif lower_mute_on == 'nan':
-        logging.info("Empty cell found, treating as don´t care, skipping channel")
-        return
-    else:
-        logging.warning("Unexpected input value found")
-        return
-
-    if is_network_communication_allowed:
-        output.send(message_on)
-        output.send(message_off)
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
-
-
-def phantom_socket(output, item, socket_type):
-    socket_tmp = item.get_socket_number()
-    socket_dlive_tmp = item.get_socket_number_dlive()
-
-    if socket_type == "local":
-        if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            lower_phantom = str(item.get_local_phantom()).lower()
-            socket = socket_dlive_tmp
-        elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            lower_phantom = str(item.get_local_phantom()).lower()
-            socket = socket_dlive_tmp
+            showinfo(message='Reading from console done, session(s) created!')
         else:
-            return
-
-    elif socket_type == "DX1":
-        if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
-            lower_phantom = str(item.get_dx1_phantom()).lower()
-            socket = socket_dlive_tmp + 64
-        else:
-            return
-
-    elif socket_type == "DX3":
-        if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
-            lower_phantom = str(item.get_dx3_phantom()).lower()
-            socket = socket_dlive_tmp + 96
-        else:
-            return
-
-    elif socket_type == "Slink":
-        if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
-            lower_phantom = str(item.get_slink_phantom()).lower()
-            socket = socket_dlive_tmp + 64
-        else:
-            return
-
-    if lower_phantom == "-" or lower_phantom == "byp":
-        logging.info("Don´t care flag found, skipping socket: " + str(socket))
-        return
-    elif lower_phantom == "yes":
-        res = dliveConstants.phantom_power_on
-    elif lower_phantom == "no":
-        res = dliveConstants.phantom_power_off
+            output = None
     else:
-        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
-        return
-
-    # TODO Currently required because value of socket cannot be higher than 127
-    if socket > 127:
-        return
-
-    payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_48V, socket,
-                     res]
-
-    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
-    if is_network_communication_allowed:
-        output.send(message)
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+        showerror(message="Nothing to do, please select at least one output option.")
 
 
-def hpf_on_channel(output, item):
-    lower_hpf_on = str(item.get_hpf_on()).lower()
-
-    if lower_hpf_on == "-" or lower_hpf_on == "byp":
-        logging.info("Don´t care flag found, skipping channel")
-        return
-    elif lower_hpf_on == "yes":
-        res = dliveConstants.hpf_on
-    elif lower_hpf_on == "no":
-        res = dliveConstants.hpf_off
-    elif lower_hpf_on == 'nan':
-        logging.info("Empty cell found, treating as don´t care, skipping channel")
-        return
-    else:
-        logging.warning("Unexpected input value found")
-        return
-
-    if is_network_communication_allowed:
-        output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_hpf_on))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=res))
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
-
-
-def calculate_vv(hpf_value):
-    return int(27.58 * numpy.log(float(hpf_value)) - 82.622)
-
-
-def clamp(value, lower_limit, upper_limit):
-    return max(lower_limit, min(value, upper_limit))
-
-
-def hpf_value_channel(output, item):
-    hpf_value = item.get_hpf_value()
-    if hpf_value == 'nan' or hpf_value == '-' or hpf_value == 'byp':
-        logging.info("Don´t care flag found, skipping channel")
-        return
-    if int(hpf_value) < dliveConstants.hpf_min_frequency or int(hpf_value) > dliveConstants.hpf_max_frequency:
-        showerror(message="Highpass filter value of CH: " + str(item.get_channel()) +
-                          " only allows values between " + str(dliveConstants.hpf_min_frequency) + " and "
-                          + str(dliveConstants.hpf_max_frequency) + " Hz. Given value: " + hpf_value +
-                          " has been clipped to the lower or upper limit.")
-
-    value_freq = calculate_vv(clamp(int(hpf_value), 20, 2000))
-
-    if is_network_communication_allowed:
-        output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_hpf_frequency))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=value_freq))
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
-
-
-def fader_level_channel(output, item):
-    lower_fader_level = str(item.get_fader_level())
-
-    if lower_fader_level == 'nan':
-        return
-
-    switcher = {
-        "10": dliveConstants.fader_level_plus10,
-        "5": dliveConstants.fader_level_plus5,
-        "0": dliveConstants.fader_level_zero,
-        "-5": dliveConstants.fader_level_minus5,
-        "-10": dliveConstants.fader_level_minus10,
-        "-15": dliveConstants.fader_level_minus15,
-        "-20": dliveConstants.fader_level_minus20,
-        "-25": dliveConstants.fader_level_minus25,
-        "-30": dliveConstants.fader_level_minus30,
-        "-35": dliveConstants.fader_level_minus35,
-        "-40": dliveConstants.fader_level_minus40,
-        "-45": dliveConstants.fader_level_minus45,
-        "-99": dliveConstants.fader_level_minus_inf,
-        "-": -1,
-        "byp": -1
-    }
-    fader_level = switcher.get(lower_fader_level, -2)
-
-    if fader_level == -1:
-        logging.info("Don´t care flag found, skipping fader level for channel: " + str(item.get_channel()))
-        return
-
-    if fader_level == -2:
-        errormsg = "Invalid fader level: " + lower_fader_level + " at channel: " + \
-                   str(item.get_channel()) + ". Please use the dropdown values. Channel will be skipped"
-        logging.info(errormsg)
-        showerror(message=errormsg)
-        return
-
-    logging.info("Set Fader to: " + str(lower_fader_level) + " at Channel: " + str(item.get_channel()))
-
-    if is_network_communication_allowed:
-        output.send(
-            mido.Message('control_change', channel=root.midi_channel, control=0x63, value=item.get_channel_console()))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_fader_level))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=int(fader_level)))
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
-
-
-def handle_channels_parameter(message, output, channel_list_entries, action):
+def handle_channels_parameter(message, context, channel_list_entries, action):
     logging.info(message)
     current_action_label["text"] = message
 
-    if var_console.get() == dliveConstants.console_drop_down_avantis:
+    if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
         max_count_dsp_channels = 64
     else:
         max_count_dsp_channels = 128
@@ -403,381 +180,172 @@ def handle_channels_parameter(message, output, channel_list_entries, action):
             continue
         logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
         if action == "name":
-            name_channel(output, item, dliveConstants.midi_channel_offset_channels,
-                         dliveConstants.channel_offset_channels, "Input Channels")
+            if name_channel(context, item, dliveConstants.midi_channel_offset_channels,
+                            dliveConstants.channel_offset_channels, "Input Channels") == 1:
+                return 1
         elif action == "color":
-            color_channel(output, item, dliveConstants.midi_channel_offset_channels,
+            color_channel(context, item, dliveConstants.midi_channel_offset_channels,
                           dliveConstants.channel_offset_channels)
         elif action == "mute":
-            mute_on_channel(output, item)
+            mute_on_channel(context, item)
         elif action == "fader_level":
-            fader_level_channel(output, item)
+            fader_level_channel(context, item)
         elif action == "hpf_on":
-            hpf_on_channel(output, item)
+            hpf_on_channel(context, item)
         elif action == "hpf_value":
-            hpf_value_channel(output, item)
+            hpf_value_channel(context, item)
         elif action == "dca":
-            dca_channel(output, item)
+            dca_channel(context, item)
         elif action == "mute_group":
-            mg_channel(output, item)
+            mg_channel(context, item)
         elif action == "assign_main_mix":
-            assign_mainmix_channel(output, item)
+            assign_mainmix_channel(context, item)
 
 
-def pad_socket(output, item, socket_type):
-    socket_tmp = item.get_socket_number()
-    socket_dlive_tmp = item.get_socket_number_dlive()
+def handle_sockets_parameter(message, socket_list_entries, action):
+    log = context.get_logger()
+    console = context.get_app_data().get_console()
 
-    if socket_type == "local":
-        if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            lower_pad = str(item.get_local_pad()).lower()
-            socket = socket_dlive_tmp
-        elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            lower_pad = str(item.get_local_pad()).lower()
-            socket = socket_dlive_tmp
-        else:
-            return
-
-    elif socket_type == "DX1":
-        if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
-            lower_pad = str(item.get_dx1_pad()).lower()
-            socket = socket_dlive_tmp + 64
-        else:
-            return
-
-    elif socket_type == "DX3":
-        if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
-            lower_pad = str(item.get_dx3_pad()).lower()
-            socket = socket_dlive_tmp + 96
-        else:
-            return
-
-    elif socket_type == "Slink":
-        if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
-            lower_pad = str(item.get_slink_pad()).lower()
-            socket = socket_dlive_tmp + 64
-        else:
-            return
-
-    if lower_pad == "-":
-        logging.info("Don´t care flag found, skipping socket: " + str(socket))
-        return
-    elif lower_pad == "yes":
-        res = dliveConstants.pad_on
-    elif lower_pad == "no":
-        res = dliveConstants.pad_off
-    elif lower_pad == 'nan':
-        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
-        return
-    else:
-        logging.warning("unexpected input value found")
-        return
-
-    # TODO Currently required because value of socket cannot be higher than 127
-    if socket > 127:
-        return
-
-    payload_array = [root.midi_channel, dliveConstants.sysex_message_set_socket_preamp_pad, socket, res]
-
-    message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + payload_array + dliveConstants.sysexhdrend)
-    if is_network_communication_allowed:
-        output.send(message)
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
-
-
-def gain_socket(output, item, socket_type):
-    socket_tmp = item.get_socket_number()
-    socket_dlive_tmp = item.get_socket_number_dlive()
-
-    if socket_type == "local":
-        if socket_tmp <= dliveConstants.LOCAL_DLIVE_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_dlive:
-            gain_sheet_lower = str(item.get_local_gain())
-            socket = socket_dlive_tmp
-        elif socket_tmp <= dliveConstants.LOCAL_AVANTIS_SOCKET_COUNT_MAX and root.console == dliveConstants.console_drop_down_avantis:
-            gain_sheet_lower = str(item.get_local_gain())
-            socket = socket_dlive_tmp
-        else:
-            return
-
-    elif socket_type == "DX1":
-        if socket_tmp <= dliveConstants.DX1_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(item.get_dx1_gain())
-            socket = socket_dlive_tmp + 64
-        else:
-            return
-
-    elif socket_type == "DX3":
-        if socket_tmp <= dliveConstants.DX3_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(item.get_dx3_gain())
-            socket = socket_dlive_tmp + 96
-        else:
-            return
-
-    elif socket_type == "Slink":
-        if socket_tmp <= dliveConstants.SLINK_SOCKET_COUNT_MAX:
-            gain_sheet_lower = str(item.get_slink_gain())
-            socket = socket_dlive_tmp + 64
-        else:
-            return
-
-    # TODO Currently required because value of socket cannot be higher than 127
-    if socket > 127:
-        return
-
-    if gain_sheet_lower == 'nan' or gain_sheet_lower == 'byp':
-        logging.info("empty cell found, treating as don´t care, skipping socket: " + str(socket))
-        return
-
-    switcher = {
-        "60": dliveConstants.gain_level_plus60,
-        "55": dliveConstants.gain_level_plus55,
-        "50": dliveConstants.gain_level_plus50,
-        "45": dliveConstants.gain_level_plus45,
-        "40": dliveConstants.gain_level_plus40,
-        "35": dliveConstants.gain_level_plus35,
-        "30": dliveConstants.gain_level_plus30,
-        "25": dliveConstants.gain_level_plus25,
-        "20": dliveConstants.gain_level_plus20,
-        "15": dliveConstants.gain_level_plus15,
-        "10": dliveConstants.gain_level_plus10,
-        "5": dliveConstants.gain_level_plus5,
-        "-": -1
-    }
-    gain_level = switcher.get(gain_sheet_lower, "Invalid gain level")
-
-    if gain_level == -1:
-        logging.info("Don´t care flag found, skipping socket: " + str(socket))
-        return
-
-    if is_network_communication_allowed:
-        logging.info("Set Gain Level " + str(gain_sheet_lower) + "dB/" + str(hex(gain_level)) + " to socket: " + str(
-            socket_type) + ":" + str(socket))
-
-        byte_1 = gain_level << 8
-        byte_2 = socket << 1
-        byte_all = byte_1 | byte_2
-        byte_out = byte_all >> 1
-        byte_out = byte_out - 8192
-
-        output.send(mido.Message('pitchwheel', channel=root.midi_channel, pitch=byte_out))
-        time.sleep(DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
-
-
-def handle_sockets_parameter(message, output, socket_list_entries, action):
-    logging.info(message)
+    log.info(message)
     current_action_label["text"] = message
 
     for item in socket_list_entries:
-        logging.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
+        log.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
         if action == "phantom":
-            if root.console == dliveConstants.console_drop_down_dlive:
-                phantom_socket(output, item, "local")
-                phantom_socket(output, item, "DX1")
-                phantom_socket(output, item, "DX3")
-            elif root.console == dliveConstants.console_drop_down_avantis:
-                phantom_socket(output, item, "local")
-                phantom_socket(output, item, "Slink")
+            if console == dliveConstants.console_drop_down_dlive:
+                phantom_socket(context, item, "local")
+                phantom_socket(context, item, "DX1")
+                phantom_socket(context, item, "DX3")
+            elif console == dliveConstants.console_drop_down_avantis:
+                phantom_socket(context, item, "local")
+                phantom_socket(context, item, "Slink")
         elif action == "pad":
-            if root.console == dliveConstants.console_drop_down_dlive:
-                pad_socket(output, item, "local")
-                pad_socket(output, item, "DX1")
-                pad_socket(output, item, "DX3")
-            elif root.console == dliveConstants.console_drop_down_avantis:
-                pad_socket(output, item, "local")
-                pad_socket(output, item, "Slink")
+            if console == dliveConstants.console_drop_down_dlive:
+                pad_socket(context, item, "local")
+                pad_socket(context, item, "DX1")
+                pad_socket(context, item, "DX3")
+            elif console == dliveConstants.console_drop_down_avantis:
+                pad_socket(context, item, "local")
+                pad_socket(context, item, "Slink")
         elif action == "gain":
-            if root.console == dliveConstants.console_drop_down_dlive:
-                gain_socket(output, item, "local")
-                gain_socket(output, item, "DX1")
-                gain_socket(output, item, "DX3")
-            elif root.console == dliveConstants.console_drop_down_avantis:
-                gain_socket(output, item, "local")
-                gain_socket(output, item, "Slink")
+            if console == dliveConstants.console_drop_down_dlive:
+                gain_socket(context, item, "local")
+                gain_socket(context, item, "DX1")
+                gain_socket(context, item, "DX3")
+            elif console == dliveConstants.console_drop_down_avantis:
+                gain_socket(context, item, "local")
+                gain_socket(context, item, "Slink")
 
 
-def assign_dca(output, channel, dca_value):
-    if is_network_communication_allowed:
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_dca_assign))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=dca_value))
-        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
-
-
-def assign_mainmix(output, channel, mainmix_value):
-    if is_network_communication_allowed:
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_mainmix_assign))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mainmix_value))
-        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
-
-
-def dca_channel(output, item):
-    channel = item.get_channel_console()
-
-    for dca_index in range(0, 24):
-
-        if root.console == dliveConstants.console_drop_down_avantis and dca_index > 15:
-            return
-
-        dca_config = item.get_dca_config()
-        dca_array = dca_config.get_dca_array()
-
-        dca_array_item_lower = dca_array.__getitem__(dca_index).lower()
-
-        if dca_array_item_lower == '-' or dca_array_item_lower == 'byp':
-            continue
-        elif dca_array.__getitem__(dca_index).lower() == "x":
-            assign_dca(output, channel, dliveConstants.dca_on_base_address + dca_index)
-        else:
-            assign_dca(output, channel, dliveConstants.dca_off_base_address + dca_index)
-
-
-def assign_mainmix_channel(output, item):
-    channel = item.get_channel_console()
-    mainmix_value = item.get_assign_mainmix()
-
-    if mainmix_value == 'nan' or mainmix_value == '-' or mainmix_value == 'byp':
-        logging.info("Don´t care flag found, skipping channel")
-        return
-
-    if mainmix_value.lower() == "yes":
-        assign_mainmix(output, channel, dliveConstants.mainmix_on)
-    else:
-        assign_mainmix(output, channel, dliveConstants.mainmix_off)
-
-
-def assign_mg(output, channel, mg_value):
-    if is_network_communication_allowed:
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x63, value=channel))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x62,
-                                 value=dliveConstants.nrpn_parameter_id_mg_assign))
-        output.send(mido.Message('control_change', channel=root.midi_channel, control=0x6, value=mg_value))
-        time.sleep(DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND)
-
-
-def mg_channel(output, item):
-    channel = item.get_channel_console()
-
-    for mg_index in range(0, 8):
-
-        mg_config = item.get_mg_config()
-        mg_array = mg_config.get_mg_array()
-
-        mg_array_item_lower = mg_array.__getitem__(mg_index).lower()
-        if mg_array_item_lower == '-' or mg_array_item_lower == 'byp':
-            continue
-        elif mg_array_item_lower == "x":
-            assign_mg(output, channel, dliveConstants.mg_on_base_address + mg_index)
-        else:
-            assign_mg(output, channel, dliveConstants.mg_off_base_address + mg_index)
-
-
-def is_valid_ip_address(ip_address):
-    try:
-        ipaddress.IPv4Address(ip_address)
-        return True
-    except ipaddress.AddressValueError:
-        return False
-
-
-def handle_groups_parameter(message, output, groups_model, action, bus_type):
+def handle_groups_parameter(message, context, groups_model, action, bus_type):
     logging.info(message)
     current_action_label["text"] = message
 
     if bus_type == "dca":
         for item in groups_model.get_dca_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca,
-                             bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_dca,
+                                dliveConstants.channel_offset_dca, bus_type) == 1:
+                    return 1
+
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
+                color_channel(context, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
 
     if bus_type == "aux_mono":
         for item in groups_model.get_auxes_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
-                             dliveConstants.channel_offset_auxes_mono, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_auxes,
+                                dliveConstants.channel_offset_auxes_mono, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                color_channel(context, item, dliveConstants.midi_channel_offset_auxes,
                               dliveConstants.channel_offset_auxes_mono)
 
     if bus_type == "aux_stereo":
         for item in groups_model.get_auxes_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_auxes,
-                             dliveConstants.channel_offset_auxes_stereo, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_auxes,
+                                dliveConstants.channel_offset_auxes_stereo, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_auxes,
+                color_channel(context, item, dliveConstants.midi_channel_offset_auxes,
                               dliveConstants.channel_offset_auxes_stereo)
 
     if bus_type == "group_mono":
         for item in groups_model.get_group_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_groups,
-                             dliveConstants.channel_offset_groups_mono, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_groups,
+                                dliveConstants.channel_offset_groups_mono, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                color_channel(context, item, dliveConstants.midi_channel_offset_groups,
                               dliveConstants.channel_offset_groups_mono)
 
     if bus_type == "group_stereo":
         for item in groups_model.get_group_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_groups,
-                             dliveConstants.channel_offset_groups_stereo, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_groups,
+                                dliveConstants.channel_offset_groups_stereo, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_groups,
+                color_channel(context, item, dliveConstants.midi_channel_offset_groups,
                               dliveConstants.channel_offset_groups_stereo)
 
     if bus_type == "matrix_mono":
         for item in groups_model.get_matrix_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
-                             dliveConstants.channel_offset_matrices_mono, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_matrices,
+                                dliveConstants.channel_offset_matrices_mono, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                color_channel(context, item, dliveConstants.midi_channel_offset_matrices,
                               dliveConstants.channel_offset_matrices_mono)
 
     if bus_type == "matrix_stereo":
         for item in groups_model.get_matrix_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_matrices,
-                             dliveConstants.channel_offset_matrices_stereo, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_matrices,
+                                dliveConstants.channel_offset_matrices_stereo, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_matrices,
+                color_channel(context, item, dliveConstants.midi_channel_offset_matrices,
                               dliveConstants.channel_offset_matrices_stereo)
 
     if bus_type == "fx_send_mono":
         for item in groups_model.get_fx_send_mono_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
-                             dliveConstants.channel_offset_fx_send_mono, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_fx_send_mono,
+                                dliveConstants.channel_offset_fx_send_mono, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_mono,
+                color_channel(context, item, dliveConstants.midi_channel_offset_fx_send_mono,
                               dliveConstants.channel_offset_fx_send_mono)
 
     if bus_type == "fx_send_stereo":
         for item in groups_model.get_fx_send_stereo_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
-                             dliveConstants.channel_offset_fx_send_stereo, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_fx_send_stereo,
+                                dliveConstants.channel_offset_fx_send_stereo, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_fx_send_stereo,
+                color_channel(context, item, dliveConstants.midi_channel_offset_fx_send_stereo,
                               dliveConstants.channel_offset_fx_send_stereo)
 
     if bus_type == "fx_return":
         for item in groups_model.get_fx_return_config():
             if action == "name":
-                name_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
-                             dliveConstants.channel_offset_fx_return, bus_type)
+                if name_channel(context, item, dliveConstants.midi_channel_offset_fx_return,
+                                dliveConstants.channel_offset_fx_return, bus_type) == 1:
+                    return 1
             elif action == "color":
-                color_channel(output, item, dliveConstants.midi_channel_offset_fx_return,
+                color_channel(context, item, dliveConstants.midi_channel_offset_fx_return,
                               dliveConstants.channel_offset_fx_return)
 
 
-def read_document(filename, check_box_reaper, check_box_trackslive, check_box_write_to_console):
-    logging.info('The following file will be read : ' + str(filename))
+def read_document(context, filename, check_box_reaper, check_box_trackslive, check_box_write_to_console):
+    log = context.get_logger()
+
+    log.info('The following file will be read : ' + str(filename))
 
     sheet = Sheet()
 
@@ -792,7 +360,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
             read_version) + " is not compatible. Please use the latest spread " \
                             "sheet (Version " + latest_spreadsheet_version + \
                     "). You can see the version in the spreadsheet tab \"Misc\""
-        logging.error(error_msg)
+        log.error(error_msg)
         showerror(message=error_msg)
         return root.quit()
 
@@ -800,8 +368,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
     sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets", dtype=str)))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
-    root.midi_channel = determine_technical_midi_port(var_midi_channel.get())
-    root.console = determine_console_id(var_console.get())
+    app_data.set_midi_channel(determine_technical_midi_port(var_midi_channel.get()))
 
     actions = 0
 
@@ -809,6 +376,8 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
         cb_write_to_console = True
     else:
         cb_write_to_console = False
+
+    context.get_app_data().set_console(var_console.get())
 
     if var_console.get() == dliveConstants.console_drop_down_avantis:
         disable_avantis_checkboxes()
@@ -818,7 +387,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
 
     if cb_write_to_console:
         for var in grid.vars:
-            logging.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
+            log.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
 
             # Name
             if var._name == GuiConstants.TEXT_NAME and var.get() is True:
@@ -1061,36 +630,49 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
         return
 
     action = "Start Processing..."
-    logging.info(action)
+    log.info(action)
     current_action_label["text"] = action
 
+    current_ip = read_current_ui_ip_address()
+
     if is_network_communication_allowed & check_box_write_to_console:
-        output = connect_to_console(read_current_ui_ip_address())
+        if not is_valid_ip_address(current_ip):
+            error_message = "Invalid IP-Address"
+            current_action_label["text"] = error_message
+            root.update()
+            showerror(message=error_message)
+            return
+        context.set_output(connect_to_console(current_ip))
     else:
-        output = None
+        context.set_output(None)
     progress_open_or_close_connection()
     root.update()
 
     if cb_write_to_console:
         for action in action_list:
             if action.get_sheet_tab() == "channels":
-                handle_channels_parameter(action.get_message(), output, sheet.get_channel_model(),
-                                          action.get_action())
-
+                if handle_channels_parameter(action.get_message(), context, sheet.get_channel_model(),
+                                             action.get_action()) == 1:
+                    reset_current_action_label()
+                    reset_progress_bar()
+                    exit(1)
             elif action.get_sheet_tab() == "sockets":
-                handle_sockets_parameter(action.get_message(), output, sheet.get_socket_model(),
+                handle_sockets_parameter(action.get_message(), sheet.get_socket_model(),
                                          action.get_action())
 
             elif action.get_sheet_tab() == "groups":
-                handle_groups_parameter(action.get_message(), output, sheet.get_group_model(),
-                                        action.get_action(), action.get_bus_type())
+                if handle_groups_parameter(action.get_message(), context, sheet.get_group_model(),
+                                           action.get_action(), action.get_bus_type()) == 1:
+                    reset_current_action_label()
+                    reset_progress_bar()
+                    exit(1)
 
             progress(actions)
             root.update()
 
     if cb_reaper:
         action = "Creating Reaper Recording Session Template file..."
-        logging.info(action)
+        log.info(action)
         current_action_label["text"] = action
 
         if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
@@ -1104,14 +686,14 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
                                             entry_additional_track_prefix.get(),
                                             var_reaper_additional_master_tracks.get(),
                                             var_master_recording_patch.get(), var_disable_track_coloring.get())
-        logging.info("Reaper Recording Session Template created")
+        log.info("Reaper Recording Session Template created")
 
         progress(actions)
         root.update()
 
     if cb_trackslive:
         action = "Creating Tracks Live Recording Session Template file..."
-        logging.info(action)
+        log.info(action)
         current_action_label["text"] = action
 
         if var_reaper_additional_master_tracks.get() and var_master_recording_patch.get() == "Select DAW Input":
@@ -1125,7 +707,7 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
                                                 entry_additional_track_prefix.get(),
                                                 var_reaper_additional_master_tracks.get(),
                                                 var_master_recording_patch.get(), var_disable_track_coloring.get())
-        logging.info("Tracks Live Recording Session Template created")
+        log.info("Tracks Live Recording Session Template created")
 
         progress(actions)
         root.update()
@@ -1135,10 +717,11 @@ def read_document(filename, check_box_reaper, check_box_trackslive, check_box_wr
         root.update()
 
     action = "Processing done"
-    logging.info(action)
+    log.info(action)
     current_action_label["text"] = ""
 
-    if is_network_communication_allowed & check_box_write_to_console:
+    if context.get_network_connection_allowed() & check_box_write_to_console:
+        output = context.get_output()
         if output is not None:
             output.close()
     progress_open_or_close_connection()
@@ -1153,135 +736,6 @@ def increment_actions(actions):
 
 def read_current_ui_ip_address():
     return ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-
-
-def create_channel_list_content(sheet_channels):
-    channel_list_entries = []
-    index = 0
-
-    for channel in sheet_channels['Channel']:
-
-        dca_array = []
-        for dca_number in range(1, 25):
-            dca_array.append(str(sheet_channels["DCA" + str(dca_number)].__getitem__(index)))
-
-        dca_config_tmp = DcaConfig(dca_array)
-
-        mg_array = []
-        for mg_number in range(1, 9):
-            mg_array.append(str(sheet_channels["Mute" + str(mg_number)].__getitem__(index)))
-
-        mg_config_tmp = MuteGroupConfig(mg_array)
-
-        cle = ChannelListEntry(int(channel),
-                               str(sheet_channels['Name'].__getitem__(index)),
-                               str(sheet_channels['Color'].__getitem__(index)),
-                               str(sheet_channels['HPF On'].__getitem__(index)),
-                               str(sheet_channels['HPF Value'].__getitem__(index)),
-                               str(sheet_channels['Fader Level'].__getitem__(index)),
-                               str(sheet_channels['Mute'].__getitem__(index)),
-                               str(sheet_channels['Recording'].__getitem__(index)),
-                               str(sheet_channels['Record Arm'].__getitem__(index)),
-                               dca_config_tmp,
-                               mg_config_tmp,
-                               str(sheet_channels['Main Mix'].__getitem__(index))
-                               )
-        channel_list_entries.append(cle)
-        index = index + 1
-    return channel_list_entries
-
-
-def create_misc_content(sheet_misc):
-    misc = Misc()
-    sheet_version = None
-    index = 0
-    for property_item in sheet_misc['Property']:
-        if str(property_item).strip() == "Version":
-            sheet_version = str(sheet_misc['Value'].__getitem__(index)).strip()
-
-    misc.set_version(sheet_version)
-    return misc
-
-
-def create_socket_list_content(sheet_sockets):
-    socket_list_entries = []
-    index = 0
-
-    for socket in sheet_sockets['Socket Number']:
-        ple = SocketListEntry(int(socket),
-                              str(sheet_sockets['Local Phantom'].__getitem__(index)),
-                              str(sheet_sockets['DX1 Phantom'].__getitem__(index)),
-                              str(sheet_sockets['DX3 Phantom'].__getitem__(index)),
-                              str(sheet_sockets['Local Pad'].__getitem__(index)),
-                              str(sheet_sockets['DX1 Pad'].__getitem__(index)),
-                              str(sheet_sockets['DX3 Pad'].__getitem__(index)),
-                              str(sheet_sockets['Slink Phantom'].__getitem__(index)),
-                              str(sheet_sockets['Slink Pad'].__getitem__(index)),
-                              str(sheet_sockets['Local Gain'].__getitem__(index)),
-                              str(sheet_sockets['DX1 Gain'].__getitem__(index)),
-                              str(sheet_sockets['DX3 Gain'].__getitem__(index)),
-                              str(sheet_sockets['Slink Gain'].__getitem__(index)),
-                              )
-
-        socket_list_entries.append(ple)
-        index = index + 1
-    return socket_list_entries
-
-
-def create_groups_list_content(sheet_groups):
-    dca_list_entries = []
-    extract_data(dca_list_entries, sheet_groups, 'DCA', 'DCA Name', 'DCA Color')
-
-    aux_mono_list_entries = []
-    extract_data(aux_mono_list_entries, sheet_groups, 'Mono Auxes', 'Aux Name', 'Aux Color')
-
-    aux_stereo_list_entries = []
-    extract_data(aux_stereo_list_entries, sheet_groups, 'Stereo Auxes', 'StAux Name', 'StAux Color')
-
-    grp_mono_list_entries = []
-    extract_data(grp_mono_list_entries, sheet_groups, 'Mono Group', 'Group Name', 'Group Color')
-
-    grp_stereo_list_entries = []
-    extract_data(grp_stereo_list_entries, sheet_groups, 'Stereo Group', 'StGroup Name', 'StGroup Color')
-
-    mtx_mono_list_entries = []
-    extract_data(mtx_mono_list_entries, sheet_groups, 'Mono Matrix', 'Matrix Name', 'Matrix Color')
-
-    mtx_stereo_list_entries = []
-    extract_data(mtx_stereo_list_entries, sheet_groups, 'Stereo Matrix', 'StMatrix Name', 'StMatrix Color')
-
-    fx_send_mono_list_entries = []
-    extract_data(fx_send_mono_list_entries, sheet_groups, 'Mono FX Send', 'FX Name', 'FX Color')
-
-    fx_send_stereo_list_entries = []
-    extract_data(fx_send_stereo_list_entries, sheet_groups, 'Stereo FX Send', 'StFX Name', 'StFX Color')
-
-    fx_return_list_entries = []
-    extract_data(fx_return_list_entries, sheet_groups, 'FX Return', 'FX Return Name', 'FX Return Color')
-
-    return GroupsListEntry(dca_list_entries,
-                           aux_mono_list_entries,
-                           aux_stereo_list_entries,
-                           grp_mono_list_entries,
-                           grp_stereo_list_entries,
-                           mtx_mono_list_entries,
-                           mtx_stereo_list_entries,
-                           fx_send_mono_list_entries,
-                           fx_send_stereo_list_entries,
-                           fx_return_list_entries)
-
-
-def extract_data(list_entries, sheet_groups, type_name, name, color):
-    index = 0
-    for item in sheet_groups[type_name]:
-        if str(item) != 'nan':
-            gse = GroupSetup(int(item),
-                             str(sheet_groups[name].__getitem__(index)),
-                             str(sheet_groups[color].__getitem__(index))
-                             )
-
-            list_entries.append(gse)
-            index = index + 1
 
 
 def determine_technical_midi_port(selected_midi_port_as_string):
@@ -1319,6 +773,9 @@ def reset_progress_bar():
 def browse_files():
     reset_progress_bar()
 
+    current_action_label["text"] = "Choose channel list spreadsheet..."
+    root.update()
+
     cb_reaper = var_write_reaper.get()
     cb_trackslive = var_write_trackslive.get()
     cb_console_write = var_write_to_console.get()
@@ -1332,7 +789,7 @@ def browse_files():
         root.reaper_output_dir = os.path.dirname(input_file_path)
         root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
         try:
-            read_document(input_file_path, cb_reaper, cb_trackslive, cb_console_write)
+            read_document(context, input_file_path, cb_reaper, cb_trackslive, cb_console_write)
         except TypeError as exc:
 
             error_message = "An error happened, probably an empty line could be the issue. " \
@@ -1369,8 +826,13 @@ def browse_files():
         showerror(message="Nothing to do, please select at least one output option.")
 
 
-def trigger_background_process():
+def trigger_background_process_spread_to_console():
     bg_thread = threading.Thread(target=browse_files)
+    bg_thread.start()
+
+
+def trigger_background_process_console_to_daw():
+    bg_thread = threading.Thread(target=get_data_from_console)
     bg_thread.start()
 
 
@@ -1391,79 +853,6 @@ def save_current_ui_settings():
     with open(file, 'w') as file:
         json.dump(data, file)
         logging.info("Following data has be persisted: " + str(json_str) + " into file: " + str(file) + ".")
-
-
-def read_persisted_ip():
-    filename = CONFIG_FILE
-    if os.path.exists(filename):
-        logging.info("Try to read persisted ip from " + str(filename) + " file.")
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            try:
-                ip_ret = data['ip']
-                logging.info("Using ip: " + str(ip_ret) + " from config file: " + str(filename))
-            except KeyError:
-                logging.error("No key: ip found, using default ip: " +
-                              dliveConstants.ip +
-                              " from dliveConstants instead.")
-                ip_ret = dliveConstants.ip
-    else:
-        logging.info("No config file found, using default ip: "
-                     + dliveConstants.ip +
-                     " from dliveConstants instead")
-        ip_ret = dliveConstants.ip
-
-    return ip_ret
-
-
-def read_persisted_console():
-    filename = CONFIG_FILE
-    if os.path.exists(filename):
-        logging.info("Try to read persisted console from " + str(filename) + " file.")
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            try:
-                console_ret = data['console']
-                logging.info("Using console: " + str(console_ret) + " from config file: " + str(filename))
-            except KeyError:
-                logging.error("No key: console found, Using default console: " +
-                              dliveConstants.console_drop_down_default +
-                              " from dliveConstants instead.")
-
-                console_ret = dliveConstants.console_drop_down_default
-    else:
-        logging.info("No config file found, using default console: " +
-                     dliveConstants.console_drop_down_default +
-                     " from dliveConstants instead.")
-
-        console_ret = dliveConstants.console_drop_down_default
-
-    return console_ret
-
-
-def read_persisted_midi_port():
-    filename = CONFIG_FILE
-    if os.path.exists(filename):
-        logging.info("Try to read persisted midi-port from " + str(filename) + " file.")
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            try:
-                midi_port_ret = data['midi-port']
-                logging.info("Using midi-port: " + str(midi_port_ret) + " from config file: " + str(filename))
-            except KeyError:
-                logging.info("Use default midi-port: " +
-                             dliveConstants.midi_channel_drop_down_string_default +
-                             " from dliveConstants instead.")
-
-                midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
-    else:
-        logging.info("No config file found, using default midi-port: " +
-                     dliveConstants.midi_channel_drop_down_string_default +
-                     " from dliveConstants instead.")
-
-        midi_port_ret = dliveConstants.midi_channel_drop_down_string_default
-
-    return midi_port_ret
 
 
 def reset_ip_field_to_default_ip():
@@ -1519,22 +908,52 @@ def clear_all_checkboxes():
         var.set(False)
 
 
+def set_limit_console_to_daw_end_channel(param):
+    combobox_end.set(str(param))
+    root.update()
+
+
+def set_limit_console_to_daw_start_channel(param):
+    combobox_start.set(str(param))
+    root.update()
+
+
+def on_endchannel_selected(*args):
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(
+            var_current_console_endChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS:
+        showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+        set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+
+def on_startchannel_selected(*args):
+    if var_console.get() == dliveConstants.console_drop_down_avantis and int(
+            var_current_console_startChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS:
+        showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+        set_limit_console_to_daw_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+
 def on_console_selected(*args):
+    context.get_app_data().set_console(var_console.get())
     print("The selected console is:", var_console.get())
     if var_console.get() == dliveConstants.console_drop_down_avantis:
-        label_ip_address_text["text"] = LABEL_IPADDRESS_AVANTIS
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
         root.update()
-        showinfo(
-            message='Info: "' + GuiConstants.TEXT_HPF_ON +
-                    '", "' + GuiConstants.TEXT_HPF_VALUE +
-                    '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
-                    '" are currently not supported by the API of Avantis!')
+
+        if tab_control.index(tab_control.select()) == 0: # = Spreadsheet to Console / DAW
+            showinfo(
+                message='Info: "' + GuiConstants.TEXT_HPF_ON +
+                        '", "' + GuiConstants.TEXT_HPF_VALUE +
+                        '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
+
+                '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
+        set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
         root.update()
 
     elif var_console.get() == dliveConstants.console_drop_down_dlive:
-        label_ip_address_text["text"] = LABEL_IPADDRESS_DLIVE
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
         reactivate_avantis_checkboxes()
+        set_limit_console_to_daw_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
         root.update()
 
 
@@ -1559,10 +978,42 @@ def disable_reaper_options_ui_elements():
 
 
 def on_reaper_write_changed():
-    if var_write_reaper.get() == 1 or var_write_trackslive.get():
+    if var_write_reaper.get() or var_write_trackslive.get():
         enable_reaper_options_ui_elements()
     else:
         disable_reaper_options_ui_elements()
+
+
+def enable_console_to_daw_prefix_ui_elements():
+    entry_console_to_daw_additional_track_prefix.config(state="normal")
+    label_console_to_daw_track_prefix.config(state="normal")
+
+
+def disable_console_to_daw_prefix_ui_elements():
+    entry_console_to_daw_additional_track_prefix.config(state="disabled")
+    label_console_to_daw_track_prefix.config(state="disabled")
+
+
+def on_console_to_daw_prefix_changed():
+    if var_console_to_daw_reaper_additional_prefix.get():
+        enable_console_to_daw_prefix_ui_elements()
+    else:
+        disable_console_to_daw_prefix_ui_elements()
+
+
+def enable_console_to_daw_mastertracks_ui_elements():
+    combobox_console_to_daw_master_track.config(state="normal")
+
+
+def disable_console_to_daw_mastertracks_ui_elements():
+    combobox_console_to_daw_master_track.config(state="disabled")
+
+
+def on_console_to_daw_mastertracks_changed():
+    if var_console_to_daw_additional_master_tracks.get():
+        enable_console_to_daw_mastertracks_ui_elements()
+    else:
+        disable_console_to_daw_mastertracks_ui_elements()
 
 
 def update_progress_label():
@@ -1625,11 +1076,6 @@ class CheckboxGrid(Frame):
             var.set(state)
 
 
-root = Tk()
-ip_address_label = StringVar(root)
-current_action_label = StringVar(root)
-
-
 def about_dialog():
     about = AboutDialog(root)
     about.resizable(False, False)
@@ -1682,6 +1128,14 @@ def disconnect_from_console(output):
 def test_ip_connection():
     reset_current_action_label()
     test_ip = read_current_ui_ip_address()
+
+    if not is_valid_ip_address(test_ip):
+        error_message = "Invalid IP-Address"
+        current_action_label["text"] = error_message
+        root.update()
+        showerror(message=error_message)
+        return
+
     logging.info("Test connection to " + str(test_ip))
     try:
         ret = connect_to_console(test_ip, test=True)
@@ -1696,11 +1150,32 @@ def test_ip_connection():
         showerror(message=action)
 
 
+root = Tk()
+ip_address_label = StringVar(root)
+current_action_label = StringVar(root)
+var_midi_channel = StringVar(root)
+var_console = StringVar(root)
+reaper_output_dir = ""
+reaper_file_prefix = ""
+
 if __name__ == '__main__':
-    logging.info("dlive-midi-tool version: " + Toolinfo.version)
+
+    logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
+    logger_instance = logging.getLogger(__name__)
+    context = Context(logger_instance, None, None,
+                      dliveConstants.allow_network_communication, CONFIG_FILE)
+    app_data = AppData(None, None)
+    context.set_app_data(app_data)
+
+    is_network_communication_allowed = context.get_network_connection_allowed()
+
+    log = context.get_logger()
+    log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('1300x800')
     root.resizable(False, False)
+
+    # ----------------- Menu Area ------------------
 
     menu_bar = Menu(root)
 
@@ -1716,18 +1191,163 @@ if __name__ == '__main__':
     # Display the menu bar
     root.config(menu=menu_bar)
 
-    config_frame = Frame(root)
+    # ----------------- Tab Area ------------------
+
+    tab_control = ttk.Notebook(root)
+
+    # Tab 1 erstellen
+    tab1 = ttk.Frame(tab_control)
+    tab_control.add(tab1, text='Spreadsheet to Console / DAW')
+
+    # Tab 2 erstellen
+    tab2 = ttk.Frame(tab_control)
+    tab_control.add(tab2, text='Console to DAW')
+
+    tab1_frame = LabelFrame(tab1, text='Spreadsheet to Console / DAW')
+    tab2_frame = LabelFrame(tab2, text='Console to DAW')
+
+    # ----------------- Global Connection Settings ------------------
+
+    config_frame = LabelFrame(root, text="Connection Settings")
     ip_frame = Frame(config_frame)
     console_frame = Frame(config_frame)
     console_frame.grid(row=1, column=0, sticky="W")
-    Label(config_frame, text="       ").grid(row=0, column=0)
+
     ip_frame.grid(row=2, column=0, sticky="W")
     midi_channel_frame = Frame(config_frame)
     midi_channel_frame.grid(row=3, column=0, sticky="W")
 
+    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
+
+    dropdown_console = OptionMenu(console_frame, var_console,
+                                  dliveConstants.console_drop_down_dlive,
+                                  dliveConstants.console_drop_down_avantis,
+                                  )
+
+    dropdown_console.pack(side=RIGHT)
+
+    var_console.set(read_persisted_console(context))
+
+    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
+    if var_console.get() == dliveConstants.console_drop_down_avantis:
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
+        root.update()
+        root.focus()
+    elif var_console.get() == dliveConstants.console_drop_down_dlive:
+        label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
+        root.update()
+        root.focus()
+    label_ip_address_text.pack(side=LEFT)
+
+    ip_field = Frame(ip_frame)
+    ip_byte0 = Entry(ip_field, width=3)
+    ip_byte1 = Entry(ip_field, width=3)
+    ip_byte2 = Entry(ip_field, width=3)
+    ip_byte3 = Entry(ip_field, width=3)
+
+    ip_byte0.grid(row=0, column=0)
+    Label(ip_field, text=".").grid(row=0, column=1)
+    ip_byte1.grid(row=0, column=2)
+    Label(ip_field, text=".").grid(row=0, column=3)
+    ip_byte2.grid(row=0, column=4)
+    Label(ip_field, text=".").grid(row=0, column=5)
+    ip_byte3.grid(row=0, column=6)
+    Label(ip_field, text="     ").grid(row=0, column=7)
+    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
+    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
+    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
+    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
+    ip_field.pack(side=RIGHT)
+
+    var_midi_channel.set(read_persisted_midi_port(context))  # default value
+
+    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
+
+    dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
+                                       dliveConstants.midi_channel_drop_down_string_1,
+                                       dliveConstants.midi_channel_drop_down_string_2,
+                                       dliveConstants.midi_channel_drop_down_string_3,
+                                       dliveConstants.midi_channel_drop_down_string_4,
+                                       dliveConstants.midi_channel_drop_down_string_5,
+                                       dliveConstants.midi_channel_drop_down_string_6,
+                                       dliveConstants.midi_channel_drop_down_string_7,
+                                       dliveConstants.midi_channel_drop_down_string_8,
+                                       dliveConstants.midi_channel_drop_down_string_9,
+                                       dliveConstants.midi_channel_drop_down_string_10,
+                                       dliveConstants.midi_channel_drop_down_string_11,
+                                       dliveConstants.midi_channel_drop_down_string_12)
+    dropdown_midi_channel.pack(side=RIGHT)
+
+    ip = read_persisted_ip(context)
+    ip_from_config_file = ip.split(".")
+
+    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
+    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
+    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
+    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
+
     config_frame.pack(side=TOP)
 
-    output_option_frame = LabelFrame(root, text="Output Option")
+    # ----------------- Spreadsheet to Console / DAW Area-------------------
+
+    parameter_lf = LabelFrame(tab1, text="Choose from given spreadsheet which column you want to write", )
+
+    headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
+    labels = [
+        [GuiConstants.TEXT_NAME,
+         GuiConstants.TEXT_COLOR,
+         GuiConstants.TEXT_HPF_ON,
+         GuiConstants.TEXT_HPF_VALUE,
+         GuiConstants.TEXT_MUTE,
+         GuiConstants.TEXT_FADER_LEVEL,
+         GuiConstants.TEXT_DCA,
+         GuiConstants.TEXT_MUTE_GROUPS,
+         GuiConstants.TEXT_MAINMIX
+         ],
+        [GuiConstants.TEXT_PHANTOM,
+         GuiConstants.TEXT_PAD,
+         GuiConstants.TEXT_GAIN
+         ],
+        [GuiConstants.TEXT_AUX_MONO_NAME,
+         GuiConstants.TEXT_AUX_MONO_COLOR,
+         GuiConstants.TEXT_AUX_STEREO_NAME,
+         GuiConstants.TEXT_AUX_STERE0_COLOR,
+         GuiConstants.TEXT_GRP_MONO_NAME,
+         GuiConstants.TEXT_GRP_MONO_COLOR,
+         GuiConstants.TEXT_GRP_STEREO_NAME,
+         GuiConstants.TEXT_GRP_STEREO_COLOR
+         ],
+        [GuiConstants.TEXT_DCA_NAME,
+         GuiConstants.TEXT_DCA_COLOR,
+         GuiConstants.TEXT_MTX_MONO_NAME,
+         GuiConstants.TEXT_MTX_MONO_COLOR,
+         GuiConstants.TEXT_MTX_STEREO_NAME,
+         GuiConstants.TEXT_MTX_STEREO_COLOR
+         ],
+        [GuiConstants.TEXT_FX_SEND_MONO_NAME,
+         GuiConstants.TEXT_FX_SEND_MONO_COLOR,
+         GuiConstants.TEXT_FX_SEND_STEREO_NAME,
+         GuiConstants.TEXT_FX_SEND_STEREO_COLOR,
+         GuiConstants.TEXT_FX_RETURN_NAME,
+         GuiConstants.TEXT_FX_RETURN_COLOR
+         ]
+    ]
+
+    grid = CheckboxGrid(parameter_lf, headers, labels)
+    grid.pack(side=TOP)
+
+    global_select_frame = Frame(parameter_lf)
+
+    button_select_all = Button(global_select_frame, text='Select All', command=select_all_checkboxes, width=8)
+    button_select_all.grid(row=0, column=0)
+    button_clear_all = Button(global_select_frame, text='Clear', command=clear_all_checkboxes, width=8)
+    button_clear_all.grid(row=0, column=1)
+
+    parameter_lf.pack(pady=10, side=TOP)
+
+    global_select_frame.pack(side=TOP)
+
+    output_option_frame = LabelFrame(tab1, text="Output Options")
     var_write_to_console = BooleanVar(value=True)
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
@@ -1738,7 +1358,7 @@ if __name__ == '__main__':
 
     var_write_trackslive = BooleanVar(value=False)
     cb_trackslive_write = Checkbutton(output_option_frame,
-                                      text="Generate Tracks Live (v1.3) Template with Name & Color (In & Out 1:1 Patch)",
+                                      text="Generate Tracks Live Template with Name & Color (In & Out 1:1 Patch)",
                                       var=var_write_trackslive, command=on_reaper_write_changed)
 
     var_disable_track_numbering = BooleanVar(value=False)
@@ -1784,154 +1404,122 @@ if __name__ == '__main__':
     combobox_master_track.grid(row=4, column=2, sticky="W")
     cb_trackslive_write.grid(row=2, column=0, sticky="W")
 
-    ip_field = Frame(ip_frame)
-    ip_byte0 = Entry(ip_field, width=3)
-    ip_byte1 = Entry(ip_field, width=3)
-    ip_byte2 = Entry(ip_field, width=3)
-    ip_byte3 = Entry(ip_field, width=3)
-    mixrack_ip = ""
-    midi_channel = None
-    var_midi_channel = StringVar(root)
-    var_console = StringVar(root)
-
-    reaper_output_dir = ""
-    reaper_file_prefix = ""
-
-    Label(root, text=" ").pack(side=TOP)
-    Label(root, text="Choose from given spreadsheet which column you want to write").pack(side=TOP)
-
-    headers = ["Channels", "Sockets / Preamps", "Auxes & Groups", "DCAs & Matrices", "FX Sends & Returns"]
-    labels = [
-        [GuiConstants.TEXT_NAME,
-         GuiConstants.TEXT_COLOR,
-         GuiConstants.TEXT_HPF_ON,
-         GuiConstants.TEXT_HPF_VALUE,
-         GuiConstants.TEXT_MUTE,
-         GuiConstants.TEXT_FADER_LEVEL,
-         GuiConstants.TEXT_DCA,
-         GuiConstants.TEXT_MUTE_GROUPS,
-         GuiConstants.TEXT_MAINMIX
-         ],
-        [GuiConstants.TEXT_PHANTOM,
-         GuiConstants.TEXT_PAD,
-         GuiConstants.TEXT_GAIN
-         ],
-        [GuiConstants.TEXT_AUX_MONO_NAME,
-         GuiConstants.TEXT_AUX_MONO_COLOR,
-         GuiConstants.TEXT_AUX_STEREO_NAME,
-         GuiConstants.TEXT_AUX_STERE0_COLOR,
-         GuiConstants.TEXT_GRP_MONO_NAME,
-         GuiConstants.TEXT_GRP_MONO_COLOR,
-         GuiConstants.TEXT_GRP_STEREO_NAME,
-         GuiConstants.TEXT_GRP_STEREO_COLOR
-         ],
-        [GuiConstants.TEXT_DCA_NAME,
-         GuiConstants.TEXT_DCA_COLOR,
-         GuiConstants.TEXT_MTX_MONO_NAME,
-         GuiConstants.TEXT_MTX_MONO_COLOR,
-         GuiConstants.TEXT_MTX_STEREO_NAME,
-         GuiConstants.TEXT_MTX_STEREO_COLOR
-         ],
-        [GuiConstants.TEXT_FX_SEND_MONO_NAME,
-         GuiConstants.TEXT_FX_SEND_MONO_COLOR,
-         GuiConstants.TEXT_FX_SEND_STEREO_NAME,
-         GuiConstants.TEXT_FX_SEND_STEREO_COLOR,
-         GuiConstants.TEXT_FX_RETURN_NAME,
-         GuiConstants.TEXT_FX_RETURN_COLOR
-         ]
-    ]
-
-    grid = CheckboxGrid(root, headers, labels)
-    grid.pack(side=TOP)
-
-    global_select_frame = Frame(root)
-
-    button_select_all = Button(global_select_frame, text='Select All', command=select_all_checkboxes, width=8)
-    button_select_all.grid(row=0, column=0)
-    button_clear_all = Button(global_select_frame, text='Clear', command=clear_all_checkboxes, width=8)
-    button_clear_all.grid(row=0, column=1)
-
-    global_select_frame.pack(side=TOP)
-
-    Label(root, text=" ").pack(side=TOP)
     output_option_frame.pack(side=TOP, fill=X)
 
-    var_console.set(read_persisted_console())
+    bottom_frame = Frame(tab1)
 
-    Label(console_frame, text="Audio Console:", width=25).pack(side=LEFT)
-
-    dropdown_console = OptionMenu(console_frame, var_console,
-                                  dliveConstants.console_drop_down_dlive,
-                                  dliveConstants.console_drop_down_avantis,
-                                  )
-    dropdown_console.pack(side=RIGHT)
-
-    label_ip_address_text = Label(ip_frame, text=ip_address_label.get(), width=25)
-    if var_console.get() == dliveConstants.console_drop_down_avantis:
-        label_ip_address_text["text"] = LABEL_IPADDRESS_AVANTIS
-        disable_avantis_checkboxes()
-        root.update()
-        root.focus()
-    elif var_console.get() == dliveConstants.console_drop_down_dlive:
-        label_ip_address_text["text"] = LABEL_IPADDRESS_DLIVE
-        reactivate_avantis_checkboxes()
-        root.update()
-        root.focus()
-    label_ip_address_text.pack(side=LEFT)
-
-    ip_byte0.grid(row=0, column=0)
-    Label(ip_field, text=".").grid(row=0, column=1)
-    ip_byte1.grid(row=0, column=2)
-    Label(ip_field, text=".").grid(row=0, column=3)
-    ip_byte2.grid(row=0, column=4)
-    Label(ip_field, text=".").grid(row=0, column=5)
-    ip_byte3.grid(row=0, column=6)
-    Label(ip_field, text="     ").grid(row=0, column=7)
-    Button(ip_field, text='Save', command=save_current_ui_settings).grid(row=0, column=8)
-    Button(ip_field, text='Director', command=set_ip_field_to_local_director_ip).grid(row=0, column=9)
-    Button(ip_field, text='Default', command=reset_ip_field_to_default_ip).grid(row=0, column=10)
-    Button(ip_field, text='Test Connection', command=test_ip_connection).grid(row=0, column=11)
-    ip_field.pack(side=RIGHT)
-
-    var_midi_channel.set(read_persisted_midi_port())  # default value
-
-    Label(midi_channel_frame, text="Midi Channel:", width=25).pack(side=LEFT)
-
-    dropdown_midi_channel = OptionMenu(midi_channel_frame, var_midi_channel,
-                                       dliveConstants.midi_channel_drop_down_string_1,
-                                       dliveConstants.midi_channel_drop_down_string_2,
-                                       dliveConstants.midi_channel_drop_down_string_3,
-                                       dliveConstants.midi_channel_drop_down_string_4,
-                                       dliveConstants.midi_channel_drop_down_string_5,
-                                       dliveConstants.midi_channel_drop_down_string_6,
-                                       dliveConstants.midi_channel_drop_down_string_7,
-                                       dliveConstants.midi_channel_drop_down_string_8,
-                                       dliveConstants.midi_channel_drop_down_string_9,
-                                       dliveConstants.midi_channel_drop_down_string_10,
-                                       dliveConstants.midi_channel_drop_down_string_11,
-                                       dliveConstants.midi_channel_drop_down_string_12)
-    dropdown_midi_channel.pack(side=RIGHT)
-
-    ip = read_persisted_ip()
-    ip_from_config_file = ip.split(".")
-
-    ip_byte0.insert(10, ip_from_config_file.__getitem__(0))
-    ip_byte1.insert(11, ip_from_config_file.__getitem__(1))
-    ip_byte2.insert(12, ip_from_config_file.__getitem__(2))
-    ip_byte3.insert(13, ip_from_config_file.__getitem__(3))
-
-    bottom_frame = Frame(root)
-
-    Button(bottom_frame, text='Open spreadsheet and start writing process', command=trigger_background_process).grid(
-        row=0)
+    Button(bottom_frame, text='Open spreadsheet and start writing process',
+           command=trigger_background_process_spread_to_console).grid(
+        row=0, column=0)
     Label(bottom_frame, text=" ", width=30).grid(row=1)
 
-    current_action_label = ttk.Label(bottom_frame, text=current_action_label.get())
-    current_action_label.grid(row=2)
-    Label(bottom_frame, text=" ", width=30).grid(row=3)
+    # ----------------- Console to DAW Area-------------------
+
+    console_to_daw_settings_lf = LabelFrame(tab2, text="Settings")
+
+    console_to_daw_settings_lf.pack(side=TOP)
+
+    start_end_channel_frame = Frame(console_to_daw_settings_lf)
+
+    values_start = [f"{i}" for i in range(1, 129)]
+    var_current_console_startChannel = StringVar()
+    combobox_start = Combobox(start_end_channel_frame, textvariable=var_current_console_startChannel,
+                              values=values_start, width=3)
+    combobox_start.set("1")
+
+    Label(start_end_channel_frame, text="Channel Start").grid(row=0, column=0, sticky="w")
+    combobox_start.grid(row=0, column=1)
+
+    values_end = [f"{i}" for i in range(1, 129)]
+    var_current_console_endChannel = StringVar()
+    combobox_end = Combobox(start_end_channel_frame, textvariable=var_current_console_endChannel,
+                            values=values_end, width=3)
+    combobox_end.set("128")
+    Label(start_end_channel_frame, text="End").grid(row=0, column=2)
+    combobox_end.grid(row=0, column=3)
+
+    start_end_channel_frame.grid(row=0)
+
+    var_console_to_daw_disable_track_numbering_daw = BooleanVar(value=False)
+    cb_console_to_daw_disable_track_numbering_daw = Checkbutton(console_to_daw_settings_lf,
+                                                                text="Disable Track Numbering",
+                                                                var=var_console_to_daw_disable_track_numbering_daw)
+
+    var_console_to_daw_disable_track_coloring_daw = BooleanVar(value=False)
+    cb_console_to_daw_disable_track_coloring_daw = Checkbutton(console_to_daw_settings_lf,
+                                                               text="Disable Track Coloring",
+                                                               var=var_console_to_daw_disable_track_coloring_daw)
+
+    var_console_to_daw_reaper_additional_prefix = BooleanVar(value=False)
+    cb_console_to_daw_reaper_additional_prefix = Checkbutton(console_to_daw_settings_lf,
+                                                             text="Add Custom Track Prefix",
+                                                             var=var_console_to_daw_reaper_additional_prefix,
+                                                             command=on_console_to_daw_prefix_changed)
+
+    entry_console_to_daw_additional_track_prefix = Entry(console_to_daw_settings_lf, width=20)
+
+    label_console_to_daw_track_prefix = Label(console_to_daw_settings_lf, text="Example: Band_Date_City", width=25)
+
+    var_console_to_daw_additional_master_tracks = BooleanVar(value=False)
+    cb_console_to_daw_additional_master_tracks = Checkbutton(console_to_daw_settings_lf,
+                                                             text="Add 2 Additional Master-Tracks",
+                                                             var=var_console_to_daw_additional_master_tracks,
+                                                             command=on_console_to_daw_mastertracks_changed)
+
+    values = [f"{i}-{i + 1}" for i in range(1, 127, 2)]
+    values.append("127-128")  # workaround
+    var_console_to_daw_master_recording_patch = StringVar()
+    combobox_console_to_daw_master_track = Combobox(console_to_daw_settings_lf,
+                                                    textvariable=var_console_to_daw_master_recording_patch,
+                                                    values=values)
+    combobox_console_to_daw_master_track.set("Select DAW Input")
+
+    disable_console_to_daw_prefix_ui_elements()
+    disable_console_to_daw_mastertracks_ui_elements()
+
+    console_to_daw_output_options_lf = LabelFrame(tab2, text="Output Options")
+
+    var_console_to_daw_reaper = BooleanVar(value=False)
+    cb_console_to_daw_reaper = Checkbutton(console_to_daw_output_options_lf,
+                                           text="Generate Reaper Session",
+                                           var=var_console_to_daw_reaper)
+
+    var_console_to_daw_trackslive = BooleanVar(value=False)
+    cb_console_to_daw_trackslive = Checkbutton(console_to_daw_output_options_lf,
+                                               text="Generate Tracks Live Template",
+                                               var=var_console_to_daw_trackslive)
+
+    label_space = Label(console_to_daw_output_options_lf, width=48)
+
+    cb_console_to_daw_reaper.grid(row=0, column=0, sticky="w")
+    label_space.grid(row=0, column=1, sticky="w")
+    cb_console_to_daw_trackslive.grid(row=1, sticky="w")
+
+    console_to_daw_output_options_lf.pack(side=TOP)
+
+    cb_console_to_daw_disable_track_numbering_daw.grid(row=1, sticky="w")
+    cb_console_to_daw_disable_track_coloring_daw.grid(row=2, sticky="w")
+    cb_console_to_daw_reaper_additional_prefix.grid(row=3, column=0, sticky="w")
+    entry_console_to_daw_additional_track_prefix.grid(row=3, column=1, sticky="w")
+    label_console_to_daw_track_prefix.grid(row=3, column=2)
+    cb_console_to_daw_additional_master_tracks.grid(row=4, column=0, sticky="w")
+    combobox_console_to_daw_master_track.grid(row=4, column=1, sticky="w")
+
+    button_frame = Frame(tab2)
+
+    Button(button_frame, text='Generate DAW session(s) from current console settings',
+           command=trigger_background_process_console_to_daw).pack(side=BOTTOM)
+
+    # ----------------- Status Area-------------------
+
+    bottom3_frame = LabelFrame(root, text="Status")
+
+    current_action_label = ttk.Label(bottom3_frame, text=current_action_label.get())
+    current_action_label.grid(row=3)
+    Label(bottom3_frame, text=" ", width=30).grid(row=5)
 
     pb = ttk.Progressbar(
-        bottom_frame,
+        bottom3_frame,
         orient='horizontal',
         mode='determinate',
         length=1250
@@ -1940,13 +1528,23 @@ if __name__ == '__main__':
     pb.grid(row=4)
 
     # label to show current value in percent
-    value_label = ttk.Label(bottom_frame, text=update_progress_label())
+    value_label = ttk.Label(bottom3_frame, text=update_progress_label())
     value_label.grid(row=5)
 
-    Button(bottom_frame, text='Close', command=root.destroy).grid(row=6)
-    Label(bottom_frame, text=" ", width=30).grid(row=7)
+    bottom4_frame = Frame(root)
+
+    Button(bottom4_frame, text='Close', command=root.destroy).grid(row=6)
+    Label(bottom4_frame, text=" ", width=30).grid(row=7)
+
+    bottom4_frame.pack(side=BOTTOM)
+    bottom3_frame.pack(side=BOTTOM)
+    button_frame.pack(side=TOP)
     bottom_frame.pack(side=BOTTOM)
 
     var_console.trace("w", on_console_selected)
+    var_current_console_endChannel.trace("w", on_endchannel_selected)
+    var_current_console_startChannel.trace("w", on_startchannel_selected)
+
+    tab_control.pack(expand=1, fill='both', side=TOP)
 
     root.mainloop()

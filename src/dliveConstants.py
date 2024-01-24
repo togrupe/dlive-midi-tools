@@ -134,6 +134,9 @@ DX1_SOCKET_COUNT_MAX = 32
 DX3_SOCKET_COUNT_MAX = 32
 SLINK_SOCKET_COUNT_MAX = 128
 
+DLIVE_MAX_CHANNELS = 128
+AVANTIS_MAX_CHANNELS = 64
+
 # Strings Midi Channel Selector
 midi_channel_drop_down_string_1 = "1 to 5"
 midi_channel_drop_down_string_2 = "2 to 6"
@@ -165,3 +168,6 @@ trim_after_x_charactors = 8
 # dlive Mixrack ip and port for midi/tcp. Please use 127.0.0.1 for dLive Director.
 ip = '192.168.1.70'
 port = 51325
+
+DEFAULT_SLEEP_AFTER_MIDI_COMMAND = 0.01
+DEFAULT_SLEEP_GROUPS_AFTER_MIDI_COMMAND = 0.001

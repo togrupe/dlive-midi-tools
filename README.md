@@ -32,7 +32,7 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
-* Generate DAW sessions from current console settings
+* Generate DAW session(s) from current console settings
 
 ## Software Liability Warning
 
@@ -59,16 +59,16 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                             | Download                                                                                     | Release Notes | MD5 Checksum                     |
-|---------|------------|--------------------------------|----------------------------------------------------------------------------------------------|---------------|----------------------------------|
-| v2.7.0  |            | macOS (x86_64 - Intel)*        |                                                                                              | [Link](#v270) |                                  |                                                                                              |               |
-|         |            | Windows (x86_64)               |                                                                                              |               |                                  |
-| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip) | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |                                                                                              |               |
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)     |               | 6e3d3adf822604d49708a434274c438f |
-| v2.5.0  | 15.09.2023 | macOS (x86_64 - Intel)*        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)       | [Link](#v250) |                                  | 
-|         |            | Windows (x86_64)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)     |               |                                  |
+| Version | Date       | OS                                      | Download                                                                                      | Release Notes | MD5 Checksum                     |
+|---------|------------|-----------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
+| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) |                                  |                                                                                              |               |
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               |                                  |
+| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |                                                                                              |               |
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
+| v2.5.0  | 15.09.2023 | macOS (x86_64 - Intel/Apple-Silicon*)   | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-macos.zip)        | [Link](#v250) |                                  | 
+|         |            | Windows (x86_64)                        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_5_0/dmt-v2_5_0-windows.zip)      |               |                                  |
 
-(*) Hints for Apple-Silicon: In combination with Rosetta also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
+(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.
 
 Older versions see [archive](doc/download-archive.md)

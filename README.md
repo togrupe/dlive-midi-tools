@@ -198,7 +198,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
-The tool has currently to modes:
+The tool has currently two modes:
 * Spreadsheet to Console / DAW (Continue with next Step)
 * Console to DAW (Continue with Step 10)
 

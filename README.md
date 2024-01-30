@@ -91,7 +91,7 @@ Empty lines in between are **not** supported. <br>
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write/save the sheets.
 Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 
-> **_NOTE:_**  You can add additional columns, like 'mic stand', 'mic/di', 'subcore patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want you can also reorder the columns to your needs.
+> **_NOTE:_**  You can add additional columns, like 'Mic Stand', 'Mic/DI', 'Sub-core Patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want, you can also reorder the columns to your needs.
 
 ### Channel Overview
 ![Channels](doc/channels/excel_channels.png)

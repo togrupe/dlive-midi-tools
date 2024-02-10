@@ -169,9 +169,9 @@ def handle_channels_parameter(message, context, channel_list_entries, action):
     current_action_label["text"] = message
 
     if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
-        max_count_dsp_channels = 64
+        max_count_dsp_channels = dliveConstants.AVANTIS_MAX_CHANNELS
     else:
-        max_count_dsp_channels = 128
+        max_count_dsp_channels = dliveConstants.DLIVE_MAX_CHANNELS
 
     for item in channel_list_entries:
         if item.get_channel_console() > max_count_dsp_channels - 1:

@@ -41,7 +41,8 @@ from parameters.sockets.Gain import gain_socket
 from parameters.sockets.Pad import pad_socket
 from parameters.sockets.Phantom import phantom_socket
 from parameters.channels.Mainmix import assign_mainmix_channel
-from persistence.Persistence import read_persisted_console, read_persisted_midi_port, read_persisted_ip
+from persistence.Persistence import persist_current_ui_settings, read_persisted_console, read_persisted_midi_port, \
+    read_persisted_ip
 from spreadsheet.Spreadsheet import create_channel_list_content, create_socket_list_content, create_groups_list_content, \
     create_misc_content, create_channel_list_content_from_console
 
@@ -837,22 +838,11 @@ def trigger_background_process_console_to_daw():
 
 
 def save_current_ui_settings():
-    file = CONFIG_FILE
     current_ip = ip_byte0.get() + "." + ip_byte1.get() + "." + ip_byte2.get() + "." + ip_byte3.get()
-
-    data = {
-        'version': 1,
-        'ip': str(current_ip),
-        'console': dropdown_console.getvar(str(var_console)),
-        'midi-port': dropdown_midi_channel.getvar(str(var_midi_channel))
-    }
-
-    json_str = json.dumps(data)
-
-    data = json.loads(json_str)
-    with open(file, 'w') as file:
-        json.dump(data, file)
-        logging.info("Following data has be persisted: " + str(json_str) + " into file: " + str(file) + ".")
+    context.get_app_data().set_console(determine_console_id(var_console.get()))
+    context.get_app_data().set_midi_channel(var_midi_channel.get())
+    context.get_app_data().set_current_ip(current_ip)
+    persist_current_ui_settings(context)
 
 
 def reset_ip_field_to_default_ip():
@@ -939,13 +929,13 @@ def on_console_selected(*args):
         label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
         root.update()
 
-        if tab_control.index(tab_control.select()) == 0: # = Spreadsheet to Console / DAW
+        if tab_control.index(tab_control.select()) == 0:  # = Spreadsheet to Console / DAW
             showinfo(
                 message='Info: "' + GuiConstants.TEXT_HPF_ON +
                         '", "' + GuiConstants.TEXT_HPF_VALUE +
                         '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
 
-                '" are currently not supported by the API of Avantis!')
+                        '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
         set_limit_console_to_daw_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
         root.update()
@@ -1164,7 +1154,7 @@ if __name__ == '__main__':
     logger_instance = logging.getLogger(__name__)
     context = Context(logger_instance, None, None,
                       dliveConstants.allow_network_communication, CONFIG_FILE)
-    app_data = AppData(None, None)
+    app_data = AppData(None, None, None)
     context.set_app_data(app_data)
 
     is_network_communication_allowed = context.get_network_connection_allowed()

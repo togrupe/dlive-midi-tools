@@ -6,23 +6,21 @@
 #
 ####################################################
 
-import json
 import logging
 import os
 import socket
 import threading
-import pandas as pd
-from mido.sockets import connect
-
 from tkinter import filedialog, Button, Tk, Checkbutton, Frame, LEFT, TOP, X, RIGHT, Label, \
     Entry, BOTTOM, StringVar, OptionMenu, ttk, LabelFrame, BooleanVar, END, Menu
 from tkinter.messagebox import showinfo, showerror
 from tkinter.ttk import Combobox
 
+import pandas as pd
+from mido.sockets import connect
+
 import GuiConstants
 import Toolinfo
 import dliveConstants
-
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from helper.Networking import is_valid_ip_address
@@ -30,17 +28,11 @@ from model.Action import Action
 from model.AppData import AppData
 from model.Context import Context
 from model.Sheet import Sheet
-from parameters.channels.Color import color_channel, get_color_channel
-from parameters.channels.Dca import dca_channel
-from parameters.channels.Faderlevel import fader_level_channel
-from parameters.channels.Hpf import hpf_on_channel, hpf_value_channel
-from parameters.channels.Mute import mute_on_channel
-from parameters.channels.Mutegroup import mg_channel
-from parameters.channels.Name import get_name_channel, name_channel
-from parameters.sockets.Gain import gain_socket
-from parameters.sockets.Pad import pad_socket
-from parameters.sockets.Phantom import phantom_socket
-from parameters.channels.Mainmix import assign_mainmix_channel
+from parameters.channels.ChannelsCommon import handle_channels_parameter
+from parameters.channels.Color import get_color_channel
+from parameters.channels.GroupsCommon import handle_groups_parameter
+from parameters.channels.Name import get_name_channel
+from parameters.sockets.SocketsCommon import handle_sockets_parameter
 from persistence.Persistence import persist_current_ui_settings, read_persisted_console, read_persisted_midi_port, \
     read_persisted_ip
 from spreadsheet.Spreadsheet import create_channel_list_content, create_socket_list_content, create_groups_list_content, \
@@ -163,184 +155,6 @@ def get_data_from_console():
             output = None
     else:
         showerror(message="Nothing to do, please select at least one output option.")
-
-
-def handle_channels_parameter(message, context, channel_list_entries, action):
-    logging.info(message)
-    current_action_label["text"] = message
-
-    if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
-        max_count_dsp_channels = dliveConstants.AVANTIS_MAX_CHANNELS
-    else:
-        max_count_dsp_channels = dliveConstants.DLIVE_MAX_CHANNELS
-
-    for item in channel_list_entries:
-        if item.get_channel_console() > max_count_dsp_channels - 1:
-            logging.warning("Skipping Channel...current channel number: " + str(item.get_channel()) +
-                            " is bigger than the console supports.")
-            continue
-        logging.info("Processing " + action + " for channel: " + str(item.get_channel_console() + 1))
-        if action == "name":
-            if name_channel(context, item, dliveConstants.midi_channel_offset_channels,
-                            dliveConstants.channel_offset_channels, "Input Channels") == 1:
-                return 1
-        elif action == "color":
-            color_channel(context, item, dliveConstants.midi_channel_offset_channels,
-                          dliveConstants.channel_offset_channels)
-        elif action == "mute":
-            mute_on_channel(context, item)
-        elif action == "fader_level":
-            fader_level_channel(context, item)
-        elif action == "hpf_on":
-            hpf_on_channel(context, item)
-        elif action == "hpf_value":
-            hpf_value_channel(context, item)
-        elif action == "dca":
-            dca_channel(context, item)
-        elif action == "mute_group":
-            mg_channel(context, item)
-        elif action == "assign_main_mix":
-            assign_mainmix_channel(context, item)
-
-
-def handle_sockets_parameter(message, socket_list_entries, action):
-    log = context.get_logger()
-    console = context.get_app_data().get_console()
-
-    log.info(message)
-    current_action_label["text"] = message
-
-    for item in socket_list_entries:
-        log.info("Processing " + action + " for socket: " + str(item.get_socket_number()))
-        if action == "phantom":
-            if console == dliveConstants.console_drop_down_dlive:
-                phantom_socket(context, item, "local")
-                phantom_socket(context, item, "DX1")
-                phantom_socket(context, item, "DX3")
-            elif console == dliveConstants.console_drop_down_avantis:
-                phantom_socket(context, item, "local")
-                phantom_socket(context, item, "Slink")
-        elif action == "pad":
-            if console == dliveConstants.console_drop_down_dlive:
-                pad_socket(context, item, "local")
-                pad_socket(context, item, "DX1")
-                pad_socket(context, item, "DX3")
-            elif console == dliveConstants.console_drop_down_avantis:
-                pad_socket(context, item, "local")
-                pad_socket(context, item, "Slink")
-        elif action == "gain":
-            if console == dliveConstants.console_drop_down_dlive:
-                gain_socket(context, item, "local")
-                gain_socket(context, item, "DX1")
-                gain_socket(context, item, "DX3")
-            elif console == dliveConstants.console_drop_down_avantis:
-                gain_socket(context, item, "local")
-                gain_socket(context, item, "Slink")
-
-
-def handle_groups_parameter(message, context, groups_model, action, bus_type):
-    logging.info(message)
-    current_action_label["text"] = message
-
-    if bus_type == "dca":
-        for item in groups_model.get_dca_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_dca,
-                                dliveConstants.channel_offset_dca, bus_type) == 1:
-                    return 1
-
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_dca, dliveConstants.channel_offset_dca)
-
-    if bus_type == "aux_mono":
-        for item in groups_model.get_auxes_mono_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_auxes,
-                                dliveConstants.channel_offset_auxes_mono, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_auxes,
-                              dliveConstants.channel_offset_auxes_mono)
-
-    if bus_type == "aux_stereo":
-        for item in groups_model.get_auxes_stereo_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_auxes,
-                                dliveConstants.channel_offset_auxes_stereo, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_auxes,
-                              dliveConstants.channel_offset_auxes_stereo)
-
-    if bus_type == "group_mono":
-        for item in groups_model.get_group_mono_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_groups,
-                                dliveConstants.channel_offset_groups_mono, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_groups,
-                              dliveConstants.channel_offset_groups_mono)
-
-    if bus_type == "group_stereo":
-        for item in groups_model.get_group_stereo_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_groups,
-                                dliveConstants.channel_offset_groups_stereo, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_groups,
-                              dliveConstants.channel_offset_groups_stereo)
-
-    if bus_type == "matrix_mono":
-        for item in groups_model.get_matrix_mono_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_matrices,
-                                dliveConstants.channel_offset_matrices_mono, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_matrices,
-                              dliveConstants.channel_offset_matrices_mono)
-
-    if bus_type == "matrix_stereo":
-        for item in groups_model.get_matrix_stereo_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_matrices,
-                                dliveConstants.channel_offset_matrices_stereo, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_matrices,
-                              dliveConstants.channel_offset_matrices_stereo)
-
-    if bus_type == "fx_send_mono":
-        for item in groups_model.get_fx_send_mono_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_fx_send_mono,
-                                dliveConstants.channel_offset_fx_send_mono, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_fx_send_mono,
-                              dliveConstants.channel_offset_fx_send_mono)
-
-    if bus_type == "fx_send_stereo":
-        for item in groups_model.get_fx_send_stereo_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_fx_send_stereo,
-                                dliveConstants.channel_offset_fx_send_stereo, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_fx_send_stereo,
-                              dliveConstants.channel_offset_fx_send_stereo)
-
-    if bus_type == "fx_return":
-        for item in groups_model.get_fx_return_config():
-            if action == "name":
-                if name_channel(context, item, dliveConstants.midi_channel_offset_fx_return,
-                                dliveConstants.channel_offset_fx_return, bus_type) == 1:
-                    return 1
-            elif action == "color":
-                color_channel(context, item, dliveConstants.midi_channel_offset_fx_return,
-                              dliveConstants.channel_offset_fx_return)
 
 
 def read_document(context, filename, check_box_reaper, check_box_trackslive, check_box_write_to_console):
@@ -651,18 +465,23 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
 
     if cb_write_to_console:
         for action in action_list:
+            action_message = action.get_message()
             if action.get_sheet_tab() == "channels":
-                if handle_channels_parameter(action.get_message(), context, sheet.get_channel_model(),
+                current_action_label["text"] = action_message
+                if handle_channels_parameter(action_message, context, sheet.get_channel_model(),
                                              action.get_action()) == 1:
                     reset_current_action_label()
                     reset_progress_bar()
                     exit(1)
             elif action.get_sheet_tab() == "sockets":
-                handle_sockets_parameter(action.get_message(), sheet.get_socket_model(),
+                current_action_label["text"] = action_message
+                handle_sockets_parameter(action_message, context, sheet.get_socket_model(),
                                          action.get_action())
 
+
             elif action.get_sheet_tab() == "groups":
-                if handle_groups_parameter(action.get_message(), context, sheet.get_group_model(),
+                current_action_label["text"] = action_message
+                if handle_groups_parameter(action_message, context, sheet.get_group_model(),
                                            action.get_action(), action.get_bus_type()) == 1:
                     reset_current_action_label()
                     reset_progress_bar()

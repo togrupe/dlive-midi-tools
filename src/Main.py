@@ -73,7 +73,7 @@ def get_data_from_console():
         if directory_path.__len__() == 0:
             return
 
-        if is_network_communication_allowed:
+        if context.get_network_connection_allowed():
             ip_address = read_current_ui_ip_address()
             if not is_valid_ip_address(ip_address):
                 error_message = "Invalid IP-Address"
@@ -157,7 +157,239 @@ def get_data_from_console():
         showerror(message="Nothing to do, please select at least one output option.")
 
 
-def read_document(context, filename, check_box_reaper, check_box_trackslive, check_box_write_to_console):
+def fill_actions(action_list, actions):
+
+    for var in grid.vars:
+        log.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
+
+        # Name
+        if var._name == GuiConstants.TEXT_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_NAME, "channels",
+                            "Set Names to channels...", "name")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Color
+        elif var._name == GuiConstants.TEXT_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_COLOR, "channels",
+                            "Set Color to channels...", "color")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Mute
+        elif var._name == GuiConstants.TEXT_MUTE and var.get() is True:
+            action = Action(GuiConstants.TEXT_MUTE, "channels",
+                            "Set Mute to channels...", "mute")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Fader Level
+        elif var._name == GuiConstants.TEXT_FADER_LEVEL and var.get() is True:
+            action = Action(GuiConstants.TEXT_FADER_LEVEL, "channels",
+                            "Set Fader Level to channels...", "fader_level")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # HPF On
+        elif var._name == GuiConstants.TEXT_HPF_ON and var.get() is True:
+            action = Action(GuiConstants.TEXT_HPF_ON, "channels",
+                            "Set HPF On to channels...", "hpf_on")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # HPF value
+        elif var._name == GuiConstants.TEXT_HPF_VALUE and var.get() is True:
+            action = Action(GuiConstants.TEXT_HPF_VALUE, "channels",
+                            "Set HPF Value to channels...", "hpf_value")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # DCAs
+        elif var._name == GuiConstants.TEXT_DCA and var.get() is True:
+            action = Action(GuiConstants.TEXT_DCA, "channels",
+                            "Set DCA Assignments to channels...", "dca")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Mute Groups
+        elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
+            action = Action(GuiConstants.TEXT_MUTE_GROUPS, "channels",
+                            "Set Mute Group Assignments to channels...", "mute_group")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Assign to Main Mix
+        elif var._name == GuiConstants.TEXT_MAINMIX and var.get() is True:
+            action = Action(GuiConstants.TEXT_MAINMIX, "channels",
+                            "Set Main Mix Assignments to channels...", "assign_main_mix")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Phantom
+        elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
+            action = Action(GuiConstants.TEXT_PHANTOM, "sockets",
+                            "Set Phantom Power to sockets...", "phantom")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Pad
+        elif var._name == GuiConstants.TEXT_PAD and var.get() is True:
+            action = Action(GuiConstants.TEXT_PAD, "sockets",
+                            "Set Pad to sockets...", "pad")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Gain
+        elif var._name == GuiConstants.TEXT_GAIN and var.get() is True:
+            action = Action(GuiConstants.TEXT_GAIN, "sockets",
+                            "Set Gain to sockets...", "gain")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # DCA Name
+        elif var._name == GuiConstants.TEXT_DCA_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_DCA_NAME, "groups",
+                            "Set DCA Names...", "name", bus_type="dca")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # DCA Color
+        elif var._name == GuiConstants.TEXT_DCA_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_DCA_COLOR, "groups",
+                            "Set DCA Color...", "color", bus_type="dca")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Aux Mono Name
+        elif var._name == GuiConstants.TEXT_AUX_MONO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_AUX_MONO_NAME, "groups",
+                            "Set Aux Mono Name...", "name", bus_type="aux_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Aux Mono Color
+        elif var._name == GuiConstants.TEXT_AUX_MONO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_AUX_MONO_COLOR, "groups",
+                            "Set Aux Mono Color...", "color", bus_type="aux_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Aux Stereo Name
+        elif var._name == GuiConstants.TEXT_AUX_STEREO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_AUX_STEREO_NAME, "groups",
+                            "Set Aux Stereo Name...", "name", bus_type="aux_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Aux Stereo Color
+        elif var._name == GuiConstants.TEXT_AUX_STERE0_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_AUX_STERE0_COLOR, "groups",
+                            "Set Aux Stereo Color...", "color", bus_type="aux_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Group Mono Name
+        elif var._name == GuiConstants.TEXT_GRP_MONO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_GRP_MONO_NAME, "groups",
+                            "Set Group Mono Name...", "name", bus_type="group_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Group Mono Color
+        elif var._name == GuiConstants.TEXT_GRP_MONO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_GRP_MONO_COLOR, "groups",
+                            "Set Group Mono Color...", "color", bus_type="group_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Group Stereo Name
+        elif var._name == GuiConstants.TEXT_GRP_STEREO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_GRP_STEREO_NAME, "groups",
+                            "Set Group Stereo Name...", "name", bus_type="group_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Group Stereo Color
+        elif var._name == GuiConstants.TEXT_GRP_STEREO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_GRP_STEREO_COLOR, "groups",
+                            "Set Group Stereo Color...", "color", bus_type="group_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Matrix Mono Name
+        elif var._name == GuiConstants.TEXT_MTX_MONO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_MTX_MONO_NAME, "groups",
+                            "Set Matrix Mono Name...", "name", bus_type="matrix_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Matrix Mono Color
+        elif var._name == GuiConstants.TEXT_MTX_MONO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_MTX_MONO_COLOR, "groups",
+                            "Set Matrix Mono Color...", "color", bus_type="matrix_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Matrix Stereo Name
+        elif var._name == GuiConstants.TEXT_MTX_STEREO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_MTX_STEREO_NAME, "groups",
+                            "Set Matrix Stereo Name...", "name", bus_type="matrix_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Matrix Stereo Color
+        elif var._name == GuiConstants.TEXT_MTX_STEREO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_MTX_STEREO_COLOR, "groups",
+                            "Set Matrix Stereo Color...", "color", bus_type="matrix_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # FX Send Mono Name
+        elif var._name == GuiConstants.TEXT_FX_SEND_MONO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_FX_SEND_MONO_NAME, "groups",
+                            "Set FX Send Mono Name...", "name", bus_type="fx_send_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # FX Send Mono Color
+        elif var._name == GuiConstants.TEXT_FX_SEND_MONO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_FX_SEND_MONO_COLOR, "groups",
+                            "Set FX Send Mono Color...", "color", bus_type="fx_send_mono")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # FX Send Stereo Name
+        elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_FX_SEND_STEREO_NAME, "groups",
+                            "Set FX Send Stereo Name...", "name", bus_type="fx_send_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # FX Send Stereo Color
+        elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_FX_SEND_STEREO_COLOR, "groups",
+                            "Set FX Send Stereo Color...", "color", bus_type="fx_send_stereo")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # FX Return Name
+        elif var._name == GuiConstants.TEXT_FX_RETURN_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_FX_RETURN_NAME, "groups",
+                            "Set FX Return Name...", "name", bus_type="fx_return")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # FX Return Color
+        elif var._name == GuiConstants.TEXT_FX_RETURN_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_FX_RETURN_COLOR, "groups",
+                            "Set FX Return Color...", "color", bus_type="fx_return")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+    return actions
+
+
+def read_document(filename):
     log = context.get_logger()
 
     log.info('The following file will be read : ' + str(filename))
@@ -185,264 +417,31 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
 
     app_data.set_midi_channel(determine_technical_midi_port(var_midi_channel.get()))
 
-    actions = 0
-
-    if check_box_write_to_console:
-        cb_write_to_console = True
-    else:
-        cb_write_to_console = False
+    context.get_app_data().set_output_write_to_console(False)
 
     context.get_app_data().set_console(var_console.get())
 
-    if var_console.get() == dliveConstants.console_drop_down_avantis:
+    if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
         disable_avantis_checkboxes()
         root.update()
-
+    actions = 0
     action_list = []
 
-    if cb_write_to_console:
-        for var in grid.vars:
-            log.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
+    if context.get_app_data().get_output_write_to_console():
+        actions = fill_actions(action_list, actions)
+        if actions == 0:
+            text = "No spreadsheet column(s) selected. Please select at least one column"
+            showinfo(message=text)
+            logging.info(text)
+            current_action_label["text"] = text
+            root.update()
+            return
 
-            # Name
-            if var._name == GuiConstants.TEXT_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_NAME, "channels",
-                                "Set Names to channels...", "name")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Color
-            elif var._name == GuiConstants.TEXT_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_COLOR, "channels",
-                                "Set Color to channels...", "color")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Mute
-            elif var._name == GuiConstants.TEXT_MUTE and var.get() is True:
-                action = Action(GuiConstants.TEXT_MUTE, "channels",
-                                "Set Mute to channels...", "mute")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Fader Level
-            elif var._name == GuiConstants.TEXT_FADER_LEVEL and var.get() is True:
-                action = Action(GuiConstants.TEXT_FADER_LEVEL, "channels",
-                                "Set Fader Level to channels...", "fader_level")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # HPF On
-            elif var._name == GuiConstants.TEXT_HPF_ON and var.get() is True:
-                action = Action(GuiConstants.TEXT_HPF_ON, "channels",
-                                "Set HPF On to channels...", "hpf_on")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # HPF value
-            elif var._name == GuiConstants.TEXT_HPF_VALUE and var.get() is True:
-                action = Action(GuiConstants.TEXT_HPF_VALUE, "channels",
-                                "Set HPF Value to channels...", "hpf_value")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # DCAs
-            elif var._name == GuiConstants.TEXT_DCA and var.get() is True:
-                action = Action(GuiConstants.TEXT_DCA, "channels",
-                                "Set DCA Assignments to channels...", "dca")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Mute Groups
-            elif var._name == GuiConstants.TEXT_MUTE_GROUPS and var.get() is True:
-                action = Action(GuiConstants.TEXT_MUTE_GROUPS, "channels",
-                                "Set Mute Group Assignments to channels...", "mute_group")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Assign to Main Mix
-            elif var._name == GuiConstants.TEXT_MAINMIX and var.get() is True:
-                action = Action(GuiConstants.TEXT_MAINMIX, "channels",
-                                "Set Main Mix Assignments to channels...", "assign_main_mix")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Phantom
-            elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
-                action = Action(GuiConstants.TEXT_PHANTOM, "sockets",
-                                "Set Phantom Power to sockets...", "phantom")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Pad
-            elif var._name == GuiConstants.TEXT_PAD and var.get() is True:
-                action = Action(GuiConstants.TEXT_PAD, "sockets",
-                                "Set Pad to sockets...", "pad")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Gain
-            elif var._name == GuiConstants.TEXT_GAIN and var.get() is True:
-                action = Action(GuiConstants.TEXT_GAIN, "sockets",
-                                "Set Gain to sockets...", "gain")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # DCA Name
-            elif var._name == GuiConstants.TEXT_DCA_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_DCA_NAME, "groups",
-                                "Set DCA Names...", "name", bus_type="dca")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # DCA Color
-            elif var._name == GuiConstants.TEXT_DCA_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_DCA_COLOR, "groups",
-                                "Set DCA Color...", "color", bus_type="dca")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Aux Mono Name
-            elif var._name == GuiConstants.TEXT_AUX_MONO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_AUX_MONO_NAME, "groups",
-                                "Set Aux Mono Name...", "name", bus_type="aux_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Aux Mono Color
-            elif var._name == GuiConstants.TEXT_AUX_MONO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_AUX_MONO_COLOR, "groups",
-                                "Set Aux Mono Color...", "color", bus_type="aux_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Aux Stereo Name
-            elif var._name == GuiConstants.TEXT_AUX_STEREO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_AUX_STEREO_NAME, "groups",
-                                "Set Aux Stereo Name...", "name", bus_type="aux_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Aux Stereo Color
-            elif var._name == GuiConstants.TEXT_AUX_STERE0_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_AUX_STERE0_COLOR, "groups",
-                                "Set Aux Stereo Color...", "color", bus_type="aux_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Group Mono Name
-            elif var._name == GuiConstants.TEXT_GRP_MONO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_GRP_MONO_NAME, "groups",
-                                "Set Group Mono Name...", "name", bus_type="group_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Group Mono Color
-            elif var._name == GuiConstants.TEXT_GRP_MONO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_GRP_MONO_COLOR, "groups",
-                                "Set Group Mono Color...", "color", bus_type="group_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Group Stereo Name
-            elif var._name == GuiConstants.TEXT_GRP_STEREO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_GRP_STEREO_NAME, "groups",
-                                "Set Group Stereo Name...", "name", bus_type="group_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Group Stereo Color
-            elif var._name == GuiConstants.TEXT_GRP_STEREO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_GRP_STEREO_COLOR, "groups",
-                                "Set Group Stereo Color...", "color", bus_type="group_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Matrix Mono Name
-            elif var._name == GuiConstants.TEXT_MTX_MONO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_MTX_MONO_NAME, "groups",
-                                "Set Matrix Mono Name...", "name", bus_type="matrix_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Matrix Mono Color
-            elif var._name == GuiConstants.TEXT_MTX_MONO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_MTX_MONO_COLOR, "groups",
-                                "Set Matrix Mono Color...", "color", bus_type="matrix_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Matrix Stereo Name
-            elif var._name == GuiConstants.TEXT_MTX_STEREO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_MTX_STEREO_NAME, "groups",
-                                "Set Matrix Stereo Name...", "name", bus_type="matrix_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # Matrix Stereo Color
-            elif var._name == GuiConstants.TEXT_MTX_STEREO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_MTX_STEREO_COLOR, "groups",
-                                "Set Matrix Stereo Color...", "color", bus_type="matrix_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # FX Send Mono Name
-            elif var._name == GuiConstants.TEXT_FX_SEND_MONO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_FX_SEND_MONO_NAME, "groups",
-                                "Set FX Send Mono Name...", "name", bus_type="fx_send_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # FX Send Mono Color
-            elif var._name == GuiConstants.TEXT_FX_SEND_MONO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_FX_SEND_MONO_COLOR, "groups",
-                                "Set FX Send Mono Color...", "color", bus_type="fx_send_mono")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # FX Send Stereo Name
-            elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_FX_SEND_STEREO_NAME, "groups",
-                                "Set FX Send Stereo Name...", "name", bus_type="fx_send_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # FX Send Stereo Color
-            elif var._name == GuiConstants.TEXT_FX_SEND_STEREO_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_FX_SEND_STEREO_COLOR, "groups",
-                                "Set FX Send Stereo Color...", "color", bus_type="fx_send_stereo")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # FX Return Name
-            elif var._name == GuiConstants.TEXT_FX_RETURN_NAME and var.get() is True:
-                action = Action(GuiConstants.TEXT_FX_RETURN_NAME, "groups",
-                                "Set FX Return Name...", "name", bus_type="fx_return")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-            # FX Return Color
-            elif var._name == GuiConstants.TEXT_FX_RETURN_COLOR and var.get() is True:
-                action = Action(GuiConstants.TEXT_FX_RETURN_COLOR, "groups",
-                                "Set FX Return Color...", "color", bus_type="fx_return")
-                action_list.append(action)
-                actions = increment_actions(actions)
-
-    if check_box_reaper:
+    if context.get_app_data().get_output_reaper():
         actions = increment_actions(actions)
-        cb_reaper = True
-    else:
-        cb_reaper = False
 
-    if check_box_trackslive:
+    if context.get_app_data().get_output_trackslive():
         actions = increment_actions(actions)
-        cb_trackslive = True
-    else:
-        cb_trackslive = False
-
-    if check_box_write_to_console and actions == 0:
-        showinfo(message="No spreadsheet column(s) selected. Please select at least one column")
-        return
 
     action = "Start Processing..."
     log.info(action)
@@ -450,7 +449,7 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
 
     current_ip = read_current_ui_ip_address()
 
-    if is_network_communication_allowed & check_box_write_to_console:
+    if context.get_network_connection_allowed() and context.get_app_data().get_output_write_to_console():
         if not is_valid_ip_address(current_ip):
             error_message = "Invalid IP-Address"
             current_action_label["text"] = error_message
@@ -463,34 +462,15 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
     progress_open_or_close_connection()
     root.update()
 
-    if cb_write_to_console:
-        for action in action_list:
-            action_message = action.get_message()
-            if action.get_sheet_tab() == "channels":
-                current_action_label["text"] = action_message
-                if handle_channels_parameter(action_message, context, sheet.get_channel_model(),
-                                             action.get_action()) == 1:
-                    reset_current_action_label()
-                    reset_progress_bar()
-                    exit(1)
-            elif action.get_sheet_tab() == "sockets":
-                current_action_label["text"] = action_message
-                handle_sockets_parameter(action_message, context, sheet.get_socket_model(),
-                                         action.get_action())
+    if context.get_app_data().get_output_write_to_console():
 
-
-            elif action.get_sheet_tab() == "groups":
-                current_action_label["text"] = action_message
-                if handle_groups_parameter(action_message, context, sheet.get_group_model(),
-                                           action.get_action(), action.get_bus_type()) == 1:
-                    reset_current_action_label()
-                    reset_progress_bar()
-                    exit(1)
-
-            progress(actions)
+        if context.get_output() is None:
+            reset_progress_bar()
             root.update()
+            return
+        process_actions(action_list, actions, sheet)
 
-    if cb_reaper:
+    if context.get_app_data().get_output_reaper():
         action = "Creating Reaper Recording Session Template file..."
         log.info(action)
         current_action_label["text"] = action
@@ -511,7 +491,7 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
         progress(actions)
         root.update()
 
-    if cb_trackslive:
+    if context.get_app_data().get_output_trackslive():
         action = "Creating Tracks Live Recording Session Template file..."
         log.info(action)
         current_action_label["text"] = action
@@ -540,13 +520,40 @@ def read_document(context, filename, check_box_reaper, check_box_trackslive, che
     log.info(action)
     current_action_label["text"] = ""
 
-    if context.get_network_connection_allowed() & check_box_write_to_console:
+    if context.get_network_connection_allowed() & context.get_app_data().get_output_write_to_console():
         output = context.get_output()
         if output is not None:
             output.close()
     progress_open_or_close_connection()
     progress_open_or_close_connection()
     root.update()
+
+
+def process_actions(action_list, actions, sheet):
+    for action in action_list:
+        action_message = action.get_message()
+        if action.get_sheet_tab() == "channels":
+            current_action_label["text"] = action_message
+            if handle_channels_parameter(action_message, context, sheet.get_channel_model(),
+                                         action.get_action()) == 1:
+                reset_current_action_label()
+                reset_progress_bar()
+                exit(1)
+        elif action.get_sheet_tab() == "sockets":
+            current_action_label["text"] = action_message
+            handle_sockets_parameter(action_message, context, sheet.get_socket_model(),
+                                     action.get_action())
+
+        elif action.get_sheet_tab() == "groups":
+            current_action_label["text"] = action_message
+            if handle_groups_parameter(action_message, context, sheet.get_group_model(),
+                                       action.get_action(), action.get_bus_type()) == 1:
+                reset_current_action_label()
+                reset_progress_bar()
+                exit(1)
+
+        progress(actions)
+        root.update()
 
 
 def increment_actions(actions):
@@ -597,8 +604,13 @@ def browse_files():
     root.update()
 
     cb_reaper = var_write_reaper.get()
+    context.get_app_data().set_output_reaper(cb_reaper)
+
     cb_trackslive = var_write_trackslive.get()
+    context.get_app_data().set_output_trackslive(cb_trackslive)
+
     cb_console_write = var_write_to_console.get()
+    context.get_app_data().set_output_write_to_console(cb_console_write)
 
     if cb_reaper or cb_trackslive or cb_console_write:
         input_file_path = filedialog.askopenfilename()
@@ -609,7 +621,7 @@ def browse_files():
         root.reaper_output_dir = os.path.dirname(input_file_path)
         root.reaper_file_prefix = os.path.splitext(os.path.basename(input_file_path))[0]
         try:
-            read_document(context, input_file_path, cb_reaper, cb_trackslive, cb_console_write)
+            read_document(input_file_path)
         except TypeError as exc:
 
             error_message = "An error happened, probably an empty line could be the issue. " \
@@ -905,7 +917,10 @@ def update_current_action_label():
 
 
 def connect_to_console(mix_rack_ip_tmp, test=False):
-    logging.info("Open connection to console on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ...")
+    text = "Try to open connection to console on ip: " + mix_rack_ip_tmp + ":" + str(dliveConstants.port) + " ..."
+
+    logging.info(text)
+    current_action_label["text"] = text
     try:
         output = connect(mix_rack_ip_tmp, dliveConstants.port)
         if test:
@@ -975,8 +990,6 @@ if __name__ == '__main__':
                       dliveConstants.allow_network_communication, CONFIG_FILE)
     app_data = AppData(None, None, None)
     context.set_app_data(app_data)
-
-    is_network_communication_allowed = context.get_network_connection_allowed()
 
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)

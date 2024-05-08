@@ -417,8 +417,6 @@ def read_document(filename):
 
     app_data.set_midi_channel(determine_technical_midi_port(var_midi_channel.get()))
 
-    context.get_app_data().set_output_write_to_console(False)
-
     context.get_app_data().set_console(var_console.get())
 
     if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:

@@ -64,18 +64,18 @@ jobs:
           onefile: true
           onefile-tempdir-spec: ./dmt
           output-file: dmt-${{github.event.inputs.mytag}}-${{runner.os}}
-#
-#      - name: Upload Artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: ${{runner.os}} Build
-#          if-no-files-found: warn
-#          path: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
-#
-#      - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
-#        uses: ncipollo/release-action@v1
-#        with:
-#          allowUpdates: true
-#          commit: main
-#          tag: ${{github.event.inputs.mytag}}
-#          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{runner.os}} Build
+          if-no-files-found: warn
+          path: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+
+      - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: main
+          tag: ${{github.event.inputs.mytag}}
+          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'

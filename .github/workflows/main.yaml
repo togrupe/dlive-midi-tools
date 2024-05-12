@@ -46,18 +46,18 @@ jobs:
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
           cache: 'pip'
           cache-dependency-path: |
-            **/requirements*.txt
+            **/dependencies*.txt
 
       - name: Install Dependencies for All
         run: |
-          pip install -r ../../requirements.txt
+          pip install -r ../../dependencies.txt
 
       - name: Build Executable for ${{runner.os}}
         uses: Nuitka/Nuitka-Action@v1.0
         with:
           nuitka-version: 1.8.5
           script-name: src/Main.py
-          company-name: CONGO*blue (forked from zak-45)
+          # company-name: CONGO*blue (forked from zak-45)
           file-version: ${{github.event.inputs.mytag}}
           # windows-icon-from-ico: assets/BPM2OSC.ico
           # macos-app-icon: assets/BPM2OSC.ico

@@ -82,7 +82,9 @@ jobs:
       - name: Create tar.gz
         if: matrix.os == 'macos-latest'
         run: |
-          tar -czvf dmt-${{github.event.inputs.mytag}}-${{runner.os}}.tgz output
+          cd output
+          tar -czvf dmt-${{github.event.inputs.mytag}}-${{runner.os}}.tgz *
+          mv *.tgz ..
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -91,10 +93,10 @@ jobs:
           if-no-files-found: warn
           path: 'dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
 
-#      - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
-#        uses: ncipollo/release-action@v1
-#        with:
-#          allowUpdates: true
-#          commit: main
-#          tag: ${{github.event.inputs.mytag}}
-#          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+      - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: main
+          tag: ${{github.event.inputs.mytag}}
+          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'

@@ -62,20 +62,39 @@ jobs:
           # windows-icon-from-ico: assets/BPM2OSC.ico
           # macos-app-icon: assets/BPM2OSC.ico
           onefile: true
-          onefile-tempdir-spec: ./dmt
+          onefile-tempdir-spec: dmt-temp
           output-file: dmt-${{github.event.inputs.mytag}}-${{runner.os}}
+
+      - name: Make artefact executable
+        run: chmod +x build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}
+
+      - name: Create temporary output folder
+        run: mkdir output
+
+      - name: Copy artefacts to temporary output folder
+        run: |
+          cp dLiveChannelList.xlsx output
+          cp dLiveChannelList.ods output
+          cp ThirdParty-Licenses.txt output 
+          cp LICENSE output
+          cp build/dmt-${{github.event.inputs.mytag}}-${{runner.os}} output
+
+      - name: Create tar.gz
+        if: matrix.os == 'macos-latest'
+        run: |
+          tar -czvf dmt-${{github.event.inputs.mytag}}-${{runner.os}}.tgz output
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{runner.os}} Build
           if-no-files-found: warn
-          path: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+          path: 'dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
 
-      - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          commit: main
-          tag: ${{github.event.inputs.mytag}}
-          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+#      - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
+#        uses: ncipollo/release-action@v1
+#        with:
+#          allowUpdates: true
+#          commit: main
+#          tag: ${{github.event.inputs.mytag}}
+#          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'

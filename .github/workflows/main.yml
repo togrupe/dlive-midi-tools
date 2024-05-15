@@ -92,7 +92,7 @@ jobs:
         with:
           name: ${{runner.os}} Build
           if-no-files-found: warn
-          path: 'dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+          path: dmt-${{github.event.inputs.mytag}}-${{runner.os}}.tgz
 
       - name: Create Release ${{github.event.inputs.mytag}} with Builds from Nuitka
         uses: ncipollo/release-action@v1
@@ -100,4 +100,4 @@ jobs:
           allowUpdates: true
           commit: main
           tag: ${{github.event.inputs.mytag}}
-          artifacts: 'build/dmt-${{github.event.inputs.mytag}}-${{runner.os}}**'
+          artifacts: dmt-${{github.event.inputs.mytag}}-${{runner.os}}.tgz

@@ -109,5 +109,5 @@ jobs:
         with:
           allowUpdates: true
           commit: main
-          tag: ${{github.event.inputs.mytag}}
+          tag: ${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}
           artifacts: dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz

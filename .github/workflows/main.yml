@@ -63,6 +63,7 @@ jobs:
           # macos-app-icon: assets/BPM2OSC.ico
           onefile: true
           onefile-tempdir-spec: dmt-temp
+          enable-plugins: tk-inter
           output-file: dmt-${{github.event.inputs.mytag}}-${{runner.os}}
 
       - name: Make artefact executable

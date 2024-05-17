@@ -72,10 +72,10 @@ jobs:
           onefile: true
           onefile-tempdir-spec: dmt-temp
           enable-plugins: tk-inter
-          output-file: dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
+          output-file: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
 
       - name: Make artefact executable
-        run: chmod +x build/dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
+        run: chmod +x build/dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
 
       - name: Create temporary output folder
         run: mkdir output
@@ -86,13 +86,13 @@ jobs:
           cp dLiveChannelList.ods output
           cp ThirdParty-Licenses.txt output 
           cp LICENSE output
-          cp build/dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}} output
+          cp build/dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}} output
 
       - name: Create tar.gz
         if: matrix.os == 'macos-latest'
         run: |
           cd output
-          tar -czvf dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz *
+          tar -czvf dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz *
           mv *.tgz ..
 
       - name: Upload Artifacts
@@ -101,13 +101,13 @@ jobs:
         with:
           name: ${{runner.os}} Build
           if-no-files-found: warn
-          path: dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz
+          path: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz
 
-      - name: Create Release ${{github.event.inputs.mytag}}${{github.event.inputs.suffix}} with Builds from Nuitka
+      - name: Create Release v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}} with Builds from Nuitka
         if: matrix.os == 'macos-latest'
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           commit: main
-          tag: ${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}
-          artifacts: dmt-${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz
+          tag: v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}
+          artifacts: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz

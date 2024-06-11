@@ -6,6 +6,7 @@ class AppData:
         self.output_reaper = False
         self.output_trackslive = False
         self.output_write_to_console = False
+        self.output_write_csv = False
 
     def get_midi_channel(self):
         return self.midi_channel
@@ -42,3 +43,9 @@ class AppData:
 
     def set_output_write_to_console(self, data):
         self.output_write_to_console = data
+
+    def get_output_write_to_csv(self):
+        return self.output_write_csv
+
+    def set_output_write_to_csv(self, data):
+        self.output_write_csv = data

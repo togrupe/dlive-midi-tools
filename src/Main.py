@@ -21,6 +21,7 @@ from mido.sockets import connect
 import GuiConstants
 import Toolinfo
 import dliveConstants
+from directorcsv import CsvCreator
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from helper.Networking import is_valid_ip_address
@@ -398,7 +399,7 @@ def read_document(filename):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '10'
+    latest_spreadsheet_version = '11'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -439,6 +440,9 @@ def read_document(filename):
         actions = increment_actions(actions)
 
     if context.get_app_data().get_output_trackslive():
+        actions = increment_actions(actions)
+
+    if context.get_app_data().get_output_write_to_csv():
         actions = increment_actions(actions)
 
     action = "Start Processing..."
@@ -506,6 +510,17 @@ def read_document(filename):
                                                 var_reaper_additional_master_tracks.get(),
                                                 var_master_recording_patch.get(), var_disable_track_coloring.get())
         log.info("Tracks Live Recording Session Template created")
+
+        progress(actions)
+        root.update()
+
+    if context.get_app_data().get_output_write_to_csv():
+        action = "Creating Director CSV file..."
+        log.info(action)
+        current_action_label["text"] = action
+
+        CsvCreator.create(sheet, root.reaper_output_dir, root.reaper_file_prefix)
+        log.info("Director CSV file created")
 
         progress(actions)
         root.update()
@@ -610,7 +625,10 @@ def browse_files():
     cb_console_write = var_write_to_console.get()
     context.get_app_data().set_output_write_to_console(cb_console_write)
 
-    if cb_reaper or cb_trackslive or cb_console_write:
+    cb_write_to_csv = var_write_to_csv.get()
+    context.get_app_data().set_output_write_to_csv(cb_write_to_csv)
+
+    if cb_reaper or cb_trackslive or cb_console_write or cb_write_to_csv:
         input_file_path = filedialog.askopenfilename()
         if input_file_path == "":
             # Nothing to do
@@ -992,7 +1010,7 @@ if __name__ == '__main__':
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x800')
+    root.geometry('1300x820')
     root.resizable(False, False)
 
     # ----------------- Menu Area ------------------
@@ -1168,9 +1186,15 @@ if __name__ == '__main__':
     global_select_frame.pack(side=TOP)
 
     output_option_frame = LabelFrame(tab1, text="Output Options")
+
+    var_write_to_csv = BooleanVar(value=False)
+    write_to_csv = Checkbutton(output_option_frame, text="Generate Director v2.x CSV (Only Inputs)",
+                               var=var_write_to_csv)
+
     var_write_to_console = BooleanVar(value=True)
     write_to_console = Checkbutton(output_option_frame, text="Write to Audio Console or Director",
                                    var=var_write_to_console)
+
     var_write_reaper = BooleanVar(value=False)
     cb_reaper_write = Checkbutton(output_option_frame,
                                   text="Generate Reaper Recording Session with Name & Color (In & Out 1:1 Patch)",
@@ -1223,6 +1247,7 @@ if __name__ == '__main__':
     cb_reaper_additional_master_tracks.grid(row=4, column=1, sticky="W")
     combobox_master_track.grid(row=4, column=2, sticky="W")
     cb_trackslive_write.grid(row=2, column=0, sticky="W")
+    write_to_csv.grid(row=5, column=0, sticky="W")
 
     output_option_frame.pack(side=TOP, fill=X)
 

@@ -148,7 +148,7 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 ## Usage
 Prerequisites: 
 * Windows >= 10 / macOS >= BigSur
-* dLive Firmware: 1.9x
+* dLive Firmware: 1.9x / 2.x
 * Avantis Firmware: 1.30
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
@@ -254,6 +254,27 @@ If you want to give feedback, report an issue or contribute (new ideas, coding, 
 dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-midi-tools/discussions)
 
 ## Release Notes
+### v2.8.0
+
+Feature & Maintenance Release
+
+#### New Features
+- Console to Console
+- CSV Director Support for V2.00
+
+#### Improvements
+- Code refactoring
+
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
+
+
 ### v2.7.0
 
 Feature & Maintenance Release

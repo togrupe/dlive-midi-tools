@@ -37,17 +37,27 @@ def convert_to_csv_color(color):
 
 
 def convert_to_csv_pad(pad):
-    if pad == "yes":
+    if pad == "-" or pad == 'nan':
+        return ''
+    elif pad == "yes":
         return CsvConstants.csv_pad_on
     else:
         return CsvConstants.csv_pad_off
 
 
 def convert_to_csv_phantom(phantom):
-    if phantom == "yes":
+    if phantom == "-" or phantom == 'nan':
+        return ''
+    elif phantom == "yes":
         return CsvConstants.csv_phantom_on
     else:
         return CsvConstants.csv_phantom_off
+
+
+def convert_to_csv_gain(gain):
+    if gain == "-" or gain == 'nan':
+        return ''
+    return int(gain)
 
 
 def create(sheet, reaper_output_dir, file_prefix):
@@ -64,7 +74,7 @@ def create(sheet, reaper_output_dir, file_prefix):
         # Input, 1, "1", Green, MixRack, 1,, 27, Off, Off, Unassigned,, , , , , Unassigned,, , , , , Unassigned,, , , ,
         daten.append(
             ['Input', item.get_channel(), item.get_name(), convert_to_csv_color(item.get_color()),
-             item.get_source(), item.get_socket(), '', int(item.get_gain()),
+             item.get_source(), item.get_socket(), '', convert_to_csv_gain(item.get_gain()),
              convert_to_csv_pad(item.get_pad()), convert_to_csv_phantom(item.get_phantom()),
              'Unassigned', '', '', '', '', '', 'Unassigned', '', '', '', '', '', 'Unassigned', '', '', '', '', ])
 

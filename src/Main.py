@@ -159,7 +159,6 @@ def get_data_from_console():
 
 
 def fill_actions(action_list, actions):
-
     for var in grid.vars:
         log.info("Current checkbox name: " + str(var._name) + " State=" + str(var.get()))
 
@@ -728,11 +727,13 @@ def disable_avantis_checkboxes():
         if current_cb in cb_to_disable:
             remove_tick(current_cb)
             checkbox.config(state="disabled")
+    write_to_csv.config(state="disabled")
 
 
 def reactivate_avantis_checkboxes():
     for checkbox in grid.checkboxes:
         checkbox.config(state="normal")
+    write_to_csv.config(state="normal")
 
 
 def select_all_checkboxes():
@@ -1188,7 +1189,7 @@ if __name__ == '__main__':
     output_option_frame = LabelFrame(tab1, text="Output Options")
 
     var_write_to_csv = BooleanVar(value=False)
-    write_to_csv = Checkbutton(output_option_frame, text="Generate Director v2.x CSV (Only Inputs)",
+    write_to_csv = Checkbutton(output_option_frame, text="Generate dLive Director v2.x CSV (Only Inputs)",
                                var=var_write_to_csv)
 
     var_write_to_console = BooleanVar(value=True)

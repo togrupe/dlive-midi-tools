@@ -267,7 +267,7 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 Feature & Maintenance Release
 
 #### New Features
-- dlive Director CSV Support for V2.00
+- dLive Director CSV Support for V2.00
 
 #### Improvements
 - Code refactoring

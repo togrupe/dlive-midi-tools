@@ -33,6 +33,7 @@ More information about future releases can be found in the [wiki](https://github
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
 * Generate DAW session(s) from current console settings
+* Generates a CSV File for dLive Director CSV Import
 
 ## Software Liability Warning
 

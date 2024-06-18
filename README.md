@@ -224,9 +224,9 @@ Choose which mode you want to use:
 
 9. `Generate dLive Director v2.xx CSV (Only Inputs)` Generates a CSV file for dLive Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can set a baseline for the MIDI based parameters. 
 
-img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
+<img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
 
-img alt="irector-import-export" src="doc/directorcsv/director-import-export.png" width="150"/>
+<img alt="irector-import-export" src="doc/directorcsv/director-import-export.png" width="150"/>
 
 
 <br><br>

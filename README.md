@@ -226,7 +226,7 @@ Choose which mode you want to use:
 
 <img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
 
-<img alt="irector-import-export" src="doc/directorcsv/director-import-export.png" width="150"/>
+<img alt="irector-import-export" src="doc/directorcsv/director-import-export.png" width="300"/>
 
 
 <br><br>

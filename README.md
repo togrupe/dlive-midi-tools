@@ -222,11 +222,14 @@ Choose which mode you want to use:
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-9. `Generate dLive Director v2.xx CSV (Only Inputs)` Generates a CSV file for dLive Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can set a baseline for the MIDI based parameters. 
+9. `Generate dLive Director v2.xx CSV (Only Inputs)` Generates a CSV file for dLive Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 
 
 <img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
 
-<img alt="irector-import-export" src="doc/directorcsv/director-import-export.png" width="300"/>
+<img alt="director-import-export" src="doc/directorcsv/director-import-export.png" width="300"/>
+
+> **_NOTE:_** This feature uses the columns Name, Color, Source, Socket, Gain, Pad, Phantom from the `Channels` Tab. 
+
 
 
 <br><br>

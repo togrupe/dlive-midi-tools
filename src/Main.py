@@ -1189,7 +1189,7 @@ if __name__ == '__main__':
     output_option_frame = LabelFrame(tab1, text="Output Options")
 
     var_write_to_csv = BooleanVar(value=False)
-    write_to_csv = Checkbutton(output_option_frame, text="Generate dLive Director v2.x CSV (Only Inputs)",
+    write_to_csv = Checkbutton(output_option_frame, text="Generate Director v2.x CSV (Columns: Name, Color, Source, Socket, Gain, Pad, Phantom)",
                                var=var_write_to_csv)
 
     var_write_to_console = BooleanVar(value=True)

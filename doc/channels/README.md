@@ -101,14 +101,14 @@ Dropdown list with predefined fader level values. (-99 = -inf) <br>
 
 Empty cells are interpreted as **Don´t care**.
 
-#### HPF On
+#### HPF On (only dLive)
 * yes - to activate the Highpass Filter <br>
 * no - to deactivate the Highpass Filter <br>
 * "-" - Don´t care. Ignore the cell. <br>
 
 Empty cells are interpreted as **Don´t care**.
 
-#### HPF Value
+#### HPF Value (only dLive)
 20-2000Hz - to set the Highpass Filter value
 
 Empty cells are interpreted as **Don´t care**.
@@ -132,14 +132,14 @@ no - The Record Button is not active
 
 Empty cells are interpreted as **no**
 
-#### DCA1-24
+#### DCA1-24 (dLive) / DCA1-16 (Avantis)
 By putting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
 
 Empty cells are interpreted as not being assigned.
 
 "-" - Don´t care. Ignore the cell. <br>
 
-#### Mute1-8
+#### Mute1-8 (Only dLive)
 By putting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
 
 Empty cells are interpreted as not being assigned.

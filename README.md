@@ -78,8 +78,8 @@ Older versions see [archive](doc/download-archive.md)
 
 
 ## Input file / The Spreadsheet Template
-An example spreadsheet file named: **dLiveChannelList.xlsx** can be found in the root folder. 
-By default, channels 1-128 are available in the sheet. If you need less, 
+Example spreadsheet files for dLive: **dLiveChannelList.xlsx** and Avantis: **AvantisChannelList.xlsx** can be found in the root folder. 
+By default, channels 1-128 (dLive) and 1-64 (Avantis) are available in the sheets. If you need less, 
 just delete the channels you don't want to process. <br>
 
 You can also write in blocks. e.g. 

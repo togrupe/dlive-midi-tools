@@ -2,7 +2,7 @@
 ## Description
 Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
 Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
-dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP. Additionally, from the same spreadsheet 
+dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP or CSV import. Additionally, from the same spreadsheet 
 or the current console settings a DAW recording session for Reaper or Tracks Live can be generated. 
 - Channel Name
 - Channel Color
@@ -22,6 +22,7 @@ or the current console settings a DAW recording session for Reaper or Tracks Liv
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)
+- Source & Socket Patching (via dLive Director CSV Import)
 
 More information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
 
@@ -33,7 +34,7 @@ More information about future releases can be found in the [wiki](https://github
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
 * Generate DAW session(s) from current console settings
-* Generate CSV File for dLive Director CSV Import
+* Generate CSV File incl. Channel Patching for dLive Director CSV Import
 
 ## Software Liability Warning
 

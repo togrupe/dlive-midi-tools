@@ -1,4 +1,4 @@
-> **_NOTE:_**  The light-grey colored columns are for the dLive Director CSV import feature. All others work based on MIDI.
+> **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
 
 #### Name: <br>
 Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.

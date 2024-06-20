@@ -23,8 +23,8 @@ The following colors are allowed:
 
 If the given color does not match, the default color black is used instead.
 
-#### Source: (only dLive CSV Import) <br>
-The following options are available:
+#### Source: (only Director CSV Import) <br>
+The following options for dLive are available:
 * Unassigned
 * MixRack
 * Surface
@@ -39,11 +39,18 @@ The following options are available:
 * IO 3
 * SigGen
 
-#### Socket: (only dLive CSV Import) <br>
+The following options for Avantis are available:
+* Unassigned
+* Surface
+* SLink
+* IO 1
+* IO 2
+* SigGen
+
+#### Socket: (only Director CSV Import) <br>
 
 The Socket number in combination with the `Source` <br>
 Allowed values dLive:
-* Unassigned
 * Mixrack: 1-64
 * Surface: 1-8
 * Surface DX 5/6: 1-32
@@ -56,25 +63,24 @@ Allowed values dLive:
 * IO 3: 1-128
 
 Allowed values Avantis:
-* Unassigned
 * Surface: 1-12
 * SLink: 1-128
 * IO 1: 1-128
 * IO 2: 1-128
 
-#### Gain: (only dLive CSV Import) <br>
+#### Gain: (only Director CSV Import) <br>
 
 * "-" - Don´t care. Ignore the cell. <br>
 * +5 to +60 - the gain value
 
-#### Pad: (only dLive CSV Import) <br>
+#### Pad: (only Director CSV Import) <br>
 * yes - to activate PAD <br>
 * no - to deactivate PAD. <br>
 * "-" - Don´t care. Ignore the cell. <br>
 
 Empty cells are interpreted as **Don´t care**.
 
-#### Phantom: (only dLive CSV Import) <br>
+#### Phantom: (only Director CSV Import) <br>
 * yes - to activate Phantom Power (48V) <br>
 * no - to deactivate Phantom Power (48V). <br>
 * "-" - Don´t care. Ignore the cell. <br>

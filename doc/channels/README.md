@@ -42,7 +42,8 @@ The following options are available:
 #### Socket: (only dLive CSV Import) <br>
 
 The Socket number in combination with the `Source` <br>
-Allowed values:
+Allowed values dLive:
+* Unassigned
 * Mixrack: 1-64
 * Surface: 1-8
 * Surface DX 5/6: 1-32
@@ -53,6 +54,13 @@ Allowed values:
 * IO 1: 1-128
 * IO 2: 1-128
 * IO 3: 1-128
+
+Allowed values Avantis:
+* Unassigned
+* Surface: 1-12
+* SLink: 1-128
+* IO 1: 1-128
+* IO 2: 1-128
 
 #### Gain: (only dLive CSV Import) <br>
 

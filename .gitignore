@@ -144,3 +144,6 @@ out/*
 
 #Tracks-live
 *.template
+
+#CSV-files
+*.csv

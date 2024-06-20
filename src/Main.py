@@ -727,13 +727,11 @@ def disable_avantis_checkboxes():
         if current_cb in cb_to_disable:
             remove_tick(current_cb)
             checkbox.config(state="disabled")
-    write_to_csv.config(state="disabled")
 
 
 def reactivate_avantis_checkboxes():
     for checkbox in grid.checkboxes:
         checkbox.config(state="normal")
-    write_to_csv.config(state="normal")
 
 
 def select_all_checkboxes():

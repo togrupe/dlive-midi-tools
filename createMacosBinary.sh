@@ -11,9 +11,13 @@ mkdir out
 cp ./dist/${basename} out
 cp dLiveChannelList.xlsx out
 cp dLiveChannelList.ods out
+cp AvantisChannelList.xlsx out
+cp AvantisChannelList.ods out
 if [ "$2" == "test" ]; then
   cp testing/dLiveChannelListTesting.xlsx out
   cp testing/dLiveChannelListTesting.ods out
+  cp testing/AvantisChannelListTesting.xlsx out
+  cp testing/AvantisChannelListTesting.ods out
 fi
 cp ThirdParty-Licenses.txt out
 cp LICENSE out

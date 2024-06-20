@@ -224,7 +224,13 @@ Choose which mode you want to use:
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-9. `Generate Director CSV (Columns: Name, Color, Source, Socket, Gain, Pad, Phantom)` Generates a CSV file for dLive Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 
+<br><br>
+> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
+
+   <img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
+
+
+9. `Generate Director CSV (Columns: Name, Color, Source, Socket, Gain, Pad, Phantom)` Generates a CSV file for Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 
 
 <img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
 
@@ -233,11 +239,6 @@ Choose which mode you want to use:
 > **_NOTE:_** This feature uses the columns Name, Color, Source, Socket, Gain, Pad, Phantom from the `Channels` Tab. 
 
 
-
-<br><br>
-> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
-
-   <img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
 
 10. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
    

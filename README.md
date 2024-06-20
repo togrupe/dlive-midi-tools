@@ -33,7 +33,7 @@ More information about future releases can be found in the [wiki](https://github
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
 * Generate DAW session(s) from current console settings
-* Generates a CSV File for dLive Director CSV Import
+* Generate CSV File for dLive Director CSV Import
 
 ## Software Liability Warning
 
@@ -62,7 +62,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Download
 | Version | Date       | OS                                  | Download                                                                                      | Release Notes   | MD5 Checksum                     |
 |---------|------------|-------------------------------------|-----------------------------------------------------------------------------------------------|-----------------|----------------------------------|
-| v2.8.0  | xx.06.2024 | macOS (x86_64 - Intel)              |                                                                                               | [Link](#v280)   |                                  |
+| v2.8.0  | xx.xx.2024  | macOS (x86_64 - Intel)              |                                                                                               | [Link](#v280)   |                                  |
 |         |            | macOS (Apple-Silicon)               |                                                                                               |                 |                                  |
 |         |            | Windows (x86_64)                    |                                                                                               |                 |                                  |
 | v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270)   | 0067242c999b6b44570076fbaed86aa7 |
@@ -151,6 +151,7 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 Prerequisites: 
 * Windows >= 10 / macOS >= BigSur
 * dLive Firmware: 1.9x / 2.x
+* dLive Director: 1.9x / 2.x (Optional)
 * Avantis Firmware: 1.30
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
@@ -222,7 +223,7 @@ Choose which mode you want to use:
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-9. `Generate dLive Director v2.xx CSV (Only Inputs)` Generates a CSV file for dLive Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 
+9. `Generate Director v2.x CSV (Columns: Name, Color, Source, Socket, Gain, Pad, Phantom)` Generates a CSV file for dLive Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 
 
 <img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
 

@@ -39,7 +39,7 @@ def convert_to_csv_color(color):
 def convert_to_csv_pad(pad):
     if pad == "-" or pad == 'nan':
         return ''
-    elif pad == "yes":
+    elif pad == SpreadsheetConstants.spreadsheet_yes:
         return CsvConstants.csv_pad_on
     else:
         return CsvConstants.csv_pad_off
@@ -48,7 +48,7 @@ def convert_to_csv_pad(pad):
 def convert_to_csv_phantom(phantom):
     if phantom == "-" or phantom == 'nan':
         return ''
-    elif phantom == "yes":
+    elif phantom == SpreadsheetConstants.spreadsheet_yes:
         return CsvConstants.csv_phantom_on
     else:
         return CsvConstants.csv_phantom_off

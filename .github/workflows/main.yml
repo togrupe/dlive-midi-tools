@@ -1,6 +1,6 @@
-# This is a basic workflow that is manually triggered
+# Cross-compile workflow that is manually triggered
 
-name: Manual workflow
+name: Cross Compile Manual workflow
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -8,25 +8,106 @@ on:
   workflow_dispatch:
     # Inputs the workflow accepts.
     inputs:
-      name:
+      mytag:
         # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
+        description: 'Input Tag'
         # Default value if no value is explicitly provided
-        default: 'World'
+        default: '0.0.0'
         # Input has to be provided for the workflow to run
         required: true
         # The data type of the input
         type: string
+      suffix:
+        description: 'Version suffix'
+        # Default suffix
+        default: ''
+        # Input has to be provided for the workflow to run
+        required: false
+        # The data type of the input
+        type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        os: [macos-latest]
+
+    runs-on: ${{matrix.os}}
+
     steps:
-    # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ inputs.name }}"
+      - name: Check-out repository
+        uses: actions/checkout@v3
+
+      - name: MacOS specific
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update 
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          cache: 'pip'
+          cache-dependency-path: |
+            **/dependencies*.txt
+
+      - name: Install Dependencies for All
+        run: |
+          pip install -r dependencies.txt
+
+      - name: Build Executable for ${{runner.os}}
+        uses: Nuitka/Nuitka-Action@v1.0
+        with:
+          nuitka-version: 1.8.5
+          script-name: src/Main.py
+          # company-name: CONGO*blue (forked from zak-45)
+          file-version: ${{github.event.inputs.mytag}}
+          # windows-icon-from-ico: assets/BPM2OSC.ico
+          # macos-app-icon: assets/BPM2OSC.ico
+          onefile: true
+          onefile-tempdir-spec: dmt-temp
+          enable-plugins: tk-inter
+          output-file: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
+
+      - name: Make artefact executable
+        run: chmod +x build/dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
+
+      - name: Create temporary output folder
+        run: mkdir output
+
+      - name: Copy artefacts to temporary output folder
+        run: |
+          cp dLiveChannelList.xlsx output
+          cp dLiveChannelList.ods output
+          cp ThirdParty-Licenses.txt output 
+          cp LICENSE output
+          cp build/dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}} output
+
+      - name: Create tar.gz
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd output
+          tar -czvf dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz *
+          mv *.tgz ..
+
+      - name: Upload Artifacts
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{runner.os}} Build
+          if-no-files-found: warn
+          path: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz
+
+      - name: Create Release v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}} with Builds from Nuitka
+        if: matrix.os == 'macos-latest'
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: main
+          tag: v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}
+          artifacts: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz

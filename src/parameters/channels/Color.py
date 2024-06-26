@@ -36,7 +36,7 @@ def color_channel(context, item, midi_channel_offset, channel_offset):
     elif lower_color == SpreadsheetConstants.spreadsheet_color_yellow:
         colour = dliveConstants.lcd_color_yellow
     elif lower_color == SpreadsheetConstants.spreadsheet_color_black:
-        colour = dliveConstants.lcd_color_black
+        colour = dliveConstants.lcd_color_off
     elif lower_color == SpreadsheetConstants.spreadsheet_color_white:
         colour = dliveConstants.lcd_color_white
     elif lower_color == 'nan':
@@ -44,7 +44,7 @@ def color_channel(context, item, midi_channel_offset, channel_offset):
         return
     else:
         log.warning("Given color: " + lower_color + " is not supported, setting default color: black")
-        colour = dliveConstants.lcd_color_black
+        colour = dliveConstants.lcd_color_off
 
     payload_array = [midi_channel + midi_channel_offset, dliveConstants.sysex_message_set_channel_colour,
                      channel_offset + item.get_channel_console(),
@@ -72,7 +72,7 @@ def convert_return_value_to_readable_color(in_message):
         color_ret = SpreadsheetConstants.spreadsheet_color_green
     elif color == dliveConstants.lcd_color_purple:
         color_ret = SpreadsheetConstants.spreadsheet_color_purple
-    elif color == dliveConstants.lcd_color_black:
+    elif color == dliveConstants.lcd_color_off:
         color_ret = SpreadsheetConstants.spreadsheet_color_black
     elif color == dliveConstants.lcd_color_white:
         color_ret = SpreadsheetConstants.spreadsheet_color_white

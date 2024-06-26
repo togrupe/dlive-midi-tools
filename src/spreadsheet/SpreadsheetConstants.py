@@ -18,3 +18,5 @@ spreadsheet_color_white = "white"
 
 spreadsheet_bypass_sign = "-"
 spreadsheet_bypass_string = "byp"
+
+spreadsheet_yes = "yes"

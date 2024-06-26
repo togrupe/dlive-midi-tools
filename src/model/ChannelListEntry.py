@@ -6,9 +6,14 @@
 #
 ####################################################
 class ChannelListEntry:
-    def __init__(self, channel, name, color, hpf_on, hpf_value, fader_level, mute, recording, record_arm, dca_config, mg_config, assign_mainmix):
+    def __init__(self, channel, name, color, source, socket, gain, pad, phantom, hpf_on, hpf_value, fader_level, mute, recording, record_arm, dca_config, mg_config, assign_mainmix):
         self.channel = channel
         self.name = name
+        self.source = source
+        self.socket = socket
+        self.gain = gain
+        self.pad = pad
+        self.phantom = phantom
         self.color = color
         self.hpf_on = hpf_on
         self.hpf_value = hpf_value
@@ -31,6 +36,21 @@ class ChannelListEntry:
 
     def get_color(self):
         return self.color
+
+    def get_source(self):
+        return self.source
+
+    def get_socket(self):
+        return self.socket
+
+    def get_gain(self):
+        return self.gain
+
+    def get_pad(self):
+        return self.pad
+
+    def get_phantom(self):
+        return self.phantom
 
     def get_hpf_on(self):
         return self.hpf_on

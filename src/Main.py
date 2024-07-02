@@ -464,6 +464,8 @@ def read_document(filename):
     root.update()
 
     if context.get_app_data().get_output_write_to_console():
+        showinfo(
+            message='Hint: Input patching (Source, Socket) can be applied by using Director´s CSV Import function.')
 
         if context.get_output() is None:
             reset_progress_bar()
@@ -514,6 +516,10 @@ def read_document(filename):
         root.update()
 
     if context.get_app_data().get_output_write_to_csv():
+        showinfo(
+            message='Info: You have selected the CSV Export Feature, Please use Directors Import CSV Feature to '
+                    'import Name, Color, Patching, Gain, Pad, Phantom (48V)')
+
         action = "Creating Director CSV file..."
         log.info(action)
         current_action_label["text"] = action

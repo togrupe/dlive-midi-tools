@@ -225,9 +225,7 @@ Choose which mode you want to use:
    * Add two additional mono busses to record your mixing sum.
 
 <br><br>
-> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, use the following settings (1+2a/2b) and continue with Step 9 (3).<br><br>
-
-   <img alt="onlyreaper" src="doc/daw_only.png" width="700"/>
+> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, disable the checkbox "Write to Audio Console or Director", choose your DAW and continue with Step 10.<br><br>
 
 
 9. `Generate Director CSV (Columns: Name, Color, Source, Socket, Gain, Pad, Phantom)` Generates a CSV file for Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 

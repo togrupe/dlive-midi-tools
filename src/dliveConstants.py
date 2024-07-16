@@ -7,7 +7,7 @@
 ####################################################
 
 # The dlive color mappings
-lcd_color_black = 0x00
+lcd_color_off = 0x00
 lcd_color_red = 0x01
 lcd_color_green = 0x02
 lcd_color_yellow = 0x03
@@ -97,6 +97,21 @@ gain_level_plus20 = 0x23 # corrected from V1.9 spec, old: 0x22
 gain_level_plus15 = 0x18 # corrected from V1.9 spec, old: 0x17
 gain_level_plus10 = 0x0C
 gain_level_plus5 = 0x0
+
+source_select_unassigned = "Unassigned"
+source_select_mixrack = "MixRack"
+source_select_surface = "Surface"
+source_select_surface_dx56 = "Surface DX 5/6"
+source_select_surface_IO4 = "IO 4"
+source_select_surface_IO5 = "IO 5"
+source_select_USB = "USB"
+source_select_mixrack_dx12 = "MixRack DX 1/2"
+source_select_mixrack_dx34 = "MixRack DX 3/4"
+source_select_mixrack_IO1 = "IO 1"
+source_select_mixrack_IO2 = "IO 2"
+source_select_mixrack_IO3 = "IO 3"
+source_select_siggen = "SigGen"
+
 
 # SysEx header definitions
 sysexhdrstart = [0xF0, 0x00, 0x00, 0x1A, 0x50, 0x10, sysex_header_major_version, sysex_header_minor_version]

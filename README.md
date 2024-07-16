@@ -259,11 +259,18 @@ Click `Generate DAW session(s) from current console settings`
 
 If you find any issues, please let me know. New ideas are welcome. 
 
-Have fun! 
+Have fun!
 
 ## Feedback
 If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
 dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-midi-tools/discussions)
+
+# Troubleshooting
+
+| Problem                              | Possible Solution                                                                               | 
+|--------------------------------------|-------------------------------------------------------------------------------------------------|
+| Console to DAW Feature seems to hang | Please make sure, the MIDI Channel on the Audio console fits to the settings in the tool. <br> You can find the MIDI Settings under "Utils/Shows -> Control -> Midi" |
+
 
 ## Release Notes
 ### v2.8.0

@@ -265,7 +265,7 @@ Have fun!
 If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
 dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-midi-tools/discussions)
 
-# Troubleshooting
+## Troubleshooting
 
 | Problem                              | Possible Solution                                                                               | 
 |--------------------------------------|-------------------------------------------------------------------------------------------------|

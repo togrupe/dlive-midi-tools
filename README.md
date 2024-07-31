@@ -4,8 +4,14 @@ Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dL
 Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
 dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP or CSV import. Additionally, from the same spreadsheet 
 or the current console settings a DAW recording session for Reaper or Tracks Live can be generated. 
-- Channel Name
-- Channel Color
+- Name & Color for: 
+  - Channel
+  - DCA
+  - Aux
+  - Group
+  - Matrices
+  - FX Sends
+  - FX Returns
 - Channel Mute
 - Fader Level
 - Main Mix Assignments
@@ -13,12 +19,6 @@ or the current console settings a DAW recording session for Reaper or Tracks Liv
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
-- DCA Name & Color
-- Aux Name & Color
-- Group Name & Color
-- Matrices Name & Color
-- FX Sends Name & Color
-- FX Returns Name & Color
 - Mute Group Assignments (dLive only)
 - HPF On (dLive only)
 - HPF Value (dLive only)

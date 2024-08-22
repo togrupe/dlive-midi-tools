@@ -1012,7 +1012,8 @@ if __name__ == '__main__':
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     logger_instance = logging.getLogger(__name__)
     context = Context(logger_instance, None, None,
-                      dliveConstants.allow_network_communication, CONFIG_FILE, False)
+                      dliveConstants.allow_network_communication, CONFIG_FILE,
+                      not GuiConstants.SHOW_CSV_PATCHING_HINT_ONCE_A_RUN)
     app_data = AppData(None, None, None)
     context.set_app_data(app_data)
 

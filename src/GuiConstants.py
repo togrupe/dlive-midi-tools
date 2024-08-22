@@ -5,6 +5,8 @@
 # Author: Tobias Grupe
 #
 ####################################################
+SHOW_CSV_PATCHING_HINT_ONCE_A_RUN = True
+
 TEXT_HPF_ON = "HPF On"
 TEXT_HPF_VALUE = "HPF Value"
 TEXT_FADER_LEVEL = "Fader Level"

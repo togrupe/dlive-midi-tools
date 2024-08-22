@@ -464,8 +464,10 @@ def read_document(filename):
     root.update()
 
     if context.get_app_data().get_output_write_to_console():
-        showinfo(
-            message='Hint: Input patching (Source, Socket) can be applied by using Director´s CSV Import function.')
+        if not context.get_csv_patching_hint_already_seen():
+            showinfo(
+                message='Hint: Input patching (Source, Socket) can be applied by using Director´s CSV Import function.')
+            context.set_csv_patching_hint_already_seen(True)
 
         if context.get_output() is None:
             reset_progress_bar()
@@ -1003,12 +1005,14 @@ var_console = StringVar(root)
 reaper_output_dir = ""
 reaper_file_prefix = ""
 
+csv_patching_hint_already_seen = False;
+
 if __name__ == '__main__':
 
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     logger_instance = logging.getLogger(__name__)
     context = Context(logger_instance, None, None,
-                      dliveConstants.allow_network_communication, CONFIG_FILE)
+                      dliveConstants.allow_network_communication, CONFIG_FILE, False)
     app_data = AppData(None, None, None)
     context.set_app_data(app_data)
 
@@ -1017,6 +1021,8 @@ if __name__ == '__main__':
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
     root.geometry('1300x820')
     root.resizable(False, False)
+
+
 
     # ----------------- Menu Area ------------------
 

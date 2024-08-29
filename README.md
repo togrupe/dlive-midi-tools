@@ -123,13 +123,13 @@ the columns `Name`, `Color`, `Recording`, and `Record Arm` are considered for th
 
 ![Reaper](doc/reaper/reaper_demo.png)
 
-# Example Generated Tracks Live Template ´
+# Example Generated Tracks Live Template
 If you select the "Generate Tracks Live Template" checkbox, 
 the columns `Name`, `Color`, `Recording`, and `Record Arm` are considered for the template generation process.
 
 ![Trackslive](doc/trackslive/trackslive_demo.png)
 
-The tool generates a track live template (*.template), which can be used to create a recording session in Tracks Live
+The tool generates a Track Live template (*.template), which can be used to create a recording session in Tracks Live
 
 ![TracksliveOpenTemplate](doc/trackslive/trackslive_open_template.png)
 

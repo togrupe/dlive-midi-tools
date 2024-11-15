@@ -61,15 +61,17 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                                   | Download                                                                                      | Release Notes   | MD5 Checksum                      |
-|---------|------------|--------------------------------------|-----------------------------------------------------------------------------------------------|-----------------|-----------------------------------|
-| v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip) | [Link](#v280)   | c5b3bc6c563a125e973e75e879002331  |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2.8.0-macOS-arm64.tgz)  |                 | d746a860cb0814acb042a02d5ebe7614  |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)      |                 | c5b3bc6c563a125e973e75e879002331  |
-| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*)| [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270)   | 0067242c999b6b44570076fbaed86aa7  |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |                 | ba57e67e20ee83c249a773cd762ead98  |
-| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*)| [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260)   | 420ae04d475091c15cf5094f2c9c5d3a  |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |                 | 6e3d3adf822604d49708a434274c438f  |
+| Version | Date       | OS                                    | Download                                                                                      | Release Notes | MD5 Checksum                     |
+|---------|------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
+| v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip) | [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
+| v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel*)               | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip) | [Link](#v280) | c5b3bc6c563a125e973e75e879002331 |
+|         |            | macOS (arm64 - Apple-Silicon)         | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2.8.0-macOS-arm64.tgz)  |               | d746a860cb0814acb042a02d5ebe7614 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)      |               | c13c95a79d8ea9fcadbba1a988441c10 |
+| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) | 0067242c999b6b44570076fbaed86aa7 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               | ba57e67e20ee83c249a773cd762ead98 |
+| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
 
 (*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.
@@ -123,13 +125,13 @@ the columns `Name`, `Color`, `Recording`, and `Record Arm` are considered for th
 
 ![Reaper](doc/reaper/reaper_demo.png)
 
-# Example Generated Tracks Live Template ´
+# Example Generated Tracks Live Template
 If you select the "Generate Tracks Live Template" checkbox, 
 the columns `Name`, `Color`, `Recording`, and `Record Arm` are considered for the template generation process.
 
 ![Trackslive](doc/trackslive/trackslive_demo.png)
 
-The tool generates a track live template (*.template), which can be used to create a recording session in Tracks Live
+The tool generates a Tracks Live template (*.template), which can be used to create a recording session in Tracks Live
 
 ![TracksliveOpenTemplate](doc/trackslive/trackslive_open_template.png)
 
@@ -273,6 +275,23 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 
 ## Release Notes
+### v2.8.2
+
+Maintenance Release
+
+#### New Features
+
+#### Improvements
+- Hint for CSV Patch via Director only shown once per session.
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
+
 ### v2.8.0
 
 Feature & Maintenance Release

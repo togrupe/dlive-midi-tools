@@ -82,6 +82,8 @@ jobs:
 
       - name: Copy artefacts to temporary output folder
         run: |
+          cp AvantisChannelList.xlsx output
+          cp AvantisChannelList.ods output
           cp dLiveChannelList.xlsx output
           cp dLiveChannelList.ods output
           cp ThirdParty-Licenses.txt output 

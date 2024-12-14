@@ -50,7 +50,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * pandas - spreadsheet reader/writer
 * reathon - Reaper Session Creator
 * xlrd - supports xls format
-* odfpy - supports odf format
+* odfpy - supports ods format
 * openpyxl - supports xlsx format
 * numpy - array computing
 * pyinstaller - Binary creator
@@ -165,7 +165,7 @@ To run the tool, you have two options:<br><br>
 A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4<br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>If the Apple Silicon Version does not work properly, please use the x86_84 MacOS version.<br><br>
 B: Build it your own from scratch, using the following steps.<br>
 
-B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
+B1. Before you run the script, please run the following command to download the required Python modules using `pip3`. Please make sure `pip3` is installed.
 
 `pip install -r dependencies.txt`
 
@@ -205,7 +205,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
 The tool has currently two modes:
-* Spreadsheet to Console / DAW (Continue with next Step) - Reads a spreadsheet (xls, xlsx or odf) and write the content to the console or to a DAW Session (Tracks Live or Reaper).
+* Spreadsheet to Console / DAW (Continue with next Step) - Reads a spreadsheet (xls, xlsx or ods) and write the content to the console or to a DAW Session (Tracks Live or Reaper).
 * Console to DAW (Continue with Step 10) - Reads the console and writes a DAW session (Tracks Live or Reaper)
 
 Choose which mode you want to use:

@@ -162,12 +162,12 @@ Prerequisites:
 * Python 3.11 (Optional, if you want to build the software yourself)
 
 To run the tool, you have two options:<br><br>
-A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4<br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>If the Apple Silicon Version does not work properly, please use the x86_84 MacOS version.<br><br>
+A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4.<br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>If the Apple Silicon version does not work properly, please try the x86_84 MacOS version.<br><br>
 B: Build it your own from scratch, using the following steps.<br>
 
 B1. Before you run the script, please run the following command to download the required Python modules using `pip3`. Please make sure `pip3` is installed.
 
-`pip install -r dependencies.txt`
+`pip3 install -r dependencies.txt`
 
 B2. Run the script with the following command: 
 
@@ -178,7 +178,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 
     B3.1 Installation of pyinstaller
 
-    `pip install pyinstaller`
+    `pip3 install pyinstaller`
 
     B3.2 Create a onefile binary (works for Windows and macOS)
 
@@ -205,7 +205,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
 The tool has currently two modes:
-* Spreadsheet to Console / DAW (Continue with next Step) - Reads a spreadsheet (xls, xlsx or ods) and write the content to the console or to a DAW Session (Tracks Live or Reaper).
+* Spreadsheet to Console / DAW (Continue with next Step) - Reads a spreadsheet (xls, xlsx or ods) and write the content to the console or to a DAW Session (Reaper or Tracks Live).
 * Console to DAW (Continue with Step 10) - Reads the console and writes a DAW session (Tracks Live or Reaper)
 
 Choose which mode you want to use:

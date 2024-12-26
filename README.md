@@ -3,7 +3,7 @@
 Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
 Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
 dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP or CSV import. Additionally, from the same spreadsheet 
-or the current console settings a DAW recording session for Reaper or Tracks Live can be generated. 
+or the current console settings a DAW (Digital Audio Workstation) recording session for Reaper or Tracks Live can be generated. 
 - Name & Color for: 
   - Channel
   - DCA
@@ -61,28 +61,28 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                                    | Download                                                                                      | Release Notes | MD5 Checksum                     |
-|---------|------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
-| v2.8.3  | 26.12.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip) | [Link](#v283) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
-|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)  |               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
-| v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip) | [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
-|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-arm64.zip)  |               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
-| v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip) | [Link](#v280) | c5b3bc6c563a125e973e75e879002331 |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)      |               | c13c95a79d8ea9fcadbba1a988441c10 |
-| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) | 0067242c999b6b44570076fbaed86aa7 |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               | ba57e67e20ee83c249a773cd762ead98 |
-| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
+| Version | Date       | OS                                    | Download                                                                                             | Release Notes | MD5 Checksum                     |
+|---------|------------|---------------------------------------|------------------------------------------------------------------------------------------------------|---------------|----------------------------------|
+| v2.8.3  | 26.12.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip)| [Link](#v283) |                                  |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)|               |                                  |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)|               |                                  |
+| v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip)| [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-arm64.zip)|               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)|               | 8886149376e24f3614ae588c5258515b |
+| v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip)| [Link](#v280) | c5b3bc6c563a125e973e75e879002331 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)|               | c13c95a79d8ea9fcadbba1a988441c10 |
+| v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip)| [Link](#v270) | 0067242c999b6b44570076fbaed86aa7 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)|               | ba57e67e20ee83c249a773cd762ead98 |
+| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)| [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)|               | 6e3d3adf822604d49708a434274c438f |
 
 Older versions see [archive](doc/download-archive.md)
 
 (*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.<br><br>
-    If you see the following message: ![Overview](doc/message.png) <br><br>
-    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)
-    More infos below in **Usage**
+    If you see the following message: <br><br> ![Message](doc/message.png) <br><br>
+    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)
+    More infos below in [Usage](#usage)
 
 
 
@@ -175,7 +175,7 @@ A: Use an available download (see above), unzip it, start the dmt tool and conti
    If you see the following message: ![Overview](doc/message.png) <br><br>
    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)<br><br>
    Enter your Password and click ![Overview](doc/open-anyway.png)
-   Afterwards the tool should appear.
+   Continue with Step 4.
     
 B: Build it your own from scratch, using the following steps.<br>
 
@@ -218,9 +218,9 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
-The tool has currently two modes:
-* Spreadsheet to Console / DAW (Continue with next Step)
-* Console to DAW (Continue with Step 10)
+The tool has currently the following modes:
+* Spreadsheet to Console / DAW (Continue with next Step) - Reads from a spreadsheet into console or to a DAW Session.
+* Console to DAW (Continue with Step 10) - Reads from the console and writes a DAW session.
 
 Choose which mode you want to use:
 

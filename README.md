@@ -63,7 +63,11 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Download
 | Version | Date       | OS                                    | Download                                                                                      | Release Notes | MD5 Checksum                     |
 |---------|------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
-| v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip) | [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
+| v2.8.3  | 26.12.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip) | [Link](#v283) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)  |               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
+| v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip) | [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-arm64.zip)  |               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
 |         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
 | v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip) | [Link](#v280) | c5b3bc6c563a125e973e75e879002331 |
 |         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)      |               | c13c95a79d8ea9fcadbba1a988441c10 |
@@ -72,10 +76,15 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 | v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
 |         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
 
-(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
-    Keep in mind that the first start can take a while.
-
 Older versions see [archive](doc/download-archive.md)
+
+(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
+    Keep in mind that the first start can take a while.<br><br>
+    If you see the following message: ![Overview](doc/message.png) <br><br>
+    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)
+    More infos below in **Usage**
+
+
 
 
 ## Input file / The Spreadsheet Template
@@ -151,17 +160,23 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 
 ## Usage
 Prerequisites: 
-* Windows >= 10 / macOS >= BigSur
+* Windows >= 10 / macOS >= Monterey
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
 * Avantis Firmware: 1.30
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
 * Tracks Live v1.3 (Optional)
-* Python 3.11 (Optional, if you want to build the software yourself)
+* Python 3.12 (Optional, if you want to build the software yourself)
 
 To run the tool, you have two options:<br><br>
 A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4 <br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>
+    
+   If you see the following message: ![Overview](doc/message.png) <br><br>
+   Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)<br><br>
+   Enter your Password and click ![Overview](doc/open-anyway.png)
+   Afterwards the tool should appear.
+    
 B: Build it your own from scratch, using the following steps.<br>
 
 B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
@@ -274,6 +289,28 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 
 ## Release Notes
+
+### v2.8.3
+
+Maintenance Release
+
+#### New Features
+
+#### Improvements
+- Button size fixed
+- Apple Silicon (arm64) version officially added
+- build on python12(macOS arm64)
+- build on python11(Intel platforms)
+- doc improved
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
+
 ### v2.8.2
 
 Maintenance Release

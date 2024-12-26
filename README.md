@@ -298,10 +298,9 @@ Maintenance Release
 
 #### Improvements
 - Button size fixed
-- Apple Silicon (arm64) version officially added
-- build on python12(macOS arm64)
-- build on python11(Intel platforms)
-- doc improved
+- Apple-Silicon (arm64) version officially added
+- Build on python12 (macOS Intel, macOS Apple-Silicon, Windows)
+- Documentation improved
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.

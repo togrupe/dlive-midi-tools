@@ -65,7 +65,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 |---------|------------|---------------------------------------|------------------------------------------------------------------------------------------------------|---------------|----------------------------------|
 | v2.8.3  | 27.12.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip)| [Link](#v283) | 7f925278baf8c797091295dc38d70fcc |
 |         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)|               | b7e5d3777defcade38d37b3775401b5d |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)|               | d362bb0e3a1c585431539e4c2d4ab093 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)|               | 3bfcff4d0ed6aa2c3be4fda9651b6593 |
 | v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip)| [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
 |         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-arm64.zip)|               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
 |         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)|               | 8886149376e24f3614ae588c5258515b |

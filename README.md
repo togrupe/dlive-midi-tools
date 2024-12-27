@@ -61,20 +61,20 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                                    | Download                                                                                 | Release Notes | MD5 Checksum                     |
-|---------|------------|---------------------------------------|------------------------------------------------------------------------------------------|---------------|----------------------------------|
+| Version | Date       | OS                                    | Download                                                                                      | Release Notes | MD5 Checksum                     |
+|---------|------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
 | v2.8.3  | 27.12.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip) | [Link](#v283) | 7f925278baf8c797091295dc38d70fcc |
-|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip) |               | b7e5d3777defcade38d37b3775401b5d |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip) |               | 3bfcff4d0ed6aa2c3be4fda9651b6593 |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)  |               | b7e5d3777defcade38d37b3775401b5d |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)      |               | 3bfcff4d0ed6aa2c3be4fda9651b6593 |
 | v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip) | [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
-|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-arm64.zip) |               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip) |               | 8886149376e24f3614ae588c5258515b |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-arm64.zip)  |               | 32da0fcfcc13e40fb12c6d2fcfd9c25a |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
 | v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip) | [Link](#v280) | c5b3bc6c563a125e973e75e879002331 |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip) |               | c13c95a79d8ea9fcadbba1a988441c10 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)      |               | c13c95a79d8ea9fcadbba1a988441c10 |
 | v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) | 0067242c999b6b44570076fbaed86aa7 |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip) |               | ba57e67e20ee83c249a773cd762ead98 |
-| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip) | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip) |               | 6e3d3adf822604d49708a434274c438f |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               | ba57e67e20ee83c249a773cd762ead98 |
+| v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
 
 Older versions see [archive](doc/download-archive.md)
 

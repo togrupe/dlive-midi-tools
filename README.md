@@ -78,13 +78,11 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 Older versions see [archive](doc/download-archive.md)
 
-(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Intel. Newer versions of macOS should have it installed by default. 
+(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (arm64) processors. Newer versions of macOS should have it installed by default. 
     Keep in mind that the first start can take a while.<br><br>
     If you see the following message: <br><br> ![Message](doc/message.png) <br><br>
-    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)
+    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)<br><br>
     More infos below in [Usage](#usage)
-
-
 
 
 ## Input file / The Spreadsheet Template

@@ -100,11 +100,17 @@ Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 > **_NOTE:_**  You can add additional columns, like 'Mic Stand', 'Mic/DI', 'Sub-core Patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want, you can also reorder the columns to your needs.
 
 ### Channel Overview
+
+> **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
+
 ![Channels](doc/channels/excel_channels.png)
 
 More details about the `Channels` columns can be found [here](doc/channels/README.md)
 
 ### Sockets Overview
+
+> **Note** <br> The `Sockets` tab represents the individual **sockets** and **NOT** the channels socket link. There is no synchronisation between the `Channels` and `Sockets` tab.
+
 ![Sockets](doc/sockets/excel_sockets.png)
 
 More details about the `Sockets` columns can be found [here](doc/sockets/README.md)

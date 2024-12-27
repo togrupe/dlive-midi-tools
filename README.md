@@ -170,10 +170,10 @@ Prerequisites:
 To run the tool, you have two options:<br><br>
 A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4 <br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>
     
-   If you see the following message:<br><br>![Overview](doc/message.png) <br><br>
+   If you see the following message: <br><br> ![Overview](doc/message.png) <br><br>
    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)<br><br>
-   Enter your Password and click ![Overview](doc/open-anyway.png)
-   Continue with Step 4.
+   Enter your Password and click <br><br> ![Overview](doc/open-anyway.png) <br><br>
+   Continue with Step 4. <br><br>
     
 B: Build it your own from scratch, using the following steps.<br>
 

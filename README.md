@@ -285,14 +285,14 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 ### v2.8.3
 
-Maintenance Release
+Maintenance Release - Python 3.12 based binaries for all platforms
 
 #### New Features
 
 #### Improvements
-- Button size fixed
 - Apple-Silicon (arm64) version officially added
-- Build on python12 (macOS Intel, macOS Apple-Silicon, Windows)
+- Binaries build on Python 3.12 (macOS Intel & Apple-Silicon, Windows) to be more future proven
+- 3rd party libraries updated to be more future proven
 - Documentation improved
 
 #### Technical Limitations
@@ -300,7 +300,8 @@ Maintenance Release
 - HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
 
 #### Issues fixed
-
+- On some systems, there was a strange mouse click behaviour
+- Button size fixed
 #### Known issues
 
 ### v2.8.2

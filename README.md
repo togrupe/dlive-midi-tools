@@ -310,7 +310,9 @@ Maintenance Release - Python 3.12 based binaries for all platforms
 
 #### Issues fixed
 - On some systems, there was a strange mouse click behaviour
+- Pad handling issue fixed
 - Button size fixed
+
 #### Known issues
 
 ### v2.8.2

@@ -258,6 +258,9 @@ Choose which mode you want to use:
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
 11. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
+The generated files `current-console-reaper-recording-template.rpp` (Reaper) / `current-console-trackslive-recording.template` (Tracks Live) are being created in the folder you have chosen. 
+
+
 
 <img alt="consoletodaw" src="doc/console-to-daw.png" width="600"/>
 

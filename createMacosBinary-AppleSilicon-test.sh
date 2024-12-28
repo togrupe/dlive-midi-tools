@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./createMacosBinary.sh arm_64 test
+./createMacosBinary.sh arm64 test

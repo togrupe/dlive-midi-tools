@@ -61,9 +61,9 @@ jobs:
           pip install -r dependencies.txt
 
       - name: Build Executable for ${{runner.os}}
-        uses: Nuitka/Nuitka-Action@v1.0
+        uses: Nuitka/Nuitka-Action@v1.2
         with:
-          nuitka-version: 1.8.5
+          nuitka-version: 2.5.9
           script-name: src/Main.py
           # company-name: CONGO*blue (forked from zak-45)
           file-version: ${{github.event.inputs.mytag}}

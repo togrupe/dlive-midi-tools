@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Check-out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: MacOS specific
         if: matrix.os == 'macos-latest'
@@ -48,7 +48,7 @@ jobs:
           brew update 
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12' # Version range or exact version of a Python version to use, using SemVer's version range syntax
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
@@ -70,7 +70,6 @@ jobs:
           # windows-icon-from-ico: assets/BPM2OSC.ico
           # macos-app-icon: assets/BPM2OSC.ico
           onefile: true
-          onefile-tempdir-spec: dmt-temp
           enable-plugins: tk-inter
           output-file: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
 

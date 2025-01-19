@@ -3,7 +3,7 @@
 Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
 Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
 dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP or CSV import. Additionally, from the same spreadsheet 
-or the current console settings a DAW recording session for Reaper or Tracks Live can be generated. 
+or the current console settings a DAW (Digital Audio Workstation) recording session for Reaper or Tracks Live can be generated. 
 - Name & Color for: 
   - Channel
   - DCA
@@ -63,19 +63,21 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Download
 | Version | Date       | OS                                    | Download                                                                                      | Release Notes | MD5 Checksum                     |
 |---------|------------|---------------------------------------|-----------------------------------------------------------------------------------------------|---------------|----------------------------------|
-| v2.8.2  | 15.11.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-macos-x86_64.zip) | [Link](#v282) | 41ebc6df4db9ca7ba56d63204cef0ff9 |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_2/dmt-v2_8_2-windows.zip)      |               | 8886149376e24f3614ae588c5258515b |
-| v2.8.0  | 16.07.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-macos-x86_64.zip) | [Link](#v280) | c5b3bc6c563a125e973e75e879002331 |
-|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_0/dmt-v2_8_0-windows.zip)      |               | c13c95a79d8ea9fcadbba1a988441c10 |
+| v2.8.3  | 28.12.2024 | macOS (x86_64 - Intel)                | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip) | [Link](#v283) | 45a0606fc8766d658b12804cced56754 |
+|         |            | macOS (arm64 - Apple-Silicon*)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)  |               | f853e3df25edf56f19eee3562ba4c857 |
+|         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)      |               | 6bc6baa85a676c6a45c27823a971f60c |
 | v2.7.0  | 24.01.2024 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-macos-x86_64.zip) | [Link](#v270) | 0067242c999b6b44570076fbaed86aa7 |
 |         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_7_0/dmt-v2_7_0-windows.zip)      |               | ba57e67e20ee83c249a773cd762ead98 |
 | v2.6.0  | 15.12.2023 | macOS (x86_64 - Intel/Apple-Silicon*) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-macos-intel.zip)  | [Link](#v260) | 420ae04d475091c15cf5094f2c9c5d3a |
 |         |            | Windows (x86_64)                      | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_6_0/dmt-v2_6_0-windows.zip)      |               | 6e3d3adf822604d49708a434274c438f |
 
-(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (M1/M2). Newer versions of macOS should have it installed by default. 
-    Keep in mind that the first start can take a while.
-
 Older versions see [archive](doc/download-archive.md)
+
+(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (arm64) processors. Newer versions of macOS should have it installed by default. 
+    Keep in mind that the first start can take a while.<br><br>
+    If you see the following message: <br><br> ![Message](doc/message.png) <br><br>
+    Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)<br><br>
+    More infos below in [Usage](#usage)
 
 
 ## Input file / The Spreadsheet Template
@@ -98,11 +100,17 @@ Please make sure that you save your changes in the (*.xlsx or *.ods) format.
 > **_NOTE:_**  You can add additional columns, like 'Mic Stand', 'Mic/DI', 'Sub-core Patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want, you can also reorder the columns to your needs.
 
 ### Channel Overview
+
+> **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
+
 ![Channels](doc/channels/excel_channels.png)
 
 More details about the `Channels` columns can be found [here](doc/channels/README.md)
 
 ### Sockets Overview
+
+> **Note** <br> The `Sockets` tab represents the individual **sockets** and **NOT** the channels socket link. There is no synchronisation between the `Channels` and `Sockets` tab.
+
 ![Sockets](doc/sockets/excel_sockets.png)
 
 More details about the `Sockets` columns can be found [here](doc/sockets/README.md)
@@ -151,17 +159,23 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
 
 ## Usage
 Prerequisites: 
-* Windows >= 10 / macOS >= BigSur
+* Windows >= 10 / macOS >= Monterey
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
 * Avantis Firmware: 1.30
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
 * Tracks Live v1.3 (Optional)
-* Python 3.11 (Optional, if you want to build the software yourself)
+* Python 3.12 (Optional, if you want to build the software yourself)
 
 To run the tool, you have two options:<br><br>
 A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4 <br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>
+    
+   If you see the following message: <br><br> ![Overview](doc/message.png) <br><br>
+   Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)<br><br>
+   Enter your Password and click <br><br> ![Overview](doc/open-anyway.png) <br><br>
+   Continue with Step 4. <br><br>
+    
 B: Build it your own from scratch, using the following steps.<br>
 
 B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
@@ -203,9 +217,9 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
 
-The tool has currently two modes:
-* Spreadsheet to Console / DAW (Continue with next Step)
-* Console to DAW (Continue with Step 10)
+The tool has currently the following modes:
+* Spreadsheet to Console / DAW (Continue with next Step) - Reads from a spreadsheet into console or to a DAW Session.
+* Console to DAW (Continue with Step 10) - Reads from the console and writes a DAW session.
 
 Choose which mode you want to use:
 
@@ -244,6 +258,9 @@ Choose which mode you want to use:
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
 11. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
+The generated files `current-console-reaper-recording-template.rpp` (Reaper) / `current-console-trackslive-recording.template` (Tracks Live) are being created in the folder you have chosen. 
+
+
 
 <img alt="consoletodaw" src="doc/console-to-daw.png" width="600"/>
 
@@ -274,6 +291,30 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 
 ## Release Notes
+
+### v2.8.3
+
+Maintenance Release - Python 3.12 based binaries for all platforms
+
+#### New Features
+
+#### Improvements
+- Apple-Silicon (arm64) version officially added
+- Binaries build on Python 3.12 (macOS Intel & Apple-Silicon, Windows) to be more future proven
+- 3rd party libraries updated to be more future proven
+- Documentation improved
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+- On some systems, there was a strange mouse click behaviour
+- Pad handling issue fixed
+- Button size fixed
+
+#### Known issues
+
 ### v2.8.2
 
 Maintenance Release

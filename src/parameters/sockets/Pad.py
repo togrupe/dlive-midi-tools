@@ -5,7 +5,7 @@ from spreadsheet import SpreadsheetConstants
 
 
 def pad_socket(context, item, socket_type):
-    console = context.get_app_data().get_console
+    console = context.get_app_data().get_console()
     output = context.get_output()
     midi_channel = context.get_app_data().get_midi_channel()
     is_network_communication_allowed = context.get_network_connection_allowed()

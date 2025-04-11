@@ -164,7 +164,7 @@ Prerequisites:
 * Windows >= 10 / macOS >= Monterey
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
-* Avantis Firmware: 1.30
+* Avantis Firmware: 1.3x
 * Microsoft Excel or LibreOffice Calc Spreadsheet
 * Reaper (Optional)
 * Tracks Live v1.3 (Optional)

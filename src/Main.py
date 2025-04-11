@@ -282,8 +282,8 @@ def fill_actions(action_list, actions):
             actions = increment_actions(actions)
 
         # Aux Stereo Color
-        elif var._name == GuiConstants.TEXT_AUX_STERE0_COLOR and var.get() is True:
-            action = Action(GuiConstants.TEXT_AUX_STERE0_COLOR, "groups",
+        elif var._name == GuiConstants.TEXT_AUX_STEREO_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_AUX_STEREO_COLOR, "groups",
                             "Set Aux Stereo Color...", "color", bus_type="aux_stereo")
             action_list.append(action)
             actions = increment_actions(actions)
@@ -386,6 +386,34 @@ def fill_actions(action_list, actions):
             action_list.append(action)
             actions = increment_actions(actions)
 
+        # UFX Send Name
+        elif var._name == GuiConstants.TEXT_UFX_SEND_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_UFX_SEND_NAME, "groups",
+                        "Set UFX Send Name...", "name", bus_type="ufx_send")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # UFX Send Color
+        elif var._name == GuiConstants.TEXT_UFX_SEND_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_UFX_SEND_COLOR, "groups",
+                        "Set UFX Send Color...", "color", bus_type="ufx_send")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # UFX Return Name
+        elif var._name == GuiConstants.TEXT_UFX_RETURN_NAME and var.get() is True:
+            action = Action(GuiConstants.TEXT_UFX_RETURN_NAME, "groups",
+                        "Set UFX Return Name...", "name", bus_type="ufx_return")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # UFX Return Color
+        elif var._name == GuiConstants.TEXT_UFX_RETURN_COLOR and var.get() is True:
+            action = Action(GuiConstants.TEXT_UFX_RETURN_COLOR, "groups",
+                            "Set UFX Return Color...", "color", bus_type="ufx_return")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
     return actions
 
 
@@ -398,7 +426,7 @@ def read_document(filename):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '11'
+    latest_spreadsheet_version = '12'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -729,7 +757,7 @@ def remove_tick(var_name):
 
 
 def disable_avantis_checkboxes():
-    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS]
+    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS, GuiConstants.TEXT_UFX_SEND_NAME, GuiConstants.TEXT_UFX_SEND_COLOR, GuiConstants.TEXT_UFX_RETURN_NAME, GuiConstants.TEXT_UFX_RETURN_COLOR]
     for checkbox in grid.checkboxes:
         current_cb = checkbox.__getitem__("text")
         if current_cb in cb_to_disable:
@@ -1020,7 +1048,7 @@ if __name__ == '__main__':
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x825')
+    root.geometry('1300x840')
     root.resizable(False, False)
 
 
@@ -1161,7 +1189,7 @@ if __name__ == '__main__':
         [GuiConstants.TEXT_AUX_MONO_NAME,
          GuiConstants.TEXT_AUX_MONO_COLOR,
          GuiConstants.TEXT_AUX_STEREO_NAME,
-         GuiConstants.TEXT_AUX_STERE0_COLOR,
+         GuiConstants.TEXT_AUX_STEREO_COLOR,
          GuiConstants.TEXT_GRP_MONO_NAME,
          GuiConstants.TEXT_GRP_MONO_COLOR,
          GuiConstants.TEXT_GRP_STEREO_NAME,
@@ -1179,7 +1207,11 @@ if __name__ == '__main__':
          GuiConstants.TEXT_FX_SEND_STEREO_NAME,
          GuiConstants.TEXT_FX_SEND_STEREO_COLOR,
          GuiConstants.TEXT_FX_RETURN_NAME,
-         GuiConstants.TEXT_FX_RETURN_COLOR
+         GuiConstants.TEXT_FX_RETURN_COLOR,
+         GuiConstants.TEXT_UFX_SEND_NAME,
+         GuiConstants.TEXT_UFX_SEND_COLOR,
+         GuiConstants.TEXT_UFX_RETURN_NAME,
+         GuiConstants.TEXT_UFX_RETURN_COLOR
          ]
     ]
 

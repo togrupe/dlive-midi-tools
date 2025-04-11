@@ -115,3 +115,23 @@ def handle_groups_parameter(message, context, groups_model, action, bus_type):
             elif action == "color":
                 color_channel(context, item, dliveConstants.midi_channel_offset_fx_return,
                               dliveConstants.channel_offset_fx_return)
+
+    if bus_type == "ufx_send":
+        for item in groups_model.get_ufx_send_config():
+            if action == "name":
+                if name_channel(context, item, dliveConstants.midi_channel_offset_ufx_send,
+                                dliveConstants.channel_offset_ufx_send, bus_type) == 1:
+                    return 1
+            elif action == "color":
+                color_channel(context, item, dliveConstants.midi_channel_offset_ufx_send,
+                              dliveConstants.channel_offset_ufx_send)
+
+    if bus_type == "ufx_return":
+        for item in groups_model.get_ufx_return_config():
+            if action == "name":
+                if name_channel(context, item, dliveConstants.midi_channel_offset_ufx_return,
+                                dliveConstants.channel_offset_ufx_return, bus_type) == 1:
+                    return 1
+            elif action == "color":
+                color_channel(context, item, dliveConstants.midi_channel_offset_ufx_return,
+                              dliveConstants.channel_offset_ufx_return)

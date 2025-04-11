@@ -12,6 +12,8 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
   - Matrices
   - FX Sends
   - FX Returns
+  - UFX Sends
+  - UFX Returns
 - Channel Mute
 - Fader Level
 - Main Mix Assignments
@@ -291,6 +293,23 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 
 ## Release Notes
+
+### v2.9.0
+
+Feature Release
+
+#### New Features
+- UFX Name & Color Support 
+
+#### Improvements
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
 
 ### v2.8.3
 

@@ -36,11 +36,11 @@ def create_channel_list_content(sheet_channels):
         cle = ChannelListEntry(int(channel),
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
-                               str(sheet_channels['Source'].__getitem__(index)),
-                               str(sheet_channels['Socket'].__getitem__(index)),
-                               str(sheet_channels['Gain'].__getitem__(index)),
-                               str(sheet_channels['Pad'].__getitem__(index)),
-                               str(sheet_channels['Phantom'].__getitem__(index)),
+                               str(sheet_channels['Source*'].__getitem__(index)),
+                               str(sheet_channels['Socket*'].__getitem__(index)),
+                               str(sheet_channels['Gain*'].__getitem__(index)),
+                               str(sheet_channels['Pad*'].__getitem__(index)),
+                               str(sheet_channels['Phantom*'].__getitem__(index)),
                                str(sheet_channels['HPF On'].__getitem__(index)),
                                str(sheet_channels['HPF Value'].__getitem__(index)),
                                str(sheet_channels['Fader Level'].__getitem__(index)),
@@ -137,6 +137,12 @@ def create_groups_list_content(sheet_groups):
     fx_return_list_entries = []
     extract_data(fx_return_list_entries, sheet_groups, 'FX Return', 'FX Return Name', 'FX Return Color')
 
+    ufx_send_list_entries = []
+    extract_data(ufx_send_list_entries, sheet_groups, 'UFX Send', 'UFX Name', 'UFX Color')
+
+    ufx_return_list_entries = []
+    extract_data(ufx_return_list_entries, sheet_groups, 'UFX Return', 'UFX Return Name', 'UFX Return Color')
+
     return GroupsListEntry(dca_list_entries,
                            aux_mono_list_entries,
                            aux_stereo_list_entries,
@@ -146,7 +152,9 @@ def create_groups_list_content(sheet_groups):
                            mtx_stereo_list_entries,
                            fx_send_mono_list_entries,
                            fx_send_stereo_list_entries,
-                           fx_return_list_entries)
+                           fx_return_list_entries,
+                           ufx_send_list_entries,
+                           ufx_return_list_entries)
 
 
 def create_channel_list_content_from_console(data_fin):

@@ -127,6 +127,8 @@ midi_channel_offset_mg = 0x4
 midi_channel_offset_fx_send_mono = 0x4
 midi_channel_offset_fx_send_stereo = 0x4
 midi_channel_offset_fx_return = 0x4
+midi_channel_offset_ufx_send = 0x4
+midi_channel_offset_ufx_return = 0x4
 
 # Channel Offsets
 channel_offset_channels = 0x0
@@ -141,6 +143,8 @@ channel_offset_mg = 0x4E
 channel_offset_fx_send_mono = 0x0
 channel_offset_fx_send_stereo = 0x10
 channel_offset_fx_return = 0x20
+channel_offset_ufx_send = 0x56
+channel_offset_ufx_return = 0x5E
 
 # The max socket amount for each type
 LOCAL_DLIVE_SOCKET_COUNT_MAX = 64

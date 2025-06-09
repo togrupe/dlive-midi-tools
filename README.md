@@ -12,8 +12,8 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
   - Matrices
   - FX Sends
   - FX Returns
-  - UFX Sends
-  - UFX Returns
+  - UFX Sends (dLive only)
+  - UFX Returns (dLive only)
 - Channel Mute
 - Fader Level
 - Main Mix Assignments

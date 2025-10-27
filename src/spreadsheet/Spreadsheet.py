@@ -49,7 +49,8 @@ def create_channel_list_content(sheet_channels):
                                str(sheet_channels['Record Arm'].__getitem__(index)),
                                dca_config_tmp,
                                mg_config_tmp,
-                               str(sheet_channels['Main Mix'].__getitem__(index))
+                               str(sheet_channels['Main Mix'].__getitem__(index)),
+                               str(sheet_channels['Process?'].__getitem__(index))
                                )
         channel_list_entries.append(cle)
         index = index + 1

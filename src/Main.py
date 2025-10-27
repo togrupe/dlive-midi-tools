@@ -426,7 +426,7 @@ def read_document(filename):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '12'
+    latest_spreadsheet_version = '13'
 
     read_version = sheet.get_misc_model().get_version()
 

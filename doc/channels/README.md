@@ -1,5 +1,11 @@
 > **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
 
+#### Process?: <br>
+* yes - Line is take into account for data dlive-midi-tools processing <br>
+* no - Line is *NOT* part of data processing <br>
+
+> **_NOTE:_** The column has also effect on DAW & Director CSV Generation process.
+
 #### Name: <br>
 Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.
 <br><br>

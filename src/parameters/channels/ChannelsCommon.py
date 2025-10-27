@@ -28,8 +28,8 @@ def handle_channels_parameter(message, context, channel_list_entries, action):
         max_count_dsp_channels = dliveConstants.DLIVE_MAX_CHANNELS
 
     for item in channel_list_entries:
-        lower_process = str(item.get_process()).lower()
-        if lower_process == 'nan' or lower_process == "no":
+        lower_enabled = str(item.get_enabled()).lower()
+        if lower_enabled == 'nan' or lower_enabled == "no":
             logging.info("No " + action + " processing wanted for channel: " + str(item.get_channel()))
             continue
         if item.get_channel_console() > max_count_dsp_channels - 1:

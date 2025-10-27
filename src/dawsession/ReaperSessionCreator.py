@@ -71,12 +71,12 @@ def create_session(sheet, reaper_output_dir, file_prefix, disable_default_track_
     ]
 
     for item in sheet.get_channel_model():
-        lower_process = str(item.get_process()).lower()
+        lower_enabled = str(item.get_enabled()).lower()
         lower_recording = str(item.get_recording()).lower()
 
-        if lower_recording == 'nan' or lower_process == 'nan':
+        if lower_enabled == 'nan' or lower_recording == 'nan':
             continue
-        if lower_process == 'yes' and lower_recording == 'yes':
+        if lower_enabled == 'yes' and lower_recording == 'yes':
 
             logging.info("Processing reaper channel:" + str(item.get_channel()) + " name: " + item.get_name())
 

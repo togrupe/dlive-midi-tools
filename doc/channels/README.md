@@ -1,6 +1,6 @@
 > **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
 
-#### Process?: <br>
+#### Enabled: <br>
 * yes - Line is taken into account for dlive-midi-tools data processing <br>
 * no - Line is *NOT* part of data processing <br>
 With this column you can exclude the particular line from data processing. 

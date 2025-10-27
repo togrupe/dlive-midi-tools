@@ -71,8 +71,8 @@ def create(sheet, reaper_output_dir, file_prefix):
          '', '', ''])
 
     for item in sheet.get_channel_model():
-        lower_process = str(item.get_process()).lower()
-        if lower_process == "no" or lower_process == 'nan':
+        lower_enabled = str(item.get_enabled()).lower()
+        if lower_enabled == "no" or lower_enabled == 'nan':
             continue
         # Input, 1, "1", Green, MixRack, 1,, 27, Off, Off, Unassigned,, , , , , Unassigned,, , , , , Unassigned,, , , ,
         daten.append(

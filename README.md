@@ -300,7 +300,7 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 Feature Release
 
 #### New Features
-- "Process" Field introduced - to take lines in & out 
+- "Enabled" Field introduced - to take lines in and out from data processing
 
 #### Improvements
 

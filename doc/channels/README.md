@@ -6,7 +6,7 @@
 
 With this column you can exclude the particular line from data processing. 
 
-> **_NOTE:_** The column has also effect on DAW & Director CSV Generation process. If you feel disturbed by the column, you can either move the column to right or blend it out.
+> **_NOTE:_** The column has also effect on DAW & Director CSV Generation process. If you feel disturbed by the column, you can either move the column to right or hide the column.
 
 #### Name: <br>
 Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.

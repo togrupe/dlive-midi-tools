@@ -179,7 +179,8 @@ def create_channel_list_content_from_console(data_fin):
                                'yes',
                                None,
                                None,
-                               None)
+                               None,
+                               'yes')
 
         channel_list_entries.append(cle)
         index = index + 1

@@ -84,7 +84,7 @@ Older versions see [archive](doc/download-archive.md)
 
 
 ## Input file / The Spreadsheet Template
-Example spreadsheet files for dLive: **dLiveChannelList.xlsx** and Avantis: **AvantisChannelList.xlsx** can be found in the root folder. 
+Example spreadsheet files for dLive: [**dLiveChannelList.xlsx**](dLiveChannelList.xlsx) and Avantis: [**AvantisChannelList.xlsx**](AvantisChannelList.xlsx) can be found in the root folder. 
 By default, channels 1-128 (dLive) and 1-64 (Avantis) are available in the sheets. If you need less, 
 just delete the channels you don't want to process. <br>
 
@@ -300,7 +300,7 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 Feature Release
 
 #### New Features
-- "Enabled" Field introduced - to take lines in and out from data processing
+- "Enabled" Field introduced - to include or exclude lines from data processing
 
 #### Improvements
 

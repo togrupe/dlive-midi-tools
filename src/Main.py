@@ -1048,7 +1048,7 @@ if __name__ == '__main__':
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x840')
+    root.geometry('1300x845')
     root.resizable(False, False)
 
 

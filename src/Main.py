@@ -426,7 +426,7 @@ def read_document(filename):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '12'
+    latest_spreadsheet_version = '13'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -1048,7 +1048,7 @@ if __name__ == '__main__':
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1300x840')
+    root.geometry('1320x850')
     root.resizable(False, False)
 
 

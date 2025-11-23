@@ -71,6 +71,9 @@ def create(sheet, reaper_output_dir, file_prefix):
          '', '', ''])
 
     for item in sheet.get_channel_model():
+        lower_enabled = str(item.get_enabled()).lower()
+        if lower_enabled == "no" or lower_enabled == 'nan':
+            continue
         # Input, 1, "1", Green, MixRack, 1,, 27, Off, Off, Unassigned,, , , , , Unassigned,, , , , , Unassigned,, , , ,
         daten.append(
             ['Input', item.get_channel(), item.get_name(), convert_to_csv_color(item.get_color()),

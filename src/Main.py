@@ -829,7 +829,9 @@ def on_console_selected(*args):
             showinfo(
                 message='Info: "' + GuiConstants.TEXT_HPF_ON +
                         '", "' + GuiConstants.TEXT_HPF_VALUE +
-                        '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
+                        '", "' + GuiConstants.TEXT_MUTE_GROUPS +
+                        '", "' + GuiConstants.TEXT_MONO_GROUP_ASSIGN +
+                        '" and  "' + GuiConstants.TEXT_STEREO_GROUP_ASSIGN +
 
                         '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()

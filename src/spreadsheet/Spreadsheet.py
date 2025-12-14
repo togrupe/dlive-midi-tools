@@ -11,8 +11,11 @@ from model.DcaConfig import DcaConfig
 from model.GroupSetup import GroupSetup
 from model.GroupsListEntry import GroupsListEntry
 from model.Misc import Misc
+from model.MonoGroupConfig import MonoGroupConfig
 from model.MuteGroupConfig import MuteGroupConfig
 from model.SocketListEntry import SocketListEntry
+from model.StereoGroupConfig import StereoGroupConfig
+from spreadsheet import SpreadsheetConstants
 
 
 def create_channel_list_content(sheet_channels):
@@ -33,6 +36,18 @@ def create_channel_list_content(sheet_channels):
 
         mg_config_tmp = MuteGroupConfig(mg_array)
 
+        mono_group_array = []
+        for mono_group_number in range(1, SpreadsheetConstants.mono_group_max+1):
+            mono_group_array.append(str(sheet_channels["Grp" + str(mono_group_number)].__getitem__(index)))
+
+        mono_group_tmp = MonoGroupConfig(mono_group_array)
+
+        stereo_group_array = []
+        for stereo_group_number in range(1, SpreadsheetConstants.stereo_group_max+1):
+            stereo_group_array.append(str(sheet_channels["StGrp" + str(stereo_group_number)].__getitem__(index)))
+
+        stereo_group_tmp = StereoGroupConfig(stereo_group_array)
+
         cle = ChannelListEntry(int(channel),
                                str(sheet_channels['Name'].__getitem__(index)),
                                str(sheet_channels['Color'].__getitem__(index)),
@@ -50,7 +65,9 @@ def create_channel_list_content(sheet_channels):
                                dca_config_tmp,
                                mg_config_tmp,
                                str(sheet_channels['Main Mix'].__getitem__(index)),
-                               str(sheet_channels['Enabled'].__getitem__(index))
+                               str(sheet_channels['Enabled'].__getitem__(index)),
+                               mono_group_tmp,
+                               stereo_group_tmp
                                )
         channel_list_entries.append(cle)
         index = index + 1
@@ -180,7 +197,10 @@ def create_channel_list_content_from_console(data_fin):
                                None,
                                None,
                                None,
-                               'yes')
+                               'yes',
+                               None,
+                               None
+                               )
 
         channel_list_entries.append(cle)
         index = index + 1

@@ -225,6 +225,20 @@ def fill_actions(action_list, actions):
             action_list.append(action)
             actions = increment_actions(actions)
 
+        # Assign to Mono Group
+        elif var._name == GuiConstants.TEXT_MONO_GROUP_ASSIGN and var.get() is True:
+            action = Action(GuiConstants.TEXT_MONO_GROUP_ASSIGN, "channels",
+                            "Set Mono Group Assignments to channels...", "assign_mono_group")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Assign to Stereo Group
+        elif var._name == GuiConstants.TEXT_STEREO_GROUP_ASSIGN and var.get() is True:
+            action = Action(GuiConstants.TEXT_STEREO_GROUP_ASSIGN, "channels",
+                            "Set Stereo Group Assignments to channels...", "assign_stereo_group")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
         # Phantom
         elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
             action = Action(GuiConstants.TEXT_PHANTOM, "sockets",
@@ -426,7 +440,7 @@ def read_document(filename):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '13'
+    latest_spreadsheet_version = '14'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -1048,7 +1062,7 @@ if __name__ == '__main__':
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1320x850')
+    root.geometry('1320x875')
     root.resizable(False, False)
 
 
@@ -1180,7 +1194,9 @@ if __name__ == '__main__':
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
          GuiConstants.TEXT_MUTE_GROUPS,
-         GuiConstants.TEXT_MAINMIX
+         GuiConstants.TEXT_MAINMIX,
+         GuiConstants.TEXT_MONO_GROUP_ASSIGN,
+         GuiConstants.TEXT_STEREO_GROUP_ASSIGN
          ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,

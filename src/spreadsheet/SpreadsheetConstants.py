@@ -20,3 +20,7 @@ spreadsheet_bypass_sign = "-"
 spreadsheet_bypass_string = "byp"
 
 spreadsheet_yes = "yes"
+
+mono_group_max = 12
+stereo_group_max = 12
+

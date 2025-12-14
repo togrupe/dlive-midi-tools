@@ -36,6 +36,6 @@ def assign_mainmix_channel(context, item):
         return
 
     if mainmix_value.lower() == "yes":
-        assign_mainmix(context, channel, dliveConstants.mainmix_on)
+        assign_mainmix(context, channel, dliveConstants.assign_on)
     else:
-        assign_mainmix(context, channel, dliveConstants.mainmix_off)
+        assign_mainmix(context, channel, dliveConstants.assign_off)

@@ -17,6 +17,7 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
 - Channel Mute
 - Fader Level
 - Main Mix Assignments
+- Group Assignmengs (dlive only)
 - DCA Assignments
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
@@ -296,12 +297,12 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 ## Release Notes
 
-### v2.10.0
+### v2.11.0
 
 Feature Release
 
 #### New Features
-- "Enabled" Field introduced - to include or exclude lines from data processing
+- Channel to Group (Mono/Stereo) Assignments
 
 #### Improvements
 

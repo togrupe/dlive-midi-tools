@@ -16,8 +16,8 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
   - UFX Returns (dLive only)
 - Channel Mute
 - Fader Level
-- Main Mix Assignments
-- Group Assignmengs (dlive only)
+- Channel to Main Mix Routing
+- Channel to Group Routing (dlive only)
 - DCA Assignments
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)

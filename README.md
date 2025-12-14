@@ -314,6 +314,23 @@ Feature Release
 
 #### Known issues
 
+### v2.10.0
+
+Feature Release
+
+#### New Features
+- "Enabled" Field introduced - to include or exclude lines from data processing
+
+#### Improvements
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
+
 ### v2.9.0
 
 Feature Release

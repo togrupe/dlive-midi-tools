@@ -66,9 +66,9 @@ mg_off_base_address = 0x18
 mute_on = 0x7F
 mute_off = 0x3F
 
-# Channel Assignment to Main Mix
+# Channel Assignment to Main Mix, Mono & Stereo Group
 assign_on = 0x7F
-assign_off = 0x3F
+assign_off = 0x0
 
 
 # Fader levels

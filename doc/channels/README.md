@@ -121,12 +121,27 @@ Empty cells are interpreted as **Don´t care**.
 
 Empty cells are interpreted as **Don´t care**.
 
-#### Main Mix
+#### Main Mix Assignment
 yes - Assigns the channel to Main-Mix <br>
 no - Removes the assignment from Main Mix <br>
 "-" - Don´t care. Ignore the cell. <br>
 
 Empty cells are interpreted as **Don´t care**.
+
+#### Channel to Mono Group Assignment - Grp1-12 (only dLive)
+By putting an "x" into the relevant cell, the channel will be assigned to the particular Mono Group.
+
+Empty cells are interpreted as not being assigned.
+
+"-" - Don´t care. Ignore the cell. <br>
+
+#### Channel to Stereo Group Assignment - StGrp1-12 (only dLive)
+By putting an "x" into the relevant cell, the channel will be assigned to the particular Stereo Group.
+
+Empty cells are interpreted as not being assigned.
+
+"-" - Don´t care. Ignore the cell. <br>
+
 
 #### Recording
 yes - Channel is taken into account for DAW Recording Session <br>

@@ -19,11 +19,9 @@ if __name__ == '__main__':
     SndN = (midi_channel + dliveConstants.midi_channel_offset_groups)  # Groups MGrp & StGrp
 
     SndCh = 0x00  #MGrp1
-    #SndCh = 0x03  #MGrp4
     #SndCh = 0x3D# MGrp62
 
     #SndCh = 0x40# StGrp1
-    #SndCh = 0x47  # StGrp7
     #SndCh = 0x5E# StGrp31
 
     value = 0x7F  # on

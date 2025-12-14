@@ -36,26 +36,32 @@ def assign_group(context, channel, value, send_channel, bus_type):
 
 def assign_group_to_channel(context, item, bus_type):
 
+    console = context.get_app_data().get_console()
+
     channel = item.get_channel_console()
 
-    if bus_type == "mono":
-        amount_of_groups = SpreadsheetConstants.mono_group_max
-    elif bus_type == "stereo":
-        amount_of_groups = SpreadsheetConstants.stereo_group_max
+    if bus_type == "mono" and console == "dLive":
+        amount_of_groups = SpreadsheetConstants.dlive_mono_group_max
+    elif bus_type == "stereo" and console == "dLive":
+        amount_of_groups = SpreadsheetConstants.dlive_stereo_group_max
+    elif bus_type == "mono" and console == "Avantis":
+        amount_of_groups = SpreadsheetConstants.avantis_mono_group_max
+    elif bus_type == "stereo" and console == "Avantis":
+        amount_of_groups = SpreadsheetConstants.avantis_stereo_group_max
 
-    for mono_group_index in range(0, amount_of_groups):
+    for group_index in range(0, amount_of_groups):
 
         if bus_type == "mono":
             group_array = item.get_mono_group_config().get_mono_group_array()
         elif bus_type == "stereo":
             group_array = item.get_stereo_group_config().get_stereo_group_array()
 
-        group_array_item_lower = group_array.__getitem__(mono_group_index).lower()
+        group_array_item_lower = group_array.__getitem__(group_index).lower()
 
         if group_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_sign or group_array_item_lower == SpreadsheetConstants.spreadsheet_bypass_string:
             continue
-        elif group_array.__getitem__(mono_group_index).lower() == "x":
-            assign_group(context, channel, dliveConstants.assign_on, mono_group_index, bus_type)
+        elif group_array.__getitem__(group_index).lower() == "x":
+            assign_group(context, channel, dliveConstants.assign_on, group_index, bus_type)
         else:
-            assign_group(context, channel, dliveConstants.assign_off, mono_group_index, bus_type)
+            assign_group(context, channel, dliveConstants.assign_off, group_index, bus_type)
 

@@ -21,6 +21,9 @@ spreadsheet_bypass_string = "byp"
 
 spreadsheet_yes = "yes"
 
-mono_group_max = 12
-stereo_group_max = 12
+dlive_mono_group_max = 12
+dlive_stereo_group_max = 12
+
+avantis_mono_group_max = 8
+avantis_stereo_group_max = 8
 

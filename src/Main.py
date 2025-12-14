@@ -453,13 +453,13 @@ def read_document(filename):
         showerror(message=error_msg)
         return root.quit()
 
-    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels", dtype=str)))
+    context.get_app_data().set_console(var_console.get())
+
+    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels", dtype=str), context))
     sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets", dtype=str)))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
     app_data.set_midi_channel(determine_technical_midi_port(var_midi_channel.get()))
-
-    context.get_app_data().set_console(var_console.get())
 
     if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
         disable_avantis_checkboxes()
@@ -771,7 +771,7 @@ def remove_tick(var_name):
 
 
 def disable_avantis_checkboxes():
-    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS, GuiConstants.TEXT_UFX_SEND_NAME, GuiConstants.TEXT_UFX_SEND_COLOR, GuiConstants.TEXT_UFX_RETURN_NAME, GuiConstants.TEXT_UFX_RETURN_COLOR]
+    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS, GuiConstants.TEXT_UFX_SEND_NAME, GuiConstants.TEXT_UFX_SEND_COLOR, GuiConstants.TEXT_UFX_RETURN_NAME, GuiConstants.TEXT_UFX_RETURN_COLOR, GuiConstants.TEXT_MONO_GROUP_ASSIGN, GuiConstants.TEXT_STEREO_GROUP_ASSIGN]
     for checkbox in grid.checkboxes:
         current_cb = checkbox.__getitem__("text")
         if current_cb in cb_to_disable:

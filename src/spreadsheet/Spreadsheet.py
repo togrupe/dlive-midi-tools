@@ -18,9 +18,18 @@ from model.StereoGroupConfig import StereoGroupConfig
 from spreadsheet import SpreadsheetConstants
 
 
-def create_channel_list_content(sheet_channels):
+def create_channel_list_content(sheet_channels, context):
+    console = context.get_app_data().get_console()
+
     channel_list_entries = []
     index = 0
+
+    if console == "Avantis":
+        console_mono_group_max = SpreadsheetConstants.avantis_mono_group_max
+        console_stereo_group_max = SpreadsheetConstants.avantis_stereo_group_max
+    elif console == "dLive":
+        console_mono_group_max = SpreadsheetConstants.dlive_mono_group_max
+        console_stereo_group_max = SpreadsheetConstants.dlive_stereo_group_max
 
     for channel in sheet_channels['Channel']:
 
@@ -37,13 +46,13 @@ def create_channel_list_content(sheet_channels):
         mg_config_tmp = MuteGroupConfig(mg_array)
 
         mono_group_array = []
-        for mono_group_number in range(1, SpreadsheetConstants.mono_group_max+1):
+        for mono_group_number in range(1, console_mono_group_max + 1):
             mono_group_array.append(str(sheet_channels["Grp" + str(mono_group_number)].__getitem__(index)))
 
         mono_group_tmp = MonoGroupConfig(mono_group_array)
 
         stereo_group_array = []
-        for stereo_group_number in range(1, SpreadsheetConstants.stereo_group_max+1):
+        for stereo_group_number in range(1, console_stereo_group_max + 1):
             stereo_group_array.append(str(sheet_channels["StGrp" + str(stereo_group_number)].__getitem__(index)))
 
         stereo_group_tmp = StereoGroupConfig(stereo_group_array)

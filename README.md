@@ -305,7 +305,7 @@ Feature Release
 - Channel to Group (Mono/Stereo) Assignments
 
 #### Improvements
-- Enabled Flag is now also effective for CSV Generation
+- Enabled flag is now also effective for CSV Generation
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.

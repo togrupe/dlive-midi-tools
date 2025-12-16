@@ -71,6 +71,8 @@ def create(sheet, reaper_output_dir, file_prefix):
          '', '', ''])
 
     for item in sheet.get_channel_model():
+        if item.get_enabled() == "no":
+            continue
         lower_enabled = str(item.get_enabled()).lower()
         if lower_enabled == "no" or lower_enabled == 'nan':
             continue

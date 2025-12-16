@@ -309,7 +309,7 @@ Feature Release
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
 
 #### Issues fixed
 

@@ -49,12 +49,12 @@ def assign_group_to_channel(context, item, bus_type):
     elif bus_type == "stereo" and console == "Avantis":
         amount_of_groups = SpreadsheetConstants.avantis_stereo_group_max
 
-    for group_index in range(0, amount_of_groups):
+    if bus_type == "mono":
+        group_array = item.get_mono_group_config().get_mono_group_array()
+    elif bus_type == "stereo":
+        group_array = item.get_stereo_group_config().get_stereo_group_array()
 
-        if bus_type == "mono":
-            group_array = item.get_mono_group_config().get_mono_group_array()
-        elif bus_type == "stereo":
-            group_array = item.get_stereo_group_config().get_stereo_group_array()
+    for group_index in range(0, amount_of_groups):
 
         group_array_item_lower = group_array.__getitem__(group_index).lower()
 

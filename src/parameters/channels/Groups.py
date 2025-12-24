@@ -1,6 +1,6 @@
 # coding=utf-8
 ####################################################
-# DCA Functions
+# Group Assignment Functions
 #
 # Author: Tobias Grupe
 #

@@ -16,7 +16,7 @@ class AboutDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("About")
-        self.geometry('600x560')
+        self.geometry('600x680')
         self.resizable(False, False)
         self.create_widgets()
 
@@ -59,6 +59,7 @@ class AboutDialog(tk.Toplevel):
         team3_value = tk.Label(content_frame, text="Zac Paton")
         team4_value = tk.Label(content_frame, text="Tim-Lukas Arold")
         team5_value = tk.Label(content_frame, text="Nathan May")
+        team6_value = tk.Label(content_frame, text="Günter Hellstern")
 
         opensource_label = tk.Label(content_frame, text="Powered by Open Source")
 
@@ -88,7 +89,7 @@ class AboutDialog(tk.Toplevel):
         space_label3.grid(row=11, column=0, sticky=tk.W)
         space_label4.grid(row=12, column=0, sticky=tk.W)
         space_label5.grid(row=13, column=0, sticky=tk.W)
-        space_label7.grid(row=14, column=0, sticky=tk.W)
+        space_label7.grid(row=15, column=0, sticky=tk.W)
         opensource_label.grid(row=16, column=0, sticky=tk.W)
         space_label6.grid(row=17, column=0, sticky=tk.W)
         python_modules_label.grid(row=18, column=0, sticky=tk.W)
@@ -107,6 +108,7 @@ class AboutDialog(tk.Toplevel):
         team3_value.grid(row=11, column=1, sticky=tk.W)
         team4_value.grid(row=12, column=1, sticky=tk.W)
         team5_value.grid(row=13, column=1, sticky=tk.W)
+        team6_value.grid(row=14, column=1, sticky=tk.W)
 
         python_modules_value0.grid(row=18, column=1, sticky=tk.W)
         python_modules_value1.grid(row=19, column=1, sticky=tk.W)

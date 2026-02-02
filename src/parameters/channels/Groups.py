@@ -30,7 +30,7 @@ def assign_group(context, channel, value, send_channel, bus_type):
         message = mido.Message.from_bytes(dliveConstants.sysexhdrstart + prefix + [value] + dliveConstants.sysexhdrend)
 
         output.send(message)
-        time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
+        time.sleep(dliveConstants.DEFAULT_SLEEP_INPUT_GROUP_ASSIGN_AFTER_MIDI_COMMAND)
 
 
 

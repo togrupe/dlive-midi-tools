@@ -16,7 +16,7 @@ class AboutDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("About")
-        self.geometry('600x680')
+        self.geometry('600x600')
         self.resizable(False, False)
         self.create_widgets()
 

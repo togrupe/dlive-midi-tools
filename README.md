@@ -16,7 +16,8 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
   - UFX Returns (dLive only)
 - Channel Mute
 - Fader Level
-- Main Mix Assignments
+- Channel to Main Mix Routing
+- Channel to Group Routing (dlive only)
 - DCA Assignments
 - 48V Phantom Power (Local, DX1 & DX3, SLink) 
 - PAD (Local, DX1 & DX3, SLink)
@@ -63,17 +64,20 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ![Overview](doc/overview.drawio.png)
 
 ## Download
-| Version | Date       | OS                                   | Download                                                                                        | Release Notes   | MD5 Checksum                     |
-|---------|------------|--------------------------------------|-------------------------------------------------------------------------------------------------|-----------------|----------------------------------|
-| v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](#v2100)  | 3be97642cafebdb830129d68aaadf6cf |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip)  |                 | 207d57b612978fd6cfa2e57f1bb59f02 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip)      |                 | 2116d00f16b7da40d8b2464636578b9f |
-| v2.9.0  | 01.05.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-macos-x86_64.zip)   | [Link](#v290)   | dddae267b51b7746b80f7f99f5732a01 |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-macos-arm64.zip)    |                 | 86ef5ecc7598494b6ebad25b95c8f3f9 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-windows.zip)        |                 | 12d25022a1e8a6754505c4eb015aaae2 |
-| v2.8.3  | 28.12.2024 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip)   | [Link](#v283)   | 45a0606fc8766d658b12804cced56754 |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)    |                 | f853e3df25edf56f19eee3562ba4c857 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)        |                 | 6bc6baa85a676c6a45c27823a971f60c |
+| Version | Date       | OS                                   | Download                                                                                        | Release Notes  | MD5 Checksum                     |
+|---------|------------|--------------------------------------|-------------------------------------------------------------------------------------------------|----------------|----------------------------------|
+| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)  |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)      |                | 970930d359582cea6266cd304265dfbc |
+| v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](#v2100) | 3be97642cafebdb830129d68aaadf6cf |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip)  |                | 207d57b612978fd6cfa2e57f1bb59f02 |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip)      |                | 2116d00f16b7da40d8b2464636578b9f |
+| v2.9.0  | 01.05.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-macos-x86_64.zip)   | [Link](#v290)  | dddae267b51b7746b80f7f99f5732a01 |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-macos-arm64.zip)    |                | 86ef5ecc7598494b6ebad25b95c8f3f9 |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-windows.zip)        |                | 12d25022a1e8a6754505c4eb015aaae2 |
+| v2.8.3  | 28.12.2024 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip)   | [Link](#v283)  | 45a0606fc8766d658b12804cced56754 |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)    |                | f853e3df25edf56f19eee3562ba4c857 |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)        |                | 6bc6baa85a676c6a45c27823a971f60c |
 
 Older versions see [archive](doc/download-archive.md)
 
@@ -98,8 +102,13 @@ in this case, the channels not mentioned are not affected, this works as well fo
 
 Empty lines in between are **not** supported. <br>
 
+
+
 Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write/save the sheets.
 Please make sure that you save your changes in the (*.xlsx or *.ods) format.
+
+> **_NOTE:_** Please be careful when you copy data from one sheet to another sheet, sometimes references to cells in the other spreadsheet are copied, which can lead to problems.
+Please only paste values of the cells, which is possible in MS Excel and Calc Spreadsheet
 
 > **_NOTE:_**  You can add additional columns, like 'Mic Stand', 'Mic/DI', 'Sub-core Patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want, you can also reorder the columns to your needs.
 
@@ -167,8 +176,8 @@ Prerequisites:
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
 * Avantis Firmware: 1.3x
-* Microsoft Excel or LibreOffice Calc Spreadsheet
-* Reaper (Optional)
+* Microsoft Excel (ideally Office 365) or LibreOffice Calc Spreadsheet (>25.x.x)
+* Reaper >= v6.x (Optional)
 * Tracks Live v1.3 (Optional)
 * Python 3.12 (Optional, if you want to build the software yourself)
 
@@ -208,6 +217,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 
 __Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
 
+> **_Recommended Workflow:_** If socket patching is to be performed, I recommend first exporting to CSV, then importing into Director. This lays the foundation for further MIDI-based data processing, where you can override over and over.
 
 1. Select the console: `dLive` or `Avantis`
 
@@ -289,12 +299,30 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 ## Troubleshooting
 
-| Problem                              | Possible Solution                                                                               | 
-|--------------------------------------|-------------------------------------------------------------------------------------------------|
-| Console to DAW Feature seems to hang | Please make sure, the MIDI Channel on the Audio console fits to the settings in the tool. <br> You can find the MIDI Settings under "Utils/Shows -> Control -> Midi" |
-
+| Problem                                   | Possible Solution                                                                                                                                                                                                                                           | 
+|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Console to DAW Feature seems to hang      | Please make sure, the MIDI Channel on the Audio console fits to the settings in the tool. <br> You can find the MIDI Settings under "Utils/Shows -> Control -> Midi"                                                                                        |
+| Input to Group Routing for MGrp1 is weird | Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. To avoid this, I recommend using a "-" by default for all routings, and then an "x" or a " " where routing is required. |  
 
 ## Release Notes
+
+### v2.11.0
+
+Feature Release
+
+#### New Features
+- Channel to Group (Mono/Stereo) Assignments
+
+#### Improvements
+- Enabled flag is now also effective for CSV Generation
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
 
 ### v2.10.0
 

@@ -6,7 +6,7 @@
 #
 ####################################################
 class ChannelListEntry:
-    def __init__(self, channel, name, color, source, socket, gain, pad, phantom, hpf_on, hpf_value, fader_level, mute, recording, record_arm, dca_config, mg_config, assign_mainmix, enabled):
+    def __init__(self, channel, name, color, source, socket, gain, pad, phantom, hpf_on, hpf_value, fader_level, mute, recording, record_arm, dca_config, mg_config, assign_mainmix, enabled, mono_group_config, stereo_group_config):
         self.channel = channel
         self.name = name
         self.source = source
@@ -25,6 +25,8 @@ class ChannelListEntry:
         self.mg_config = mg_config
         self.assign_mainmix = assign_mainmix
         self.enabled = enabled
+        self.mono_group_config = mono_group_config
+        self.stereo_group_config = stereo_group_config
 
     def get_channel(self):
         return self.channel
@@ -82,3 +84,9 @@ class ChannelListEntry:
 
     def get_enabled(self):
         return self.enabled
+
+    def get_mono_group_config(self):
+        return self.mono_group_config
+
+    def get_stereo_group_config(self):
+        return self.stereo_group_config

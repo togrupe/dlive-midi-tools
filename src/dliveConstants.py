@@ -41,6 +41,7 @@ sysex_message_set_channel_colour = 0x06
 sysex_message_get_channel_colour = 0x04
 sysex_message_set_socket_preamp_48V = 0x0C
 sysex_message_set_socket_preamp_pad = 0x09
+sysex_message_set_groups_on = 0x0E
 
 # NRPN messages
 nrpn_parameter_id_hpf_on = 0x31
@@ -65,9 +66,10 @@ mg_off_base_address = 0x18
 mute_on = 0x7F
 mute_off = 0x3F
 
-# Channel Assignment to Main Mix
-mainmix_on = 0x7F
-mainmix_off = 0x3F
+# Channel Assignment to Main Mix, Mono & Stereo Group
+assign_on = 0x7F
+assign_off = 0x0
+
 
 # Fader levels
 fader_level_plus10 = 0x7F

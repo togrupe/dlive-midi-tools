@@ -225,6 +225,20 @@ def fill_actions(action_list, actions):
             action_list.append(action)
             actions = increment_actions(actions)
 
+        # Assign to Mono Group
+        elif var._name == GuiConstants.TEXT_MONO_GROUP_ASSIGN and var.get() is True:
+            action = Action(GuiConstants.TEXT_MONO_GROUP_ASSIGN, "channels",
+                            "Set Mono Group Assignments to channels...", "assign_mono_group")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
+        # Assign to Stereo Group
+        elif var._name == GuiConstants.TEXT_STEREO_GROUP_ASSIGN and var.get() is True:
+            action = Action(GuiConstants.TEXT_STEREO_GROUP_ASSIGN, "channels",
+                            "Set Stereo Group Assignments to channels...", "assign_stereo_group")
+            action_list.append(action)
+            actions = increment_actions(actions)
+
         # Phantom
         elif var._name == GuiConstants.TEXT_PHANTOM and var.get() is True:
             action = Action(GuiConstants.TEXT_PHANTOM, "sockets",
@@ -426,7 +440,7 @@ def read_document(filename):
 
     sheet.set_misc_model(create_misc_content(pd.read_excel(filename, sheet_name="Misc")))
 
-    latest_spreadsheet_version = '13'
+    latest_spreadsheet_version = '14'
 
     read_version = sheet.get_misc_model().get_version()
 
@@ -439,13 +453,13 @@ def read_document(filename):
         showerror(message=error_msg)
         return root.quit()
 
-    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels", dtype=str)))
+    context.get_app_data().set_console(var_console.get())
+
+    sheet.set_channel_model(create_channel_list_content(pd.read_excel(filename, sheet_name="Channels", dtype=str), context))
     sheet.set_socket_model(create_socket_list_content(pd.read_excel(filename, sheet_name="Sockets", dtype=str)))
     sheet.set_group_model(create_groups_list_content(pd.read_excel(filename, sheet_name="Groups", dtype=str)))
 
     app_data.set_midi_channel(determine_technical_midi_port(var_midi_channel.get()))
-
-    context.get_app_data().set_console(var_console.get())
 
     if context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
         disable_avantis_checkboxes()
@@ -757,7 +771,7 @@ def remove_tick(var_name):
 
 
 def disable_avantis_checkboxes():
-    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS, GuiConstants.TEXT_UFX_SEND_NAME, GuiConstants.TEXT_UFX_SEND_COLOR, GuiConstants.TEXT_UFX_RETURN_NAME, GuiConstants.TEXT_UFX_RETURN_COLOR]
+    cb_to_disable = [GuiConstants.TEXT_HPF_ON, GuiConstants.TEXT_HPF_VALUE, GuiConstants.TEXT_MUTE_GROUPS, GuiConstants.TEXT_UFX_SEND_NAME, GuiConstants.TEXT_UFX_SEND_COLOR, GuiConstants.TEXT_UFX_RETURN_NAME, GuiConstants.TEXT_UFX_RETURN_COLOR, GuiConstants.TEXT_MONO_GROUP_ASSIGN, GuiConstants.TEXT_STEREO_GROUP_ASSIGN]
     for checkbox in grid.checkboxes:
         current_cb = checkbox.__getitem__("text")
         if current_cb in cb_to_disable:
@@ -815,7 +829,9 @@ def on_console_selected(*args):
             showinfo(
                 message='Info: "' + GuiConstants.TEXT_HPF_ON +
                         '", "' + GuiConstants.TEXT_HPF_VALUE +
-                        '" and "' + GuiConstants.TEXT_MUTE_GROUPS +
+                        '", "' + GuiConstants.TEXT_MUTE_GROUPS +
+                        '", "' + GuiConstants.TEXT_MONO_GROUP_ASSIGN +
+                        '" and  "' + GuiConstants.TEXT_STEREO_GROUP_ASSIGN +
 
                         '" are currently not supported by the API of Avantis!')
         disable_avantis_checkboxes()
@@ -1048,7 +1064,7 @@ if __name__ == '__main__':
     log = context.get_logger()
     log.info("dlive-midi-tool version: " + Toolinfo.version)
     root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-    root.geometry('1320x850')
+    root.geometry('1320x875')
     root.resizable(False, False)
 
 
@@ -1180,7 +1196,9 @@ if __name__ == '__main__':
          GuiConstants.TEXT_FADER_LEVEL,
          GuiConstants.TEXT_DCA,
          GuiConstants.TEXT_MUTE_GROUPS,
-         GuiConstants.TEXT_MAINMIX
+         GuiConstants.TEXT_MAINMIX,
+         GuiConstants.TEXT_MONO_GROUP_ASSIGN,
+         GuiConstants.TEXT_STEREO_GROUP_ASSIGN
          ],
         [GuiConstants.TEXT_PHANTOM,
          GuiConstants.TEXT_PAD,

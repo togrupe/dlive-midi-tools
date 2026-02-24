@@ -10,6 +10,7 @@ import dliveConstants
 from parameters.channels.Color import color_channel
 from parameters.channels.Dca import dca_channel
 from parameters.channels.Faderlevel import fader_level_channel
+from parameters.channels.Groups import assign_group_to_channel
 from parameters.channels.Hpf import hpf_on_channel, hpf_value_channel
 from parameters.channels.Mainmix import assign_mainmix_channel
 from parameters.channels.Mute import mute_on_channel
@@ -58,3 +59,7 @@ def handle_channels_parameter(message, context, channel_list_entries, action):
             mg_channel(context, item)
         elif action == "assign_main_mix":
             assign_mainmix_channel(context, item)
+        elif action == "assign_mono_group":
+            assign_group_to_channel(context, item, "mono")
+        elif action == "assign_stereo_group":
+            assign_group_to_channel(context, item, "stereo")

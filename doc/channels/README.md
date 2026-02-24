@@ -55,7 +55,7 @@ The following options for Avantis are available:
 * IO 2
 * SigGen
 
-#### Socket: (only Director CSV Import) <br>
+#### Socket: (Only Director CSV Import) <br>
 
 The Socket number in combination with the `Source` <br>
 Allowed values dLive:
@@ -76,19 +76,19 @@ Allowed values Avantis:
 * IO 1: 1-128
 * IO 2: 1-128
 
-#### Gain: (only Director CSV Import) <br>
+#### Gain: (Only Director CSV Import) <br>
 
 * "-" - Don´t care. Ignore the cell. <br>
 * +5 to +60 - the gain value
 
-#### Pad: (only Director CSV Import) <br>
+#### Pad: (Only Director CSV Import) <br>
 * yes - to activate PAD <br>
 * no - to deactivate PAD. <br>
 * "-" - Don´t care. Ignore the cell. <br>
 
 Empty cells are interpreted as **Don´t care**.
 
-#### Phantom: (only Director CSV Import) <br>
+#### Phantom: (Only Director CSV Import) <br>
 * yes - to activate Phantom Power (48V) <br>
 * no - to deactivate Phantom Power (48V). <br>
 * "-" - Don´t care. Ignore the cell. <br>
@@ -109,24 +109,42 @@ Dropdown list with predefined fader level values. (-99 = -inf) <br>
 
 Empty cells are interpreted as **Don´t care**.
 
-#### HPF On (only dLive)
+#### HPF On (Only dLive)
 * yes - to activate the Highpass Filter <br>
 * no - to deactivate the Highpass Filter <br>
 * "-" - Don´t care. Ignore the cell. <br>
 
 Empty cells are interpreted as **Don´t care**.
 
-#### HPF Value (only dLive)
+#### HPF Value (Only dLive)
 20-2000Hz - to set the Highpass Filter value
 
 Empty cells are interpreted as **Don´t care**.
 
-#### Main Mix
+#### Main Mix Assignment
 yes - Assigns the channel to Main-Mix <br>
 no - Removes the assignment from Main Mix <br>
 "-" - Don´t care. Ignore the cell. <br>
 
 Empty cells are interpreted as **Don´t care**.
+
+
+#### Channel to Group Assignments
+> **_NOTE:_** Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. To avoid this, I recommend using a "-" by default for all routings, and then an "x" or a " " where routing is required.
+
+##### Channel to Mono Group Assignment - Grp1-12 (Only dLive)
+By putting an "x" into the relevant cell, the channel will be assigned to the particular Mono Group.
+
+Empty cells are interpreted as not being assigned.
+
+"-" - Don´t care. Ignore the cell. <br>
+
+##### Channel to Stereo Group Assignment - StGrp1-12 (Only dLive)
+By putting an "x" into the relevant cell, the channel will be assigned to the particular Stereo Group.
+
+Empty cells are interpreted as not being assigned.
+
+"-" - Don´t care. Ignore the cell. <br>
 
 #### Recording
 yes - Channel is taken into account for DAW Recording Session <br>

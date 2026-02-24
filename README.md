@@ -217,7 +217,7 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 
 __Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
 
-> **_Recommended Workflow:_** If socket patching is to be performed, I recommend first exporting to CSV, then importing into Director. This lays the foundation for further MIDI-based data processin, where you can override over and over.
+> **_Recommended Workflow:_** If socket patching is to be performed, I recommend first exporting to CSV, then importing into Director. This lays the foundation for further MIDI-based data processing, where you can override over and over.
 
 1. Select the console: `dLive` or `Avantis`
 

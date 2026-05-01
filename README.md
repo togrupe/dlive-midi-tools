@@ -63,6 +63,8 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Overview
 ![Overview](doc/overview.drawio.png)
 
+For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
+
 ## Download
 | Version | Date       | OS                                   | Download                                                                                        | Release Notes  | MD5 Checksum                     |
 |---------|------------|--------------------------------------|-------------------------------------------------------------------------------------------------|----------------|----------------------------------|

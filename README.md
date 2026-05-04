@@ -12,8 +12,8 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
   - Matrices
   - FX Sends
   - FX Returns
-  - UFX Sends (dLive only)
-  - UFX Returns (dLive only)
+  - UFX Sends
+  - UFX Returns
 - Channel Mute
 - Fader Level
 - Channel to Main Mix Routing
@@ -68,6 +68,9 @@ For a detailed architectural overview including component diagram, data flows, a
 ## Download
 | Version | Date       | OS                                   | Download                                                                                        | Release Notes  | MD5 Checksum                     |
 |---------|------------|--------------------------------------|-------------------------------------------------------------------------------------------------|----------------|----------------------------------|
+| v2.12.0 | TBD        | macOS (x86_64 - Intel*)              | TBD                                                                                             | [Link](#v2120) |                                  |
+|         |            | macOS (arm64 - Apple-Silicon)        | TBD                                                                                             |                |                                  |
+|         |            | Windows (x86_64)                     | TBD                                                                                             |                |                                  |
 | v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
 |         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)  |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
 |         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)      |                | 970930d359582cea6266cd304265dfbc |
@@ -307,6 +310,25 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 | Input to Group Routing for MGrp1 is weird | Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. To avoid this, I recommend using a "-" by default for all routings, and then an "x" or a " " where routing is required. |  
 
 ## Release Notes
+
+### v2.12.0
+
+Feature Release
+
+#### New Features
+- UFX Name & Color Support for Avantis
+- Spreadsheet Validator
+
+#### Improvements
+- Allowed character validation for channel and group names
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
 
 ### v2.11.0
 

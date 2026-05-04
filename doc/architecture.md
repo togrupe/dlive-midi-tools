@@ -19,6 +19,7 @@ graph TD
 
     subgraph Input["Input"]
         Spreadsheet["Spreadsheet Parser\n(pandas / openpyxl / odfpy)"]
+        Validator["Validator\n(Name chars · Color · Fader\nHPF range · Channel range)"]
         Persistence["Persistence\n(config.json)"]
     end
 
@@ -50,6 +51,8 @@ graph TD
     Controller --> Spreadsheet
 
     Spreadsheet --> Models
+    Models --> Validator
+    Validator -.->|"Error List"| Controller
     Models --> Channels
     Models --> Sockets
     Models --> ReaperGen
@@ -58,7 +61,7 @@ graph TD
 
     Channels -->|"SysEx / CC / NRPN"| Console
     Sockets -->|"SysEx"| Console
-    Console -->|"Channel Names\nConsole to DAW mode"| Controller
+    Controller -.->|"reads Channel Names\n(Console to DAW mode)"| Console
 
     ReaperGen --> Reaper
     TracksLiveGen --> TracksLive
@@ -79,6 +82,7 @@ graph TD
 | Context | `src/model/Context.py` | Global context passed throughout: logger, config path, network flag |
 | Data Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations |
 | Spreadsheet | `src/spreadsheet/Spreadsheet.py` | Parse `.xlsx` / `.ods` templates into model objects via pandas |
+| Validator | `src/spreadsheet/Validator.py` | Validate parsed models: allowed name characters, color values, fader levels, HPF range, channel range, yes/no fields |
 | Channel Params | `src/parameters/channels/` | Generate SysEx, CC, and NRPN MIDI messages for channel parameters |
 | Socket Params | `src/parameters/sockets/` | Generate SysEx MIDI messages for socket/preamp parameters |
 | Reaper Creator | `src/dawsession/ReaperSessionCreator.py` | Generate Reaper `.rpp` recording session files |
@@ -95,6 +99,9 @@ graph TD
 Spreadsheet (.xlsx/.ods)
     → Spreadsheet Parser (pandas)
     → Data Models (ChannelListEntry, SocketListEntry, GroupsListEntry)
+    → Validator (name chars, colors, fader levels, HPF range, channel range)
+        ↳ Errors → shown to user; processing stops
+        ↳ Valid  → continue
     → Parameter Handlers (generate MIDI messages)
     → mido Library
     → Console / Director (MIDI over TCP)

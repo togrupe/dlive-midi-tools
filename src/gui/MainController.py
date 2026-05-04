@@ -38,6 +38,7 @@ from spreadsheet.Spreadsheet import (create_channel_list_content,
                                      create_groups_list_content,
                                      create_misc_content,
                                      create_channel_list_content_from_console)
+from spreadsheet.Validator import validate
 
 
 class MainController:
@@ -429,6 +430,20 @@ class MainController:
         if self.context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
             self.view.disable_avantis_checkboxes()
             self.view.root.update()
+
+        validation_errors = validate(sheet, self.context.get_app_data().get_console())
+        if validation_errors:
+            MAX_SHOWN = 20
+            shown = validation_errors[:MAX_SHOWN]
+            suffix = (f"\n\n... and {len(validation_errors) - MAX_SHOWN} more error(s). See log for full list."
+                      if len(validation_errors) > MAX_SHOWN else "")
+            msg = "Spreadsheet validation failed:\n\n" + "\n".join(shown) + suffix
+            for err in validation_errors:
+                self.log.error("Validation: " + err)
+            showerror(message=msg)
+            self.view.reset_progress()
+            self.view.reset_status()
+            return
 
         actions = 0
         action_list = []

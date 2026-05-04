@@ -25,6 +25,21 @@ _BYPASS = {SpreadsheetConstants.spreadsheet_bypass_sign, SpreadsheetConstants.sp
 
 _NAN = 'nan'
 
+_ALLOWED_CHARS = frozenset([
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    ' ', '!', '"', '#', '%', '&', "'", '(', ')', '*', '+', ',', '-',
+    '.', '/', '<', '=', '>', '?', '@', '[', '\\', ']', '_', '{', '}', '~',
+])
+
+
+def _invalid_chars(text):
+    """Return a set of characters in text that are not in _ALLOWED_CHARS."""
+    return set(text) - _ALLOWED_CHARS
+
 
 def _skip(value):
     return value in _BYPASS or value == _NAN
@@ -41,6 +56,12 @@ def _validate_channels(channel_entries, console, errors):
 
         if ch < 1 or ch > max_ch:
             errors.append(f"{p} channel number {ch} out of range (1-{max_ch})")
+
+        name = str(entry.get_name())
+        if not _skip(name.lower()):
+            bad = _invalid_chars(name)
+            if bad:
+                errors.append(f"{p} name '{name}' contains invalid character(s): {sorted(bad)}")
 
         color = entry.get_color().lower()
         if not _skip(color) and color not in _VALID_COLORS:
@@ -147,12 +168,17 @@ def _validate_groups(groups_entry, errors):
 
     for section_name, entries in sections:
         for entry in entries:
+            p = f"Groups {section_name} #{entry.get_channel()}:"
+
+            name = str(entry.get_name())
+            if not _skip(name.lower()):
+                bad = _invalid_chars(name)
+                if bad:
+                    errors.append(f"{p} name '{name}' contains invalid character(s): {sorted(bad)}")
+
             color = str(entry.get_color()).lower()
             if not _skip(color) and color not in _VALID_COLORS:
-                errors.append(
-                    f"Groups {section_name} #{entry.get_channel()}: "
-                    f"invalid color '{entry.get_color()}'"
-                )
+                errors.append(f"{p} invalid color '{entry.get_color()}'")
 
 
 def validate(sheet, console):

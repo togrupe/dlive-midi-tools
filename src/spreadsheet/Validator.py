@@ -19,6 +19,18 @@ _VALID_GAIN_LEVELS = {'5', '10', '15', '20', '25', '30', '35', '40', '45', '50',
 
 _VALID_YES_NO = {'yes', 'no'}
 
+_VALID_SOURCE_DLIVE = {
+    'Unassigned', 'MixRack', 'Surface', 'Surface DX 5/6',
+    'IO 4', 'IO 5', 'USB',
+    'MixRack DX 1/2', 'MixRack DX 3/4',
+    'IO 1', 'IO 2', 'IO 3', 'SigGen',
+}
+
+_VALID_SOURCE_AVANTIS = {
+    'Unassigned', 'Surface', 'SLink',
+    'IO 1', 'IO 2', 'SigGen',
+}
+
 _VALID_TOGGLE = {'x'}
 
 _BYPASS = {SpreadsheetConstants.spreadsheet_bypass_sign, SpreadsheetConstants.spreadsheet_bypass_string}
@@ -62,6 +74,14 @@ def _validate_channels(channel_entries, console, errors):
             bad = _invalid_chars(name)
             if bad:
                 errors.append(f"{p} name '{name}' contains invalid character(s): {sorted(bad)}")
+
+        source = str(entry.get_source())
+        if not _skip(source.lower()):
+            valid_sources = (_VALID_SOURCE_DLIVE
+                             if console != dliveConstants.console_drop_down_avantis
+                             else _VALID_SOURCE_AVANTIS)
+            if source not in valid_sources:
+                errors.append(f"{p} invalid Source '{source}'")
 
         color = entry.get_color().lower()
         if not _skip(color) and color not in _VALID_COLORS:

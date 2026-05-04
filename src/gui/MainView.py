@@ -529,10 +529,6 @@ class MainView:
             GuiConstants.TEXT_HPF_ON,
             GuiConstants.TEXT_HPF_VALUE,
             GuiConstants.TEXT_MUTE_GROUPS,
-            GuiConstants.TEXT_UFX_SEND_NAME,
-            GuiConstants.TEXT_UFX_SEND_COLOR,
-            GuiConstants.TEXT_UFX_RETURN_NAME,
-            GuiConstants.TEXT_UFX_RETURN_COLOR,
             GuiConstants.TEXT_MONO_GROUP_ASSIGN,
             GuiConstants.TEXT_STEREO_GROUP_ASSIGN,
         ]

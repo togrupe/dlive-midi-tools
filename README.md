@@ -321,6 +321,8 @@ Feature Release
 
 #### Improvements
 - Allowed character validation for channel and group names
+- Code Refactoring: MVC Pattern introduced
+- About Dialog refactored
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.

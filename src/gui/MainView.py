@@ -39,6 +39,7 @@ class MainView:
         self._create_connection_settings()
         self._create_tab1_content()
         self._create_tab2_content()
+        self._create_tab3_content()
         self._create_status_area()
         self._finalize_layout()
 
@@ -69,6 +70,9 @@ class MainView:
 
         self.tab2 = ttk.Frame(self.tab_control)
         self.tab_control.add(self.tab2, text='Console to DAW')
+
+        self.tab3 = ttk.Frame(self.tab_control)
+        self.tab_control.add(self.tab3, text='Helpers')
 
         self.tab1_frame = LabelFrame(self.tab1, text='Spreadsheet to Console / DAW')
         self.tab2_frame = LabelFrame(self.tab2, text='Console to DAW')
@@ -403,6 +407,39 @@ class MainView:
         self.btn_console_to_daw.pack(side=BOTTOM)
 
         button_frame.pack(side=TOP)
+
+    # ------------------------------------------------------------------
+    # Tab 3 – Helpers
+    # ------------------------------------------------------------------
+
+    def _create_tab3_content(self):
+        reset_frame = LabelFrame(self.tab3, text="Reset")
+
+        self.btn_reset_dca = Button(reset_frame, text='RESET all DCA Assignments', width=35)
+        self.btn_reset_mute_groups = Button(reset_frame, text='RESET all Mute Group Assignments', width=35)
+        self.btn_reset_main_mix = Button(reset_frame, text='RESET all Main Assignments', width=35)
+
+        self.btn_reset_dca.grid(row=0, column=0, padx=10, pady=5, sticky='W')
+        self.btn_reset_mute_groups.grid(row=0, column=1, padx=10, pady=5, sticky='W')
+        self.btn_reset_main_mix.grid(row=1, column=0, padx=10, pady=5, sticky='W')
+
+        reset_frame.pack(side=TOP, fill=X, padx=10, pady=10)
+
+        mute_frame = LabelFrame(self.tab3, text="Mute")
+
+        self.btn_mute_all_inputs = Button(mute_frame, text='MUTE ALL INPUTS', width=35)
+        self.btn_mute_all_outputs = Button(mute_frame, text='MUTE ALL OUTPUTS', width=35)
+
+        self.btn_mute_all_inputs.grid(row=0, column=0, padx=10, pady=5, sticky='W')
+        self.btn_mute_all_outputs.grid(row=0, column=1, padx=10, pady=5, sticky='W')
+
+        mute_frame.pack(side=TOP, fill=X, padx=10, pady=10)
+
+    def disable_helpers_avantis(self):
+        self.btn_reset_mute_groups.config(state='disabled')
+
+    def enable_helpers_avantis(self):
+        self.btn_reset_mute_groups.config(state='normal')
 
     # ------------------------------------------------------------------
     # Status Area (packed side=BOTTOM)

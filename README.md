@@ -317,12 +317,17 @@ Feature Release
 
 #### New Features
 - UFX Name & Color Support for Avantis
-- Spreadsheet Validator
+- Spreadsheet Validator — validates channel and group names, colors, fader levels, HPF range, channel range, Source field (dLive & Avantis)
+- Helpers Tab with the following actions (direct console communication, no spreadsheet required):
+  - RESET all DCA Assignments
+  - RESET all Mute Group Assignments (dLive only)
+  - RESET all Main Mix Assignments
+  - MUTE ALL INPUTS
+  - MUTE ALL OUTPUTS
 
 #### Improvements
 - Allowed character validation for channel and group names
-- Code Refactoring: MVC Pattern introduced
-- About Dialog refactored
+- Source field validation per console type (dLive / Avantis)
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.

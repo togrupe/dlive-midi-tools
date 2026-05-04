@@ -39,6 +39,10 @@ from spreadsheet.Spreadsheet import (create_channel_list_content,
                                      create_misc_content,
                                      create_channel_list_content_from_console)
 from spreadsheet.Validator import validate
+from parameters.channels.Helpers import (
+    reset_all_dca, reset_all_mute_groups, reset_all_main_mix,
+    mute_all_inputs, mute_all_outputs,
+)
 
 
 class MainController:
@@ -73,6 +77,9 @@ class MainController:
         self.view.disable_console_to_daw_prefix()
         self.view.disable_console_to_daw_mastertracks()
 
+        if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
+            self.view.disable_helpers_avantis()
+
     def _bind_commands(self):
         # Menu
         self.view.file_menu.entryconfig(0, command=self.on_about)
@@ -98,6 +105,18 @@ class MainController:
 
         # Tab 2 action button
         self.view.btn_console_to_daw.config(command=self.on_console_to_daw_thread)
+
+        # Tab 3 helper buttons
+        self.view.btn_reset_dca.config(
+            command=lambda: self._on_helper_thread(reset_all_dca, "Resetting all DCA Assignments..."))
+        self.view.btn_reset_mute_groups.config(
+            command=lambda: self._on_helper_thread(reset_all_mute_groups, "Resetting all Mute Group Assignments..."))
+        self.view.btn_reset_main_mix.config(
+            command=lambda: self._on_helper_thread(reset_all_main_mix, "Resetting all Main Mix Assignments..."))
+        self.view.btn_mute_all_inputs.config(
+            command=lambda: self._on_helper_thread(mute_all_inputs, "Muting all Inputs..."))
+        self.view.btn_mute_all_outputs.config(
+            command=lambda: self._on_helper_thread(mute_all_outputs, "Muting all Outputs..."))
 
         # Variable traces
         self.view.var_console.trace("w", self.on_console_selected)
@@ -170,12 +189,14 @@ class MainController:
                             '" are currently not supported by the API of Avantis!')
 
             self.view.disable_avantis_checkboxes()
+            self.view.disable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
             self.view.label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
             self.view.reactivate_avantis_checkboxes()
+            self.view.enable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
 
@@ -669,6 +690,42 @@ class MainController:
                 actions += 1
 
         return actions
+
+    # ------------------------------------------------------------------
+    # Business logic – Helpers
+    # ------------------------------------------------------------------
+
+    def _on_helper_thread(self, helper_fn, status_msg):
+        threading.Thread(target=self._run_helper, args=(helper_fn, status_msg), daemon=True).start()
+
+    def _run_helper(self, helper_fn, status_msg):
+        current_ip = self.view.get_ip()
+        if not is_valid_ip_address(current_ip):
+            showerror(message="Invalid IP-Address")
+            return
+
+        self.context.get_app_data().set_midi_channel(
+            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
+
+        self.view.reset_status()
+        self.view.reset_progress()
+        self.context.set_output(self._connect_to_console(current_ip))
+        if self.context.get_output() is None:
+            return
+
+        try:
+            self.view.set_status(status_msg)
+            helper_fn(self.context)
+            self.view.reset_status()
+            showinfo(message="Done!")
+        except OSError as e:
+            error = "Operation failed: " + str(e)
+            self.log.error(error)
+            showerror(message=error)
+        finally:
+            output = self.context.get_output()
+            if output:
+                output.close()
 
     def _connect_to_console(self, ip, test=False):
         text = ("Try to open connection to console on ip: " + ip + ":" +

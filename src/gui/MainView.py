@@ -51,7 +51,10 @@ class MainView:
         menu_bar = Menu(self.root)
 
         self.file_menu = Menu(menu_bar, tearoff=0)
-        self.file_menu.add_command(label="About")          # index 0 – controller binds command
+        self.file_menu.add_command(label="Documentation")  # index 0 – controller binds command
+        self.file_menu.add_command(label="Donate ☕")      # index 1 – controller binds command
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="About")          # index 3 – controller binds command
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Close", command=self.root.destroy)
 

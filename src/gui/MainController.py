@@ -9,7 +9,9 @@
 import logging
 import os
 import socket
+import sys
 import threading
+import webbrowser
 from tkinter import filedialog
 from tkinter.messagebox import showinfo, showerror
 
@@ -21,6 +23,7 @@ import dliveConstants
 from directorcsv import CsvCreator
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
+from gui.DonateDialog import DonateDialog
 from helper.Networking import is_valid_ip_address
 from model.Action import Action
 from model.Sheet import Sheet
@@ -82,7 +85,9 @@ class MainController:
 
     def _bind_commands(self):
         # Menu
-        self.view.file_menu.entryconfig(0, command=self.on_about)
+        self.view.file_menu.entryconfig(0, command=self.on_open_documentation)
+        self.view.file_menu.entryconfig(1, command=self.on_donate)
+        self.view.file_menu.entryconfig(3, command=self.on_about)
 
         # Connection buttons
         self.view.btn_save.config(command=self.on_save_settings)
@@ -127,9 +132,24 @@ class MainController:
     # Event handlers
     # ------------------------------------------------------------------
 
+    def on_open_documentation(self):
+        if getattr(sys, 'frozen', False):
+            base_dir = sys._MEIPASS
+        else:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        readme_path = os.path.join(base_dir, 'README.md')
+        if os.path.exists(readme_path):
+            webbrowser.open('file://' + readme_path)
+        else:
+            webbrowser.open('https://github.com/togrupe/dlive-midi-tools#readme')
+
     def on_about(self):
         about = AboutDialog(self.view.root)
         about.mainloop()
+
+    def on_donate(self):
+        donate = DonateDialog(self.view.root)
+        donate.mainloop()
 
     def on_save_settings(self):
         current_ip = self.view.get_ip()

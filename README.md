@@ -239,6 +239,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 The tool has currently the following modes:
 * Spreadsheet to Console / DAW (Continue with next Step) - Reads from a spreadsheet into console or to a DAW Session.
 * Console to DAW (Continue with Step 10) - Reads from the console and writes a DAW session.
+* Helpers (Continue with Step 12) - Direct console operations without a spreadsheet.
 
 Choose which mode you want to use:
 
@@ -292,7 +293,26 @@ Options:
 
 Click `Generate DAW session(s) from current console settings`
 
-12. If something goes wrong, please check the Python console or the `main.log`
+12. The `Helpers` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
+
+### Reset
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| RESET all DCA Assignments | Removes all DCA assignments from every channel | dLive & Avantis |
+| RESET all Mute Group Assignments | Removes all Mute Group assignments from every channel | dLive only |
+| RESET all Main Mix Assignments | Removes all Main Mix assignments from every channel | dLive & Avantis |
+
+### Mute
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| MUTE ALL INPUTS | Mutes all input channels | dLive & Avantis |
+| MUTE ALL OUTPUTS | Mutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
+
+> **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
+
+13. If something goes wrong, please check the Python console or the `main.log`
 
 If you find any issues, please let me know. New ideas are welcome. 
 

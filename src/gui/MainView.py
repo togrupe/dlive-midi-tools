@@ -424,14 +424,14 @@ class MainView:
 
         self.btn_reset_dca.grid(row=0, column=0, padx=10, pady=5, sticky='W')
         self.btn_reset_mute_groups.grid(row=0, column=1, padx=10, pady=5, sticky='W')
-        self.btn_reset_main_mix.grid(row=1, column=0, padx=10, pady=5, sticky='W')
+        self.btn_reset_main_mix.grid(row=0, column=2, padx=10, pady=5, sticky='W')
 
         reset_frame.pack(side=TOP, fill=X, padx=10, pady=10)
 
         mute_frame = LabelFrame(self.tab3, text="Mute")
 
-        self.btn_mute_all_inputs = Button(mute_frame, text='MUTE ALL INPUTS', width=35)
-        self.btn_mute_all_outputs = Button(mute_frame, text='MUTE ALL OUTPUTS', width=35)
+        self.btn_mute_all_inputs = Button(mute_frame, text='MUTE all Inputs', width=35)
+        self.btn_mute_all_outputs = Button(mute_frame, text='MUTE all Outputs', width=35)
 
         self.btn_mute_all_inputs.grid(row=0, column=0, padx=10, pady=5, sticky='W')
         self.btn_mute_all_outputs.grid(row=0, column=1, padx=10, pady=5, sticky='W')

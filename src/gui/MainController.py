@@ -114,7 +114,7 @@ class MainController:
         # Tab 2 action button
         self.view.btn_console_to_daw.config(command=self.on_console_to_daw_thread)
 
-        # Tab 3 helper buttons
+        # Tab 3 utility buttons
         self.view.btn_reset_dca.config(
             command=lambda: self._on_helper_thread(reset_all_dca, "Resetting all DCA Assignments..."))
         self.view.btn_reset_mute_groups.config(

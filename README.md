@@ -239,7 +239,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 The tool has currently the following modes:
 * Spreadsheet to Console / DAW (Continue with next Step) - Reads from a spreadsheet into console or to a DAW Session.
 * Console to DAW (Continue with Step 10) - Reads from the console and writes a DAW session.
-* Helpers (Continue with Step 12) - Direct console operations without a spreadsheet.
+* Utilities (Continue with Step 12) - Direct console operations without a spreadsheet.
 
 Choose which mode you want to use:
 
@@ -293,7 +293,7 @@ Options:
 
 Click `Generate DAW session(s) from current console settings`
 
-12. The `Helpers` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
+12. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
 
 ### Reset
 
@@ -362,7 +362,7 @@ Feature Release
 #### New Features
 - UFX Name & Color Support for Avantis
 - Spreadsheet Validator — validates channel and group names, colors, fader levels, HPF range, channel range, Source field (dLive & Avantis)
-- Helpers Tab with the following actions (direct console communication, no spreadsheet required):
+- Utilities Tab with the following actions (direct console communication, no spreadsheet required):
   - RESET all DCA Assignments
   - RESET all Mute Group Assignments (dLive only)
   - RESET all Main Mix Assignments

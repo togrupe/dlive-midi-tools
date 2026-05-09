@@ -75,7 +75,7 @@ class MainView:
         self.tab_control.add(self.tab2, text='Console to DAW')
 
         self.tab3 = ttk.Frame(self.tab_control)
-        self.tab_control.add(self.tab3, text='Helpers')
+        self.tab_control.add(self.tab3, text='Utilities')
 
         self.tab1_frame = LabelFrame(self.tab1, text='Spreadsheet to Console / DAW')
         self.tab2_frame = LabelFrame(self.tab2, text='Console to DAW')
@@ -412,7 +412,7 @@ class MainView:
         button_frame.pack(side=TOP)
 
     # ------------------------------------------------------------------
-    # Tab 3 – Helpers
+    # Tab 3 – Utilities
     # ------------------------------------------------------------------
 
     def _create_tab3_content(self):

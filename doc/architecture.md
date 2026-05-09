@@ -29,7 +29,7 @@ graph TD
     subgraph MIDIHandlers["MIDI Parameter Handlers"]
         Channels["Channel Parameters\nName · Color · Mute · Fader Level\nHPF On/Value · DCA · Mute Groups\nGroup Routing · Main Mix Routing"]
         Sockets["Socket Parameters\nPhantom Power · Pad · Gain"]
-        Helpers["Parameter Helpers\nReset DCA · Reset Mute Groups · Reset Main Mix\nMute / Unmute All Inputs · Mute / Unmute All Outputs\nFaders to 0 dB / -inf · Phantom Power OFF"]
+        Utilities["Parameter Helpers\nReset DCA · Reset Mute Groups · Reset Main Mix\nMute / Unmute All Inputs · Mute / Unmute All Outputs\nFaders to 0 dB / -inf · Phantom Power OFF"]
     end
 
     subgraph OutputGenerators["Output Generators"]
@@ -65,9 +65,9 @@ graph TD
 
     Channels -->|"SysEx / CC / NRPN"| Console
     Sockets -->|"SysEx"| Console
-    Helpers -->|"SysEx / CC / NRPN"| Console
+    Utilities -->|"SysEx / CC / NRPN"| Console
     Controller -.->|"reads Channel Names\n(Console to DAW mode)"| Console
-    Controller --> Helpers
+    Controller --> Utilities
 
     ReaperGen --> Reaper
     TracksLiveGen --> TracksLive
@@ -143,10 +143,10 @@ Console (MIDI over TCP)
     → .rpp / .template file
 ```
 
-### Helpers Tab → Console
+### Utilities Tab → Console
 
 ```
-User (Helpers tab button)
+User (Utilities tab button)
     → MainController (threaded)
     → Parameter Helpers:
         Reset:   reset_all_dca / reset_all_mute_groups / reset_all_main_mix

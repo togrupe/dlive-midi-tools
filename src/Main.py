@@ -11,8 +11,8 @@ import logging
 import Toolinfo
 import dliveConstants
 import GuiConstants
-from model.AppData import AppData
-from model.Context import Context
+from AppData import AppData
+from Context import Context
 from gui.MainView import MainView
 from gui.MainController import MainController
 

@@ -11,10 +11,13 @@ graph TD
         Controller["MainController\n(Event Handling & Orchestration)"]
     end
 
-    subgraph DataLayer["Data Layer"]
-        Context["Context\n(Logger, Config, Network Flag)"]
-        AppData["AppData\n(Console Type, IP, MIDI Port)"]
-        Models["Data Models\nChannelListEntry · SocketListEntry\nGroupsListEntry · DcaConfig\nMuteGroupConfig · GroupSetup"]
+    subgraph RuntimeState["Runtime State"]
+        Context["Context\n(Logger, Output, AppData,\nNetwork Flag, Config, CSV Hint)"]
+        AppData["AppData\n(Console Type, IP, MIDI Port,\nOutput Flags)"]
+    end
+
+    subgraph DomainModels["Domain Models"]
+        Models["ChannelListEntry · SocketListEntry\nGroupsListEntry · DcaConfig\nMuteGroupConfig · GroupSetup"]
     end
 
     subgraph Input["Input"]
@@ -26,6 +29,7 @@ graph TD
     subgraph MIDIHandlers["MIDI Parameter Handlers"]
         Channels["Channel Parameters\nName · Color · Mute · Fader Level\nHPF On/Value · DCA · Mute Groups\nGroup Routing · Main Mix Routing"]
         Sockets["Socket Parameters\nPhantom Power · Pad · Gain"]
+        Helpers["Parameter Helpers\nReset DCA · Reset Mute Groups\nReset Main Mix · Mute All Inputs\nMute All Outputs"]
     end
 
     subgraph OutputGenerators["Output Generators"]
@@ -44,7 +48,7 @@ graph TD
     Main --> View
     Main --> Controller
     Main --> Context
-    Main --> AppData
+    Context -.->|"contains"| AppData
 
     View <-->|"User Events"| Controller
     Controller <-->|"Read / Write"| Persistence
@@ -61,14 +65,15 @@ graph TD
 
     Channels -->|"SysEx / CC / NRPN"| Console
     Sockets -->|"SysEx"| Console
+    Helpers -->|"SysEx / CC / NRPN"| Console
     Controller -.->|"reads Channel Names\n(Console to DAW mode)"| Console
+    Controller --> Helpers
 
     ReaperGen --> Reaper
     TracksLiveGen --> TracksLive
     CsvGen --> Director
 
-    Context -.->|"logger / flags"| Controller
-    AppData -.->|"runtime state"| Controller
+    Context -.->|"logger / flags / state"| Controller
 ```
 
 ## Module Descriptions
@@ -78,13 +83,14 @@ graph TD
 | Entry Point | `src/Main.py` | Initialize context, models, view, and controller; start Tkinter event loop |
 | MainView | `src/gui/MainView.py` | Tkinter GUI layout, widgets, tabs, checkboxes, progress bars |
 | MainController | `src/gui/MainController.py` | Event handlers, threading for long operations, business logic orchestration |
-| AppData | `src/model/AppData.py` | Runtime state: console type, IP address, MIDI channel, output flags |
-| Context | `src/model/Context.py` | Global context passed throughout: logger, config path, network flag |
-| Data Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations |
+| AppData | `src/AppData.py` | Runtime state: console type, IP address, MIDI channel, output flags |
+| Context | `src/Context.py` | Global context passed throughout: logger, MIDI output, AppData reference, network flag, config path, CSV hint flag |
+| Domain Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations |
 | Spreadsheet | `src/spreadsheet/Spreadsheet.py` | Parse `.xlsx` / `.ods` templates into model objects via pandas |
 | Validator | `src/spreadsheet/Validator.py` | Validate parsed models: allowed name characters, color values, fader levels, HPF range, channel range, yes/no fields |
 | Channel Params | `src/parameters/channels/` | Generate SysEx, CC, and NRPN MIDI messages for channel parameters |
 | Socket Params | `src/parameters/sockets/` | Generate SysEx MIDI messages for socket/preamp parameters |
+| Parameter Helpers | `src/parameters/channels/Helpers.py` | Bulk console operations: reset all DCA/Mute Group/Main Mix assignments, mute all inputs/outputs |
 | Reaper Creator | `src/dawsession/ReaperSessionCreator.py` | Generate Reaper `.rpp` recording session files |
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
@@ -135,6 +141,17 @@ Console (MIDI over TCP)
     → Data Models
     → Reaper / Tracks Live Session Creator
     → .rpp / .template file
+```
+
+### Helpers Tab → Console
+
+```
+User (Helpers tab button)
+    → MainController (threaded)
+    → Parameter Helpers (reset_all_dca / reset_all_mute_groups /
+                         reset_all_main_mix / mute_all_inputs / mute_all_outputs)
+    → MIDI messages (CC / NRPN / Note)
+    → Console (MIDI over TCP)
 ```
 
 ## MIDI Protocol

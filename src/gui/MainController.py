@@ -45,6 +45,9 @@ from spreadsheet.Validator import validate
 from parameters.channels.Helpers import (
     reset_all_dca, reset_all_mute_groups, reset_all_main_mix,
     mute_all_inputs, mute_all_outputs,
+    unmute_all_inputs, unmute_all_outputs,
+    set_all_input_faders_to_zero, set_all_input_faders_to_minus_inf,
+    phantom_power_off_all_sockets,
 )
 
 
@@ -122,6 +125,16 @@ class MainController:
             command=lambda: self._on_helper_thread(mute_all_inputs, "Muting all Inputs..."))
         self.view.btn_mute_all_outputs.config(
             command=lambda: self._on_helper_thread(mute_all_outputs, "Muting all Outputs..."))
+        self.view.btn_unmute_all_inputs.config(
+            command=lambda: self._on_helper_thread(unmute_all_inputs, "Unmuting all Inputs..."))
+        self.view.btn_unmute_all_outputs.config(
+            command=lambda: self._on_helper_thread(unmute_all_outputs, "Unmuting all Outputs..."))
+        self.view.btn_fader_all_to_zero.config(
+            command=lambda: self._on_helper_thread(set_all_input_faders_to_zero, "Setting all Input Faders to 0 dB..."))
+        self.view.btn_fader_all_to_minus_inf.config(
+            command=lambda: self._on_helper_thread(set_all_input_faders_to_minus_inf, "Setting all Input Faders to -inf..."))
+        self.view.btn_phantom_off_all.config(
+            command=lambda: self._on_helper_thread(phantom_power_off_all_sockets, "Switching Phantom Power OFF for all Sockets..."))
 
         # Variable traces
         self.view.var_console.trace("w", self.on_console_selected)

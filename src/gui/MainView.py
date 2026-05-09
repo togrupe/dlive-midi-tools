@@ -432,11 +432,32 @@ class MainView:
 
         self.btn_mute_all_inputs = Button(mute_frame, text='MUTE all Inputs', width=35)
         self.btn_mute_all_outputs = Button(mute_frame, text='MUTE all Outputs', width=35)
+        self.btn_unmute_all_inputs = Button(mute_frame, text='UNMUTE all Inputs', width=35)
+        self.btn_unmute_all_outputs = Button(mute_frame, text='UNMUTE all Outputs', width=35)
 
         self.btn_mute_all_inputs.grid(row=0, column=0, padx=10, pady=5, sticky='W')
         self.btn_mute_all_outputs.grid(row=0, column=1, padx=10, pady=5, sticky='W')
+        self.btn_unmute_all_inputs.grid(row=1, column=0, padx=10, pady=5, sticky='W')
+        self.btn_unmute_all_outputs.grid(row=1, column=1, padx=10, pady=5, sticky='W')
 
         mute_frame.pack(side=TOP, fill=X, padx=10, pady=10)
+
+        fader_frame = LabelFrame(self.tab3, text="Fader")
+
+        self.btn_fader_all_to_zero = Button(fader_frame, text='Set all Input Faders to 0 dB', width=35)
+        self.btn_fader_all_to_minus_inf = Button(fader_frame, text='Set all Input Faders to -inf', width=35)
+
+        self.btn_fader_all_to_zero.grid(row=0, column=0, padx=10, pady=5, sticky='W')
+        self.btn_fader_all_to_minus_inf.grid(row=0, column=1, padx=10, pady=5, sticky='W')
+
+        fader_frame.pack(side=TOP, fill=X, padx=10, pady=10)
+
+        preamp_frame = LabelFrame(self.tab3, text="Preamp Safety")
+
+        self.btn_phantom_off_all = Button(preamp_frame, text='Phantom Power OFF (all Sockets)', width=35)
+        self.btn_phantom_off_all.grid(row=0, column=0, padx=10, pady=5, sticky='W')
+
+        preamp_frame.pack(side=TOP, fill=X, padx=10, pady=10)
 
     def disable_helpers_avantis(self):
         self.btn_reset_mute_groups.config(state='disabled')

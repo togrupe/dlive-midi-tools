@@ -29,7 +29,7 @@ graph TD
     subgraph MIDIHandlers["MIDI Parameter Handlers"]
         Channels["Channel Parameters\nName · Color · Mute · Fader Level\nHPF On/Value · DCA · Mute Groups\nGroup Routing · Main Mix Routing"]
         Sockets["Socket Parameters\nPhantom Power · Pad · Gain"]
-        Helpers["Parameter Helpers\nReset DCA · Reset Mute Groups\nReset Main Mix · Mute All Inputs\nMute All Outputs"]
+        Helpers["Parameter Helpers\nReset DCA · Reset Mute Groups · Reset Main Mix\nMute / Unmute All Inputs · Mute / Unmute All Outputs\nFaders to 0 dB / -inf · Phantom Power OFF"]
     end
 
     subgraph OutputGenerators["Output Generators"]
@@ -90,7 +90,7 @@ graph TD
 | Validator | `src/spreadsheet/Validator.py` | Validate parsed models: allowed name characters, color values, fader levels, HPF range, channel range, yes/no fields |
 | Channel Params | `src/parameters/channels/` | Generate SysEx, CC, and NRPN MIDI messages for channel parameters |
 | Socket Params | `src/parameters/sockets/` | Generate SysEx MIDI messages for socket/preamp parameters |
-| Parameter Helpers | `src/parameters/channels/Helpers.py` | Bulk console operations: reset all DCA/Mute Group/Main Mix assignments, mute all inputs/outputs |
+| Parameter Helpers | `src/parameters/channels/Helpers.py` | Bulk console operations: reset all DCA/Mute Group/Main Mix assignments, mute/unmute all inputs/outputs, set all input faders to 0 dB or -inf, phantom power off for all sockets |
 | Reaper Creator | `src/dawsession/ReaperSessionCreator.py` | Generate Reaper `.rpp` recording session files |
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
@@ -148,9 +148,13 @@ Console (MIDI over TCP)
 ```
 User (Helpers tab button)
     → MainController (threaded)
-    → Parameter Helpers (reset_all_dca / reset_all_mute_groups /
-                         reset_all_main_mix / mute_all_inputs / mute_all_outputs)
-    → MIDI messages (CC / NRPN / Note)
+    → Parameter Helpers:
+        Reset:   reset_all_dca / reset_all_mute_groups / reset_all_main_mix
+        Mute:    mute_all_inputs / mute_all_outputs
+        Unmute:  unmute_all_inputs / unmute_all_outputs
+        Fader:   set_all_input_faders_to_zero / set_all_input_faders_to_minus_inf
+        Preamp:  phantom_power_off_all_sockets
+    → MIDI messages (SysEx / CC / NRPN / Note)
     → Console (MIDI over TCP)
 ```
 

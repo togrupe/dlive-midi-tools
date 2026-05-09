@@ -307,10 +307,25 @@ Click `Generate DAW session(s) from current console settings`
 
 | Button | Description | Console Support |
 |--------|-------------|-----------------|
-| MUTE ALL INPUTS | Mutes all input channels | dLive & Avantis |
-| MUTE ALL OUTPUTS | Mutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
+| MUTE all Inputs | Mutes all input channels | dLive & Avantis |
+| MUTE all Outputs | Mutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
+| UNMUTE all Inputs | Unmutes all input channels | dLive & Avantis |
+| UNMUTE all Outputs | Unmutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
 
 > **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
+
+### Fader
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| Set all Input Faders to 0 dB | Sets all input channel faders to unity gain (0 dB) — useful as a soundcheck starting point | dLive & Avantis |
+| Set all Input Faders to -inf | Sets all input channel faders to minimum (-inf) — useful for a silent start | dLive & Avantis |
+
+### Preamp Safety
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| Phantom Power OFF (all Sockets) | Switches 48V phantom power off on all sockets (Local, DX1, DX3 for dLive; Local, SLink for Avantis) — use before changing microphones | dLive & Avantis |
 
 13. If something goes wrong, please check the Python console or the `main.log`
 
@@ -351,8 +366,11 @@ Feature Release
   - RESET all DCA Assignments
   - RESET all Mute Group Assignments (dLive only)
   - RESET all Main Mix Assignments
-  - MUTE ALL INPUTS
-  - MUTE ALL OUTPUTS
+  - MUTE all Inputs / UNMUTE all Inputs
+  - MUTE all Outputs / UNMUTE all Outputs
+  - Set all Input Faders to 0 dB
+  - Set all Input Faders to -inf
+  - Phantom Power OFF (all Sockets)
 
 #### Improvements
 - Allowed character validation for channel and group names

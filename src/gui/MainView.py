@@ -250,13 +250,14 @@ class MainView:
             fill="x", padx=10, pady=(6, 2))
 
         self.grid = CheckboxGrid(parameter_lf, headers, labels)
-        self.grid.pack(side="top", padx=5, pady=3, fill="x", expand=True)
+        self.grid.pack(side="top", padx=5, pady=3, fill="x")
 
-        global_select_frame = ctk.CTkFrame(outer, fg_color="transparent")
+        global_select_frame = ctk.CTkFrame(parameter_lf, fg_color="transparent")
         self.btn_select_all = ctk.CTkButton(global_select_frame, text='Select All', width=90)
         self.btn_select_all.grid(row=0, column=0, padx=5)
         self.btn_clear_all = ctk.CTkButton(global_select_frame, text='Clear', width=70)
         self.btn_clear_all.grid(row=0, column=1, padx=5)
+        global_select_frame.pack(side="top", pady=(0, 10))
 
         # Output Options – compact 2-column layout
         output_option_frame = self._section(outer, "Output Options")
@@ -340,14 +341,12 @@ class MainView:
         # the rest are fixed-height so they are always fully visible.
         outer.columnconfigure(0, weight=1)
         outer.rowconfigure(0, weight=1)   # parameter_lf – expands
-        outer.rowconfigure(1, weight=0)   # Select All / Clear
-        outer.rowconfigure(2, weight=0)   # Output Options
-        outer.rowconfigure(3, weight=0)   # Button
+        outer.rowconfigure(1, weight=0)   # Output Options
+        outer.rowconfigure(2, weight=0)   # Button
 
         parameter_lf.grid(row=0, column=0, sticky="nsew", pady=(0, 3))
-        global_select_frame.grid(row=1, column=0, pady=3)
-        output_option_frame.grid(row=2, column=0, sticky="ew", pady=3)
-        bottom_frame.grid(row=3, column=0, pady=3)
+        output_option_frame.grid(row=1, column=0, sticky="ew", pady=3)
+        bottom_frame.grid(row=2, column=0, pady=3)
 
     # ------------------------------------------------------------------
     # Tab 2 – Console to DAW

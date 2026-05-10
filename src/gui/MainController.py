@@ -73,9 +73,9 @@ class MainController:
 
         # Set the IP-label text based on the persisted console type
         if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
-            self.view.label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
         else:
-            self.view.label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
         self.view.root.update()
         self.view.root.focus()
 
@@ -93,47 +93,47 @@ class MainController:
         self.view.file_menu.entryconfig(3, command=self.on_about)
 
         # Connection buttons
-        self.view.btn_save.config(command=self.on_save_settings)
-        self.view.btn_director.config(command=self.on_director_ip)
-        self.view.btn_default.config(command=self.on_reset_ip)
-        self.view.btn_test_connection.config(command=self.on_test_connection)
+        self.view.btn_save.configure(command=self.on_save_settings)
+        self.view.btn_director.configure(command=self.on_director_ip)
+        self.view.btn_default.configure(command=self.on_reset_ip)
+        self.view.btn_test_connection.configure(command=self.on_test_connection)
 
         # Checkbox / combobox commands
-        self.view.cb_reaper_write.config(command=self.on_reaper_write_changed)
-        self.view.cb_trackslive_write.config(command=self.on_reaper_write_changed)
-        self.view.cb_console_to_daw_reaper_additional_prefix.config(
+        self.view.cb_reaper_write.configure(command=self.on_reaper_write_changed)
+        self.view.cb_trackslive_write.configure(command=self.on_reaper_write_changed)
+        self.view.cb_console_to_daw_reaper_additional_prefix.configure(
             command=self.on_console_to_daw_prefix_changed)
-        self.view.cb_console_to_daw_additional_master_tracks.config(
+        self.view.cb_console_to_daw_additional_master_tracks.configure(
             command=self.on_console_to_daw_mastertracks_changed)
 
         # Tab 1 action buttons
-        self.view.btn_select_all.config(command=self.view.select_all_checkboxes)
-        self.view.btn_clear_all.config(command=self.view.clear_all_checkboxes)
-        self.view.btn_open_spreadsheet.config(command=self.on_browse_files_thread)
+        self.view.btn_select_all.configure(command=self.view.select_all_checkboxes)
+        self.view.btn_clear_all.configure(command=self.view.clear_all_checkboxes)
+        self.view.btn_open_spreadsheet.configure(command=self.on_browse_files_thread)
 
         # Tab 2 action button
-        self.view.btn_console_to_daw.config(command=self.on_console_to_daw_thread)
+        self.view.btn_console_to_daw.configure(command=self.on_console_to_daw_thread)
 
         # Tab 3 utility buttons
-        self.view.btn_reset_dca.config(
+        self.view.btn_reset_dca.configure(
             command=lambda: self._on_helper_thread(reset_all_dca, "Resetting all DCA Assignments..."))
-        self.view.btn_reset_mute_groups.config(
+        self.view.btn_reset_mute_groups.configure(
             command=lambda: self._on_helper_thread(reset_all_mute_groups, "Resetting all Mute Group Assignments..."))
-        self.view.btn_reset_main_mix.config(
+        self.view.btn_reset_main_mix.configure(
             command=lambda: self._on_helper_thread(reset_all_main_mix, "Resetting all Main Mix Assignments..."))
-        self.view.btn_mute_all_inputs.config(
+        self.view.btn_mute_all_inputs.configure(
             command=lambda: self._on_helper_thread(mute_all_inputs, "Muting all Inputs..."))
-        self.view.btn_mute_all_outputs.config(
+        self.view.btn_mute_all_outputs.configure(
             command=lambda: self._on_helper_thread(mute_all_outputs, "Muting all Outputs..."))
-        self.view.btn_unmute_all_inputs.config(
+        self.view.btn_unmute_all_inputs.configure(
             command=lambda: self._on_helper_thread(unmute_all_inputs, "Unmuting all Inputs..."))
-        self.view.btn_unmute_all_outputs.config(
+        self.view.btn_unmute_all_outputs.configure(
             command=lambda: self._on_helper_thread(unmute_all_outputs, "Unmuting all Outputs..."))
-        self.view.btn_fader_all_to_zero.config(
+        self.view.btn_fader_all_to_zero.configure(
             command=lambda: self._on_helper_thread(set_all_input_faders_to_zero, "Setting all Input Faders to 0 dB..."))
-        self.view.btn_fader_all_to_minus_inf.config(
+        self.view.btn_fader_all_to_minus_inf.configure(
             command=lambda: self._on_helper_thread(set_all_input_faders_to_minus_inf, "Setting all Input Faders to -inf..."))
-        self.view.btn_phantom_off_all.config(
+        self.view.btn_phantom_off_all.configure(
             command=lambda: self._on_helper_thread(phantom_power_off_all_sockets, "Switching Phantom Power OFF for all Sockets..."))
 
         # Variable traces
@@ -209,10 +209,10 @@ class MainController:
         self.log.info("The selected console is: " + self.view.var_console.get())
 
         if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
-            self.view.label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_AVANTIS
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
             self.view.root.update()
 
-            if self.view.tab_control.index(self.view.tab_control.select()) == 0:
+            if self.view.tab_control.get() == "Spreadsheet to Console / DAW":
                 showinfo(
                     message='Info: "' + GuiConstants.TEXT_HPF_ON +
                             '", "' + GuiConstants.TEXT_HPF_VALUE +
@@ -227,7 +227,7 @@ class MainController:
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
-            self.view.label_ip_address_text["text"] = GuiConstants.LABEL_IPADDRESS_DLIVE
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
             self.view.reactivate_avantis_checkboxes()
             self.view.enable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
@@ -252,14 +252,20 @@ class MainController:
             self.view.disable_console_to_daw_mastertracks()
 
     def on_endchannel_selected(self, *args):
+        val = self.view.var_current_console_endChannel.get()
+        if not val.strip().isdigit():
+            return
         if (self.view.var_console.get() == dliveConstants.console_drop_down_avantis and
-                int(self.view.var_current_console_endChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS):
+                int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
             showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
 
     def on_startchannel_selected(self, *args):
+        val = self.view.var_current_console_startChannel.get()
+        if not val.strip().isdigit():
+            return
         if (self.view.var_console.get() == dliveConstants.console_drop_down_avantis and
-                int(self.view.var_current_console_startChannel.get()) > dliveConstants.AVANTIS_MAX_CHANNELS):
+                int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
             showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
             self.view.set_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
 

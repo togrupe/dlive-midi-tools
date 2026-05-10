@@ -164,9 +164,9 @@ Click on `Open Template` and select the generated file.
 
 
 ## Settings on the console
-The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to: `12 to 16`, which is default.
+The `MIDI Channel` setting on dLive under `Utils/Shows -> Control -> MIDI` should be set to: `12 to 16`, which is default.
 
-If you want to change the preconfigured Midi port, you can change it in the Graphical User Interface according to your dLive settings. 
+If you want to change the preconfigured MIDI port, you can change it in the Graphical User Interface according to your dLive settings. 
 
 ## Default IP-Address
 The default dLive Mixrack IP-Address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
@@ -247,8 +247,7 @@ Choose which mode you want to use:
 
 7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
    
-   `Select All` selects all checkboxes.
-   `Clear` removes all ticks.
+   `Select All` and `Clear` select or deselect all checkboxes.
 
 8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
@@ -273,7 +272,7 @@ Choose which mode you want to use:
 
 
 
-10. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
+10. Click the button `Open Spreadsheet and Start Writing Process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
    
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
@@ -291,7 +290,7 @@ Options:
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-Click `Generate DAW session(s) from current console settings`
+Click `Generate DAW Session(s) from Current Console Settings`
 
 12. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
 
@@ -373,6 +372,9 @@ Feature Release
   - Phantom Power OFF (all Sockets)
 
 #### Improvements
+- Redesigned UI optimized for Full HD (1920×1080) screens — no scrolling required
+- Connection Settings consolidated into a single row (Console, MIDI Channel, IP and buttons in one line)
+- Status bar redesigned with horizontal layout (label left, progress right)
 - Allowed character validation for channel and group names
 - Source field validation per console type (dLive / Avantis)
 

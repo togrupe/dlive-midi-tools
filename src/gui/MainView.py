@@ -146,7 +146,7 @@ class MainView:
                           values=[dliveConstants.console_drop_down_dlive,
                                   dliveConstants.console_drop_down_avantis]).pack(side="left", padx=(0, 20))
 
-        ctk.CTkLabel(single_row, text="Midi Channel:", width=100, anchor="w").pack(side="left")
+        ctk.CTkLabel(single_row, text="MIDI Channel:", width=100, anchor="w").pack(side="left")
         ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,
                           values=[
                               dliveConstants.midi_channel_drop_down_string_1,
@@ -245,7 +245,7 @@ class MainView:
 
         parameter_lf = ctk.CTkFrame(outer, border_width=1, border_color="white")
         ctk.CTkLabel(parameter_lf,
-                     text=" Choose from given spreadsheet which column you want to write",
+                     text=" Select spreadsheet columns to apply",
                      font=ctk.CTkFont(weight="bold"), anchor="w").pack(
             fill="x", padx=10, pady=(6, 2))
 
@@ -332,7 +332,7 @@ class MainView:
         bottom_frame = ctk.CTkFrame(outer, fg_color="transparent")
         self.btn_open_spreadsheet = ctk.CTkButton(
             bottom_frame,
-            text='Open spreadsheet and start writing process',
+            text='Open Spreadsheet and Start Writing Process',
             height=38, font=ctk.CTkFont(size=13))
         self.btn_open_spreadsheet.grid(row=0, column=0, padx=10, pady=6)
 
@@ -452,7 +452,7 @@ class MainView:
         button_frame = ctk.CTkFrame(scroll, fg_color="transparent")
         self.btn_console_to_daw = ctk.CTkButton(
             button_frame,
-            text='Generate DAW session(s) from current console settings',
+            text='Generate DAW Session(s) from Current Console Settings',
             height=40, font=ctk.CTkFont(size=13))
         self.btn_console_to_daw.pack(pady=10)
         button_frame.pack(side="top", pady=5)
@@ -528,18 +528,22 @@ class MainView:
         ctk.CTkButton(bottom4_frame, text='Close', command=self.root.destroy, width=80).pack(pady=8)
         bottom4_frame.pack(side="bottom")
 
-        bottom3_frame = self._section(self.root, "Status")
-        bottom3_frame.columnconfigure(0, weight=1)
+        bottom3_frame = ctk.CTkFrame(self.root, border_width=1, border_color="white")
+        bottom3_frame.columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(bottom3_frame, text=" Status",
+                     font=ctk.CTkFont(weight="bold"), anchor="w").grid(
+            row=0, column=0, rowspan=3, padx=(10, 0), pady=8, sticky="ns")
 
         self.current_action_label = ctk.CTkLabel(bottom3_frame, text="")
-        self.current_action_label.grid(row=1, column=0, padx=10, pady=2)
+        self.current_action_label.grid(row=0, column=1, padx=10, pady=(6, 1), sticky="w")
 
         self.pb = ctk.CTkProgressBar(bottom3_frame, mode='determinate')
         self.pb.set(0)
-        self.pb.grid(row=2, column=0, padx=10, pady=4, sticky="ew")
+        self.pb.grid(row=1, column=1, padx=10, pady=1, sticky="ew")
 
         self.value_label = ctk.CTkLabel(bottom3_frame, text=self._progress_label())
-        self.value_label.grid(row=3, column=0, padx=10, pady=2)
+        self.value_label.grid(row=2, column=1, padx=10, pady=(1, 6), sticky="w")
 
         bottom3_frame.pack(side="bottom", fill="x", padx=10, pady=5)
 

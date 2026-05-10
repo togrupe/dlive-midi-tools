@@ -22,7 +22,7 @@ class CheckboxGrid(ctk.CTkFrame):
         self.checkboxes = []
         for i, header in enumerate(self.headers):
             self.columnconfigure(i, weight=1)
-            frame = ctk.CTkFrame(self)
+            frame = ctk.CTkFrame(self, border_width=1, border_color="white")
             frame.grid(row=0, column=i, padx=5, pady=5, sticky="nsew")
 
             ctk.CTkLabel(frame, text=header,

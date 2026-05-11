@@ -160,6 +160,10 @@ class MainController:
         mode = "dark" if self.view.var_dark_mode.get() else "light"
         ctk.set_appearance_mode(mode)
         self.context.get_app_data().set_appearance_mode(mode)
+        self.context.get_app_data().set_console(
+            self._determine_console_id(self.view.var_console.get()))
+        self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
+        self.context.get_app_data().set_current_ip(self.view.get_ip())
         persist_current_ui_settings(self.context)
 
     def on_open_documentation(self):

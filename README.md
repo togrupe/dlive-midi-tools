@@ -176,7 +176,7 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
  
 
 ## Usage
-Prerequisites: 
+Prerequisites:
 * Windows >= 10 / macOS >= Monterey
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
@@ -223,6 +223,19 @@ B3. (Optional) If you want to make a binary out of it, please do the following:
 __Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
 
 > **_Recommended Workflow:_** If socket patching is to be performed, I recommend first exporting to CSV, then importing into Director. This lays the foundation for further MIDI-based data processing, where you can override over and over.
+
+## Menu Bar
+
+The menu bar at the top of the window provides the following options:
+
+**Settings**
+- `Dark Mode` — toggles between dark and light appearance. The selected mode is persisted across restarts.
+
+**Help**
+- `Documentation` — opens the online documentation in your browser
+- `Donate ☕` — opens the donation page
+- `About` — shows version information
+- `Close` — exits the application
 
 1. Select the console: `dLive` or `Avantis`
 
@@ -273,7 +286,19 @@ Choose which mode you want to use:
 
 
 10. Click the button `Open Spreadsheet and Start Writing Process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
-   
+
+   Before processing, the tool automatically validates the spreadsheet. The validator checks:
+   - Channel and group **names** for invalid characters
+   - **Colors** against the supported color list
+   - **Fader levels** against the supported value list
+   - **HPF values** for valid range
+   - **Channel numbers** against the console's maximum (128 for dLive, 64 for Avantis)
+   - **Source field** values per console type (dLive / Avantis)
+   - **Mute**, **HPF On**, **DCA**, **Mute Group**, **Group Routing** toggle values
+   - **Phantom**, **Pad**, and **Gain** values in the Sockets tab
+
+   If any validation errors are found, a summary is shown and processing is aborted.
+
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
 11. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
@@ -300,7 +325,7 @@ Click `Generate DAW Session(s) from Current Console Settings`
 |--------|-------------|-----------------|
 | RESET all DCA Assignments | Removes all DCA assignments from every channel | dLive & Avantis |
 | RESET all Mute Group Assignments | Removes all Mute Group assignments from every channel | dLive only |
-| RESET all Main Mix Assignments | Removes all Main Mix assignments from every channel | dLive & Avantis |
+| RESET all Main Assignments | Removes all Main Mix assignments from every channel | dLive & Avantis |
 
 ### Mute
 
@@ -373,6 +398,7 @@ Feature Release
 
 #### Improvements
 - Redesigned UI optimized for Full HD (1920×1080) screens — no scrolling required
+- Dark / Light mode toggle added (via Settings menu), persisted across restarts
 - Connection Settings consolidated into a single row (Console, MIDI Channel, IP and buttons in one line)
 - Status bar redesigned with horizontal layout (label left, progress right)
 - Allowed character validation for channel and group names

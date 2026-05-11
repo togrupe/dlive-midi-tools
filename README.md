@@ -198,7 +198,7 @@ B: Build it your own from scratch, using the following steps.<br>
 
 B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
 
-`pip install -r dependencies.txt`
+`pip install -r requirements.txt`
 
 B2. Run the script with the following command: 
 

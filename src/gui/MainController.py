@@ -35,7 +35,9 @@ from parameters.sockets.SocketsCommon import handle_sockets_parameter
 from persistence.Persistence import (persist_current_ui_settings,
                                      read_persisted_console,
                                      read_persisted_midi_port,
-                                     read_persisted_ip)
+                                     read_persisted_ip,
+                                     read_persisted_appearance_mode,
+                                     migrate_config_if_needed)
 from spreadsheet.Spreadsheet import (create_channel_list_content,
                                      create_socket_list_content,
                                      create_groups_list_content,
@@ -65,6 +67,13 @@ class MainController:
     # ------------------------------------------------------------------
 
     def _load_persisted_settings(self):
+        import customtkinter as ctk
+        migrate_config_if_needed(self.context)
+        appearance_mode = read_persisted_appearance_mode(self.context)
+        ctk.set_appearance_mode(appearance_mode)
+        self.context.get_app_data().set_appearance_mode(appearance_mode)
+        self.view.var_dark_mode.set(appearance_mode == "dark")
+
         self.view.var_console.set(read_persisted_console(self.context))
         self.view.var_midi_channel.set(read_persisted_midi_port(self.context))
 
@@ -88,6 +97,7 @@ class MainController:
 
     def _bind_commands(self):
         # Menu
+        self.view.var_dark_mode.trace("w", self.on_appearance_mode_changed)
         self.view.file_menu.entryconfig(0, command=self.on_open_documentation)
         self.view.file_menu.entryconfig(1, command=self.on_donate)
         self.view.file_menu.entryconfig(3, command=self.on_about)
@@ -144,6 +154,13 @@ class MainController:
     # ------------------------------------------------------------------
     # Event handlers
     # ------------------------------------------------------------------
+
+    def on_appearance_mode_changed(self, *args):
+        import customtkinter as ctk
+        mode = "dark" if self.view.var_dark_mode.get() else "light"
+        ctk.set_appearance_mode(mode)
+        self.context.get_app_data().set_appearance_mode(mode)
+        persist_current_ui_settings(self.context)
 
     def on_open_documentation(self):
         if getattr(sys, 'frozen', False):

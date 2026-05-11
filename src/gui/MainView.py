@@ -109,6 +109,13 @@ class MainView:
     def _create_menu(self):
         menu_bar = Menu(self.root)
 
+        self.settings_menu = Menu(menu_bar, tearoff=0)
+        self.var_dark_mode = BooleanVar(value=True)
+        self.settings_menu.add_checkbutton(label="Dark Mode",
+                                           variable=self.var_dark_mode,
+                                           onvalue=True, offvalue=False)
+        menu_bar.add_cascade(label="Settings", menu=self.settings_menu)
+
         self.file_menu = Menu(menu_bar, tearoff=0)
         self.file_menu.add_command(label="Documentation")  # index 0
         self.file_menu.add_command(label="Donate ☕")      # index 1

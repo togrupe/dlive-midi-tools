@@ -157,6 +157,7 @@ SLINK_SOCKET_COUNT_MAX = 128
 
 DLIVE_MAX_CHANNELS = 128
 AVANTIS_MAX_CHANNELS = 64
+MIXING_STATION_MAX_CHANNELS = 99
 
 # Strings Midi Channel Selector
 midi_channel_drop_down_string_1 = "1 to 5"

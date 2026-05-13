@@ -52,7 +52,7 @@ from parameters.channels.Helpers import (
     phantom_power_off_all_sockets,
 )
 from mixingstation.MixingStationClient import MixingStationClient
-from mixingstation.MixingStationHandler import handle_ms_channels
+from mixingstation.MixingStationHandler import handle_ms_channels, get_channel_data as ms_get_channel_data
 from persistence.Persistence import read_persisted_ms_port
 
 
@@ -277,6 +277,7 @@ class MainController:
             self.view.disable_avantis_checkboxes()
             self.view.disable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+            self.view.set_console_to_daw_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
@@ -286,6 +287,7 @@ class MainController:
             self.view.reactivate_avantis_checkboxes()
             self.view.enable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.set_console_to_daw_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
@@ -296,6 +298,7 @@ class MainController:
             self.view.disable_mixing_station_checkboxes()
             self.view.disable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
             self.view.root.update()
 
     def on_reaper_write_changed(self):
@@ -377,7 +380,34 @@ class MainController:
             if directory_path.__len__() == 0:
                 return
 
-            if self.context.get_network_connection_allowed():
+            start_channel = int(self.view.var_current_console_startChannel.get()) - 1
+            end_channel = int(self.view.var_current_console_endChannel.get())
+
+            if start_channel > end_channel:
+                error_msg = ("Start Channel: " + str(start_channel + 1) +
+                             " is greater than End Channel: " + str(end_channel))
+                self.log.error(error_msg)
+                showerror(message=error_msg)
+                return
+
+            use_mixing_station = self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station
+
+            if use_mixing_station:
+                try:
+                    ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
+                    self.context.set_ms_client(ms_client)
+                    self.view.set_status("Reading channel data from Mixing Station...")
+                    self.view.advance_progress(actions)
+                    self.view.advance_progress(actions)
+                    self.view.root.update()
+                    data_fin = ms_get_channel_data(ms_client, start_channel, end_channel)
+                except Exception as e:
+                    error_msg = f"Failed to read from Mixing Station: {e}"
+                    self.log.error(error_msg)
+                    self.view.set_status(error_msg)
+                    showerror(message=error_msg)
+                    return
+            elif self.context.get_network_connection_allowed():
                 ip_address = self.view.get_ip()
                 if not is_valid_ip_address(ip_address):
                     error_message = "Invalid IP-Address"
@@ -387,15 +417,6 @@ class MainController:
 
                 self.context.set_output(self._connect_to_console(ip_address))
                 output = self.context.get_output()
-                start_channel = int(self.view.var_current_console_startChannel.get()) - 1
-                end_channel = int(self.view.var_current_console_endChannel.get())
-
-                if start_channel > end_channel:
-                    error_msg = ("Start Channel: " + str(start_channel + 1) +
-                                 " is greater than End Channel: " + str(end_channel))
-                    self.log.error(error_msg)
-                    showerror(message=error_msg)
-                    return
 
                 self.view.set_status("Reading channel color from console")
                 self.view.advance_progress(actions)
@@ -406,57 +427,58 @@ class MainController:
                 self.view.advance_progress(actions)
                 self.view.root.update()
                 data_fin = get_name_channel(self.context, data_color, start_channel, end_channel)
-
-                sheet = Sheet()
-                sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
-
-                try:
-                    if self.view.var_console_to_daw_reaper.get():
-                        self.view.set_status("Generating Reaper Session...")
-                        self.view.advance_progress(actions)
-                        self.view.root.update()
-                        ReaperSessionCreator.create_session(
-                            sheet, directory_path, "current-console",
-                            self.view.var_console_to_daw_disable_track_numbering_daw.get(),
-                            self.view.var_console_to_daw_reaper_additional_prefix.get(),
-                            self.view.entry_console_to_daw_additional_track_prefix.get(),
-                            self.view.var_console_to_daw_additional_master_tracks.get(),
-                            self.view.var_console_to_daw_master_recording_patch.get(),
-                            self.view.var_console_to_daw_disable_track_coloring_daw.get())
-                        text = "Reaper Recording Session Template created"
-                        self.view.set_status(text)
-                        self.log.info(text)
-
-                    if self.view.var_console_to_daw_trackslive.get():
-                        self.view.set_status("Generating Tracks Live Template...")
-                        self.view.advance_progress(actions)
-                        self.view.root.update()
-                        TracksLiveSessionCreator.create_session(
-                            sheet, directory_path, "current-console",
-                            self.view.var_console_to_daw_disable_track_numbering_daw.get(),
-                            self.view.var_console_to_daw_reaper_additional_prefix.get(),
-                            self.view.entry_console_to_daw_additional_track_prefix.get(),
-                            self.view.var_console_to_daw_additional_master_tracks.get(),
-                            self.view.var_console_to_daw_master_recording_patch.get(),
-                            self.view.var_console_to_daw_disable_track_coloring_daw.get())
-                        text = "Tracks Live Recording Session Template created"
-                        self.view.set_status(text)
-                        self.log.info(text)
-
-                    output.close()
-                    self.view.advance_progress_connection()
-
-                except OSError:
-                    error = ("Some thing went wrong during store, please choose a folder "
-                             "where you have write rights.")
-                    self.log.error(error)
-                    self.view.set_status(error)
-                    showerror(message=error)
-                    return
-
-                showinfo(message='Reading from console done, session(s) created!')
             else:
-                pass  # network not allowed; nothing to do
+                return
+
+            sheet = Sheet()
+            sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
+
+            try:
+                if self.view.var_console_to_daw_reaper.get():
+                    self.view.set_status("Generating Reaper Session...")
+                    self.view.advance_progress(actions)
+                    self.view.root.update()
+                    ReaperSessionCreator.create_session(
+                        sheet, directory_path, "current-console",
+                        self.view.var_console_to_daw_disable_track_numbering_daw.get(),
+                        self.view.var_console_to_daw_reaper_additional_prefix.get(),
+                        self.view.entry_console_to_daw_additional_track_prefix.get(),
+                        self.view.var_console_to_daw_additional_master_tracks.get(),
+                        self.view.var_console_to_daw_master_recording_patch.get(),
+                        self.view.var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Reaper Recording Session Template created"
+                    self.view.set_status(text)
+                    self.log.info(text)
+
+                if self.view.var_console_to_daw_trackslive.get():
+                    self.view.set_status("Generating Tracks Live Template...")
+                    self.view.advance_progress(actions)
+                    self.view.root.update()
+                    TracksLiveSessionCreator.create_session(
+                        sheet, directory_path, "current-console",
+                        self.view.var_console_to_daw_disable_track_numbering_daw.get(),
+                        self.view.var_console_to_daw_reaper_additional_prefix.get(),
+                        self.view.entry_console_to_daw_additional_track_prefix.get(),
+                        self.view.var_console_to_daw_additional_master_tracks.get(),
+                        self.view.var_console_to_daw_master_recording_patch.get(),
+                        self.view.var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Tracks Live Recording Session Template created"
+                    self.view.set_status(text)
+                    self.log.info(text)
+
+                if not use_mixing_station:
+                    output.close()
+                self.view.advance_progress_connection()
+
+            except OSError:
+                error = ("Some thing went wrong during store, please choose a folder "
+                         "where you have write rights.")
+                self.log.error(error)
+                self.view.set_status(error)
+                showerror(message=error)
+                return
+
+            showinfo(message='Reading from console done, session(s) created!')
         else:
             showerror(message="Nothing to do, please select at least one output option.")
 

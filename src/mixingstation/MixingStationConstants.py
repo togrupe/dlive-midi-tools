@@ -25,6 +25,18 @@ COLOR_MAP = {
     "white":   7,
 }
 
+# Mixing Station color integer → spreadsheet color string (inverse of COLOR_MAP)
+MS_COLOR_TO_SPREADSHEET = {
+    0: "black",
+    1: "red",
+    2: "green",
+    3: "blue",
+    4: "light blue",  # Cyan
+    5: "yellow",
+    6: "purple",      # Magenta
+    7: "white",
+}
+
 # Spreadsheet fader dB string → float dB value for MS REST API
 FADER_DB_MAP = {
     "10":  10.0,

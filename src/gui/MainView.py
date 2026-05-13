@@ -714,6 +714,13 @@ class MainView:
 
     def set_end_channel(self, n):
         self.combobox_end.set(str(n))
+
+    def set_console_to_daw_max_channel(self, max_ch):
+        values = [f"{i}" for i in range(1, max_ch + 1)]
+        self.combobox_end.configure(values=values)
+        current = int(self.var_current_console_endChannel.get())
+        if current > max_ch:
+            self.combobox_end.set(str(max_ch))
         self.root.update()
 
     def set_start_channel(self, n):

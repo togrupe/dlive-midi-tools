@@ -5,8 +5,28 @@
 # Author: Tobias Grupe
 ####################################################
 
+import logging
+
 from spreadsheet import SpreadsheetConstants
 from mixingstation import MixingStationConstants
+
+
+def get_channel_data(ms_client, start_channel, end_channel):
+    data = []
+    for channel in range(start_channel, end_channel):
+        color_id = int(ms_client.get(MixingStationConstants.PATH_CHANNEL_COLOR.format(channel))["value"])
+        color = MixingStationConstants.MS_COLOR_TO_SPREADSHEET.get(color_id, SpreadsheetConstants.spreadsheet_color_black)
+
+        name = ms_client.get(MixingStationConstants.PATH_CHANNEL_NAME.format(channel))["value"]
+
+        logging.info(f"Mixing Station ch {channel + 1}: name={name}, color={color}")
+        data.append({
+            "dliveChannel": channel + 1,
+            "technicalChannel": channel,
+            "color": color,
+            "name": name,
+        })
+    return data
 
 
 def handle_ms_channels(log, ms_client, channel_list_entries, action):

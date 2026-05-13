@@ -32,6 +32,12 @@ class MixingStationClient:
         with urllib.request.urlopen(req, timeout=5):
             pass
 
+    def get(self, param_path):
+        url = f"{self._base}/console/data/get/{param_path}/val"
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return json.loads(resp.read())
+
     def test_connection(self):
         url = f"{self._base}/app/state"
         req = urllib.request.Request(url, method="GET")

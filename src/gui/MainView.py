@@ -151,10 +151,11 @@ class MainView:
         ctk.CTkLabel(single_row, text="Audio Console:", width=120, anchor="w").pack(side="left")
         ctk.CTkOptionMenu(single_row, variable=self.var_console,
                           values=[dliveConstants.console_drop_down_dlive,
-                                  dliveConstants.console_drop_down_avantis]).pack(side="left", padx=(0, 20))
+                                  dliveConstants.console_drop_down_avantis,
+                                  dliveConstants.console_drop_down_mixing_station]).pack(side="left", padx=(0, 20))
 
         ctk.CTkLabel(single_row, text="MIDI Channel:", width=100, anchor="w").pack(side="left")
-        ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,
+        self._midi_channel_menu = ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,
                           values=[
                               dliveConstants.midi_channel_drop_down_string_1,
                               dliveConstants.midi_channel_drop_down_string_2,
@@ -168,7 +169,8 @@ class MainView:
                               dliveConstants.midi_channel_drop_down_string_10,
                               dliveConstants.midi_channel_drop_down_string_11,
                               dliveConstants.midi_channel_drop_down_string_12,
-                          ]).pack(side="left", padx=(0, 20))
+                          ])
+        self._midi_channel_menu.pack(side="left", padx=(0, 20))
 
         self.label_ip_address_text = ctk.CTkLabel(single_row, text="", width=120, anchor="w")
         self.label_ip_address_text.pack(side="left")
@@ -186,6 +188,14 @@ class MainView:
         self.ip_byte2.grid(row=0, column=4, padx=2)
         ctk.CTkLabel(ip_field, text=".").grid(row=0, column=5)
         self.ip_byte3.grid(row=0, column=6, padx=2)
+
+        self._ms_port_frame = ctk.CTkFrame(ip_field, fg_color="transparent")
+        ctk.CTkLabel(self._ms_port_frame, text=":").pack(side="left", padx=(5, 0))
+        self.entry_ms_port = ctk.CTkEntry(self._ms_port_frame, width=65)
+        self.entry_ms_port.insert(0, str(dliveConstants.mixing_station_default_port))
+        self.entry_ms_port.pack(side="left", padx=(2, 0))
+        self._ms_port_frame.grid(row=0, column=7, padx=(5, 0))
+        self._ms_port_frame.grid_remove()
 
         self.btn_save = ctk.CTkButton(ip_field, text='Save', width=70)
         self.btn_save.grid(row=0, column=8, padx=5)
@@ -663,6 +673,39 @@ class MainView:
     def reactivate_avantis_checkboxes(self):
         for checkbox in self.grid.checkboxes:
             checkbox.configure(state="normal")
+
+    _MS_SUPPORTED_PARAMS = {
+        GuiConstants.TEXT_NAME,
+        GuiConstants.TEXT_COLOR,
+        GuiConstants.TEXT_MUTE,
+        GuiConstants.TEXT_FADER_LEVEL,
+    }
+
+    def disable_mixing_station_checkboxes(self):
+        for checkbox in self.grid.checkboxes:
+            text = checkbox.cget("text")
+            if text not in self._MS_SUPPORTED_PARAMS:
+                self._remove_tick(text)
+                checkbox.configure(state="disabled")
+
+    def show_ms_port(self):
+        self._ms_port_frame.grid()
+
+    def hide_ms_port(self):
+        self._ms_port_frame.grid_remove()
+
+    def get_ms_port(self):
+        return self.entry_ms_port.get()
+
+    def set_ms_port(self, port):
+        self.entry_ms_port.delete(0, 'end')
+        self.entry_ms_port.insert(0, str(port))
+
+    def enable_midi_channel(self):
+        self._midi_channel_menu.configure(state="normal")
+
+    def disable_midi_channel(self):
+        self._midi_channel_menu.configure(state="disabled")
 
     def _remove_tick(self, var_name):
         for var in self.grid.vars:

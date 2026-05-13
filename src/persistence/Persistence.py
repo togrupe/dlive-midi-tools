@@ -118,6 +118,22 @@ def read_persisted_appearance_mode(context):
     return "dark"
 
 
+def read_persisted_ms_port(context):
+    log = context.get_logger()
+    filename = context.get_config_file()
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            try:
+                port = data['ms-port']
+                log.info("Using ms-port: " + str(port) + " from config file.")
+                return str(port)
+            except KeyError:
+                pass
+    log.info("No ms-port in config, using default: " + str(dliveConstants.mixing_station_default_port))
+    return str(dliveConstants.mixing_station_default_port)
+
+
 def persist_current_ui_settings(context):
     log = context.get_logger()
     filename = context.get_config_file()
@@ -125,13 +141,15 @@ def persist_current_ui_settings(context):
     midi_channel = context.get_app_data().get_midi_channel()
     current_ip = context.get_app_data().get_current_ip()
     appearance_mode = context.get_app_data().get_appearance_mode()
+    ms_port = context.get_app_data().get_mixing_station_port()
 
     data = {
         'version': 2,
         'ip': str(current_ip),
         'console': console,
         'midi-port': midi_channel,
-        'appearance-mode': appearance_mode
+        'appearance-mode': appearance_mode,
+        'ms-port': ms_port,
     }
 
     json_str = json.dumps(data)

@@ -177,8 +177,12 @@ midi_channel_drop_down_string_default = midi_channel_drop_down_string_12
 # Strings Console Selector
 console_drop_down_avantis = "Avantis"
 console_drop_down_dlive = "dLive"
+console_drop_down_mixing_station = "Mixing Station"
 
 console_drop_down_default = console_drop_down_dlive
+
+# Mixing Station REST API default port
+mixing_station_default_port = 9000
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
 allow_network_communication = True

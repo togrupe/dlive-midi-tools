@@ -51,6 +51,9 @@ from parameters.channels.Helpers import (
     set_all_input_faders_to_zero, set_all_input_faders_to_minus_inf,
     phantom_power_off_all_sockets,
 )
+from mixingstation.MixingStationClient import MixingStationClient
+from mixingstation.MixingStationHandler import handle_ms_channels
+from persistence.Persistence import read_persisted_ms_port
 
 
 class MainController:
@@ -80,9 +83,18 @@ class MainController:
         ip = read_persisted_ip(self.context)
         self.view.set_ip(ip)
 
-        # Set the IP-label text based on the persisted console type
-        if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
+        ms_port = read_persisted_ms_port(self.context)
+        self.view.set_ms_port(ms_port)
+        self.context.get_app_data().set_mixing_station_port(ms_port)
+
+        console = self.view.var_console.get()
+        if console == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
+        elif console == dliveConstants.console_drop_down_mixing_station:
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
+            self.view.show_ms_port()
+            self.view.disable_midi_channel()
+            self.view.disable_mixing_station_checkboxes()
         else:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
         self.view.root.update()
@@ -92,7 +104,8 @@ class MainController:
         self.view.disable_console_to_daw_prefix()
         self.view.disable_console_to_daw_mastertracks()
 
-        if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
+        if console in (dliveConstants.console_drop_down_avantis,
+                       dliveConstants.console_drop_down_mixing_station):
             self.view.disable_helpers_avantis()
 
     def _bind_commands(self):
@@ -164,6 +177,7 @@ class MainController:
             self._determine_console_id(self.view.var_console.get()))
         self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
         self.context.get_app_data().set_current_ip(self.view.get_ip())
+        self.context.get_app_data().set_mixing_station_port(self.view.get_ms_port())
         persist_current_ui_settings(self.context)
 
     def on_open_documentation(self):
@@ -191,6 +205,7 @@ class MainController:
             self._determine_console_id(self.view.var_console.get()))
         self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
         self.context.get_app_data().set_current_ip(current_ip)
+        self.context.get_app_data().set_mixing_station_port(self.view.get_ms_port())
         persist_current_ui_settings(self.context)
 
     def on_reset_ip(self):
@@ -206,6 +221,20 @@ class MainController:
     def on_test_connection(self):
         self.view.reset_status()
         test_ip = self.view.get_ip()
+
+        if self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
+            ms_port = self.view.get_ms_port()
+            logging.info("Test Mixing Station connection to " + test_ip + ":" + ms_port)
+            try:
+                client = MixingStationClient(test_ip, int(ms_port))
+                client.test_connection()
+                showinfo(message="Connection Test successful")
+            except Exception as e:
+                action = "Connection Test failed: " + str(e)
+                logging.error(action)
+                self.view.set_status("Connection Test failed")
+                showerror(message="Connection Test failed.\nIs Mixing Station running and the REST API enabled?")
+            return
 
         if not is_valid_ip_address(test_ip):
             error_message = "Invalid IP-Address"
@@ -231,6 +260,9 @@ class MainController:
 
         if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
+            self.view.hide_ms_port()
+            self.view.enable_midi_channel()
+            self.view.reactivate_avantis_checkboxes()
             self.view.root.update()
 
             if self.view.tab_control.get() == "Spreadsheet to Console / DAW":
@@ -249,8 +281,20 @@ class MainController:
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
+            self.view.hide_ms_port()
+            self.view.enable_midi_channel()
             self.view.reactivate_avantis_checkboxes()
             self.view.enable_helpers_avantis()
+            self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.root.update()
+
+        elif self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
+            self.view.show_ms_port()
+            self.view.disable_midi_channel()
+            self.view.reactivate_avantis_checkboxes()
+            self.view.disable_mixing_station_checkboxes()
+            self.view.disable_helpers_avantis()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
 
@@ -508,8 +552,12 @@ class MainController:
         app_data.set_midi_channel(
             self._determine_technical_midi_port(self.view.var_midi_channel.get()))
 
-        if self.context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
+        console = self.context.get_app_data().get_console()
+        if console == dliveConstants.console_drop_down_avantis:
             self.view.disable_avantis_checkboxes()
+            self.view.root.update()
+        elif console == dliveConstants.console_drop_down_mixing_station:
+            self.view.disable_mixing_station_checkboxes()
             self.view.root.update()
 
         validation_errors = validate(sheet, self.context.get_app_data().get_console())
@@ -552,15 +600,22 @@ class MainController:
         self.view.set_status(action)
 
         current_ip = self.view.get_ip()
+        console = self.context.get_app_data().get_console()
+        is_ms = (console == dliveConstants.console_drop_down_mixing_station)
 
         if (self.context.get_network_connection_allowed() and
                 self.context.get_app_data().get_output_write_to_console()):
-            if not is_valid_ip_address(current_ip):
-                error_message = "Invalid IP-Address"
-                self.view.set_status(error_message)
-                showerror(message=error_message)
-                return
-            self.context.set_output(self._connect_to_console(current_ip))
+            if is_ms:
+                ms_port = self.view.get_ms_port()
+                self.context.set_ms_client(MixingStationClient(current_ip, int(ms_port)))
+                self.context.set_output(None)
+            else:
+                if not is_valid_ip_address(current_ip):
+                    error_message = "Invalid IP-Address"
+                    self.view.set_status(error_message)
+                    showerror(message=error_message)
+                    return
+                self.context.set_output(self._connect_to_console(current_ip))
         else:
             self.context.set_output(None)
 
@@ -568,12 +623,12 @@ class MainController:
         self.view.root.update()
 
         if self.context.get_app_data().get_output_write_to_console():
-            if not self.context.get_csv_patching_hint_already_seen():
+            if not is_ms and not self.context.get_csv_patching_hint_already_seen():
                 showinfo(
                     message='Hint: Input patching (Source, Socket) can be applied by using Director´s CSV Import function.')
                 self.context.set_csv_patching_hint_already_seen(True)
 
-            if self.context.get_output() is None:
+            if not is_ms and self.context.get_output() is None:
                 self.view.reset_progress()
                 self.view.root.update()
                 return
@@ -671,22 +726,29 @@ class MainController:
         self.view.root.update()
 
     def _process_actions(self, action_list, actions, sheet):
+        is_ms = (self.context.get_app_data().get_console() ==
+                 dliveConstants.console_drop_down_mixing_station)
+
         for action in action_list:
             action_message = action.get_message()
             if action.get_sheet_tab() == "channels":
                 self.view.set_status(action_message)
-                if handle_channels_parameter(action_message, self.context,
-                                             sheet.get_channel_model(),
-                                             action.get_action()) == 1:
-                    self.view.reset_status()
-                    self.view.reset_progress()
-                    exit(1)
-            elif action.get_sheet_tab() == "sockets":
+                if is_ms:
+                    handle_ms_channels(self.log, self.context.get_ms_client(),
+                                       sheet.get_channel_model(), action.get_action())
+                else:
+                    if handle_channels_parameter(action_message, self.context,
+                                                 sheet.get_channel_model(),
+                                                 action.get_action()) == 1:
+                        self.view.reset_status()
+                        self.view.reset_progress()
+                        exit(1)
+            elif action.get_sheet_tab() == "sockets" and not is_ms:
                 self.view.set_status(action_message)
                 handle_sockets_parameter(action_message, self.context,
                                          sheet.get_socket_model(),
                                          action.get_action())
-            elif action.get_sheet_tab() == "groups":
+            elif action.get_sheet_tab() == "groups" and not is_ms:
                 self.view.set_status(action_message)
                 if handle_groups_parameter(action_message, self.context,
                                            sheet.get_group_model(),
@@ -837,5 +899,6 @@ class MainController:
         switcher = {
             dliveConstants.console_drop_down_dlive: dliveConstants.console_drop_down_dlive,
             dliveConstants.console_drop_down_avantis: dliveConstants.console_drop_down_avantis,
+            dliveConstants.console_drop_down_mixing_station: dliveConstants.console_drop_down_mixing_station,
         }
         return switcher.get(selected_console_as_string, "Invalid console")

@@ -1,3 +1,6 @@
+import dliveConstants
+
+
 class AppData:
     def __init__(self, midi_channel, console, current_ip):
         self.midi_channel = midi_channel
@@ -8,6 +11,7 @@ class AppData:
         self.output_trackslive = False
         self.output_write_to_console = False
         self.output_write_csv = False
+        self.mixing_station_port = str(dliveConstants.mixing_station_default_port)
 
     def get_midi_channel(self):
         return self.midi_channel
@@ -56,3 +60,9 @@ class AppData:
 
     def set_appearance_mode(self, mode):
         self.appearance_mode = mode
+
+    def get_mixing_station_port(self):
+        return self.mixing_station_port
+
+    def set_mixing_station_port(self, port):
+        self.mixing_station_port = str(port)

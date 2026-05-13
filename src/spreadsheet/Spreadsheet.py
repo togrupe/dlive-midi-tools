@@ -30,6 +30,9 @@ def create_channel_list_content(sheet_channels, context):
     elif console == "dLive":
         console_mono_group_max = SpreadsheetConstants.dlive_mono_group_max
         console_stereo_group_max = SpreadsheetConstants.dlive_stereo_group_max
+    elif console == "Mixing Station":
+        console_mono_group_max = SpreadsheetConstants.dlive_mono_group_max
+        console_stereo_group_max = SpreadsheetConstants.dlive_stereo_group_max
 
     for channel in sheet_channels['Channel']:
 

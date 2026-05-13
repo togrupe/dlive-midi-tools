@@ -1,9 +1,10 @@
 # dlive-midi-tools
 ## Description
-Python and MIDI/TCP-based tool to prepare channel lists for Allen &amp; Heath dLive & Avantis consoles. 
-Based on a spreadsheet the following parameters can be preconfigured and in very few steps be written to real 
-dLive/Avantis systems or to dLive/Avantis Director via MIDI/TCP or CSV import. Additionally, from the same spreadsheet 
-or the current console settings a DAW (Digital Audio Workstation) recording session for Reaper or Tracks Live can be generated. 
+Python-based tool to prepare channel lists for Allen &amp; Heath dLive, Avantis, and Mixing Station.
+Based on a spreadsheet the following parameters can be preconfigured and written to real consoles via MIDI/TCP,
+to dLive/Avantis Director via CSV import, or to the Mixing Station app via REST API. Additionally, from the same
+spreadsheet or the current console/Mixing Station settings a DAW (Digital Audio Workstation) recording session for
+Reaper or Tracks Live can be generated.
 - Name & Color for: 
   - Channel
   - DCA
@@ -36,7 +37,8 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
-* Generate DAW session(s) from current console settings
+* Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level)
+* Generate DAW session(s) from current console or Mixing Station settings
 * Generate CSV File incl. channel patching for Director CSV Import
 
 ## Software Liability Warning
@@ -181,6 +183,7 @@ Prerequisites:
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
 * Avantis Firmware: 1.3x
+* Mixing Station (Android / iOS / Desktop) with REST API enabled, port 9000 (Optional)
 * Microsoft Excel (ideally Office 365) or LibreOffice Calc Spreadsheet (>25.x.x)
 * Reaper >= v6.x (Optional)
 * Tracks Live v1.3 (Optional)
@@ -237,9 +240,9 @@ The menu bar at the top of the window provides the following options:
 - `About` — shows version information
 - `Close` — exits the application
 
-1. Select the console: `dLive` or `Avantis`
+1. Select the console: `dLive`, `Avantis`, or `Mixing Station`
 
-2. Check the (Mixrack-) IP and Midi Port. 
+2. Check the IP address. For dLive / Avantis also check the MIDI Port. For Mixing Station enter the host IP and port (default: 9000).
 
 3. `Save` Persists the current settings (console, IP, midi-port) for the next start of the tool.
 
@@ -301,10 +304,12 @@ Choose which mode you want to use:
 
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
-11. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
-The generated files `current-console-reaper-recording-template.rpp` (Reaper) / `current-console-trackslive-recording.template` (Tracks Live) are being created in the folder you have chosen. 
+11. Console to DAW - Generates a DAW session from the current console or Mixing Station settings. This can be triggered even later, when an existing show is available. This process doesn´t need a spreadsheet.
+The generated files `current-console-reaper-recording-template.rpp` (Reaper) / `current-console-trackslive-recording.template` (Tracks Live) are being created in the folder you have chosen.
 
-
+The source is determined automatically from the console selection in the Connection Settings:
+* **dLive / Avantis** — channel names and colors are read via MIDI/TCP (SysEx)
+* **Mixing Station** — channel names and colors are read via REST API (`GET /console/data/get/ch.N.cfg.name|color/val`); channel range is limited to 1–99
 
 <img alt="consoletodaw" src="doc/console-to-daw.png" width="600"/>
 
@@ -318,6 +323,8 @@ Options:
 Click `Generate DAW Session(s) from Current Console Settings`
 
 12. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
+
+> **_NOTE:_** Utilities are not available when Mixing Station is selected — all buttons are disabled in that case.
 
 ### Reset
 
@@ -384,6 +391,11 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 Feature Release
 
 #### New Features
+- **Mixing Station support** via REST API (HTTP port 9000):
+  - Spreadsheet → Mixing Station: Name, Color, Mute, Fader Level
+  - Console to DAW from Mixing Station: reads channel names and colors (up to 99 channels)
+  - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
+  - Utilities tab is automatically disabled when Mixing Station is selected
 - UFX Name & Color Support for Avantis
 - Spreadsheet Validator — validates channel and group names, colors, fader levels, HPF range, channel range, Source field (dLive & Avantis)
 - Utilities Tab with the following actions (direct console communication, no spreadsheet required):

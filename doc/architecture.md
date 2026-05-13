@@ -12,7 +12,7 @@ graph TD
     end
 
     subgraph RuntimeState["Runtime State"]
-        Context["Context\n(Logger, Output, AppData,\nNetwork Flag, Config, CSV Hint)"]
+        Context["Context\n(Logger, Output, AppData,\nNetwork Flag, Config, CSV Hint,\nMixingStationClient)"]
         AppData["AppData\n(Console Type, IP, MIDI Port,\nOutput Flags)"]
     end
 
@@ -32,6 +32,12 @@ graph TD
         Utilities["Parameter Helpers\nReset DCA · Reset Mute Groups · Reset Main Mix\nMute / Unmute All Inputs · Mute / Unmute All Outputs\nFaders to 0 dB / -inf · Phantom Power OFF"]
     end
 
+    subgraph MixingStationIntegration["Mixing Station Integration"]
+        MSClient["MixingStationClient\n(HTTP REST Client\nGET · POST)"]
+        MSHandler["MixingStationHandler\n(Channel Read / Write\nName · Color · Mute · Fader)"]
+        MSConstants["MixingStationConstants\n(Path templates · Color map\nFader map)"]
+    end
+
     subgraph OutputGenerators["Output Generators"]
         ReaperGen["Reaper Session Creator\n(.rpp)"]
         TracksLiveGen["Tracks Live Session Creator\n(.template)"]
@@ -40,6 +46,7 @@ graph TD
 
     subgraph External["External Systems"]
         Console["dLive / Avantis Console\nor Director offline\nMIDI over TCP · IP:51325"]
+        MSApp["Mixing Station App\nREST API · HTTP:9000"]
         Reaper["Reaper DAW"]
         TracksLive["Tracks Live DAW"]
         Director["dLive Director /\nAvantis Director"]
@@ -59,6 +66,7 @@ graph TD
     Validator -.->|"Error List"| Controller
     Models --> Channels
     Models --> Sockets
+    Models --> MSHandler
     Models --> ReaperGen
     Models --> TracksLiveGen
     Models --> CsvGen
@@ -66,14 +74,20 @@ graph TD
     Channels -->|"SysEx / CC / NRPN"| Console
     Sockets -->|"SysEx"| Console
     Utilities -->|"SysEx / CC / NRPN"| Console
-    Controller -.->|"reads Channel Names\n(Console to DAW mode)"| Console
+    Controller -.->|"reads Channel Names & Colors\n(Console to DAW · dLive/Avantis)"| Console
     Controller --> Utilities
+    Controller --> MSHandler
+
+    MSHandler --> MSClient
+    MSHandler -.->|"uses"| MSConstants
+    MSClient -->|"REST API\nHTTP GET / POST"| MSApp
 
     ReaperGen --> Reaper
     TracksLiveGen --> TracksLive
     CsvGen --> Director
 
     Context -.->|"logger / flags / state"| Controller
+    Context -.->|"ms_client ref"| MSHandler
 ```
 
 ## Module Descriptions
@@ -84,13 +98,16 @@ graph TD
 | MainView | `src/gui/MainView.py` | Tkinter GUI layout, widgets, tabs, checkboxes, progress bars |
 | MainController | `src/gui/MainController.py` | Event handlers, threading for long operations, business logic orchestration |
 | AppData | `src/AppData.py` | Runtime state: console type, IP address, MIDI channel, output flags |
-| Context | `src/Context.py` | Global context passed throughout: logger, MIDI output, AppData reference, network flag, config path, CSV hint flag |
+| Context | `src/Context.py` | Global context passed throughout: logger, MIDI output, AppData reference, network flag, config path, CSV hint flag, MixingStationClient reference |
 | Domain Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations |
 | Spreadsheet | `src/spreadsheet/Spreadsheet.py` | Parse `.xlsx` / `.ods` templates into model objects via pandas |
 | Validator | `src/spreadsheet/Validator.py` | Validate parsed models: allowed name characters, color values, fader levels, HPF range, channel range, yes/no fields |
 | Channel Params | `src/parameters/channels/` | Generate SysEx, CC, and NRPN MIDI messages for channel parameters |
 | Socket Params | `src/parameters/sockets/` | Generate SysEx MIDI messages for socket/preamp parameters |
 | Parameter Helpers | `src/parameters/channels/Helpers.py` | Bulk console operations: reset all DCA/Mute Group/Main Mix assignments, mute/unmute all inputs/outputs, set all input faders to 0 dB or -inf, phantom power off for all sockets |
+| MS Client | `src/mixingstation/MixingStationClient.py` | Thin HTTP REST client for the Mixing Station app: `get(path)` and `set(path, value)` over `http://{host}:{port}` |
+| MS Handler | `src/mixingstation/MixingStationHandler.py` | Channel read (`get_channel_data`) and write helpers (name, color, mute, fader level) using the REST client |
+| MS Constants | `src/mixingstation/MixingStationConstants.py` | REST path templates, color integer ↔ spreadsheet string maps, fader dB map, default port |
 | Reaper Creator | `src/dawsession/ReaperSessionCreator.py` | Generate Reaper `.rpp` recording session files |
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
@@ -99,7 +116,7 @@ graph TD
 
 ## Data Flow
 
-### Spreadsheet → Console / Director
+### Spreadsheet → Console / Director (dLive / Avantis)
 
 ```
 Spreadsheet (.xlsx/.ods)
@@ -111,6 +128,18 @@ Spreadsheet (.xlsx/.ods)
     → Parameter Handlers (generate MIDI messages)
     → mido Library
     → Console / Director (MIDI over TCP)
+```
+
+### Spreadsheet → Mixing Station
+
+```
+Spreadsheet (.xlsx/.ods)
+    → Spreadsheet Parser (pandas)
+    → Data Models (ChannelListEntry)
+    → Validator
+    → MixingStationHandler (name / color / mute / fader level)
+    → MixingStationClient
+    → Mixing Station App (HTTP POST /console/data/set/…)
 ```
 
 ### Spreadsheet → DAW Session
@@ -133,12 +162,25 @@ Spreadsheet (.xlsx/.ods)
     → .csv file → Director CSV Import
 ```
 
-### Console → DAW Session
+### Console → DAW Session (dLive / Avantis)
 
 ```
 Console (MIDI over TCP)
-    → MainController (reads channel names via MIDI)
-    → Data Models
+    → Color.get_color_channel  (SysEx GET per channel)
+    → Name.get_name_channel    (SysEx GET per channel)
+    → Data Models (ChannelListEntry)
+    → Reaper / Tracks Live Session Creator
+    → .rpp / .template file
+```
+
+### Console → DAW Session (Mixing Station)
+
+```
+Mixing Station App (HTTP REST API · port 9000)
+    → MixingStationClient.get(ch.N.cfg.color)  (per channel)
+    → MixingStationClient.get(ch.N.cfg.name)   (per channel)
+    → MixingStationHandler.get_channel_data
+    → Data Models (ChannelListEntry)
     → Reaper / Tracks Live Session Creator
     → .rpp / .template file
 ```
@@ -158,7 +200,9 @@ User (Utilities tab button)
     → Console (MIDI over TCP)
 ```
 
-## MIDI Protocol
+> Utilities are not available for Mixing Station (buttons disabled when Mixing Station is selected).
+
+## MIDI Protocol (dLive / Avantis)
 
 | Parameter | MIDI Message Type | Notes |
 |-----------|-------------------|-------|
@@ -175,19 +219,46 @@ User (Utilities tab button)
 | Main Mix Routing | NRPN | |
 | Mute | Control Change | |
 
+## Mixing Station REST API
+
+| Operation | Method | Path pattern | Notes |
+|-----------|--------|-------------|-------|
+| Get channel name | GET | `/console/data/get/ch.{N}.cfg.name/val` | 0-based channel index |
+| Get channel color | GET | `/console/data/get/ch.{N}.cfg.color/val` | Returns float; 0–7 enum |
+| Set channel name | POST | `/console/data/set/ch.{N}.cfg.name/val` | Max 6 characters |
+| Set channel color | POST | `/console/data/set/ch.{N}.cfg.color/val` | Integer 0–7 |
+| Set fader level | POST | `/console/data/set/ch.{N}.mix.lvl/val` | Float dB value |
+| Set mute | POST | `/console/data/set/ch.{N}.mix.on/val` | Bool: `true` = unmuted |
+| Test connection | GET | `/app/state` | Used by Test Connection button |
+
+### Color Enum
+
+| ID | Mixing Station | Spreadsheet value |
+|----|---------------|-------------------|
+| 0 | Black | black |
+| 1 | Red | red |
+| 2 | Green | green |
+| 3 | Blue | blue |
+| 4 | Cyan | light blue |
+| 5 | Yellow | yellow |
+| 6 | Magenta | purple |
+| 7 | White | white |
+
 ## Console Support Matrix
 
-| Feature | dLive | Avantis |
-|---------|-------|---------|
-| Max Channels | 128 | 64 |
-| Name & Color | Yes | Yes |
-| Phantom / Pad / Gain (Local) | Yes | Yes |
-| Phantom / Pad / Gain (DX1/DX3) | Yes | Yes |
-| Phantom / Pad / Gain (SLink/DX2) | Yes | No (API limitation) |
-| Fader Level | Yes | Yes |
-| Mute | Yes | Yes |
-| HPF On / Value | Yes | No (API limitation) |
-| DCA Assignments | Yes | Yes |
-| Mute Group Assignments | Yes | No (API limitation) |
-| Group Routing | Yes | No (API limitation) |
-| Main Mix Routing | Yes | Yes |
+| Feature | dLive | Avantis | Mixing Station |
+|---------|-------|---------|----------------|
+| Max Channels | 128 | 64 | 99 |
+| Name & Color | Yes | Yes | Yes |
+| Mute | Yes | Yes | Yes |
+| Fader Level | Yes | Yes | Yes |
+| Console to DAW (read name + color) | Yes | Yes | Yes |
+| Phantom / Pad / Gain (Local) | Yes | Yes | No |
+| Phantom / Pad / Gain (DX1/DX3) | Yes | Yes | No |
+| Phantom / Pad / Gain (SLink/DX2) | Yes | No | No |
+| HPF On / Value | Yes | No | No |
+| DCA Assignments | Yes | Yes | No |
+| Mute Group Assignments | Yes | No | No |
+| Group Routing | Yes | No | No |
+| Main Mix Routing | Yes | Yes | No |
+| Utilities Tab | Yes | Yes | No |

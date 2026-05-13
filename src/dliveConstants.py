@@ -178,7 +178,7 @@ midi_channel_drop_down_string_default = midi_channel_drop_down_string_12
 # Strings Console Selector
 console_drop_down_avantis = "Avantis"
 console_drop_down_dlive = "dLive"
-console_drop_down_mixing_station = "Mixing Station"
+console_drop_down_mixing_station = "SQ via Mixing Station (REST API)"
 
 console_drop_down_default = console_drop_down_dlive
 

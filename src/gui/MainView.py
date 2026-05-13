@@ -535,6 +535,22 @@ class MainView:
     def enable_helpers_avantis(self):
         self.btn_reset_mute_groups.configure(state='normal')
 
+    def disable_utilities(self):
+        for btn in (self.btn_reset_dca, self.btn_reset_mute_groups, self.btn_reset_main_mix,
+                    self.btn_mute_all_inputs, self.btn_mute_all_outputs,
+                    self.btn_unmute_all_inputs, self.btn_unmute_all_outputs,
+                    self.btn_fader_all_to_zero, self.btn_fader_all_to_minus_inf,
+                    self.btn_phantom_off_all):
+            btn.configure(state='disabled')
+
+    def enable_utilities(self):
+        for btn in (self.btn_reset_dca, self.btn_reset_mute_groups, self.btn_reset_main_mix,
+                    self.btn_mute_all_inputs, self.btn_mute_all_outputs,
+                    self.btn_unmute_all_inputs, self.btn_unmute_all_outputs,
+                    self.btn_fader_all_to_zero, self.btn_fader_all_to_minus_inf,
+                    self.btn_phantom_off_all):
+            btn.configure(state='normal')
+
     # ------------------------------------------------------------------
     # Status Area
     # ------------------------------------------------------------------

@@ -95,6 +95,8 @@ class MainController:
             self.view.show_ms_port()
             self.view.disable_midi_channel()
             self.view.disable_mixing_station_checkboxes()
+            self.view.disable_utilities()
+            self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
         else:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
         self.view.root.update()
@@ -276,6 +278,7 @@ class MainController:
 
             self.view.disable_avantis_checkboxes()
             self.view.disable_helpers_avantis()
+            self.view.enable_utilities()
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.root.update()
@@ -286,6 +289,7 @@ class MainController:
             self.view.enable_midi_channel()
             self.view.reactivate_avantis_checkboxes()
             self.view.enable_helpers_avantis()
+            self.view.enable_utilities()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
@@ -297,6 +301,7 @@ class MainController:
             self.view.reactivate_avantis_checkboxes()
             self.view.disable_mixing_station_checkboxes()
             self.view.disable_helpers_avantis()
+            self.view.disable_utilities()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
             self.view.root.update()

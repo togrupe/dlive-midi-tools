@@ -152,7 +152,7 @@ class MainView:
         ctk.CTkOptionMenu(single_row, variable=self.var_console,
                           values=[dliveConstants.console_drop_down_dlive,
                                   dliveConstants.console_drop_down_avantis,
-                                  dliveConstants.console_drop_down_mixing_station]).pack(side="left", padx=(0, 20))
+                                  dliveConstants.console_drop_down_sq_mixing_station]).pack(side="left", padx=(0, 20))
 
         ctk.CTkLabel(single_row, text="MIDI Channel:", width=100, anchor="w").pack(side="left")
         self._midi_channel_menu = ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,

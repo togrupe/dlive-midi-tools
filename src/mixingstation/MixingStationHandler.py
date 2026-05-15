@@ -11,11 +11,12 @@ from spreadsheet import SpreadsheetConstants
 from mixingstation import MixingStationConstants
 
 
-def get_channel_data(ms_client, start_channel, end_channel):
+def get_channel_data(ms_client, start_channel, end_channel, console=""):
+    _, reverse_map = MixingStationConstants.get_color_maps(console)
     data = []
     for channel in range(start_channel, end_channel):
         color_id = int(ms_client.get(MixingStationConstants.PATH_CHANNEL_COLOR.format(channel))["value"])
-        color = MixingStationConstants.MS_COLOR_TO_SPREADSHEET.get(color_id, SpreadsheetConstants.spreadsheet_color_black)
+        color = reverse_map.get(color_id, SpreadsheetConstants.spreadsheet_color_black)
 
         name = ms_client.get(MixingStationConstants.PATH_CHANNEL_NAME.format(channel))["value"]
 
@@ -29,7 +30,7 @@ def get_channel_data(ms_client, start_channel, end_channel):
     return data
 
 
-def handle_ms_channels(log, ms_client, channel_list_entries, action):
+def handle_ms_channels(log, ms_client, channel_list_entries, action, console=""):
     for item in channel_list_entries:
         lower_enabled = str(item.get_enabled()).lower()
         if lower_enabled in ('nan', 'no'):
@@ -39,7 +40,7 @@ def handle_ms_channels(log, ms_client, channel_list_entries, action):
         if action == "name":
             _write_name(ms_client, log, item)
         elif action == "color":
-            _write_color(ms_client, log, item)
+            _write_color(ms_client, log, item, console)
         elif action == "fader_level":
             _write_fader_level(ms_client, log, item)
         elif action == "mute":
@@ -59,13 +60,14 @@ def _write_name(ms_client, log, item):
     ms_client.set(path, trimmed)
 
 
-def _write_color(ms_client, log, item):
+def _write_color(ms_client, log, item, console=""):
     color = item.get_color().lower()
     if color in (SpreadsheetConstants.spreadsheet_bypass_sign,
                  SpreadsheetConstants.spreadsheet_bypass_string, 'nan'):
         log.info(f"Skipping MS color for channel {item.get_channel()}")
         return
-    ms_color = MixingStationConstants.COLOR_MAP.get(color, 0)
+    color_map, _ = MixingStationConstants.get_color_maps(console)
+    ms_color = color_map.get(color, 0)
     path = MixingStationConstants.PATH_CHANNEL_COLOR.format(item.get_channel_console())
     ms_client.set(path, ms_color, fmt="val")
 

@@ -29,6 +29,8 @@ class MainView:
 
         self.var_midi_channel = StringVar(self.root)
         self.var_console = StringVar(self.root)
+        self.var_ms_console = StringVar(self.root)
+        self.var_ms_console.set(dliveConstants.console_drop_down_sq_mixing_station)
 
         self.reaper_output_dir = ""
         self.reaper_file_prefix = ""
@@ -148,16 +150,30 @@ class MainView:
         single_row = ctk.CTkFrame(config_frame, fg_color="transparent")
         single_row.grid(row=1, column=0, sticky="W", padx=5, pady=3)
 
-        ctk.CTkLabel(single_row, text="Audio Console:", width=120, anchor="w").pack(side="left")
-        ctk.CTkOptionMenu(single_row, variable=self.var_console,
+        console_section = ctk.CTkFrame(single_row, fg_color="transparent")
+        ctk.CTkLabel(console_section, text="Audio Console:", width=120, anchor="w").pack(side="left")
+        ctk.CTkOptionMenu(console_section, variable=self.var_console,
                           values=[dliveConstants.console_drop_down_dlive,
                                   dliveConstants.console_drop_down_avantis,
-                                  dliveConstants.console_drop_down_sq_mixing_station,
-                                  dliveConstants.console_drop_down_dm7_mixing_station,
-                                  dliveConstants.console_drop_down_wing_mixing_station,
-                                  dliveConstants.console_drop_down_m32_mixing_station,
-                                  dliveConstants.console_drop_down_qu16_mixing_station,
-                                  ]).pack(side="left", padx=(0, 20))
+                                  dliveConstants.console_drop_down_mixing_station,
+                                  ]).pack(side="left", padx=(0, 5))
+
+        self._ms_console_selector = ctk.CTkFrame(console_section, fg_color="transparent")
+        ctk.CTkLabel(self._ms_console_selector, text="Type:", width=40, anchor="w").pack(
+            side="left", padx=(8, 0))
+        self._ms_console_menu = ctk.CTkOptionMenu(
+            self._ms_console_selector,
+            variable=self.var_ms_console,
+            values=[
+                dliveConstants.console_drop_down_sq_mixing_station,
+                dliveConstants.console_drop_down_dm7_mixing_station,
+                dliveConstants.console_drop_down_wing_mixing_station,
+                dliveConstants.console_drop_down_m32_mixing_station,
+                dliveConstants.console_drop_down_qu16_mixing_station,
+            ])
+        self._ms_console_menu.pack(side="left")
+
+        console_section.pack(side="left", padx=(0, 20))
 
         ctk.CTkLabel(single_row, text="MIDI Channel:", width=100, anchor="w").pack(side="left")
         self._midi_channel_menu = ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,
@@ -714,6 +730,17 @@ class MainView:
 
     def hide_ms_port(self):
         self._ms_port_frame.grid_remove()
+
+    def show_ms_console_selector(self):
+        self._ms_console_selector.pack(side="left", padx=(5, 0))
+
+    def hide_ms_console_selector(self):
+        self._ms_console_selector.pack_forget()
+
+    def get_effective_console(self):
+        if self.var_console.get() == dliveConstants.console_drop_down_mixing_station:
+            return self.var_ms_console.get()
+        return self.var_console.get()
 
     def get_ms_port(self):
         return self.entry_ms_port.get()

@@ -77,7 +77,12 @@ class MainController:
         self.context.get_app_data().set_appearance_mode(appearance_mode)
         self.view.var_dark_mode.set(appearance_mode == "dark")
 
-        self.view.var_console.set(read_persisted_console(self.context))
+        persisted_console = read_persisted_console(self.context)
+        if persisted_console in dliveConstants.MIXING_STATION_CONSOLES:
+            self.view.var_console.set(dliveConstants.console_drop_down_mixing_station)
+            self.view.var_ms_console.set(persisted_console)
+        else:
+            self.view.var_console.set(persisted_console)
         self.view.var_midi_channel.set(read_persisted_midi_port(self.context))
 
         ip = read_persisted_ip(self.context)
@@ -87,12 +92,13 @@ class MainController:
         self.view.set_ms_port(ms_port)
         self.context.get_app_data().set_mixing_station_port(ms_port)
 
-        console = self.view.var_console.get()
+        console = self.view.get_effective_console()
         if console == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
         elif console in dliveConstants.MIXING_STATION_CONSOLES:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
             self.view.show_ms_port()
+            self.view.show_ms_console_selector()
             self.view.disable_midi_channel()
             self.view.disable_mixing_station_checkboxes()
             self.view.disable_utilities()
@@ -163,6 +169,7 @@ class MainController:
 
         # Variable traces
         self.view.var_console.trace("w", self.on_console_selected)
+        self.view.var_ms_console.trace("w", self.on_ms_console_selected)
         self.view.var_current_console_endChannel.trace("w", self.on_endchannel_selected)
         self.view.var_current_console_startChannel.trace("w", self.on_startchannel_selected)
 
@@ -176,7 +183,7 @@ class MainController:
         ctk.set_appearance_mode(mode)
         self.context.get_app_data().set_appearance_mode(mode)
         self.context.get_app_data().set_console(
-            self._determine_console_id(self.view.var_console.get()))
+            self._determine_console_id(self.view.get_effective_console()))
         self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
         self.context.get_app_data().set_current_ip(self.view.get_ip())
         self.context.get_app_data().set_mixing_station_port(self.view.get_ms_port())
@@ -204,7 +211,7 @@ class MainController:
     def on_save_settings(self):
         current_ip = self.view.get_ip()
         self.context.get_app_data().set_console(
-            self._determine_console_id(self.view.var_console.get()))
+            self._determine_console_id(self.view.get_effective_console()))
         self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
         self.context.get_app_data().set_current_ip(current_ip)
         self.context.get_app_data().set_mixing_station_port(self.view.get_ms_port())
@@ -224,7 +231,7 @@ class MainController:
         self.view.reset_status()
         test_ip = self.view.get_ip()
 
-        if self.view.var_console.get() in dliveConstants.MIXING_STATION_CONSOLES:
+        if self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES:
             ms_port = self.view.get_ms_port()
             logging.info("Test Mixing Station connection to " + test_ip + ":" + ms_port)
             try:
@@ -257,12 +264,14 @@ class MainController:
             showerror(message=action)
 
     def on_console_selected(self, *args):
-        self.context.get_app_data().set_console(self.view.var_console.get())
+        effective = self.view.get_effective_console()
+        self.context.get_app_data().set_console(effective)
         self.log.info("The selected console is: " + self.view.var_console.get())
 
         if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
             self.view.hide_ms_port()
+            self.view.hide_ms_console_selector()
             self.view.enable_midi_channel()
             self.view.reactivate_avantis_checkboxes()
             self.view.root.update()
@@ -286,6 +295,7 @@ class MainController:
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
             self.view.hide_ms_port()
+            self.view.hide_ms_console_selector()
             self.view.enable_midi_channel()
             self.view.reactivate_avantis_checkboxes()
             self.view.enable_helpers_avantis()
@@ -294,9 +304,10 @@ class MainController:
             self.view.set_console_to_daw_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
 
-        elif self.view.var_console.get() in dliveConstants.MIXING_STATION_CONSOLES:
+        elif self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
             self.view.show_ms_port()
+            self.view.show_ms_console_selector()
             self.view.disable_midi_channel()
             self.view.reactivate_avantis_checkboxes()
             self.view.disable_mixing_station_checkboxes()
@@ -305,6 +316,11 @@ class MainController:
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
             self.view.root.update()
+
+    def on_ms_console_selected(self, *args):
+        effective = self.view.get_effective_console()
+        self.context.get_app_data().set_console(effective)
+        self.log.info("The selected Mixing Station console is: " + effective)
 
     def on_reaper_write_changed(self):
         if self.view.var_write_reaper.get() or self.view.var_write_trackslive.get():
@@ -395,7 +411,7 @@ class MainController:
                 showerror(message=error_msg)
                 return
 
-            use_mixing_station = self.view.var_console.get() in dliveConstants.MIXING_STATION_CONSOLES
+            use_mixing_station = self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES
 
             if use_mixing_station:
                 try:
@@ -406,7 +422,7 @@ class MainController:
                     self.view.advance_progress(actions)
                     self.view.root.update()
                     data_fin = ms_get_channel_data(ms_client, start_channel, end_channel,
-                                                   self.view.var_console.get())
+                                                   self.view.get_effective_console())
                 except Exception as e:
                     error_msg = f"Failed to read from Mixing Station: {e}"
                     self.log.error(error_msg)
@@ -564,7 +580,7 @@ class MainController:
             showerror(message=error_msg)
             return self.view.root.quit()
 
-        self.context.get_app_data().set_console(self.view.var_console.get())
+        self.context.get_app_data().set_console(self.view.get_effective_console())
 
         sheet.set_channel_model(
             create_channel_list_content(

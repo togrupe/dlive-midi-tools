@@ -409,7 +409,7 @@ Feature Release
   - Phantom Power OFF (all Sockets)
 
 #### Improvements
-- Redesigned UI optimized for Full HD (1920×1080) screens — no scrolling required
+- Redesigned UI with 85 % widget scaling — fits on 1440×900 screens without scrolling (also works on Full HD and larger)
 - Dark / Light mode toggle added (via Settings menu), persisted across restarts
 - Connection Settings consolidated into a single row (Console, MIDI Channel, IP and buttons in one line)
 - Status bar redesigned with horizontal layout (label left, progress right)

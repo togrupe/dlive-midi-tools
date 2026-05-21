@@ -17,14 +17,16 @@ from gui.CheckboxGrid import CheckboxGrid
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+ctk.set_widget_scaling(0.85)
+ctk.set_window_scaling(0.85)
 
 
 class MainView:
     def __init__(self):
         self.root = ctk.CTk()
         self.root.title(Toolinfo.tool_name + ' - v' + Toolinfo.version)
-        self.root.geometry('1600x980')
-        self.root.minsize(1280, 840)
+        self.root.geometry('1680x1000')
+        self.root.minsize(1500, 840)
         self.root.resizable(True, True)
 
         self.var_midi_channel = StringVar(self.root)

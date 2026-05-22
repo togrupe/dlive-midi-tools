@@ -2,31 +2,19 @@
 
 name: Cross Compile Manual workflow
 
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
     inputs:
       mytag:
-        # Friendly description to be shown in the UI instead of 'name'
         description: 'Input Tag'
-        # Default value if no value is explicitly provided
         default: '0.0.0'
-        # Input has to be provided for the workflow to run
         required: true
-        # The data type of the input
         type: string
       suffix:
         description: 'Version suffix'
-        # Default suffix
         default: ''
-        # Input has to be provided for the workflow to run
         required: false
-        # The data type of the input
         type: string
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 
 jobs:
   build:
@@ -34,81 +22,78 @@ jobs:
       contents: write
     strategy:
       matrix:
-        os: [macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux-x86_64
+          - os: macos-13
+            platform: macos-x86_64
+          - os: macos-latest
+            platform: macos-arm64
+          - os: windows-latest
+            platform: windows
 
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check-out repository
         uses: actions/checkout@v4
 
-      - name: MacOS specific
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew update 
+      - name: Install tkinter (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y python3-tk
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          python-version: '3.12'
           cache: 'pip'
-          cache-dependency-path: |
-            **/dependencies*.txt
+          cache-dependency-path: 'requirements.txt'
 
-      - name: Install Dependencies for All
-        run: |
-          pip install -r dependencies.txt
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
 
-      - name: Build Executable for ${{runner.os}}
+      - name: Build Executable
         uses: Nuitka/Nuitka-Action@v1.2
         with:
           nuitka-version: 2.5.9
           script-name: src/Main.py
-          # company-name: CONGO*blue (forked from zak-45)
-          file-version: ${{github.event.inputs.mytag}}
-          # windows-icon-from-ico: assets/BPM2OSC.ico
-          # macos-app-icon: assets/BPM2OSC.ico
+          file-version: ${{ github.event.inputs.mytag }}
           onefile: true
           enable-plugins: tk-inter
-          output-file: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
+          output-file: dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}
 
-      - name: Make artefact executable
-        run: chmod +x build/dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}
+      - name: Make artifact executable (Unix)
+        if: runner.os != 'Windows'
+        run: chmod +x build/dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}
 
-      - name: Create temporary output folder
-        run: mkdir output
-
-      - name: Copy artefacts to temporary output folder
+      - name: Collect release files (Unix)
+        if: runner.os != 'Windows'
         run: |
-          cp AvantisChannelList.xlsx output
-          cp AvantisChannelList.ods output
-          cp dLiveChannelList.xlsx output
-          cp dLiveChannelList.ods output
-          cp ThirdParty-Licenses.txt output 
-          cp LICENSE output
-          cp build/dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}} output
+          mkdir output
+          cp AvantisChannelList.xlsx AvantisChannelList.ods dLiveChannelList.xlsx dLiveChannelList.ods MixingStationChannelList.xlsx ThirdParty-Licenses.txt LICENSE output/
+          cp build/dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }} output/
+          cd output && zip -r ../dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.zip .
 
-      - name: Create tar.gz
-        if: matrix.os == 'macos-latest'
+      - name: Collect release files (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          cd output
-          tar -czvf dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz *
-          mv *.tgz ..
+          New-Item -ItemType Directory output
+          Copy-Item AvantisChannelList.xlsx, AvantisChannelList.ods, dLiveChannelList.xlsx, dLiveChannelList.ods, MixingStationChannelList.xlsx, ThirdParty-Licenses.txt, LICENSE output\
+          Copy-Item build\dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.exe output\
+          Compress-Archive -Path output\* -DestinationPath dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.zip
 
-      - name: Upload Artifacts
-        if: matrix.os == 'macos-latest'
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{runner.os}} Build
+          name: dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}
           if-no-files-found: warn
-          path: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz
+          path: dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.zip
 
-      - name: Create Release v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}} with Builds from Nuitka
-        if: matrix.os == 'macos-latest'
+      - name: Create/Update GitHub Release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           commit: main
-          tag: v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}
-          artifacts: dmt-v${{github.event.inputs.mytag}}${{github.event.inputs.suffix}}-${{runner.os}}-arm64.tgz
+          tag: v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}
+          artifacts: dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.zip

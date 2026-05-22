@@ -7,8 +7,6 @@
 
 import dliveConstants
 
-MS_DEFAULT_PORT = 9000
-
 # REST parameter path templates (channel index is 0-based)
 PATH_CHANNEL_NAME = "ch.{}.cfg.name"
 PATH_CHANNEL_COLOR = "ch.{}.cfg.color"

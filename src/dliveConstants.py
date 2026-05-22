@@ -182,21 +182,18 @@ console_drop_down_mixing_station = "Mixing Station"
 console_drop_down_sq_mixing_station = "SQ"
 console_drop_down_dm7_mixing_station = "DM7"
 console_drop_down_wing_mixing_station = "Wing"
-console_drop_down_m32_mixing_station = "M32"
+console_drop_down_m32_mixing_station = "M32/X32"
 console_drop_down_qu16_mixing_station = "QU16"
 
 MIXING_STATION_CONSOLES = frozenset({
     console_drop_down_sq_mixing_station,
-    console_drop_down_dm7_mixing_station,
-    console_drop_down_wing_mixing_station,
     console_drop_down_m32_mixing_station,
-    console_drop_down_qu16_mixing_station,
 })
 
 console_drop_down_default = console_drop_down_dlive
 
 # Mixing Station REST API default port
-mixing_station_default_port = 9000
+mixing_station_default_port = 8080
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
 allow_network_communication = True

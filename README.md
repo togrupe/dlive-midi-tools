@@ -37,7 +37,7 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
-* Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level)
+* Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level) — currently for SQ and M32/X32
 * Generate DAW session(s) from current console or Mixing Station settings
 * Generate CSV File incl. channel patching for Director CSV Import
 
@@ -63,16 +63,18 @@ By using this software, you acknowledge and agree that you do so at your own ris
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 ## Overview
-![Overview](doc/overview.drawio.png)
+![Overview](doc/overview.drawio.svg)
 
 For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
+
+For the five supported workflows (Spreadsheet → Console / DAW, → Director CSV, Console → DAW, Mixing Station variants) with Mermaid flowcharts and step-by-step descriptions, see [Workflows & Overview](doc/workflows.md).
 
 ## Download
 | Version | Date       | OS                                   | Download                                                                                                  | Release Notes  | MD5 Checksum                     |
 |---------|------------|--------------------------------------|-----------------------------------------------------------------------------------------------------------|----------------|----------------------------------|
-| v2.12.0 | 11.05.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0-RC12/dmt-v2_12_0-RC12-macos-x86_64.zip) | [Link](#v2120) |                                  |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0-RC12/dmt-v2_12_0-RC12-macos-arm64.zip)  |                |                                  |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0-RC12/dmt-v2_12_0-RC12-windows.zip)      |                |                                  |
+| v2.12.0 | 11.05.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0-RC14/dmt-v2_12_0-RC14-macos-x86_64.zip) | [Link](#v2120) |                                  |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0-RC14/dmt-v2_12_0-RC14-macos-arm64.zip)  |                |                                  |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0-RC14/dmt-v2_12_0-RC14-windows.zip)      |                |                                  |
 | v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip)           | [Link](#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
 |         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)            |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
 |         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)                |                | 970930d359582cea6266cd304265dfbc |

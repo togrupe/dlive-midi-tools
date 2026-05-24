@@ -66,12 +66,20 @@ jobs:
         if: runner.os != 'Windows'
         run: chmod +x build/dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}
 
+      - name: Create wrapper script (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          BINARY=dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}
+          printf '#!/bin/sh\nDIR="$(cd "$(dirname "$0")" && pwd)"\nexec "$DIR/%s" "$@"\n' "$BINARY" > start.sh
+          chmod +x start.sh
+
       - name: Collect release files (Unix)
         if: runner.os != 'Windows'
         run: |
           mkdir output
           cp AvantisChannelList.xlsx AvantisChannelList.ods dLiveChannelList.xlsx dLiveChannelList.ods MixingStationChannelList.xlsx ThirdParty-Licenses.txt LICENSE output/
           cp build/dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }} output/
+          cp start.sh output/
           cd output && zip -r ../dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.zip .
 
       - name: Collect release files (Windows)

@@ -1,7 +1,0 @@
-numpy
-mido
-pandas
-xlrd
-openpyxl
-odfpy
-reathon

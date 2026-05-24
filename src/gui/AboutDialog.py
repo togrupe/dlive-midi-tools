@@ -11,116 +11,61 @@ from tkinter.ttk import Frame, Button
 
 import Toolinfo
 
+ABOUT_CONTENT = [
+    {"type": "spacer"},
+    {"type": "row",      "label": "Toolname:",           "value": Toolinfo.tool_name},
+    {"type": "row",      "label": "GitHub Project:",     "value": "https://github.com/togrupe/dlive-midi-tools"},
+    {"type": "spacer"},
+    {"type": "row",      "label": "Version:",            "value": Toolinfo.version},
+    {"type": "row",      "label": "Build-Date:",         "value": Toolinfo.build_date},
+    {"type": "row",      "label": "License:",            "value": "MIT License"},
+    {"type": "spacer"},
+    {"type": "row",      "label": "Idea & Development:", "value": "Tobias Grupe"},
+    {"type": "row",      "label": "Testing Avantis:",    "value": "Matthieu Pochon"},
+    {"type": "multirow", "label": "Testing dLive:",      "values": ["Tobias Grupe", "Zac Paton", "Tim-Lukas Arold", "Nathan May", "Günter Hellstern"]},
+    {"type": "spacer"},
+    {"type": "full",     "text": "Powered by Open Source"},
+    {"type": "spacer"},
+    {"type": "multirow", "label": "Used Python Modules:", "values": ["mido", "pandas", "openpyxl", "odfpy", "reathon", "pyinstaller"]},
+    {"type": "spacer"},
+    {"type": "row",      "label": "Contact/Feedback:",   "value": "dmt@liveworks-vt.de"},
+]
+
 
 class AboutDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.title("About")
-        self.geometry('600x600')
         self.resizable(False, False)
         self.create_widgets()
+        self.update_idletasks()
+        self.geometry(f"{self.winfo_reqwidth() + 40}x{self.winfo_reqheight() + 20}")
 
     def create_widgets(self):
         content_frame = Frame(self)
+        row = 0
 
-        space_label0 = tk.Label(content_frame, text="")
-        space_label1 = tk.Label(content_frame, text="")
-        space_label2 = tk.Label(content_frame, text="")
-        space_label3 = tk.Label(content_frame, text="")
-        space_label4 = tk.Label(content_frame, text="")
-        space_label5 = tk.Label(content_frame, text="")
-        space_label6 = tk.Label(content_frame, text="")
-        space_label7 = tk.Label(content_frame, text="")
+        for entry in ABOUT_CONTENT:
+            kind = entry["type"]
 
-        # create labels for the about dialog
-        toolname_label = tk.Label(content_frame, text="Toolname:")
-        toolname_value = tk.Label(content_frame, text=Toolinfo.tool_name)
+            if kind == "spacer":
+                tk.Label(content_frame, text="").grid(row=row, column=0, sticky=tk.W)
+                row += 1
 
-        github_project_label = tk.Label(content_frame, text="GitHub Project:")
-        github_project_value = tk.Label(content_frame, text="https://github.com/togrupe/dlive-midi-tools")
+            elif kind == "row":
+                tk.Label(content_frame, text=entry["label"]).grid(row=row, column=0, sticky=tk.W)
+                tk.Label(content_frame, text=entry["value"]).grid(row=row, column=1, sticky=tk.W)
+                row += 1
 
-        version_label = tk.Label(content_frame, text="Version:")
-        version_value = tk.Label(content_frame, text=Toolinfo.version)
+            elif kind == "multirow":
+                tk.Label(content_frame, text=entry["label"]).grid(row=row, column=0, sticky=tk.W)
+                for value in entry["values"]:
+                    tk.Label(content_frame, text=value).grid(row=row, column=1, sticky=tk.W)
+                    row += 1
 
-        build_label = tk.Label(content_frame, text="Build-Date:")
-        build_value = tk.Label(content_frame, text=Toolinfo.build_date)
-
-        license_label = tk.Label(content_frame, text="License:")
-        license_value = tk.Label(content_frame, text="MIT License")
-
-        team0_label = tk.Label(content_frame, text="Idea & Development:")
-        team0_value = tk.Label(content_frame, text="Tobias Grupe")
-
-        team1_label = tk.Label(content_frame, text="Testing Avantis:")
-        team1_value = tk.Label(content_frame, text="Matthieu Pochon")
-
-        team2_label = tk.Label(content_frame, text="Testing dLive:")
-        team2_value = tk.Label(content_frame, text="Tobias Grupe")
-        team3_value = tk.Label(content_frame, text="Zac Paton")
-        team4_value = tk.Label(content_frame, text="Tim-Lukas Arold")
-        team5_value = tk.Label(content_frame, text="Nathan May")
-        team6_value = tk.Label(content_frame, text="Günter Hellstern")
-
-        opensource_label = tk.Label(content_frame, text="Powered by Open Source")
-
-        contact_email_label = tk.Label(content_frame, text="Contact/Feedback:")
-        contact_email_value = tk.Label(content_frame, text="dmt@liveworks-vt.de")
-
-        python_modules_label = tk.Label(content_frame, text="Used Python Modules:")
-        python_modules_value0 = tk.Label(content_frame, text="mido")
-        python_modules_value1 = tk.Label(content_frame, text="pandas")
-        python_modules_value2 = tk.Label(content_frame, text="openpyxl")
-        python_modules_value3 = tk.Label(content_frame, text="odfpy")
-        python_modules_value4 = tk.Label(content_frame, text="reathon")
-        python_modules_value5 = tk.Label(content_frame, text="pyinstaller")
-
-        # set the grid layout for the labels
-        space_label0.grid(row=0, column=0, sticky=tk.W)
-        toolname_label.grid(row=1, column=0, sticky=tk.W)
-        github_project_label.grid(row=2, column=0, sticky=tk.W)
-        space_label1.grid(row=3, column=0, sticky=tk.W)
-        version_label.grid(row=4, column=0, sticky=tk.W)
-        build_label.grid(row=5, column=0, sticky=tk.W)
-        license_label.grid(row=6, column=0, sticky=tk.W)
-        space_label2.grid(row=7, column=0, sticky=tk.W)
-        team0_label.grid(row=8, column=0, sticky=tk.W)
-        team1_label.grid(row=9, column=0, sticky=tk.W)
-        team2_label.grid(row=10, column=0, sticky=tk.W)
-        space_label3.grid(row=11, column=0, sticky=tk.W)
-        space_label4.grid(row=12, column=0, sticky=tk.W)
-        space_label5.grid(row=13, column=0, sticky=tk.W)
-        space_label7.grid(row=15, column=0, sticky=tk.W)
-        opensource_label.grid(row=16, column=0, sticky=tk.W)
-        space_label6.grid(row=17, column=0, sticky=tk.W)
-        python_modules_label.grid(row=18, column=0, sticky=tk.W)
-
-        # set the grid layout for the values
-        toolname_value.grid(row=1, column=1, sticky=tk.W)
-        github_project_value.grid(row=2, column=1, sticky=tk.W)
-
-        version_value.grid(row=4, column=1, sticky=tk.W)
-        build_value.grid(row=5, column=1, sticky=tk.W)
-        license_value.grid(row=6, column=1, sticky=tk.W)
-
-        team0_value.grid(row=8, column=1, sticky=tk.W)
-        team1_value.grid(row=9, column=1, sticky=tk.W)
-        team2_value.grid(row=10, column=1, sticky=tk.W)
-        team3_value.grid(row=11, column=1, sticky=tk.W)
-        team4_value.grid(row=12, column=1, sticky=tk.W)
-        team5_value.grid(row=13, column=1, sticky=tk.W)
-        team6_value.grid(row=14, column=1, sticky=tk.W)
-
-        python_modules_value0.grid(row=18, column=1, sticky=tk.W)
-        python_modules_value1.grid(row=19, column=1, sticky=tk.W)
-        python_modules_value2.grid(row=20, column=1, sticky=tk.W)
-        python_modules_value3.grid(row=21, column=1, sticky=tk.W)
-        python_modules_value4.grid(row=22, column=1, sticky=tk.W)
-        python_modules_value5.grid(row=23, column=1, sticky=tk.W)
-
-        space_label6.grid(row=24, column=0, sticky=tk.W)
-
-        contact_email_label.grid(row=25, column=0, sticky=tk.W)
-        contact_email_value.grid(row=25, column=1, sticky=tk.W)
+            elif kind == "full":
+                tk.Label(content_frame, text=entry["text"]).grid(row=row, column=0, columnspan=2, sticky=tk.W)
+                row += 1
 
         content_frame.pack(side=TOP)
 

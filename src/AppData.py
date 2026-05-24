@@ -3,6 +3,7 @@ class AppData:
         self.midi_channel = midi_channel
         self.console = console
         self.current_ip = current_ip
+        self.appearance_mode = "dark"
         self.output_reaper = False
         self.output_trackslive = False
         self.output_write_to_console = False
@@ -49,3 +50,9 @@ class AppData:
 
     def set_output_write_to_csv(self, data):
         self.output_write_csv = data
+
+    def get_appearance_mode(self):
+        return self.appearance_mode
+
+    def set_appearance_mode(self, mode):
+        self.appearance_mode = mode

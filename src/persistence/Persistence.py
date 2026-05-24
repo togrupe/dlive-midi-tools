@@ -88,18 +88,50 @@ def read_persisted_ip(context):
     return ip_ret
 
 
+def migrate_config_if_needed(context):
+    """Migrates config from v1 to v2 by adding appearance-mode default."""
+    log = context.get_logger()
+    filename = context.get_config_file()
+    if not os.path.exists(filename):
+        return
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    if data.get('version', 1) < 2:
+        data['version'] = 2
+        data.setdefault('appearance-mode', 'dark')
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+        log.info("Config migrated from v1 to v2.")
+
+
+def read_persisted_appearance_mode(context):
+    log = context.get_logger()
+    filename = context.get_config_file()
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            try:
+                return data['appearance-mode']
+            except KeyError:
+                pass
+    log.info("No appearance-mode found in config, using default: dark")
+    return "dark"
+
+
 def persist_current_ui_settings(context):
     log = context.get_logger()
     filename = context.get_config_file()
     console = context.get_app_data().get_console()
     midi_channel = context.get_app_data().get_midi_channel()
     current_ip = context.get_app_data().get_current_ip()
+    appearance_mode = context.get_app_data().get_appearance_mode()
 
     data = {
-        'version': 1,
+        'version': 2,
         'ip': str(current_ip),
         'console': console,
-        'midi-port': midi_channel
+        'midi-port': midi_channel,
+        'appearance-mode': appearance_mode
     }
 
     json_str = json.dumps(data)

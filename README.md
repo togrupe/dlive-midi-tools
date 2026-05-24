@@ -12,8 +12,8 @@ or the current console settings a DAW (Digital Audio Workstation) recording sess
   - Matrices
   - FX Sends
   - FX Returns
-  - UFX Sends (dLive only)
-  - UFX Returns (dLive only)
+  - UFX Sends
+  - UFX Returns
 - Channel Mute
 - Fader Level
 - Channel to Main Mix Routing
@@ -63,21 +63,20 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 ## Overview
 ![Overview](doc/overview.drawio.png)
 
+For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
+
 ## Download
-| Version | Date       | OS                                   | Download                                                                                        | Release Notes  | MD5 Checksum                     |
-|---------|------------|--------------------------------------|-------------------------------------------------------------------------------------------------|----------------|----------------------------------|
+| Version | Date       | OS                                   | Download                                                                                   | Release Notes  | MD5 Checksum                     |
+|---------|------------|--------------------------------------|--------------------------------------------------------------------------------------------|----------------|----------------------------------|
+| v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip ) | [Link](#v2120) | 861622a542446db242c93d00ea3cf99a |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip) |                | cc6fd1f297b123158d2591841b7d5898 |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip) |                | 2b09f614d9b6c517e33be5b4d5fe7a6e|
 | v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)  |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)      |                | 970930d359582cea6266cd304265dfbc |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip) |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip) |                | 970930d359582cea6266cd304265dfbc |
 | v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](#v2100) | 3be97642cafebdb830129d68aaadf6cf |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip)  |                | 207d57b612978fd6cfa2e57f1bb59f02 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip)      |                | 2116d00f16b7da40d8b2464636578b9f |
-| v2.9.0  | 01.05.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-macos-x86_64.zip)   | [Link](#v290)  | dddae267b51b7746b80f7f99f5732a01 |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-macos-arm64.zip)    |                | 86ef5ecc7598494b6ebad25b95c8f3f9 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_9_0/dmt-v2_9_0-windows.zip)        |                | 12d25022a1e8a6754505c4eb015aaae2 |
-| v2.8.3  | 28.12.2024 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-x86_64.zip)   | [Link](#v283)  | 45a0606fc8766d658b12804cced56754 |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-macos-arm64.zip)    |                | f853e3df25edf56f19eee3562ba4c857 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_8_3/dmt-v2_8_3-windows.zip)        |                | 6bc6baa85a676c6a45c27823a971f60c |
+|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip) |                | 207d57b612978fd6cfa2e57f1bb59f02 |
+|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip) |                | 2116d00f16b7da40d8b2464636578b9f |
 
 Older versions see [archive](doc/download-archive.md)
 
@@ -159,9 +158,9 @@ Click on `Open Template` and select the generated file.
 
 
 ## Settings on the console
-The `Midi Channel` setting on dLive under `Utils/Shows -> Control -> Midi` should be set to: `12 to 16`, which is default.
+The `MIDI Channel` setting on dLive under `Utils/Shows -> Control -> MIDI` should be set to: `12 to 16`, which is default.
 
-If you want to change the preconfigured Midi port, you can change it in the Graphical User Interface according to your dLive settings. 
+If you want to change the preconfigured MIDI port, you can change it in the Graphical User Interface according to your dLive settings. 
 
 ## Default IP-Address
 The default dLive Mixrack IP-Address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
@@ -171,7 +170,7 @@ Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the 
  
 
 ## Usage
-Prerequisites: 
+Prerequisites:
 * Windows >= 10 / macOS >= Monterey
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
@@ -193,7 +192,7 @@ B: Build it your own from scratch, using the following steps.<br>
 
 B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
 
-`pip install -r dependencies.txt`
+`pip install -r requirements.txt`
 
 B2. Run the script with the following command: 
 
@@ -219,6 +218,19 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 
 > **_Recommended Workflow:_** If socket patching is to be performed, I recommend first exporting to CSV, then importing into Director. This lays the foundation for further MIDI-based data processing, where you can override over and over.
 
+## Menu Bar
+
+The menu bar at the top of the window provides the following options:
+
+**Settings**
+- `Dark Mode` — toggles between dark and light appearance. The selected mode is persisted across restarts.
+
+**Help**
+- `Documentation` — opens the online documentation in your browser
+- `Donate ☕` — opens the donation page
+- `About` — shows version information
+- `Close` — exits the application
+
 1. Select the console: `dLive` or `Avantis`
 
 2. Check the (Mixrack-) IP and Midi Port. 
@@ -234,6 +246,7 @@ __Recommendation__: Please back up your current show file, just to be on the saf
 The tool has currently the following modes:
 * Spreadsheet to Console / DAW (Continue with next Step) - Reads from a spreadsheet into console or to a DAW Session.
 * Console to DAW (Continue with Step 10) - Reads from the console and writes a DAW session.
+* Utilities (Continue with Step 12) - Direct console operations without a spreadsheet.
 
 Choose which mode you want to use:
 
@@ -241,8 +254,7 @@ Choose which mode you want to use:
 
 7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
    
-   `Select All` selects all checkboxes.
-   `Clear` removes all ticks.
+   `Select All` and `Clear` select or deselect all checkboxes.
 
 8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
    will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
@@ -267,8 +279,20 @@ Choose which mode you want to use:
 
 
 
-10. Click the button `Open spreadsheet and start writing process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
-   
+10. Click the button `Open Spreadsheet and Start Writing Process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
+
+   Before processing, the tool automatically validates the spreadsheet. The validator checks:
+   - Channel and group **names** for invalid characters
+   - **Colors** against the supported color list
+   - **Fader levels** against the supported value list
+   - **HPF values** for valid range
+   - **Channel numbers** against the console's maximum (128 for dLive, 64 for Avantis)
+   - **Source field** values per console type (dLive / Avantis)
+   - **Mute**, **HPF On**, **DCA**, **Mute Group**, **Group Routing** toggle values
+   - **Phantom**, **Pad**, and **Gain** values in the Sockets tab
+
+   If any validation errors are found, a summary is shown and processing is aborted.
+
    **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
 
 11. Console to DAW - Generates a DAW session from the current console settings. This can be triggered even later, when an existing show is available on the console. This process doesn´t need a spreadsheet. 
@@ -285,13 +309,56 @@ Options:
    * An additional custom track prefix can also be added.<br>
    * Add two additional mono busses to record your mixing sum.
 
-Click `Generate DAW session(s) from current console settings`
+Click `Generate DAW Session(s) from Current Console Settings`
 
-12. If something goes wrong, please check the Python console or the `main.log`
+12. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
+
+### Reset
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| RESET all DCA Assignments | Removes all DCA assignments from every channel | dLive & Avantis |
+| RESET all Mute Group Assignments | Removes all Mute Group assignments from every channel | dLive only |
+| RESET all Main Assignments | Removes all Main Mix assignments from every channel | dLive & Avantis |
+
+### Mute
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| MUTE all Inputs | Mutes all input channels | dLive & Avantis |
+| MUTE all Outputs | Mutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
+| UNMUTE all Inputs | Unmutes all input channels | dLive & Avantis |
+| UNMUTE all Outputs | Unmutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
+
+> **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
+
+### Fader
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| Set all Input Faders to 0 dB | Sets all input channel faders to unity gain (0 dB) — useful as a soundcheck starting point | dLive & Avantis |
+| Set all Input Faders to -inf | Sets all input channel faders to minimum (-inf) — useful for a silent start | dLive & Avantis |
+
+### Preamp Safety
+
+| Button | Description | Console Support |
+|--------|-------------|-----------------|
+| Phantom Power OFF (all Sockets) | Switches 48V phantom power off on all sockets (Local, DX1, DX3 for dLive; Local, SLink for Avantis) — use before changing microphones | dLive & Avantis |
+
+13. If something goes wrong, please check the Python console or the `main.log`
 
 If you find any issues, please let me know. New ideas are welcome. 
 
 Have fun!
+
+## Support the Project ☕
+
+dlive-midi-tools is a free, open-source project developed and maintained in my spare time.
+If it saves you time at your gigs or studio sessions, consider buying me a coffee — it keeps the project alive and motivates future development.
+
+Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
+
+[☕ Buy Me a Coffee](https://buymeacoffee.com/togrupe)
 
 ## Feedback
 If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
@@ -305,6 +372,39 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 | Input to Group Routing for MGrp1 is weird | Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. To avoid this, I recommend using a "-" by default for all routings, and then an "x" or a " " where routing is required. |  
 
 ## Release Notes
+
+### v2.12.0
+
+Feature Release
+
+#### New Features
+- UFX Name & Color Support for Avantis
+- Spreadsheet Validator — validates channel and group names, colors, fader levels, HPF range, channel range, Source field (dLive & Avantis)
+- Utilities Tab with the following actions (direct console communication, no spreadsheet required):
+  - RESET all DCA Assignments
+  - RESET all Mute Group Assignments (dLive only)
+  - RESET all Main Mix Assignments
+  - MUTE all Inputs / UNMUTE all Inputs
+  - MUTE all Outputs / UNMUTE all Outputs
+  - Set all Input Faders to 0 dB
+  - Set all Input Faders to -inf
+  - Phantom Power OFF (all Sockets)
+
+#### Improvements
+- Redesigned UI — fits on 1440×900 screens without scrolling (also works on Full HD and larger)
+- Dark / Light mode toggle added (via Settings menu), persisted across restarts
+- Connection Settings consolidated into a single row (Console, MIDI Channel, IP and buttons in one line)
+- Status bar redesigned with horizontal layout (label left, progress right)
+- Allowed character validation for channel and group names
+- Source field validation per console type (dLive / Avantis)
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
 
 ### v2.11.0
 

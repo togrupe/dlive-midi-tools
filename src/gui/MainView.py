@@ -168,7 +168,10 @@ class MainView:
             variable=self.var_ms_console,
             values=[
                 dliveConstants.console_drop_down_sq_mixing_station,
+                dliveConstants.console_drop_down_dm7_mixing_station,
+                dliveConstants.console_drop_down_wing_mixing_station,
                 dliveConstants.console_drop_down_m32_mixing_station,
+                dliveConstants.console_drop_down_qu16_mixing_station,
             ])
         self._ms_console_menu.pack(side="left")
 

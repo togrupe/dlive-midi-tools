@@ -183,7 +183,7 @@ console_drop_down_sq_mixing_station = "SQ"
 console_drop_down_dm7_mixing_station = "DM7"
 console_drop_down_wing_mixing_station = "Wing"
 console_drop_down_m32_mixing_station = "M32/X32"
-console_drop_down_qu16_mixing_station = "QU16"
+console_drop_down_qu16_mixing_station = "QU"
 
 MIXING_STATION_CONSOLES = frozenset({
     console_drop_down_sq_mixing_station,

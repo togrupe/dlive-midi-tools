@@ -65,18 +65,14 @@ _RM_M32 = {
     12: "blue", 13: "purple", 14: "light blue", 15: "white",
 }
 
-# QU16: 0:Black 1:Red 2:Green 3:Yellow 4:Blue 5:Magenta 6:Cyan 7:White
-#       8-15: inverted variants  16:Gray  17:Orange  18:Purple
+# QU: 1:Yellow 2:Red 3:Green 4:Blue 5:Dark Blue 6:Purple 7:Magenta 8:White
 _CM_QU16 = {
-    "black": 0, "red": 1, "green": 2, "blue": 4,
-    "light blue": 6, "yellow": 3, "purple": 18, "white": 7,
+    "yellow": 1, "red": 2, "green": 3, "blue": 4,
+    "dark blue": 5, "purple": 6, "black": 5, "white": 8,
 }
 _RM_QU16 = {
-    0: "black",  1: "red",    2: "green",       3: "yellow",
-    4: "blue",   5: "purple", 6: "light blue",  7: "white",
-    8: "black",  9: "red",   10: "green",      11: "yellow",
-    12: "blue", 13: "purple", 14: "light blue", 15: "white",
-    16: "black", 17: "yellow", 18: "purple",
+    1: "yellow", 2: "red",    3: "green",     4: "blue",
+    5: "dark blue", 6: "purple", 7: "magenta", 8: "white",
 }
 
 CONSOLE_COLOR_MAPS = {

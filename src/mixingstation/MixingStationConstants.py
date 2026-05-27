@@ -43,15 +43,13 @@ _RM_DM7 = {
 # Wing: 0-2:Blue 3:Cyan 4:Green 5-6:Yellow 7:Brown 8-9:Red 10:Pink
 #       11:Purple 12:Orange 13:Blue 14:Orange 15:Teal 16:Gray 17:White
 _CM_WING = {
-    "black": 16, "red": 8, "green": 4, "blue": 0,
-    "light blue": 3, "yellow": 5, "purple": 11, "white": 17,
+    "blue": 0, "light blue": 1, "white": 3, "green": 4, "yellow": 6, "black": 7, "red": 8,
+    "purple": 10
 }
 _RM_WING = {
-    0: "blue",   1: "blue",   2: "blue",       3: "light blue",
-    4: "green",  5: "yellow", 6: "yellow",      7: "yellow",
-    8: "red",    9: "red",   10: "red",         11: "purple",
-    12: "yellow", 13: "blue", 14: "yellow",     15: "light blue",
-    16: "black", 17: "white",
+    0: "blue",   1: "light blue",   2: "blue",        3: "light blue",
+    4: "green",  5: "yellow",       6: "yellow",      7: "yellow",
+    8: "red",    9: "red",          10: "purple",        11: "purple"
 }
 
 # M32: 0:Black 1:Red 2:Green 3:Yellow 4:Blue 5:Magenta 6:Cyan 7:White

@@ -65,6 +65,15 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
 
+## Support the Project ☕
+
+dlive-midi-tools is a free, open-source project developed and maintained in my spare time.
+If it saves you time at your gigs or studio sessions, consider buying me a coffee — it keeps the project alive and motivates future development.
+
+Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
+
+[☕ Buy Me a Coffee](https://buymeacoffee.com/togrupe)
+
 ## Download
 | Version | Date       | OS                                   | Download                                                                                   | Release Notes  | MD5 Checksum                     |
 |---------|------------|--------------------------------------|--------------------------------------------------------------------------------------------|----------------|----------------------------------|
@@ -350,15 +359,6 @@ Click `Generate DAW Session(s) from Current Console Settings`
 If you find any issues, please let me know. New ideas are welcome. 
 
 Have fun!
-
-## Support the Project ☕
-
-dlive-midi-tools is a free, open-source project developed and maintained in my spare time.
-If it saves you time at your gigs or studio sessions, consider buying me a coffee — it keeps the project alive and motivates future development.
-
-Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
-
-[☕ Buy Me a Coffee](https://buymeacoffee.com/togrupe)
 
 ## Feedback
 If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>

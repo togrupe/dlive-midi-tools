@@ -382,16 +382,32 @@ dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-mid
 
 ## Release Notes
 
+### v2.13.0
+
+Feature Release
+
+#### New Features
+- **Mixing Station support** via REST API (HTTP port 8080):
+  - Spreadsheet → Mixing Station: Name, Color, Mute, Fader Level
+  - Console to DAW from Mixing Station: reads channel names and colors (up to 99 channels)
+  - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
+  - Utilities tab is automatically disabled when Mixing Station is selected
+
+#### Improvements
+
+#### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+#### Issues fixed
+
+#### Known issues
+
 ### v2.12.0
 
 Feature Release
 
 #### New Features
-- **Mixing Station support** via REST API (HTTP port 9000):
-  - Spreadsheet → Mixing Station: Name, Color, Mute, Fader Level
-  - Console to DAW from Mixing Station: reads channel names and colors (up to 99 channels)
-  - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
-  - Utilities tab is automatically disabled when Mixing Station is selected
 - UFX Name & Color Support for Avantis
 - Spreadsheet Validator — validates channel and group names, colors, fader levels, HPF range, channel range, Source field (dLive & Avantis)
 - Utilities Tab with the following actions (direct console communication, no spreadsheet required):

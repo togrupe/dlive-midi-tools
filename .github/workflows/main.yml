@@ -47,18 +47,23 @@ jobs:
         run: |
           INCLUDES='[]'
           if [ "${{ inputs.linux }}" = "true" ]; then
-            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"ubuntu-latest","platform":"linux-x86_64","script":"start.sh"}]')
+            INCLUDES=$(echo "$INCLUDES" | jq -c '. += [{"os":"ubuntu-latest","platform":"linux-x86_64","script":"start.sh"}]')
           fi
           if [ "${{ inputs.macosIntel }}" = "true" ]; then
-            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"macos-15-intel","platform":"macos-x86_64","script":"start.command"}]')
+            INCLUDES=$(echo "$INCLUDES" | jq -c '. += [{"os":"macos-15-intel","platform":"macos-x86_64","script":"start.command"}]')
           fi
           if [ "${{ inputs.macosArm }}" = "true" ]; then
-            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"macos-latest","platform":"macos-arm64","script":"start.command"}]')
+            INCLUDES=$(echo "$INCLUDES" | jq -c '. += [{"os":"macos-latest","platform":"macos-arm64","script":"start.command"}]')
           fi
           if [ "${{ inputs.windows }}" = "true" ]; then
-            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"windows-latest","platform":"windows","script":""}]')
+            INCLUDES=$(echo "$INCLUDES" | jq -c '. += [{"os":"windows-latest","platform":"windows","script":""}]')
           fi
-          echo "matrix={\"include\":$INCLUDES}" >> $GITHUB_OUTPUT
+          MATRIX=$(jq -cn --argjson inc "$INCLUDES" '{"include":$inc}')
+          {
+            echo 'matrix<<EOF'
+            echo "$MATRIX"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
           [ "$INCLUDES" = "[]" ] && echo "has_targets=false" >> $GITHUB_OUTPUT || echo "has_targets=true" >> $GITHUB_OUTPUT
 
   build:

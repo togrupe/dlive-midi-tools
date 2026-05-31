@@ -15,9 +15,34 @@ on:
         default: ''
         required: false
         type: string
+      linux:
+        description: 'Build Linux (x86_64)'
+        default: true
+        required: false
+        type: boolean
+      macosIntel:
+        description: 'Build macOS Intel (x86_64)'
+        default: true
+        required: false
+        type: boolean
+      macosArm:
+        description: 'Build macOS ARM (arm64)'
+        default: true
+        required: false
+        type: boolean
+      windows:
+        description: 'Build Windows'
+        default: true
+        required: false
+        type: boolean
 
 jobs:
   build:
+    if: |
+      (matrix.os == 'ubuntu-latest'    && inputs.linux)      ||
+      (matrix.os == 'macos-15-intel'   && inputs.macosIntel) ||
+      (matrix.os == 'macos-latest'     && inputs.macosArm)   ||
+      (matrix.os == 'windows-latest'   && inputs.windows)
     permissions:
       contents: write
     strategy:
@@ -25,10 +50,13 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux-x86_64
+            script: start.sh
           - os: macos-15-intel
             platform: macos-x86_64
+            script: start.command
           - os: macos-latest
             platform: macos-arm64
+            script: start.command
           - os: windows-latest
             platform: windows
 
@@ -70,8 +98,8 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           BINARY=dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}
-          printf '#!/bin/sh\nDIR="$(cd "$(dirname "$0")" && pwd)"\nexec "$DIR/%s" "$@"\n' "$BINARY" > start.sh
-          chmod +x start.sh
+          printf '#!/bin/sh\nDIR="$(cd "$(dirname "$0")" && pwd)"\nexec "$DIR/%s" "$@"\n' "$BINARY" > ${{ matrix.script }}
+          chmod +x ${{ matrix.script }}
 
       - name: Collect release files (Unix)
         if: runner.os != 'Windows'
@@ -79,7 +107,7 @@ jobs:
           mkdir output
           cp AvantisChannelList.xlsx AvantisChannelList.ods dLiveChannelList.xlsx dLiveChannelList.ods MixingStationChannelList.xlsx ThirdParty-Licenses.txt LICENSE output/
           cp build/dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }} output/
-          cp start.sh output/
+          cp ${{ matrix.script }} output/
           cd output && zip -r ../dmt-v${{ github.event.inputs.mytag }}${{ github.event.inputs.suffix }}-${{ matrix.platform }}.zip .
 
       - name: Collect release files (Windows)

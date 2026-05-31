@@ -37,28 +37,37 @@ on:
         type: boolean
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has_targets: ${{ steps.set-matrix.outputs.has_targets }}
+    steps:
+      - id: set-matrix
+        run: |
+          INCLUDES='[]'
+          if [ "${{ inputs.linux }}" = "true" ]; then
+            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"ubuntu-latest","platform":"linux-x86_64","script":"start.sh"}]')
+          fi
+          if [ "${{ inputs.macosIntel }}" = "true" ]; then
+            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"macos-15-intel","platform":"macos-x86_64","script":"start.command"}]')
+          fi
+          if [ "${{ inputs.macosArm }}" = "true" ]; then
+            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"macos-latest","platform":"macos-arm64","script":"start.command"}]')
+          fi
+          if [ "${{ inputs.windows }}" = "true" ]; then
+            INCLUDES=$(echo "$INCLUDES" | jq '. += [{"os":"windows-latest","platform":"windows","script":""}]')
+          fi
+          echo "matrix={\"include\":$INCLUDES}" >> $GITHUB_OUTPUT
+          [ "$INCLUDES" = "[]" ] && echo "has_targets=false" >> $GITHUB_OUTPUT || echo "has_targets=true" >> $GITHUB_OUTPUT
+
   build:
-    if: |
-      (matrix.os == 'ubuntu-latest'    && inputs.linux)      ||
-      (matrix.os == 'macos-15-intel'   && inputs.macosIntel) ||
-      (matrix.os == 'macos-latest'     && inputs.macosArm)   ||
-      (matrix.os == 'windows-latest'   && inputs.windows)
+    needs: setup
+    if: needs.setup.outputs.has_targets == 'true'
     permissions:
       contents: write
     strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            platform: linux-x86_64
-            script: start.sh
-          - os: macos-15-intel
-            platform: macos-x86_64
-            script: start.command
-          - os: macos-latest
-            platform: macos-arm64
-            script: start.command
-          - os: windows-latest
-            platform: windows
+      matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
 
     runs-on: ${{ matrix.os }}
 

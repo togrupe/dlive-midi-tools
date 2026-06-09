@@ -134,48 +134,7 @@ Avantis Director 1.3x required for the import step.
 
 ---
 
-## Workflow C – Console → DAW (dLive / Avantis)
-
-Read current channel names and colors directly from a live console and generate DAW
-recording session files — no spreadsheet required.
-
-```mermaid
-flowchart TD
-    FOH["FOH Console\ndLive / Avantis"]
-
-    subgraph dmt["Channel List Manager"]
-        READ["Read Channel Names & Colors\nSysEx GET · MIDI/TCP · port 51325"]
-        MODELS["Build Channel Models"]
-        REAPER["Generate Reaper Session (.rpp)"]
-        TL["Generate Tracks Live Template (.template)"]
-    end
-
-    DAW["Recording Tools\nReaper / Tracks Live"]
-
-    FOH -->|"MIDI/TCP"| READ
-    READ --> MODELS
-    MODELS --> REAPER
-    MODELS --> TL
-    REAPER --> DAW
-    TL --> DAW
-```
-
-### Step Sequence
-
-| Step | Action |
-|------|--------|
-| C1a | Connect to console via MIDI/TCP |
-| C1b | Read channel name + color per channel via SysEx GET |
-| C2a | Generate Reaper session from channel data |
-| C2b | Generate Tracks Live template from channel data |
-
-**Configurable:** Channel range (start / end channel) is set in the tool before reading.
-
-**Prerequisites:** Console reachable at the configured IP address on port 51325.
-
----
-
-## Workflow D – Spreadsheet → Mixing Station → Console
+## Workflow C – Spreadsheet → Mixing Station → Console
 
 ### Idea & Background
 
@@ -185,8 +144,8 @@ It exposes an HTTP REST API that allows external tools — like dmt — to read 
 parameters without a direct MIDI/TCP connection to the console.
 
 This workflow is the Mixing Station equivalent of Workflow A. Instead of sending MIDI
-messages to a dLive or Avantis console, dmt sends HTTP POST requests to the Mixing Station
-app, which immediately forwards each change to the connected console.
+messages to a dLive or Avantis console via MIDI/TCP, dmt sends HTTP POST requests to the
+Mixing Station app, which immediately forwards each change to the connected console.
 
 **Typical scenario:** Pre-show or rehearsal preparation. You have built your channel list in
 the spreadsheet (names, colors, mute states, fader levels) and want to load it into the
@@ -206,13 +165,13 @@ surface work required.
 
 | Step | Action |
 |------|--------|
-| D1 | Prepare the channel list spreadsheet (names, colors, mute, fader levels) |
-| D2 | Start Mixing Station, connect to your console, enable HTTP REST API |
-| D3 | In dmt: select Mixing Station, choose console sub-type, enter host IP and port |
-| D4 | Click **Test Connection** to confirm the link |
-| D5 | Select the checkboxes for the parameters to write (Name, Color, Mute, Fader Level) |
-| D6 | Click **Open Spreadsheet and Start Writing Process** — dmt validates and writes |
-| D7 | Mixing Station applies each parameter to the connected console in real time |
+| C1 | Prepare the channel list spreadsheet (names, colors, mute, fader levels) |
+| C2 | Start Mixing Station, connect to your console, enable HTTP REST API |
+| C3 | In dmt: select Mixing Station, choose console sub-type, enter host IP and port |
+| C4 | Click **Test Connection** to confirm the link |
+| C5 | Select the checkboxes for the parameters to write (Name, Color, Mute, Fader Level) |
+| C6 | Click **Open Spreadsheet and Start Writing Process** — dmt validates and writes |
+| C7 | Mixing Station applies each parameter to the connected console in real time |
 
 > **Note:** Only the four parameters listed above are available for Mixing Station. All other
 > checkboxes (Phantom Power, Gain, Pad, DCA, Routing etc.) are automatically disabled when
@@ -328,11 +287,52 @@ Select the matching console sub-type (SQ / DM7 / Wing / M32/X32 / QU) in the Typ
 
 ---
 
+## Workflow D – Console → DAW (dLive / Avantis)
+
+Read current channel names and colors directly from a live console and generate DAW
+recording session files — no spreadsheet required.
+
+```mermaid
+flowchart TD
+    FOH["FOH Console\ndLive / Avantis"]
+
+    subgraph dmt["Channel List Manager"]
+        READ["Read Channel Names & Colors\nSysEx GET · MIDI/TCP · port 51325"]
+        MODELS["Build Channel Models"]
+        REAPER["Generate Reaper Session (.rpp)"]
+        TL["Generate Tracks Live Template (.template)"]
+    end
+
+    DAW["Recording Tools\nReaper / Tracks Live"]
+
+    FOH -->|"MIDI/TCP"| READ
+    READ --> MODELS
+    MODELS --> REAPER
+    MODELS --> TL
+    REAPER --> DAW
+    TL --> DAW
+```
+
+### Step Sequence
+
+| Step | Action |
+|------|--------|
+| D1a | Connect to console via MIDI/TCP |
+| D1b | Read channel name + color per channel via SysEx GET |
+| D2a | Generate Reaper session from channel data |
+| D2b | Generate Tracks Live template from channel data |
+
+**Configurable:** Channel range (start / end channel) is set in the tool before reading.
+
+**Prerequisites:** Console reachable at the configured IP address on port 51325.
+
+---
+
 ## Workflow E – Console → Mixing Station → DAW
 
 ### Idea & Background
 
-This workflow is the Mixing Station equivalent of Workflow C. Instead of reading channel
+This workflow is the Mixing Station equivalent of Workflow D. Instead of reading channel
 names and colors from a dLive or Avantis console via MIDI, dmt reads them from the Mixing
 Station REST API and generates a matching DAW recording session.
 
@@ -382,11 +382,11 @@ flowchart TD
 |------|--------|
 | E1 | Start Mixing Station, connect to console, confirm REST API is enabled |
 | E2 | In dmt: select Mixing Station, choose console sub-type, enter host IP and port |
-| E3 | Switch to the **Console to DAW** tab, set Start and End channel |
-| E4 | Click **Generate DAW Session(s) from Current Console Settings** |
-| E5 | dmt reads channel name + color per channel via HTTP GET (channels 1–99 max) |
-| E6 | dmt builds channel models and writes the Reaper (.rpp) or Tracks Live (.template) file |
-| E7 | Open the generated file in Reaper or Tracks Live |
+| E3a | Switch to the **Console to DAW** tab, set Start and End channel |
+| E3b | Click **Generate DAW Session(s) from Current Console Settings** |
+| E3c | dmt reads channel name + color per channel via HTTP GET (channels 1–99 max) |
+| E4 | dmt builds channel models and writes the Reaper (.rpp) or Tracks Live (.template) file |
+| E5 | Open the generated file in Reaper or Tracks Live |
 
 **Prerequisites:** Mixing Station running with REST API enabled on port 8080.
 
@@ -398,9 +398,9 @@ flowchart TD
 |---|----------|--------|--------|------------|
 | A | Spreadsheet → Console / DAW | .xlsx / .ods | dLive / Avantis + DAW | MIDI over TCP |
 | B | Spreadsheet → Director CSV | .xlsx / .ods | Director (offline) | CSV file |
-| C | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
-| D | Spreadsheet → Mixing Station | .xlsx / .ods | Console via Mixing Station | HTTP REST |
-| E | Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
+| C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
+| D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
+| E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
 
 ---
 

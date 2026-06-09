@@ -67,7 +67,7 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
 
-For the five supported workflows (Spreadsheet → Console / DAW, → Director CSV, Console → DAW, Mixing Station variants) with Mermaid flowcharts and step-by-step descriptions, see [Workflows & Overview](doc/workflows.md).
+For the five supported workflows (A: Spreadsheet → Console/DAW, B: → Director CSV, C: → Mixing Station → Console, D: Console → DAW, E: Console → Mixing Station → DAW) with Mermaid flowcharts and step-by-step descriptions, see [Workflows & Overview](doc/workflows.md).
 
 ## Support the Project ☕
 

@@ -221,20 +221,36 @@ User (Utilities tab button)
 
 ## Mixing Station REST API
 
+Mixing Station is a third-party app that runs on Android, iOS, macOS, or Windows and
+connects to a physical console over the local network. It exposes an HTTP REST API that
+dmt uses as an alternative transport layer — instead of sending MIDI over TCP directly to
+the console, dmt sends HTTP requests to Mixing Station, which forwards the changes to the
+connected hardware.
+
+This approach is used for consoles that are not natively supported by dmt's MIDI layer
+(SQ, DM7, Wing, M32/X32, QU). The Mixing Station app must be running, connected to the
+console, and have the HTTP REST API enabled before dmt can communicate with it.
+
+Default port: **8080**. Channel indices are 0-based in all paths.
+
 | Operation | Method | Path pattern | Notes |
 |-----------|--------|-------------|-------|
 | Get channel name | GET | `/console/data/get/ch.{N}.cfg.name/val` | 0-based channel index |
-| Get channel color | GET | `/console/data/get/ch.{N}.cfg.color/val` | Returns float; 0–7 enum |
+| Get channel color | GET | `/console/data/get/ch.{N}.cfg.color/val` | Returns float; console-specific integer |
 | Set channel name | POST | `/console/data/set/ch.{N}.cfg.name/val` | Max 6 characters |
-| Set channel color | POST | `/console/data/set/ch.{N}.cfg.color/val` | Integer 0–7 |
+| Set channel color | POST | `/console/data/set/ch.{N}.cfg.color/val` | Console-specific integer (see color maps) |
 | Set fader level | POST | `/console/data/set/ch.{N}.mix.lvl/val` | Float dB value |
 | Set mute | POST | `/console/data/set/ch.{N}.mix.on/val` | Bool: `true` = unmuted |
 | Test connection | GET | `/app/state` | Used by Test Connection button |
 
-### Color Enum
+### Color Maps
 
-| ID | Mixing Station | Spreadsheet value |
-|----|---------------|-------------------|
+Color IDs are console-specific. The tool selects the correct map based on the console type chosen in the UI.
+
+#### SQ
+
+| ID | Color | Spreadsheet value |
+|----|-------|-------------------|
 | 0 | Black | black |
 | 1 | Red | red |
 | 2 | Green | green |
@@ -244,10 +260,66 @@ User (Utilities tab button)
 | 6 | Magenta | purple |
 | 7 | White | white |
 
+#### DM7
+
+| ID | Color | Spreadsheet value |
+|----|-------|-------------------|
+| 0 | Purple | purple |
+| 2 | Red | red |
+| 4 | Yellow | yellow |
+| 5 | Blue | blue |
+| 6 | Cyan | light blue |
+| 7 | Green | green |
+| 10 | White | white |
+| 11 | Black | black |
+
+#### Wing
+
+| ID | Color | Spreadsheet value |
+|----|-------|-------------------|
+| 0 | Blue | blue |
+| 1 | Light Blue | light blue |
+| 4 | Green | green |
+| 6 | Yellow | yellow |
+| 7 | Brown / Black | black |
+| 8 | Red | red |
+| 10 | Purple | purple |
+
+#### M32 / X32
+
+| ID | Color | Spreadsheet value |
+|----|-------|-------------------|
+| 0 | Black | black |
+| 1 | Red | red |
+| 2 | Green | green |
+| 3 | Yellow | yellow |
+| 4 | Blue | blue |
+| 5 | Magenta | purple |
+| 6 | Cyan | light blue |
+| 7 | White | white |
+
+IDs 8–15 are inverted variants of 0–7 (same spreadsheet colors on read-back).
+
+#### QU
+
+| ID | Color | Spreadsheet value |
+|----|-------|-------------------|
+| 1 | Yellow | yellow |
+| 2 | Red | red |
+| 3 | Green | green |
+| 4 | Blue | blue |
+| 6 | Purple | purple |
+| 8 | White | white |
+
 ## Console Support Matrix
+
+Mixing Station acts as a bridge between dmt and the physical console. The console sub-type
+(SQ / DM7 / Wing / M32/X32 / QU) is selected separately in the UI and only affects the
+color mapping used for REST API calls.
 
 | Feature | dLive | Avantis | Mixing Station |
 |---------|-------|---------|----------------|
+| Supported sub-types | — | — | SQ · DM7 · Wing · M32/X32 · QU |
 | Max Channels | 128 | 64 | 99 |
 | Name & Color | Yes | Yes | Yes |
 | Mute | Yes | Yes | Yes |

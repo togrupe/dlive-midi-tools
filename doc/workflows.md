@@ -177,8 +177,49 @@ flowchart TD
 
 ## Workflow D – Spreadsheet → Mixing Station → Console
 
+### Idea & Background
+
+**Mixing Station** is a third-party app (Android / iOS / macOS / Windows) that runs on a
+tablet or laptop and connects to a physical console over the local WiFi or wired network.
+It exposes an HTTP REST API that allows external tools — like dmt — to read and write mixer
+parameters without a direct MIDI/TCP connection to the console.
+
+This workflow is the Mixing Station equivalent of Workflow A. Instead of sending MIDI
+messages to a dLive or Avantis console, dmt sends HTTP POST requests to the Mixing Station
+app, which immediately forwards each change to the connected console.
+
+**Typical scenario:** Pre-show or rehearsal preparation. You have built your channel list in
+the spreadsheet (names, colors, mute states, fader levels) and want to load it into the
+console in one click. Your console (SQ, DM7, Wing, M32/X32, or QU) is reachable through
+Mixing Station running on a tablet or laptop on the same network. dmt connects to Mixing
+Station and applies all selected parameters channel by channel — no manual console
+surface work required.
+
+### Prerequisites & Setup
+
+1. Install and start **Mixing Station** on a device that is on the same network as your console.
+2. In Mixing Station, connect to your console and enable the **REST API** (Settings → Remote Control → HTTP API). Note the host IP and port (default: 8080).
+3. In dmt Connection Settings, select **Mixing Station** as the console, choose the console sub-type (SQ / DM7 / Wing / M32/X32 / QU) from the Type dropdown, and enter the Mixing Station host IP and port.
+4. Use **Test Connection** to verify that dmt can reach the Mixing Station REST API before starting the write process.
+
+### Step Sequence
+
+| Step | Action |
+|------|--------|
+| D1 | Prepare the channel list spreadsheet (names, colors, mute, fader levels) |
+| D2 | Start Mixing Station, connect to your console, enable HTTP REST API |
+| D3 | In dmt: select Mixing Station, choose console sub-type, enter host IP and port |
+| D4 | Click **Test Connection** to confirm the link |
+| D5 | Select the checkboxes for the parameters to write (Name, Color, Mute, Fader Level) |
+| D6 | Click **Open Spreadsheet and Start Writing Process** — dmt validates and writes |
+| D7 | Mixing Station applies each parameter to the connected console in real time |
+
+> **Note:** Only the four parameters listed above are available for Mixing Station. All other
+> checkboxes (Phantom Power, Gain, Pad, DCA, Routing etc.) are automatically disabled when
+> Mixing Station is selected.
+
 Apply channel names, colors, mute states, and fader levels to a console via the
-**Mixing Station** app REST API. Currently supported console types: SQ and M32.
+**Mixing Station** app REST API. Supported console types: **SQ, DM7, Wing, M32/X32, QU**.
 
 ```mermaid
 flowchart TD
@@ -192,8 +233,8 @@ flowchart TD
     end
 
     ERR["Errors shown to user\nProcessing stops"]
-    MS["Mixing Station App\nAndroid / iOS / Desktop\nREST API · port 9000"]
-    FOH["FOH Console\nSQ · M32"]
+    MS["Mixing Station App\nAndroid / iOS / Desktop\nREST API · port 8080"]
+    FOH["FOH Console\nSQ · DM7 · Wing · M32/X32 · QU"]
 
     TMPL --> PARSE
     PARSE --> VALIDATE
@@ -209,11 +250,15 @@ flowchart TD
 | Parameter | REST Path | Notes |
 |-----------|-----------|-------|
 | Channel Name | `ch.{N}.cfg.name` | Max 6 characters |
-| Channel Color | `ch.{N}.cfg.color` | Integer 0–7 |
+| Channel Color | `ch.{N}.cfg.color` | Console-specific integer (see color maps below) |
 | Mute | `ch.{N}.mix.on` | `true` = unmuted |
 | Fader Level | `ch.{N}.mix.lvl` | Float dB value |
 
 ### Color Mapping
+
+Color IDs differ per console type. The spreadsheet color values are mapped to console-specific integers automatically when a console type is selected in the tool.
+
+#### SQ
 
 | ID | Mixing Station | Spreadsheet Value |
 |----|---------------|-------------------|
@@ -226,18 +271,91 @@ flowchart TD
 | 6 | Magenta | `purple` |
 | 7 | White | `white` |
 
-**Prerequisites:** Mixing Station running with REST API enabled on port 9000.
+#### DM7
+
+| ID | Mixing Station | Spreadsheet Value |
+|----|---------------|-------------------|
+| 0 | Purple | `purple` |
+| 2 | Red | `red` |
+| 4 | Yellow | `yellow` |
+| 5 | Blue | `blue` |
+| 6 | Cyan | `light blue` |
+| 7 | Green | `green` |
+| 10 | White | `white` |
+| 11 | Black | `black` |
+
+#### Wing
+
+| ID | Mixing Station | Spreadsheet Value |
+|----|---------------|-------------------|
+| 0 | Blue | `blue` |
+| 1 | Light Blue | `light blue` |
+| 4 | Green | `green` |
+| 6 | Yellow | `yellow` |
+| 7 | Brown / Black | `black` |
+| 8 | Red | `red` |
+| 10 | Purple | `purple` |
+
+#### M32 / X32
+
+| ID | Mixing Station | Spreadsheet Value |
+|----|---------------|-------------------|
+| 0 | Black | `black` |
+| 1 | Red | `red` |
+| 2 | Green | `green` |
+| 3 | Yellow | `yellow` |
+| 4 | Blue | `blue` |
+| 5 | Magenta | `purple` |
+| 6 | Cyan | `light blue` |
+| 7 | White | `white` |
+
+IDs 8–15 are inverted variants of 0–7 and map back to the same spreadsheet colors on read.
+
+#### QU
+
+| ID | Mixing Station | Spreadsheet Value |
+|----|---------------|-------------------|
+| 1 | Yellow | `yellow` |
+| 2 | Red | `red` |
+| 3 | Green | `green` |
+| 4 | Blue | `blue` |
+| 6 | Purple | `purple` |
+| 8 | White | `white` |
+
+**Prerequisites:** Mixing Station running with REST API enabled on port 8080.
 Host IP and port are configured in the Connection Settings of the tool.
+Select the matching console sub-type (SQ / DM7 / Wing / M32/X32 / QU) in the Type dropdown.
 
 ---
 
 ## Workflow E – Console → Mixing Station → DAW
 
+### Idea & Background
+
+This workflow is the Mixing Station equivalent of Workflow C. Instead of reading channel
+names and colors from a dLive or Avantis console via MIDI, dmt reads them from the Mixing
+Station REST API and generates a matching DAW recording session.
+
+**Typical scenario:** A show is already loaded on the console and you want a DAW session
+(Reaper or Tracks Live) that mirrors the current channel names and colors — without
+re-entering any data in a spreadsheet. dmt reads each channel from Mixing Station and
+builds the session file automatically.
+
+This is particularly useful for last-minute setups where the console state diverged from the
+original spreadsheet (last-minute channel swaps, renamed inputs on site) and you need the
+DAW to reflect what is actually on the desk.
+
+### Prerequisites & Setup
+
+1. Mixing Station must be running and connected to the console, with the REST API enabled.
+2. In dmt, select **Mixing Station**, choose the console sub-type, and enter host IP and port.
+3. Switch to the **Console to DAW** tab, set the channel range, and click **Generate DAW Session(s) from Current Console Settings**.
+
 Read channel names and colors from Mixing Station and generate DAW recording session files.
 
 ```mermaid
 flowchart TD
-    MS["Mixing Station App\nREST API · port 9000"]
+    MS["Mixing Station App\nREST API · port 8080"]
 
     subgraph dmt["Channel List Manager"]
         MSCLIENT["HTTP REST Client\nHTTP GET per channel"]
@@ -262,12 +380,15 @@ flowchart TD
 
 | Step | Action |
 |------|--------|
-| E1 | Connect to Mixing Station (host:port configured in tool) |
-| E2 | Read channel name + color per channel via HTTP GET |
-| E3 | Build channel models from REST responses |
-| E4 | Generate Reaper session and / or Tracks Live template |
+| E1 | Start Mixing Station, connect to console, confirm REST API is enabled |
+| E2 | In dmt: select Mixing Station, choose console sub-type, enter host IP and port |
+| E3 | Switch to the **Console to DAW** tab, set Start and End channel |
+| E4 | Click **Generate DAW Session(s) from Current Console Settings** |
+| E5 | dmt reads channel name + color per channel via HTTP GET (channels 1–99 max) |
+| E6 | dmt builds channel models and writes the Reaper (.rpp) or Tracks Live (.template) file |
+| E7 | Open the generated file in Reaper or Tracks Live |
 
-**Prerequisites:** Mixing Station running with REST API enabled on port 9000.
+**Prerequisites:** Mixing Station running with REST API enabled on port 8080.
 
 ---
 

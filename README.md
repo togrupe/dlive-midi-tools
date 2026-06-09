@@ -37,7 +37,7 @@ More information about future releases can be found in the [wiki](https://github
 * Sync channel names and colors between consoles and DAW for virtual soundchecks
 * Supports dLive & dLive Director (offline and online)
 * Supports Avantis & Avantis Director (offline and online)
-* Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level) — currently for SQ and M32/X32
+* Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level) — supports SQ, DM7, Wing, M32/X32, and QU consoles
 * Generate DAW session(s) from current console or Mixing Station settings
 * Generate CSV File incl. channel patching for Director CSV Import
 
@@ -188,7 +188,7 @@ Prerequisites:
 * dLive Firmware: 1.9x / 2.x
 * dLive Director: 1.9x / 2.x (Optional)
 * Avantis Firmware: 1.3x
-* Mixing Station (Android / iOS / Desktop) with REST API enabled, port 9000 (Optional)
+* Mixing Station (Android / iOS / Desktop) with REST API enabled, port 8080 (Optional)
 * Microsoft Excel (ideally Office 365) or LibreOffice Calc Spreadsheet (>25.x.x)
 * Reaper >= v6.x (Optional)
 * Tracks Live v1.3 (Optional)
@@ -247,7 +247,7 @@ The menu bar at the top of the window provides the following options:
 
 1. Select the console: `dLive`, `Avantis`, or `Mixing Station`
 
-2. Check the IP address. For dLive / Avantis also check the MIDI Port. For Mixing Station enter the host IP and port (default: 9000).
+2. Check the IP address. For dLive / Avantis also check the MIDI Port. For Mixing Station select the console type (SQ, DM7, Wing, M32/X32, QU), then enter the host IP and port (default: 8080).
 
 3. `Save` Persists the current settings (console, IP, midi-port) for the next start of the tool.
 

@@ -67,7 +67,15 @@ see [3rd Party Licenses](ThirdParty-Licenses.txt)
 
 For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
 
-For the five supported workflows (A: Spreadsheet → Console/DAW, B: → Director CSV, C: → Mixing Station → Console, D: Console → DAW, E: Console → Mixing Station → DAW) with Mermaid flowcharts and step-by-step descriptions, see [Workflows & Overview](doc/workflows.md).
+For Mermaid flowcharts and step-by-step descriptions of all workflows, see [Workflows & Overview](doc/workflows.md).
+
+| # | Workflow | Source | Target | Connection |
+|---|----------|--------|--------|------------|
+| A | Spreadsheet → Console / DAW | .xlsx / .ods | dLive / Avantis + DAW | MIDI over TCP |
+| B | Spreadsheet → Director CSV | .xlsx / .ods | Director (offline) | CSV file |
+| C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
+| D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
+| E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
 
 ## Support the Project ☕
 

@@ -111,6 +111,7 @@ graph TD
 | Reaper Creator | `src/dawsession/ReaperSessionCreator.py` | Generate Reaper `.rpp` recording session files |
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
+| PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using reportlab; `open_file()` sends it to the OS default PDF viewer for printing |
 | Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions |
 | Helper | `src/helper/Networking.py` | IP address validation utilities |
 
@@ -176,13 +177,32 @@ Console (MIDI over TCP)
 ### Console → DAW Session (Mixing Station)
 
 ```
-Mixing Station App (HTTP REST API · port 9000)
+Mixing Station App (HTTP REST API · port 8080)
     → MixingStationClient.get(ch.N.cfg.color)  (per channel)
     → MixingStationClient.get(ch.N.cfg.name)   (per channel)
     → MixingStationHandler.get_channel_data
     → Data Models (ChannelListEntry)
     → Reaper / Tracks Live Session Creator
     → .rpp / .template file
+```
+
+### Console → PDF (dLive / Avantis)
+
+```
+Console (MIDI over TCP)
+    → Color.get_color_channel  (SysEx GET per channel)
+    → Name.get_name_channel    (SysEx GET per channel)
+    → PdfExporter.export_pdf   (channel list as table, color cells)
+    → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
+```
+
+### Console → PDF (Mixing Station)
+
+```
+Mixing Station App (HTTP REST API · port 8080)
+    → MixingStationHandler.get_channel_data  (name · color per channel)
+    → PdfExporter.export_pdf   (channel list as table, color cells)
+    → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
 ```
 
 ### Utilities Tab → Console
@@ -325,6 +345,7 @@ color mapping used for REST API calls.
 | Mute | Yes | Yes | Yes |
 | Fader Level | Yes | Yes | Yes |
 | Console to DAW (read name + color) | Yes | Yes | Yes |
+| Export / Print as PDF | Yes | Yes | Yes |
 | Phantom / Pad / Gain (Local) | Yes | Yes | No |
 | Phantom / Pad / Gain (DX1/DX3) | Yes | Yes | No |
 | Phantom / Pad / Gain (SLink/DX2) | Yes | No | No |

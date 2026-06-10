@@ -39,6 +39,7 @@ More information about future releases can be found in the [wiki](https://github
 * Supports Avantis & Avantis Director (offline and online)
 * Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level) — supports SQ, DM7, Wing, M32/X32, and QU consoles
 * Generate DAW session(s) from current console or Mixing Station settings
+* Print channel list or export it as a PDF directly from the console or Mixing Station
 * Generate CSV File incl. channel patching for Director CSV Import
 
 ## Software Liability Warning
@@ -58,6 +59,7 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * odfpy - supports odf format
 * openpyxl - supports xlsx format
 * numpy - array computing
+* reportlab - PDF generation
 * pyinstaller - Binary creator
 
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
@@ -335,7 +337,26 @@ Options:
 
 Click `Generate DAW Session(s) from Current Console Settings`
 
-12. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
+12. **Print / Export Channel List as PDF** — also available in the Console to DAW tab. Reads the current channel list directly from the console or Mixing Station and produces a formatted PDF — no spreadsheet required.
+
+   Two buttons are available:
+
+   | Button | Behaviour |
+   |--------|-----------|
+   | `Export Channel List as PDF` | Asks for a save location and writes a PDF file |
+   | `Print Channel List` | Generates a PDF to a temporary file and opens it in the system's default PDF viewer for printing |
+
+   The channel range (Start / End) configured in the Settings section above applies to both buttons.
+
+   **Columns in the PDF:**
+
+   | Column | dLive / Avantis | Mixing Station |
+   |--------|-----------------|----------------|
+   | Ch | Yes | Yes |
+   | Name | Yes | Yes |
+   | Color | Yes — colored cell | Yes — colored cell |
+
+13. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
 
 > **_NOTE:_** Utilities are not available when Mixing Station is selected — all buttons are disabled in that case.
 
@@ -399,7 +420,13 @@ Feature Release
   - Spreadsheet → Mixing Station: Name, Color, Mute, Fader Level
   - Console to DAW from Mixing Station: reads channel names and colors (up to 99 channels)
   - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
+  - Supported console sub-types: SQ, DM7, Wing, M32/X32, QU — each with its own color mapping
   - Utilities tab is automatically disabled when Mixing Station is selected
+- **Print / Export Channel List as PDF** — available in the Console to DAW tab:
+  - `Export Channel List as PDF` — reads current channel list from the console or Mixing Station and saves a formatted PDF to a chosen location
+  - `Print Channel List` — same read, opens the PDF in the system's default PDF viewer for direct printing
+  - Channel color is rendered as a colored cell in the PDF
+  - No spreadsheet required; uses the channel Start / End range selectors in the tab
 
 #### Improvements
 

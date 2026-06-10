@@ -53,6 +53,7 @@ from parameters.channels.Helpers import (
 )
 from mixingstation.MixingStationClient import MixingStationClient
 from mixingstation.MixingStationHandler import handle_ms_channels, get_channel_data as ms_get_channel_data
+from export import PdfExporter
 from persistence.Persistence import read_persisted_ms_port
 
 
@@ -142,8 +143,10 @@ class MainController:
         self.view.btn_clear_all.configure(command=self.view.clear_all_checkboxes)
         self.view.btn_open_spreadsheet.configure(command=self.on_browse_files_thread)
 
-        # Tab 2 action button
+        # Tab 2 action buttons
         self.view.btn_console_to_daw.configure(command=self.on_console_to_daw_thread)
+        self.view.btn_export_pdf.configure(command=self.on_export_pdf_thread)
+        self.view.btn_print_channels.configure(command=self.on_print_channels_thread)
 
         # Tab 3 utility buttons
         self.view.btn_reset_dca.configure(
@@ -366,6 +369,14 @@ class MainController:
         bg_thread = threading.Thread(target=self._get_data_from_console)
         bg_thread.start()
 
+    def on_export_pdf_thread(self):
+        bg_thread = threading.Thread(target=lambda: self._read_and_export_pdf(print_mode=False))
+        bg_thread.start()
+
+    def on_print_channels_thread(self):
+        bg_thread = threading.Thread(target=lambda: self._read_and_export_pdf(print_mode=True))
+        bg_thread.start()
+
     # ------------------------------------------------------------------
     # Business logic – Console to DAW
     # ------------------------------------------------------------------
@@ -503,6 +514,97 @@ class MainController:
             showinfo(message='Reading from console done, session(s) created!')
         else:
             showerror(message="Nothing to do, please select at least one output option.")
+
+    # ------------------------------------------------------------------
+    # Business logic – Print / Export Channel List as PDF
+    # ------------------------------------------------------------------
+
+    def _read_and_export_pdf(self, print_mode=False):
+        app_data = self.context.get_app_data()
+        app_data.set_midi_channel(
+            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
+        self.context.set_app_data(app_data)
+
+        start_channel = int(self.view.var_current_console_startChannel.get()) - 1
+        end_channel = int(self.view.var_current_console_endChannel.get())
+
+        if start_channel >= end_channel:
+            error_msg = (f"Start Channel {start_channel + 1} must be less than "
+                         f"End Channel {end_channel}.")
+            showerror(message=error_msg)
+            return
+
+        use_mixing_station = self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES
+        console_type = self.view.get_effective_console()
+
+        self.view.reset_status()
+        self.view.reset_progress()
+        self.view.advance_progress_connection()
+        self.view.root.update()
+
+        try:
+            if use_mixing_station:
+                ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
+                self.context.set_ms_client(ms_client)
+                self.view.set_status("Reading channel data from Mixing Station...")
+                self.view.root.update()
+                channel_data = ms_get_channel_data(ms_client, start_channel, end_channel, console_type)
+            elif self.context.get_network_connection_allowed():
+                ip_address = self.view.get_ip()
+                if not is_valid_ip_address(ip_address):
+                    showerror(message="Invalid IP-Address")
+                    return
+                self.context.set_output(self._connect_to_console(ip_address))
+                self.view.set_status("Reading channel colors from console...")
+                self.view.root.update()
+                data_color = get_color_channel(self.context, start_channel, end_channel)
+                self.view.set_status("Reading channel names from console...")
+                self.view.root.update()
+                channel_data = get_name_channel(self.context, data_color, start_channel, end_channel)
+                self.context.get_output().close()
+            else:
+                return
+        except Exception as e:
+            error_msg = f"Failed to read channel data: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        if print_mode:
+            filepath = PdfExporter.make_temp_path()
+        else:
+            self.view.set_status("Choose a file location...")
+            filepath = filedialog.asksaveasfilename(
+                title="Save Channel List PDF",
+                defaultextension=".pdf",
+                filetypes=[("PDF files", "*.pdf")],
+                initialfile=f"channel-list-{console_type.lower().replace('/', '-')}.pdf",
+            )
+            if not filepath:
+                self.view.set_status("Export cancelled.")
+                return
+
+        try:
+            self.view.set_status("Generating PDF...")
+            self.view.root.update()
+            PdfExporter.export_pdf(filepath, channel_data, console_type)
+        except Exception as e:
+            error_msg = f"Failed to generate PDF: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        self.view.advance_progress_connection()
+
+        if print_mode:
+            self.view.set_status("Opening for print...")
+            PdfExporter.open_file(filepath)
+            showinfo(message="Channel list opened for printing.")
+        else:
+            self.view.set_status(f"PDF saved: {os.path.basename(filepath)}")
+            showinfo(message=f"Channel list exported to:\n{filepath}")
 
     # ------------------------------------------------------------------
     # Business logic – Spreadsheet to Console / DAW

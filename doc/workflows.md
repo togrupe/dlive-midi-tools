@@ -392,6 +392,54 @@ flowchart TD
 
 ---
 
+## Channel List Print & Export
+
+Print or export the current channel list as a PDF file directly from the console or Mixing
+Station — no spreadsheet required.
+
+### Idea & Background
+
+After a show is set up on the console, it is often useful to have a printed or archived copy
+of the channel list — for documentation, for the monitor engineer, or as a reference during
+setup. This feature reads the live channel list directly from the console (the same read path
+as Workflows D and E) and produces a formatted, printable PDF.
+
+Two variants are available:
+
+| Button | Behaviour |
+|--------|-----------|
+| **Export Channel List as PDF** | Asks for a save location and writes the PDF to disk |
+| **Print Channel List** | Saves the PDF to a temporary file and opens it in the system's default PDF viewer for direct printing |
+
+Both buttons are found in the **Console to DAW** tab. The channel Start / End range selectors
+in that tab control which channels are included.
+
+### PDF Content
+
+The PDF contains a table with one row per channel. Columns depend on the console type:
+
+| Column | dLive / Avantis | Mixing Station |
+|--------|-----------------|----------------|
+| Ch | Yes | Yes |
+| Name | Yes | Yes |
+| Color | Yes — colored cell background | Yes — colored cell background |
+
+Both console paths read name and color only — the same data available via the read-back
+path (MIDI SysEx for dLive / Avantis; REST GET for Mixing Station).
+
+### Step Sequence
+
+| Step | Action |
+|------|--------|
+| 1 | Ensure the console or Mixing Station is reachable (use **Test Connection** if unsure) |
+| 2 | Switch to the **Console to DAW** tab, set **Channel Start** and **End** |
+| 3a | Click **Export Channel List as PDF** → choose a save location → PDF is written |
+| 3b | *or* Click **Print Channel List** → PDF opens in the system PDF viewer → print from there |
+
+**Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station).
+
+---
+
 ## Workflow Summary
 
 | # | Workflow | Source | Target | Connection |
@@ -401,6 +449,7 @@ flowchart TD
 | C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
+| — | Console → PDF (Print / Export) | dLive / Avantis or Mixing Station | PDF file / printer | MIDI over TCP or HTTP REST |
 
 ---
 

@@ -558,11 +558,13 @@ class MainView:
         btn_row = ctk.CTkFrame(export_frame, fg_color="transparent")
         self.btn_export_pdf = ctk.CTkButton(
             btn_row,
-            text='Export Channel List as PDF')
+            text='Export Channel List as PDF',
+            fg_color="#8E44AD", hover_color="#6C3483")
         self.btn_export_pdf.pack(side="left", padx=5)
         self.btn_print_channels = ctk.CTkButton(
             btn_row,
-            text='Print Channel List')
+            text='Print Channel List',
+            fg_color="#8E44AD", hover_color="#6C3483")
         self.btn_print_channels.pack(side="left", padx=5)
         btn_row.grid(row=1, column=0, padx=10, pady=8)
         export_frame.pack(side="top", fill="x", padx=10, pady=8)

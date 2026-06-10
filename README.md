@@ -111,7 +111,7 @@ Older versions see [archive](doc/download-archive.md)
 
 
 ## Input file / The Spreadsheet Template
-Example spreadsheet files for dLive: [**dLiveChannelList.xlsx**](dLiveChannelList.xlsx) and Avantis: [**AvantisChannelList.xlsx**](AvantisChannelList.xlsx) can be found in the root folder. 
+Example spreadsheet files for dLive: [**dLiveChannelList.xlsx**](dLiveChannelList.xlsx), Avantis: [**AvantisChannelList.xlsx**](AvantisChannelList.xlsx), and Mixing Station: [**MixingStationChannelList.xlsx**](MixingStationChannelList.xlsx) can be found in the root folder. 
 By default, channels 1-128 (dLive) and 1-64 (Avantis) are available in the sheets. If you need less, 
 just delete the channels you don't want to process. <br>
 
@@ -337,7 +337,7 @@ Options:
 
 Click `Generate DAW Session(s) from Current Console Settings`
 
-12. **Print / Export Channel List as PDF** — also available in the Console to DAW tab. Reads the current channel list directly from the console or Mixing Station and produces a formatted PDF — no spreadsheet required.
+12. **Print / Export Channel List as PDF** — available in the **Utilities** tab. Reads the current channel list directly from the console or Mixing Station and produces a formatted PDF — no spreadsheet required.
 
    Two buttons are available:
 
@@ -422,7 +422,7 @@ Feature Release
   - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
   - Supported console sub-types: SQ, DM7, Wing, M32/X32, QU — each with its own color mapping
   - Utilities tab is automatically disabled when Mixing Station is selected
-- **Print / Export Channel List as PDF** — available in the Console to DAW tab:
+- **Print / Export Channel List as PDF** — available in the **Utilities** tab:
   - `Export Channel List as PDF` — reads current channel list from the console or Mixing Station and saves a formatted PDF to a chosen location
   - `Print Channel List` — same read, opens the PDF in the system's default PDF viewer for direct printing
   - Channel color is rendered as a colored cell in the PDF

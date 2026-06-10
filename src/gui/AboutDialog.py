@@ -28,7 +28,7 @@ ABOUT_CONTENT = [
     {"type": "spacer"},
     {"type": "multirow", "label": "Used Python Modules:", "values": ["numpy", "mido", "pandas", "xlrd", "openpyxl", "odfpy", "reathon", "customtkinter", "pyinstaller"]},
     {"type": "spacer"},
-    {"type": "row",      "label": "Contact/Feedback:",   "value": "dmt@liveworks-vt.de"},
+    {"type": "multirow",      "label": "Contact/Feedback:",   "values": ["dmt@liveworks-vt.de", "https://github.com/togrupe/dlive-midi-tools/discussions"]},
 ]
 
 

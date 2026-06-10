@@ -165,7 +165,7 @@ surface work required.
 
 | Step | Action |
 |------|--------|
-| C1 | Prepare the channel list spreadsheet (names, colors, mute, fader levels) |
+| C1 | Prepare the channel list spreadsheet (names, colors, mute, fader levels) — use [MixingStationChannelList.xlsx](../MixingStationChannelList.xlsx) as the starting template |
 | C2 | Start Mixing Station, connect to your console, enable HTTP REST API |
 | C3 | In dmt: select Mixing Station, choose console sub-type, enter host IP and port |
 | C4 | Click **Test Connection** to confirm the link |
@@ -411,8 +411,8 @@ Two variants are available:
 | **Export Channel List as PDF** | Asks for a save location and writes the PDF to disk |
 | **Print Channel List** | Saves the PDF to a temporary file and opens it in the system's default PDF viewer for direct printing |
 
-Both buttons are found in the **Console to DAW** tab. The channel Start / End range selectors
-in that tab control which channels are included.
+Both buttons are found in the **Utilities** tab. The channel Start / End range selectors
+in the Console to DAW tab control which channels are included.
 
 ### PDF Content
 
@@ -432,7 +432,7 @@ path (MIDI SysEx for dLive / Avantis; REST GET for Mixing Station).
 | Step | Action |
 |------|--------|
 | 1 | Ensure the console or Mixing Station is reachable (use **Test Connection** if unsure) |
-| 2 | Switch to the **Console to DAW** tab, set **Channel Start** and **End** |
+| 2 | Switch to the **Utilities** tab |
 | 3a | Click **Export Channel List as PDF** → choose a save location → PDF is written |
 | 3b | *or* Click **Print Channel List** → PDF opens in the system PDF viewer → print from there |
 

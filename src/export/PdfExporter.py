@@ -11,25 +11,35 @@ import subprocess
 import sys
 import tempfile
 
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from fpdf import FPDF, XPos, YPos
 
-# (background color, text color) per channel color name
+# (background RGB, text RGB) per channel color name
 _CELL_COLORS = {
-    "black":      (colors.Color(0.12, 0.12, 0.12), colors.white),
-    "red":        (colors.Color(0.80, 0.12, 0.12), colors.white),
-    "green":      (colors.Color(0.12, 0.62, 0.12), colors.white),
-    "blue":       (colors.Color(0.12, 0.27, 0.80), colors.white),
-    "light blue": (colors.Color(0.28, 0.62, 0.92), colors.black),
-    "yellow":     (colors.Color(0.95, 0.88, 0.12), colors.black),
-    "purple":     (colors.Color(0.50, 0.12, 0.72), colors.white),
-    "white":      (colors.Color(0.95, 0.95, 0.95), colors.black),
-    "grey":       (colors.Color(0.50, 0.50, 0.50), colors.white),
-    "orange":     (colors.Color(0.92, 0.52, 0.12), colors.black),
+    "black":      ((31,  31,  31),  (255, 255, 255)),
+    "red":        ((204,  31,  31), (255, 255, 255)),
+    "green":      ((31,  158,  31), (255, 255, 255)),
+    "blue":       ((31,   69, 204), (255, 255, 255)),
+    "light blue": ((71,  158, 235), (0,   0,   0)),
+    "yellow":     ((242, 224,  31), (0,   0,   0)),
+    "purple":     ((128,  31, 184), (255, 255, 255)),
+    "white":      ((242, 242, 242), (0,   0,   0)),
+    "grey":       ((128, 128, 128), (255, 255, 255)),
+    "orange":     ((235, 133,  31), (0,   0,   0)),
 }
+
+_COL_W = (12, 65, 35)  # mm: Ch, Name, Color
+_ROW_H = 6             # mm
+
+
+def _header_row(pdf):
+    pdf.set_fill_color(46, 46, 46)
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_draw_color(179, 179, 179)
+    pdf.set_font("Helvetica", style="B", size=9)
+    pdf.cell(_COL_W[0], _ROW_H, "Ch",    border=1, align="C", fill=True)
+    pdf.cell(_COL_W[1], _ROW_H, "Name",  border=1, align="C", fill=True)
+    pdf.cell(_COL_W[2], _ROW_H, "Color", border=1, align="C", fill=True,
+             new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
 
 def export_pdf(filepath, channel_data, console_type):
@@ -38,61 +48,65 @@ def export_pdf(filepath, channel_data, console_type):
     channel_data: list of dicts with keys:
         dliveChannel (int), name (str), color (str)
     """
-    doc = SimpleDocTemplate(
-        filepath,
-        pagesize=A4,
-        leftMargin=1.5 * cm, rightMargin=1.5 * cm,
-        topMargin=1.5 * cm, bottomMargin=1.5 * cm,
-    )
-    styles = getSampleStyleSheet()
-    elements = []
+    pdf = FPDF(orientation="P", unit="mm", format="A4")
+    pdf.set_auto_page_break(auto=False)
+    pdf.set_margins(15, 15, 15)
+    pdf.add_page()
 
-    elements.append(Paragraph(f"Channel List — {console_type}", styles["Title"]))
+    page_bottom = pdf.h - 15
+
+    # Title
+    pdf.set_font("Helvetica", style="B", size=14)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(0, 8, f"Channel List - {console_type}", align="C",
+             new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+
+    # Date
     date_str = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M")
-    elements.append(Paragraph(f"Generated: {date_str}", styles["Normal"]))
-    elements.append(Spacer(1, 0.4 * cm))
+    pdf.set_font("Helvetica", size=9)
+    pdf.set_text_color(80, 80, 80)
+    pdf.cell(0, 5, f"Generated: {date_str}",
+             new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+    pdf.ln(4)
 
-    rows = [["Ch", "Name", "Color"]]
-    for d in channel_data:
+    _header_row(pdf)
+
+    pdf.set_font("Helvetica", size=8)
+    for i, d in enumerate(channel_data):
+        if pdf.get_y() + _ROW_H > page_bottom:
+            pdf.add_page()
+            _header_row(pdf)
+            pdf.set_font("Helvetica", size=8)
+
+        ch_num = str(d["dliveChannel"])
+        name = str(d.get("name", ""))
         color_raw = str(d.get("color", "")).lower().strip()
-        rows.append([str(d["dliveChannel"]), str(d.get("name", "")), color_raw if color_raw else "—"])
 
-    table = Table(rows, colWidths=[1.2 * cm, 6.5 * cm, 3.5 * cm], repeatRows=1)
+        alt_bg = (242, 242, 242) if i % 2 == 0 else (255, 255, 255)
+        pdf.set_draw_color(179, 179, 179)
 
-    style_cmds = [
-        ("BACKGROUND",    (0, 0), (-1, 0),  colors.Color(0.18, 0.18, 0.18)),
-        ("TEXTCOLOR",     (0, 0), (-1, 0),  colors.white),
-        ("FONTNAME",      (0, 0), (-1, 0),  "Helvetica-Bold"),
-        ("FONTSIZE",      (0, 0), (-1, 0),  9),
-        ("FONTSIZE",      (0, 1), (-1, -1), 8),
-        ("ALIGN",         (0, 0), (-1, -1), "CENTER"),
-        ("VALIGN",        (0, 0), (-1, -1), "MIDDLE"),
-        ("GRID",          (0, 0), (-1, -1), 0.4, colors.Color(0.70, 0.70, 0.70)),
-        ("LEFTPADDING",   (0, 0), (-1, -1), 4),
-        ("RIGHTPADDING",  (0, 0), (-1, -1), 4),
-        ("TOPPADDING",    (0, 0), (-1, -1), 3),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-    ]
+        pdf.set_fill_color(*alt_bg)
+        pdf.set_text_color(0, 0, 0)
+        pdf.cell(_COL_W[0], _ROW_H, ch_num, border=1, align="C", fill=True)
+        pdf.cell(_COL_W[1], _ROW_H, name,   border=1, align="C", fill=True)
 
-    # Alternating row background for Ch and Name columns
-    for i in range(1, len(rows)):
-        bg = colors.Color(0.95, 0.95, 0.95) if i % 2 == 0 else colors.white
-        style_cmds.append(("BACKGROUND", (0, i), (1, i), bg))
-
-    # Per-channel color cell
-    for i, d in enumerate(channel_data, start=1):
-        color_raw = str(d.get("color", "")).lower().strip()
         if color_raw in _CELL_COLORS:
             cell_bg, cell_fg = _CELL_COLORS[color_raw]
-            style_cmds.append(("BACKGROUND", (2, i), (2, i), cell_bg))
-            style_cmds.append(("TEXTCOLOR",  (2, i), (2, i), cell_fg))
+            pdf.set_fill_color(*cell_bg)
+            pdf.set_text_color(*cell_fg)
+        else:
+            pdf.set_fill_color(*alt_bg)
+            pdf.set_text_color(0, 0, 0)
 
-    table.setStyle(TableStyle(style_cmds))
-    elements.append(table)
-    elements.append(Spacer(1, 0.5 * cm))
-    elements.append(Paragraph("Generated by dlive-midi-tools", styles["Normal"]))
+        pdf.cell(_COL_W[2], _ROW_H, color_raw or "-", border=1, align="C", fill=True,
+                 new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    doc.build(elements)
+    pdf.ln(5)
+    pdf.set_font("Helvetica", size=8)
+    pdf.set_text_color(128, 128, 128)
+    pdf.cell(0, 5, "Generated by dlive-midi-tools", align="C")
+
+    pdf.output(filepath)
 
 
 def make_temp_path():

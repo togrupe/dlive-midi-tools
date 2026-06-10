@@ -111,7 +111,7 @@ graph TD
 | Reaper Creator | `src/dawsession/ReaperSessionCreator.py` | Generate Reaper `.rpp` recording session files |
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
-| PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using reportlab; `open_file()` sends it to the OS default PDF viewer for printing |
+| PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using fpdf2; `open_file()` sends it to the OS default PDF viewer for printing |
 | Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions |
 | Helper | `src/helper/Networking.py` | IP address validation utilities |
 

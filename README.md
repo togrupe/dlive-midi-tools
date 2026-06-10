@@ -59,7 +59,8 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * odfpy - supports odf format
 * openpyxl - supports xlsx format
 * numpy - array computing
-* reportlab - PDF generation
+* fpdf2 - PDF generation
+* customtkinter - GUI framework
 * pyinstaller - Binary creator
 
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
@@ -422,13 +423,15 @@ Feature Release
   - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
   - Supported console sub-types: SQ, DM7, Wing, M32/X32, QU — each with its own color mapping
   - Utilities tab is automatically disabled when Mixing Station is selected
+  - Spreadsheet template [MixingStationChannelList.xlsx](MixingStationChannelList.xlsx) added
 - **Print / Export Channel List as PDF** — available in the **Utilities** tab:
   - `Export Channel List as PDF` — reads current channel list from the console or Mixing Station and saves a formatted PDF to a chosen location
   - `Print Channel List` — same read, opens the PDF in the system's default PDF viewer for direct printing
   - Channel color is rendered as a colored cell in the PDF
-  - No spreadsheet required; uses the channel Start / End range selectors in the tab
+  - No spreadsheet required; uses the channel Start / End range selectors in the Console to DAW tab
 
 #### Improvements
+- PDF generation migrated from reportlab to **fpdf2** (MIT license)
 
 #### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.

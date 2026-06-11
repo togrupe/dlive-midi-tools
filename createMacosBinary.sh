@@ -14,6 +14,7 @@ cp dLiveChannelList.ods out
 cp AvantisChannelList.xlsx out
 cp AvantisChannelList.ods out
 cp MixingStationChannelList.xlsx out
+cp MixingStationChannelList.ods out
 if [ "$2" == "test" ]; then
   cp testing/dLiveChannelListTesting.xlsx out
   cp testing/dLiveChannelListTesting.ods out

@@ -30,6 +30,10 @@ Reaper or Tracks Live can be generated.
 
 More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
 
+**Main Window**
+
+<img src="doc/gui.png" alt="Main Window" width="700"/>
+
 ## Contents
 
 - [Use Cases](#use-cases)

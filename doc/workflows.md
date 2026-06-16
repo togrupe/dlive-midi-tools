@@ -215,71 +215,7 @@ flowchart TD
 
 ### Color Mapping
 
-Color IDs differ per console type. The spreadsheet color values are mapped to console-specific integers automatically when a console type is selected in the tool.
-
-#### SQ
-
-| ID | Mixing Station | Spreadsheet Value |
-|----|---------------|-------------------|
-| 0 | Black | `black` |
-| 1 | Red | `red` |
-| 2 | Green | `green` |
-| 3 | Blue | `blue` |
-| 4 | Cyan | `light blue` |
-| 5 | Yellow | `yellow` |
-| 6 | Magenta | `purple` |
-| 7 | White | `white` |
-
-#### DM7
-
-| ID | Mixing Station | Spreadsheet Value |
-|----|---------------|-------------------|
-| 0 | Purple | `purple` |
-| 2 | Red | `red` |
-| 4 | Yellow | `yellow` |
-| 5 | Blue | `blue` |
-| 6 | Cyan | `light blue` |
-| 7 | Green | `green` |
-| 10 | White | `white` |
-| 11 | Black | `black` |
-
-#### Wing
-
-| ID | Mixing Station | Spreadsheet Value |
-|----|---------------|-------------------|
-| 0 | Blue | `blue` |
-| 1 | Light Blue | `light blue` |
-| 4 | Green | `green` |
-| 6 | Yellow | `yellow` |
-| 7 | Brown / Black | `black` |
-| 8 | Red | `red` |
-| 10 | Purple | `purple` |
-
-#### M32 / X32
-
-| ID | Mixing Station | Spreadsheet Value |
-|----|---------------|-------------------|
-| 0 | Black | `black` |
-| 1 | Red | `red` |
-| 2 | Green | `green` |
-| 3 | Yellow | `yellow` |
-| 4 | Blue | `blue` |
-| 5 | Magenta | `purple` |
-| 6 | Cyan | `light blue` |
-| 7 | White | `white` |
-
-IDs 8–15 are inverted variants of 0–7 and map back to the same spreadsheet colors on read.
-
-#### QU
-
-| ID | Mixing Station | Spreadsheet Value |
-|----|---------------|-------------------|
-| 1 | Yellow | `yellow` |
-| 2 | Red | `red` |
-| 3 | Green | `green` |
-| 4 | Blue | `blue` |
-| 6 | Purple | `purple` |
-| 8 | White | `white` |
+Color IDs differ per console type and are mapped automatically when a console sub-type is selected in the tool. For the full per-console color tables see [Architecture Overview — Color Maps](architecture.md#color-maps).
 
 **Prerequisites:** Mixing Station running with REST API enabled on port 8080.
 Host IP and port are configured in the Connection Settings of the tool.

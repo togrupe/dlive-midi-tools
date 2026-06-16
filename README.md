@@ -1,11 +1,11 @@
 # dlive-midi-tools
 ## Description
-Python-based tool to prepare channel lists for Allen &amp; Heath dLive, Avantis, and Mixing Station.
+Python-based tool to prepare channel lists for Allen & Heath dLive, Avantis, and Mixing Station.
 Based on a spreadsheet the following parameters can be preconfigured and written to real consoles via MIDI/TCP,
 to dLive/Avantis Director via CSV import, or to the Mixing Station app via REST API. Additionally, from the same
 spreadsheet or the current console/Mixing Station settings a DAW (Digital Audio Workstation) recording session for
 Reaper or Tracks Live can be generated.
-- Name & Color for: 
+- Name & Color for:
   - Channel
   - DCA
   - Aux
@@ -18,9 +18,9 @@ Reaper or Tracks Live can be generated.
 - Channel Mute
 - Fader Level
 - Channel to Main Mix Routing
-- Channel to Group Routing (dlive only)
+- Channel to Group Routing (dLive only)
 - DCA Assignments
-- 48V Phantom Power (Local, DX1 & DX3, SLink) 
+- 48V Phantom Power (Local, DX1 & DX3, SLink)
 - PAD (Local, DX1 & DX3, SLink)
 - Gain (Local, DX1 & DX3, SLink)
 - Mute Group Assignments (dLive only)
@@ -28,7 +28,18 @@ Reaper or Tracks Live can be generated.
 - HPF Value (dLive only)
 - Source & Socket Patching (via dLive Director CSV Import)
 
-More information about future releases can be found in the [wiki](https://github.com/togrupe/dlive-midi-tools/wiki)
+More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
+
+## Contents
+
+- [Use Cases](#use-cases)
+- [Overview](#overview)
+- [Download](#download)
+- [Input file / The Spreadsheet Template](#input-file--the-spreadsheet-template)
+- [Usage](#usage)
+- [Feedback](#feedback)
+- [Troubleshooting](#troubleshooting)
+- [Release Notes](#release-notes)
 
 ## Use Cases
 
@@ -49,7 +60,6 @@ This software is provided "as is," without warranty of any kind, express or impl
 Furthermore, this software may be subject to known or unknown bugs, errors, and vulnerabilities, which may result in unexpected behavior or security breaches. The authors or copyright holders shall not be liable for any damages or losses resulting from such bugs, errors, or vulnerabilities.
 
 By using this software, you acknowledge and agree that you do so at your own risk and that you will be solely responsible for any damages or losses that may arise from such use.
-
 
 ## Used Python Libraries
 * mido - Midi Library
@@ -92,52 +102,48 @@ Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
 ## Download
 | Version | Date       | OS                                   | Download                                                                                   | Release Notes  | MD5 Checksum                     |
 |---------|------------|--------------------------------------|--------------------------------------------------------------------------------------------|----------------|----------------------------------|
-| v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip ) | [Link](#v2120) | 861622a542446db242c93d00ea3cf99a |
+| v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2120) | 861622a542446db242c93d00ea3cf99a |
 |         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip) |                | cc6fd1f297b123158d2591841b7d5898 |
 |         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip) |                | 2b09f614d9b6c517e33be5b4d5fe7a6e|
-| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
+| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
 |         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip) |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
 |         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip) |                | 970930d359582cea6266cd304265dfbc |
-| v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](#v2100) | 3be97642cafebdb830129d68aaadf6cf |
+| v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2100) | 3be97642cafebdb830129d68aaadf6cf |
 |         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip) |                | 207d57b612978fd6cfa2e57f1bb59f02 |
 |         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip) |                | 2116d00f16b7da40d8b2464636578b9f |
 
 Older versions see [archive](doc/download-archive.md)
 
-(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (arm64) processors. Newer versions of macOS should have it installed by default. 
+(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (arm64) processors. Newer versions of macOS should have it installed by default.
     Keep in mind that the first start can take a while.<br><br>
     If you see the following message: <br><br> ![Message](doc/message.png) <br><br>
     Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)<br><br>
     More infos below in [Usage](#usage)
 
-
 ## Input file / The Spreadsheet Template
-Example spreadsheet files for dLive: [**dLiveChannelList.xlsx**](dLiveChannelList.xlsx), Avantis: [**AvantisChannelList.xlsx**](AvantisChannelList.xlsx), and Mixing Station: [**MixingStationChannelList.xlsx**](MixingStationChannelList.xlsx) can be found in the root folder. 
-By default, channels 1-128 (dLive) and 1-64 (Avantis) are available in the sheets. If you need less, 
-just delete the channels you don't want to process. <br>
+Example spreadsheet files for dLive: [**dLiveChannelList.xlsx**](dLiveChannelList.xlsx), Avantis: [**AvantisChannelList.xlsx**](AvantisChannelList.xlsx), and Mixing Station: [**MixingStationChannelList.xlsx**](MixingStationChannelList.xlsx) can be found in the root folder.
+By default, channels 1-128 (dLive) and 1-64 (Avantis) are available in the sheets. If you need less,
+just delete the channels you don't want to process.
 
-You can also write in blocks. e.g. 
+You can also write in blocks, e.g.:
 * CH1-16
 * CH25-32
 * CH97-128
 
-in this case, the channels not mentioned are not affected, this works as well for the  `Groups`.
+Channels not mentioned are not affected. This works for `Groups` as well.
 
-Empty lines in between are **not** supported. <br>
+Empty lines in between are **not** supported.
 
+Microsoft Excel and LibreOffice Calc can be used to write/save the sheets.
+Please save your changes in `*.xlsx` or `*.ods` format.
 
+> **_NOTE:_** Be careful when copying data between sheets — cell references from the source sheet may be copied instead of values. Always paste values only.
 
-Microsoft Excel and LibreOffice Calc Spreadsheet can be used to write/save the sheets.
-Please make sure that you save your changes in the (*.xlsx or *.ods) format.
-
-> **_NOTE:_** Please be careful when you copy data from one sheet to another sheet, sometimes references to cells in the other spreadsheet are copied, which can lead to problems.
-Please only paste values of the cells, which is possible in MS Excel and Calc Spreadsheet
-
-> **_NOTE:_**  You can add additional columns, like 'Mic Stand', 'Mic/DI', 'Sub-core Patching' etc., but please make sure that the first line keeps the existing fields including their names, otherwise the data can´t be parsed properly. If you want, you can also reorder the columns to your needs.
+> **_NOTE:_** You can add additional columns (e.g. 'Mic Stand', 'Mic/DI', 'Sub-core Patching'), but keep the first row's existing field names intact so the parser can find them. Columns can be reordered freely.
 
 ### Channel Overview
 
-> **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
+> **_NOTE:_** The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
 
 ![Channels](doc/channels/excel_channels.png)
 
@@ -145,7 +151,7 @@ More details about the `Channels` columns can be found [here](doc/channels/READM
 
 ### Sockets Overview
 
-> **Note** <br> The `Sockets` tab represents the individual **sockets** and **NOT** the channels socket link. There is no synchronisation between the `Channels` and `Sockets` tab.
+> **Note:** The `Sockets` tab represents individual **sockets**, not the channel socket link. There is no synchronisation between the `Channels` and `Sockets` tabs.
 
 ![Sockets](doc/sockets/excel_sockets.png)
 
@@ -157,595 +163,35 @@ More details about the `Sockets` columns can be found [here](doc/sockets/README.
 More details about the `Groups` columns can be found [here](doc/groups/README.md)
 
 ### Mixer Config
-This is a report of used busses. It does not change the "Mixer Config". <br> Please have a look at the yellow box. <br>
-It can help you to set the "Mixer Config" properly.
+This is a report of used buses. It does not change the "Mixer Config". Please have a look at the yellow box — it can help you set the "Mixer Config" properly.
 
 ![mixerconfig](doc/mixerconfig/excel_mixerconfig.png)
 
-# Example Generated Reaper Recording Session
-If you select the "Generate Reaper Recording Session" checkbox, 
-the columns `Name`, `Color`, `Recording`, and `Record Arm` are considered for the template generation process. 
-
-![Reaper](doc/reaper/reaper_demo.png)
-
-# Example Generated Tracks Live Template
-If you select the "Generate Tracks Live Template" checkbox, 
-the columns `Name`, `Color`, `Recording`, and `Record Arm` are considered for the template generation process.
-
-![Trackslive](doc/trackslive/trackslive_demo.png)
-
-The tool generates a Tracks Live template (*.template), which can be used to create a recording session in Tracks Live
-
-![TracksliveOpenTemplate](doc/trackslive/trackslive_open_template.png)
-
-Click on `Open Template` and select the generated file.
-
-
-## Settings on the console
-The `MIDI Channel` setting on dLive under `Utils/Shows -> Control -> MIDI` should be set to: `12 to 16`, which is default.
-
-If you want to change the preconfigured MIDI port, you can change it in the Graphical User Interface according to your dLive settings. 
-
-## Default IP-Address
-The default dLive Mixrack IP-Address is: 192.168.1.70. This IP-Address is preconfigured in the scripts. If you want to 
-change it, you can edit the field `ip` in the file: dliveConstants.py or during runtime within the Graphical User Interface.  
-
-Please make sure that your Ethernet or Wi-Fi interface has an IP-Address in the same subnet. e.g. IP: 192.168.1.10 / Subnet: 255.255.255.0
- 
-
 ## Usage
-Prerequisites:
-* Windows >= 10 / macOS >= Monterey
-* dLive Firmware: 1.9x / 2.x
-* dLive Director: 1.9x / 2.x (Optional)
-* Avantis Firmware: 1.3x
-* Mixing Station (Android / iOS / Desktop) with REST API enabled, port 8080 (Optional)
-* Microsoft Excel (ideally Office 365) or LibreOffice Calc Spreadsheet (>25.x.x)
-* Reaper >= v6.x (Optional)
-* Tracks Live v1.3 (Optional)
-* Python 3.12 (Optional, if you want to build the software yourself)
 
-To run the tool, you have two options:<br><br>
-A: Use an available download (see above), unzip it, start the dmt tool and continue with Step 4 <br> If the tool does not start automatically: Try it with "Open with -> Terminal" or run it from terminal.<br><br>
-    
-   If you see the following message: <br><br> ![Overview](doc/message.png) <br><br>
-   Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway ![Overview](doc/preferences_privacy.png)<br><br>
-   Enter your Password and click <br><br> ![Overview](doc/open-anyway.png) <br><br>
-   Continue with Step 4. <br><br>
-    
-B: Build it your own from scratch, using the following steps.<br>
+For complete step-by-step instructions, console and network settings, DAW session examples, and utilities reference, see the **[Usage Guide](doc/usage.md)**.
 
-B1. Before you run the script, please run the following command to download the required Python modules using `pip`. Please make sure `pip` is installed.
+**Quick start:**
 
-`pip install -r requirements.txt`
+A: Download the latest release (see [Download](#download) above), unzip, and run the `dmt` executable. On macOS, if you see a security warning go to System Preferences → Privacy and Security → Open Anyway.
 
-B2. Run the script with the following command: 
+B: Build from source:
 
-`cd src` <br>
-`python3 Main.py`
+```
+pip install -r requirements.txt
+cd src && python3 Main.py
+```
 
-B3. (Optional) If you want to make a binary out of it, please do the following: 
-
-    B3.1 Installation of pyinstaller
-
-    `pip install pyinstaller`
-
-    B3.2 Create a onefile binary (works for Windows and macOS)
-
-    `pyinstaller -y --onefile -w ./src/Main.py`
-
-
-4. Afterwards, the following window appears. This can take a couple of seconds.
-
-![Gui](doc/gui.png)
-
-__Recommendation__: Please back up your current show file, just to be on the safe side if something goes wrong.
-
-> **_Recommended Workflow:_** If socket patching is to be performed, I recommend first exporting to CSV, then importing into Director. This lays the foundation for further MIDI-based data processing, where you can override over and over.
-
-## Menu Bar
-
-The menu bar at the top of the window provides the following options:
-
-**Settings**
-- `Dark Mode` — toggles between dark and light appearance. The selected mode is persisted across restarts.
-
-**Help**
-- `Documentation` — opens the online documentation in your browser
-- `Donate ☕` — opens the donation page
-- `About` — shows version information
-- `Close` — exits the application
-
-1. Select the console: `dLive`, `Avantis`, or `Mixing Station`
-
-2. Check the IP address. For dLive / Avantis also check the MIDI Port. For Mixing Station select the console type (SQ, DM7, Wing, M32/X32, QU), then enter the host IP and port (default: 8080).
-
-3. `Save` Persists the current settings (console, IP, midi-port) for the next start of the tool.
-
-4. `Director`, sets the IP to 127.0.0.1, to use Director locally on the same machine. Director has to be started before. You can also write to a Director instance running on a different machine, in this case, please use the external IP-Address of this machine where Director is already started and running. (In case of connection issues, please check the firewall rules or disable it temporarily)
-
-5. `Default` Sets the IP back to default: 192.168.1.70.
-
-6. `Test Connection` Tries to establish a test connection to the console. In both cases (successful/failed) you will be informed by a pop-up.
-
-The tool has currently the following modes:
-* Spreadsheet to Console / DAW (Continue with next Step) - Reads from a spreadsheet into console or to a DAW Session.
-* Console to DAW (Continue with Step 10) - Reads from the console and writes a DAW session.
-* Utilities (Continue with Step 12) - Direct console operations without a spreadsheet.
-
-Choose which mode you want to use:
-
-<img alt="tabs" src="doc/tabs.png" width="300"/>
-
-7. Select the spreadsheet columns you want to write and then select `Write to Audio Console or Director`.
-   
-   `Select All` and `Clear` select or deselect all checkboxes.
-
-8. If you also want to create a DAW Session template (Reaper or Tracks Live), set the corresponding tick. The session files `<input-spreadsheet-file>-reaper-recording-template.rpp` / `<input-spreadsheet-file>-trackslive-recording.template` 
-   will be generated into the directory from where the spreadsheet has been chosen. In the `Channels` tab, you can configure which channel shall be recorded and "record armed". The patching is 1:1 (derived from the channel number) <br><br>
-   
-   The following DAW-based options are available: <br>
-   * Disable Track Numbering <br>
-   * Disable Track Coloring <br>
-   * An additional custom track prefix can also be added.<br>
-   * Add two additional mono busses to record your mixing sum.
-
-<br><br>
-> **_NOTE:_**  You can also use the tool to create only the DAW session file (Reaper or Tracks Live), in case you use a different audio console. In this case, disable the checkbox "Write to Audio Console or Director", choose your DAW and continue with Step 10.<br><br>
-
-
-9. `Generate Director CSV (Columns: Name, Color, Source, Socket, Gain, Pad, Phantom)` Generates a CSV file for Director incl. Name, Color, Patching, Gain, Pad, Phantom, using the Director CSV Import function, you can use this as a baseline for the MIDI based parameters. 
-
-<img alt="director-main-system" src="doc/directorcsv/director-main-system.png" width="150"/>
-
-<img alt="director-import-export" src="doc/directorcsv/director-import-export.png" width="300"/>
-
-> **_NOTE:_** This feature uses the columns Name, Color, Source, Socket, Gain, Pad, Phantom from the `Channels` Tab. 
-
-
-
-10. Click the button `Open Spreadsheet and Start Writing Process` to select the spreadsheet. Afterwards, the selected action(s) start automatically.
-
-   Before processing, the tool automatically validates the spreadsheet. The validator checks:
-   - Channel and group **names** for invalid characters
-   - **Colors** against the supported color list
-   - **Fader levels** against the supported value list
-   - **HPF values** for valid range
-   - **Channel numbers** against the console's maximum (128 for dLive, 64 for Avantis)
-   - **Source field** values per console type (dLive / Avantis)
-   - **Mute**, **HPF On**, **DCA**, **Mute Group**, **Group Routing** toggle values
-   - **Phantom**, **Pad**, and **Gain** values in the Sockets tab
-
-   If any validation errors are found, a summary is shown and processing is aborted.
-
-   **Recommendation:** Please test it first with the delivered spreadsheet to make sure everything works properly.
-
-11. Console to DAW - Generates a DAW session from the current console or Mixing Station settings. This can be triggered even later, when an existing show is available. This process doesn´t need a spreadsheet.
-The generated files `current-console-reaper-recording-template.rpp` (Reaper) / `current-console-trackslive-recording.template` (Tracks Live) are being created in the folder you have chosen.
-
-The source is determined automatically from the console selection in the Connection Settings:
-* **dLive / Avantis** — channel names and colors are read via MIDI/TCP (SysEx)
-* **Mixing Station** — channel names and colors are read via REST API (`GET /console/data/get/ch.N.cfg.name|color/val`); channel range is limited to 1–99
-
-<img alt="consoletodaw" src="doc/console-to-daw.png" width="600"/>
-
-Options:
-   * Choose `Start` and `End` channel to be used for DAW generation.
-   * Disable Track Numbering <br>
-   * Disable Track Coloring <br>
-   * An additional custom track prefix can also be added.<br>
-   * Add two additional mono busses to record your mixing sum.
-
-Click `Generate DAW Session(s) from Current Console Settings`
-
-12. **Print / Export Channel List as PDF** — available in the **Utilities** tab. Reads the current channel list directly from the console or Mixing Station and produces a formatted PDF — no spreadsheet required.
-
-   Two buttons are available:
-
-   | Button | Behaviour |
-   |--------|-----------|
-   | `Export Channel List as PDF` | Asks for a save location and writes a PDF file |
-   | `Print Channel List` | Generates a PDF to a temporary file and opens it in the system's default PDF viewer for printing |
-
-   The channel range (Start / End) configured in the Settings section above applies to both buttons.
-
-   **Columns in the PDF:**
-
-   | Column | dLive / Avantis | Mixing Station |
-   |--------|-----------------|----------------|
-   | Ch | Yes | Yes |
-   | Name | Yes | Yes |
-   | Color | Yes — colored cell | Yes — colored cell |
-
-13. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
-
-> **_NOTE:_** Utilities are not available when Mixing Station is selected — all buttons are disabled in that case.
-
-### Reset
-
-| Button | Description | Console Support |
-|--------|-------------|-----------------|
-| RESET all DCA Assignments | Removes all DCA assignments from every channel | dLive & Avantis |
-| RESET all Mute Group Assignments | Removes all Mute Group assignments from every channel | dLive only |
-| RESET all Main Assignments | Removes all Main Mix assignments from every channel | dLive & Avantis |
-
-### Mute
-
-| Button | Description | Console Support |
-|--------|-------------|-----------------|
-| MUTE all Inputs | Mutes all input channels | dLive & Avantis |
-| MUTE all Outputs | Mutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
-| UNMUTE all Inputs | Unmutes all input channels | dLive & Avantis |
-| UNMUTE all Outputs | Unmutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
-
-> **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
-
-### Fader
-
-| Button | Description | Console Support |
-|--------|-------------|-----------------|
-| Set all Input Faders to 0 dB | Sets all input channel faders to unity gain (0 dB) — useful as a soundcheck starting point | dLive & Avantis |
-| Set all Input Faders to -inf | Sets all input channel faders to minimum (-inf) — useful for a silent start | dLive & Avantis |
-
-### Preamp Safety
-
-| Button | Description | Console Support |
-|--------|-------------|-----------------|
-| Phantom Power OFF (all Sockets) | Switches 48V phantom power off on all sockets (Local, DX1, DX3 for dLive; Local, SLink for Avantis) — use before changing microphones | dLive & Avantis |
-
-13. If something goes wrong, please check the Python console or the `main.log`
-
-If you find any issues, please let me know. New ideas are welcome. 
-
-Have fun!
+**Prerequisites:** Windows ≥ 10 / macOS ≥ Monterey · dLive firmware 1.9x/2.x · Avantis firmware 1.3x · Mixing Station with REST API enabled (optional) · Microsoft Excel or LibreOffice Calc · Reaper ≥ v6.x (optional) · Tracks Live v1.3 (optional)
 
 ## Feedback
-If you want to give feedback, report an issue or contribute (new ideas, coding, testing, documentation) please use the following mail address: <br>
-dmt@liveworks-vt.de or the following [Link](https://github.com/togrupe/dlive-midi-tools/discussions)
+If you want to give feedback, report an issue, or contribute (new ideas, coding, testing, documentation) please use:
+dmt@liveworks-vt.de or the [GitHub Discussions](https://github.com/togrupe/dlive-midi-tools/discussions)
 
 ## Troubleshooting
 
-| Problem                                   | Possible Solution                                                                                                                                                                                                                                           | 
-|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Console to DAW Feature seems to hang      | Please make sure, the MIDI Channel on the Audio console fits to the settings in the tool. <br> You can find the MIDI Settings under "Utils/Shows -> Control -> Midi"                                                                                        |
-| Input to Group Routing for MGrp1 is weird | Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. To avoid this, I recommend using a "-" by default for all routings, and then an "x" or a " " where routing is required. |  
+See [Troubleshooting](doc/troubleshooting.md).
 
 ## Release Notes
 
-### v2.13.0
-
-Feature Release
-
-#### New Features
-- **Mixing Station support** via REST API (HTTP port 8080):
-  - Spreadsheet → Mixing Station: Name, Color, Mute, Fader Level
-  - Console to DAW from Mixing Station: reads channel names and colors (up to 99 channels)
-  - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
-  - Supported console sub-types: SQ, DM7, Wing, M32/X32, QU — each with its own color mapping
-  - Utilities tab is automatically disabled when Mixing Station is selected
-  - Spreadsheet template [MixingStationChannelList.xlsx](MixingStationChannelList.xlsx) added
-- **Print / Export Channel List as PDF** — available in the **Utilities** tab:
-  - `Export Channel List as PDF` — reads current channel list from the console or Mixing Station and saves a formatted PDF to a chosen location
-  - `Print Channel List` — same read, opens the PDF in the system's default PDF viewer for direct printing
-  - Channel color is rendered as a colored cell in the PDF
-  - No spreadsheet required; uses the channel Start / End range selectors in the Console to DAW tab
-
-#### Improvements
-- PDF generation migrated from reportlab to **fpdf2** (MIT license)
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.12.0
-
-Feature Release
-
-#### New Features
-- UFX Name & Color Support for Avantis
-- Spreadsheet Validator — validates channel and group names, colors, fader levels, HPF range, channel range, Source field (dLive & Avantis)
-- Utilities Tab with the following actions (direct console communication, no spreadsheet required):
-  - RESET all DCA Assignments
-  - RESET all Mute Group Assignments (dLive only)
-  - RESET all Main Mix Assignments
-  - MUTE all Inputs / UNMUTE all Inputs
-  - MUTE all Outputs / UNMUTE all Outputs
-  - Set all Input Faders to 0 dB
-  - Set all Input Faders to -inf
-  - Phantom Power OFF (all Sockets)
-
-#### Improvements
-- Redesigned UI — fits on 1440×900 screens without scrolling (also works on Full HD and larger)
-- Dark / Light mode toggle added (via Settings menu), persisted across restarts
-- Connection Settings consolidated into a single row (Console, MIDI Channel, IP and buttons in one line)
-- Status bar redesigned with horizontal layout (label left, progress right)
-- Allowed character validation for channel and group names
-- Source field validation per console type (dLive / Avantis)
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.11.0
-
-Feature Release
-
-#### New Features
-- Channel to Group (Mono/Stereo) Assignments
-
-#### Improvements
-- Enabled flag is now also effective for CSV Generation
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.10.0
-
-Feature Release
-
-#### New Features
-- "Enabled" Field introduced - to include or exclude lines from data processing
-
-#### Improvements
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.9.0
-
-Feature Release
-
-#### New Features
-- UFX Name & Color Support 
-
-#### Improvements
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.8.3
-
-Maintenance Release - Python 3.12 based binaries for all platforms
-
-#### New Features
-
-#### Improvements
-- Apple-Silicon (arm64) version officially added
-- Binaries build on Python 3.12 (macOS Intel & Apple-Silicon, Windows) to be more future proven
-- 3rd party libraries updated to be more future proven
-- Documentation improved
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-- On some systems, there was a strange mouse click behaviour
-- Pad handling issue fixed
-- Button size fixed
-
-#### Known issues
-
-### v2.8.2
-
-Maintenance Release
-
-#### New Features
-
-#### Improvements
-- Hint for CSV Patch via Director only shown once per session.
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.8.0
-
-Feature & Maintenance Release
-
-#### New Features
-- dLive Director CSV Support for V2.00
-
-#### Improvements
-- Code refactoring
-
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-
-### v2.7.0
-
-Feature & Maintenance Release
-
-#### New Features
-- Console to DAW Recording Session
-
-
-#### Improvements
-- Switched to tab based GUI
-- Handling of invalid IP-Addresses
-- Repository reorganized
-
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.6.0
-
-Feature & Maintenance Release
-
-#### New Features
-- Tracks Live Support (Template Generation)
-- Possibility to disable track coloring
-- Channel to Main Mix Assignments
-- Bypass feature for DCAs and Mute Groups added
-
-
-#### Improvements
-- Support for spaces in track names for Reaper
-
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
-- HPF on, HPF value, and Mute Groups for Avantis are currently not possible due to technical limitations on API.
-
-#### Issues fixed
-
-#### Known issues
-
-### v2.5.0
-
-Feature & Maintenance Release
-
-#### New Features
-- Bypass feature on channels, sockets, and groups sheet added
-- Possibility to disable track numbering
-- Possibility to add two additional master tracks
-- Possibility to add a custom track prefix
-
-#### Improvements
-- Gain value mapping improved - gain values are now more accurate.
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
-
-#### Issues fixed
-
-#### Known issues
-
-
-### v2.4.1
-
-Maintenance Release
-
-#### Issues fixed
-- spreadsheet template formula fixed at cell AT2
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
-
-### v2.4.0
-
-Feature & Maintenance Release
-
-#### New Features
-- DCA Name & Color
-- Aux Name & Color
-- Group Name & Color
-- Matrices Name & Color
-- FX Sends Name & Color
-- FX Returns Name & Color
-- Current Processing Action now shown in UI
-- Test Connection Button added
-- Select All Button added
-- Clear Button added
-
-#### Improvements
-- HPF Value Formula improved
-- Channels > 64 skipped for Avantis
-- UI Error Handling improved
-- Repository reorganized
-- Spreadsheet improved (Mixer Config report, DCA names) 
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
-
-#### Issues fixed
-
-#### Known issues
-
-
-
-### v2.3.0
-
-Feature Release
-
-#### New Features
-- Fader Level Support
-- Gain Support
-- DCA Support
-- Mute Group Support (dLive only)
-- HPF On Support (dLive only)
-- HPF Value Support (dLive only)
-
-#### Improvements
-- Progress Bar improved
-- Infobox for missing Avantis features added
-- Checkbox Groups introduced
-- Checkbox Group "Select All" added
-- IP-Address Label is now dynamic
-- Processing accelerated
-
-
-#### Technical Limitations
-- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently due to technical limitation not possible.
-- HPF on, HPF value and Mute Groups for Avantis due to technical limitation currently not possible.
-
-#### Issues fixed
-
-#### Known issues
-
-
-### v2.2.0
-
-Feature Release
-
-#### New Features
-- Avantis support
-- Director button introduced
-- Save button added, to persist data
-- Default button added, to set back the ip to default
-- Recordable & Record Arm feature added
-- Reaper template is now generated right next to the chosen spreadsheet with the same name as prefix
-
-#### Technical Limitations
-- DX2 (Pad/Phantom) for Avantis via SLink is currently due to technical limitation not possible.
-
-#### Issues fixed
-- Temporary GUI freeze fixed
-
-#### Improvements
-- Robustness improved
-
-#### Known issues
+See [Release Notes](doc/release-notes.md) for the full version history.

@@ -46,7 +46,7 @@ graph TD
 
     subgraph External["External Systems"]
         Console["dLive / Avantis Console\nor Director offline\nMIDI over TCP · IP:51325"]
-        MSApp["Mixing Station App\nREST API · HTTP:9000"]
+        MSApp["Mixing Station App\nREST API · HTTP:8080"]
         Reaper["Reaper DAW"]
         TracksLive["Tracks Live DAW"]
         Director["dLive Director /\nAvantis Director"]

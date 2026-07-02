@@ -15,7 +15,7 @@ dmt is a free, open-source tool that turns a single spreadsheet into a configure
 You've got the channel list in Excel — but the console still needs programming channel by channel. Then the DAW session. Then the PDF for the crew. **dmt eliminates that repetitive work.**
 
 - **One spreadsheet, everything else follows.** Push names, colors, fader levels, routing, gain, phantom power, and more to your console live over the network.
-- **No more console ↔ DAW mismatch.** dmt syncs console and DAW from the same source — what you see in Reaper matches what's on the desk.
+- **No more console ↔ DAW mismatch.** dmt syncs console and DAW from the same source — what you see in Reaper or Tracks Live matches what's on the desk.
 - **Prepare offline, deploy in seconds.** Do all prep at home; connect at the venue and push the full channel list in one click.
 - **Multi-console, multi-platform.** dLive, Avantis, or Mixing Station (SQ, DM7, Wing, M32/X32, QU) — covered.
 - **FOH, monitors, broadcast — one push.** Deploy the same channel list to all consoles. No copy-paste between desks, no name mismatches between positions.
@@ -29,17 +29,10 @@ You've got the channel list in Excel — but the console still needs programming
 - **Live Sound engineers, touring & festival crews** who want fast, reliable and reproducible channel-list deployment across shows
 - **Recording engineers** syncing console and DAW for virtual soundchecks
 
----
-
-## For the Geeks
-
-Python-based tool to prepare channel lists for Allen & Heath dLive, Avantis, and Mixing Station.
-Based on a spreadsheet the following parameters can be preconfigured and written to real consoles via MIDI/TCP,
-to dLive/Avantis Director via CSV import, or to the Mixing Station app via REST API. Additionally, from the same
-spreadsheet or the current console/Mixing Station settings a DAW (Digital Audio Workstation) recording session for
-Reaper or Tracks Live can be generated.
+**[⬇ Download the latest version](#download)**
 
 ---
+
 
 ## What You Can Configure
 
@@ -61,7 +54,6 @@ Reaper or Tracks Live can be generated.
 
 - [Why dmt?](#why-dmt)
 - [Who Is It For?](#who-is-it-for)
-- [For the Geeks](#for-the-geeks)
 - [What You Can Configure](#what-you-can-configure)
 - [Overview](#overview)
 - [Download](#download)
@@ -81,13 +73,13 @@ For a detailed architectural overview including component diagram, data flows, a
 
 For flowcharts and step-by-step descriptions of all workflows, see [Workflows & Overview](doc/workflows.md).
 
-| # | Workflow | Source | Target | Connection |
-|---|----------|--------|--------|------------|
-| A | Spreadsheet → Console / DAW | .xlsx / .ods | dLive / Avantis + DAW | MIDI over TCP |
-| B | Spreadsheet → Director CSV | .xlsx / .ods | Director (offline) | CSV file |
-| C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
-| D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
-| E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
+| # | Workflow | Input | Output |
+|---|----------|-------|--------|
+| A | Spreadsheet → Console / DAW | .xlsx / .ods | dLive / Avantis + DAW |
+| B | Spreadsheet → Director CSV | .xlsx / .ods | Director (offline) |
+| C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station |
+| D | Console → DAW | dLive / Avantis | Reaper / Tracks Live |
+| E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live |
 
 More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
 
@@ -123,7 +115,7 @@ Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
 
 Older versions see [archive](doc/download-archive.md)
 
-(*) Hints for Apple-Silicon: In combination with Rosetta 2 also compatible for Apple-Silicon (arm64) processors. Newer versions of macOS should have it installed by default.
+(*) For Apple Silicon Macs, prefer the native **arm64** build. The x86_64 (Intel) build also runs via Rosetta 2, which newer versions of macOS have installed by default — but the native build is recommended.
     Keep in mind that the first start can take a while.<br><br>
     If you see the following message: <br><br> ![Message](doc/message.png) <br><br>
     Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)<br><br>

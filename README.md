@@ -1,42 +1,68 @@
-# dlive-midi-tools
-## Description
-Python-based tool to prepare channel lists for Allen & Heath dLive, Avantis, and Mixing Station.
-Based on a spreadsheet the following parameters can be preconfigured and written to real consoles via MIDI/TCP,
-to dLive/Avantis Director via CSV import, or to the Mixing Station app via REST API. Additionally, from the same
-spreadsheet or the current console/Mixing Station settings a DAW (Digital Audio Workstation) recording session for
-Reaper or Tracks Live can be generated.
-- Name & Color for:
-  - Channel
-  - DCA
-  - Aux
-  - Group
-  - Matrices
-  - FX Sends
-  - FX Returns
-  - UFX Sends
-  - UFX Returns
-- Channel Mute
-- Fader Level
-- Channel to Main Mix Routing
-- Channel to Group Routing (dLive only)
-- DCA Assignments
-- 48V Phantom Power (Local, DX1 & DX3, SLink)
-- PAD (Local, DX1 & DX3, SLink)
-- Gain (Local, DX1 & DX3, SLink)
-- Mute Group Assignments (dLive only)
-- HPF On (dLive only)
-- HPF Value (dLive only)
-- Source & Socket Patching (via dLive Director CSV Import)
+# dlive-midi-tools (dmt)
 
-More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
+**Stop typing channel names twice. Stop making mistakes at midnight. Stop building DAW sessions by hand.**
+
+dmt is a free, open-source tool that turns a single spreadsheet into a configured mixing console, a ready-to-record DAW session, and a printable channel list — all in seconds.
 
 **Main Window**
 
 <img src="doc/gui.png" alt="Main Window" width="700"/>
 
+---
+
+## Why dmt?
+
+You've got the channel list in Excel — but the console still needs programming channel by channel. Then the DAW session. Then the PDF for the crew. **dmt eliminates that repetitive work.**
+
+- **One spreadsheet, everything else follows.** Push names, colors, fader levels, routing, gain, phantom power, and more to your console live over the network.
+- **No more console ↔ DAW mismatch.** dmt syncs console and DAW from the same source — what you see in Reaper matches what's on the desk.
+- **Prepare offline, deploy in seconds.** Do all prep at home; connect at the venue and push the full channel list in one click.
+- **Multi-console, multi-platform.** dLive, Avantis, or Mixing Station (SQ, DM7, Wing, M32/X32, QU) — covered.
+- **FOH, monitors, broadcast — one push.** Deploy the same channel list to all consoles. No copy-paste between desks, no name mismatches between positions.
+- **PDF channel lists on demand.** Pull the current console state and export a print-ready PDF instantly — no re-typing, no formatting.
+
+
+---
+
+## Who Is It For?
+
+- **Live Sound engineers, touring & festival crews** who want fast, reliable and reproducible channel-list deployment across shows
+- **Recording engineers** syncing console and DAW for virtual soundchecks
+
+---
+
+## For the Geeks
+
+Python-based tool to prepare channel lists for Allen & Heath dLive, Avantis, and Mixing Station.
+Based on a spreadsheet the following parameters can be preconfigured and written to real consoles via MIDI/TCP,
+to dLive/Avantis Director via CSV import, or to the Mixing Station app via REST API. Additionally, from the same
+spreadsheet or the current console/Mixing Station settings a DAW (Digital Audio Workstation) recording session for
+Reaper or Tracks Live can be generated.
+
+---
+
+## What You Can Configure
+
+- **Name & Color** for Channels, DCAs, Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns
+- **Channel Mute** and **Fader Level**
+- **Channel to Main Mix Routing**
+- **Channel to Group Routing** (dLive only)
+- **DCA Assignments**
+- **48V Phantom Power** (Local, DX1 & DX3, SLink)
+- **PAD** (Local, DX1 & DX3, SLink)
+- **Gain** (Local, DX1 & DX3, SLink)
+- **Mute Group Assignments** (dLive only)
+- **HPF On / HPF Value** (dLive only)
+- **Source & Socket Patching** (via dLive Director CSV Import)
+
+---
+
 ## Contents
 
-- [Use Cases](#use-cases)
+- [Why dmt?](#why-dmt)
+- [Who Is It For?](#who-is-it-for)
+- [For the Geeks](#for-the-geeks)
+- [What You Can Configure](#what-you-can-configure)
 - [Overview](#overview)
 - [Download](#download)
 - [Input file / The Spreadsheet Template](#input-file--the-spreadsheet-template)
@@ -45,46 +71,15 @@ More information about past and future releases can be found in the [Release Not
 - [Troubleshooting](#troubleshooting)
 - [Release Notes](#release-notes)
 
-## Use Cases
-
-* Single source (spreadsheet) for channel lists in single or multi-console situations
-* Better overview of all channels during preparation phase
-* Sync channel names and colors between consoles and DAW for virtual soundchecks
-* Supports dLive & dLive Director (offline and online)
-* Supports Avantis & Avantis Director (offline and online)
-* Supports Mixing Station app via REST API (Name, Color, Mute, Fader Level) — supports SQ, DM7, Wing, M32/X32, and QU consoles
-* Generate DAW session(s) from current console or Mixing Station settings
-* Print channel list or export it as a PDF directly from the console or Mixing Station
-* Generate CSV File incl. channel patching for Director CSV Import
-
-## Software Liability Warning
-
-This software is provided "as is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
-
-Furthermore, this software may be subject to known or unknown bugs, errors, and vulnerabilities, which may result in unexpected behavior or security breaches. The authors or copyright holders shall not be liable for any damages or losses resulting from such bugs, errors, or vulnerabilities.
-
-By using this software, you acknowledge and agree that you do so at your own risk and that you will be solely responsible for any damages or losses that may arise from such use.
-
-## Used Python Libraries
-* mido - Midi Library
-* pandas - spreadsheet reader/writer
-* reathon - Reaper Session Creator
-* xlrd - supports xls format
-* odfpy - supports odf format
-* openpyxl - supports xlsx format
-* numpy - array computing
-* fpdf2 - PDF generation
-* customtkinter - GUI framework
-* pyinstaller - Binary creator
-
-see [3rd Party Licenses](ThirdParty-Licenses.txt)
+---
 
 ## Overview
+
 ![Overview](doc/overview.drawio.svg)
 
 For a detailed architectural overview including component diagram, data flows, and MIDI protocol reference, see [Architecture Overview](doc/architecture.md).
 
-For Mermaid flowcharts and step-by-step descriptions of all workflows, see [Workflows & Overview](doc/workflows.md).
+For flowcharts and step-by-step descriptions of all workflows, see [Workflows & Overview](doc/workflows.md).
 
 | # | Workflow | Source | Target | Connection |
 |---|----------|--------|--------|------------|
@@ -93,6 +88,10 @@ For Mermaid flowcharts and step-by-step descriptions of all workflows, see [Work
 | C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
+
+More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
+
+---
 
 ## Support the Project ☕
 
@@ -103,18 +102,24 @@ Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
 
 [☕ Buy Me a Coffee](https://buymeacoffee.com/togrupe)
 
+---
+
 ## Download
-| Version | Date       | OS                                   | Download                                                                                   | Release Notes  | MD5 Checksum                     |
-|---------|------------|--------------------------------------|--------------------------------------------------------------------------------------------|----------------|----------------------------------|
-| v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2120) | 861622a542446db242c93d00ea3cf99a |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip) |                | cc6fd1f297b123158d2591841b7d5898 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip) |                | 2b09f614d9b6c517e33be5b4d5fe7a6e|
-| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip) |                | c8f1e8b8ebd2183cfed8868aa504a7bb |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip) |                | 970930d359582cea6266cd304265dfbc |
-| v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2100) | 3be97642cafebdb830129d68aaadf6cf |
-|         |            | macOS (arm64 - Apple-Silicon)        | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip) |                | 207d57b612978fd6cfa2e57f1bb59f02 |
-|         |            | Windows (x86_64)                     | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip) |                | 2116d00f16b7da40d8b2464636578b9f |
+
+| Version | Date       | OS                            | Download                                                                                          | Release Notes                      | MD5 Checksum                     |
+|---------|------------|-------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------|----------------------------------|
+| v2.13.0 | 02.07.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2130) | TBD |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-arm64.zip)  |                                    | TBD |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-windows.zip)      |                                    | TBD |
+| v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2120) | 861622a542446db242c93d00ea3cf99a |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip)  |                                    | cc6fd1f297b123158d2591841b7d5898 |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip)      |                                    | 2b09f614d9b6c517e33be5b4d5fe7a6e |
+| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)  |                                    | c8f1e8b8ebd2183cfed8868aa504a7bb |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)      |                                    | 970930d359582cea6266cd304265dfbc |
+| v2.10.0 | 23.11.2025 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2100) | 3be97642cafebdb830129d68aaadf6cf |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-macos-arm64.zip)  |                                    | 207d57b612978fd6cfa2e57f1bb59f02 |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_10_0/dmt-v2_10_0-windows.zip)      |                                    | 2116d00f16b7da40d8b2464636578b9f |
 
 Older versions see [archive](doc/download-archive.md)
 
@@ -124,7 +129,10 @@ Older versions see [archive](doc/download-archive.md)
     Please go to System Preferences -> Privacy and Security -> Security -> Open Anyway <br><br>![Preferences](doc/preferences_privacy.png)<br><br>
     More infos below in [Usage](#usage)
 
+---
+
 ## Input file / The Spreadsheet Template
+
 Example spreadsheet files for dLive: [**dLiveChannelList.xlsx**](dLiveChannelList.xlsx), Avantis: [**AvantisChannelList.xlsx**](AvantisChannelList.xlsx), and Mixing Station: [**MixingStationChannelList.xlsx**](MixingStationChannelList.xlsx) can be found in the root folder.
 By default, channels 1-128 (dLive) and 1-64 (Avantis) are available in the sheets. If you need less,
 just delete the channels you don't want to process.
@@ -171,6 +179,8 @@ This is a report of used buses. It does not change the "Mixer Config". Please ha
 
 ![mixerconfig](doc/mixerconfig/excel_mixerconfig.png)
 
+---
+
 ## Usage
 
 For complete step-by-step instructions, console and network settings, DAW session examples, and utilities reference, see the **[Usage Guide](doc/usage.md)**.
@@ -188,14 +198,45 @@ cd src && python3 Main.py
 
 **Prerequisites:** Windows ≥ 10 / macOS ≥ Monterey · dLive firmware 1.9x/2.x · Avantis firmware 1.3x · Mixing Station with REST API enabled (optional) · Microsoft Excel or LibreOffice Calc · Reaper ≥ v6.x (optional) · Tracks Live v1.3 (optional)
 
+---
+
 ## Feedback
+
 If you want to give feedback, report an issue, or contribute (new ideas, coding, testing, documentation) please use:
 dmt@liveworks-vt.de or the [GitHub Discussions](https://github.com/togrupe/dlive-midi-tools/discussions)
+
+---
 
 ## Troubleshooting
 
 See [Troubleshooting](doc/troubleshooting.md).
 
+---
+
 ## Release Notes
 
 See [Release Notes](doc/release-notes.md) for the full version history.
+
+---
+
+## Software Liability Warning
+
+This software is provided "as is," without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+
+Furthermore, this software may be subject to known or unknown bugs, errors, and vulnerabilities, which may result in unexpected behavior or security breaches. The authors or copyright holders shall not be liable for any damages or losses resulting from such bugs, errors, or vulnerabilities.
+
+By using this software, you acknowledge and agree that you do so at your own risk and that you will be solely responsible for any damages or losses that may arise from such use.
+
+## Used Python Libraries
+* mido - Midi Library
+* pandas - spreadsheet reader/writer
+* reathon - Reaper Session Creator
+* xlrd - supports xls format
+* odfpy - supports odf format
+* openpyxl - supports xlsx format
+* numpy - array computing
+* fpdf2 - PDF generation
+* customtkinter - GUI framework
+* pyinstaller - Binary creator
+
+see [3rd Party Licenses](ThirdParty-Licenses.txt)

@@ -1,22 +1,27 @@
-> **_NOTE:_**  The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
+# Channels
 
-#### Enabled: <br>
-* yes - Row is taken into account for dlive-midi-tools data processing <br>
-* no - Row is *NOT* part of data processing <br>
+> **_NOTE:_** The light-grey colored columns are for the Director CSV import feature. All others work based on MIDI.
 
-With this column you can exclude the particular row from data processing. 
+#### Enabled
 
-> **_NOTE:_** The column has also effect on DAW & Director CSV Generation process. If you feel disturbed by the column, you can either move the column to right or hide the column.
+* yes — Row is taken into account for dlive-midi-tools data processing
+* no — Row is *NOT* part of data processing
 
-#### Name: <br>
-Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.
-<br><br>
-"-" ignores the cell. <br><br>
-Empty cells are written as blank signs.<br>
+With this column you can exclude the particular row from data processing.
 
-Special characters like "äöüéß" are not allowed, otherwise you will get an Error Message.
+> **_NOTE:_** The column also affects DAW & Director CSV generation. If you find the column distracting, you can move it to the right or hide it.
 
-#### Color: <br>
+#### Name
+
+Channel name. Keep in mind that names longer than 8 characters are trimmed automatically to 8 characters.
+
+"-" ignores the cell.
+
+Empty cells are written as blank.
+
+Special characters like "äöüéß" are not allowed — you will get an error message if they are used.
+
+#### Color
 
 The following colors are allowed:
 * blue
@@ -27,11 +32,12 @@ The following colors are allowed:
 * yellow 
 * black
 * white
-* "-" - Don´t care. Ignore the cell. <br>
+* "-" — Don't care. Ignore the cell.
 
-If the given color does not match, the default color black is used instead.
+If the given color does not match, the validator will report an error and processing will be aborted.
 
-#### Source: (only Director CSV Import) <br>
+#### Source (only Director CSV Import)
+
 The following options for dLive are available:
 * Unassigned
 * MixRack
@@ -55,9 +61,10 @@ The following options for Avantis are available:
 * IO 2
 * SigGen
 
-#### Socket: (Only Director CSV Import) <br>
+#### Socket (only Director CSV Import)
 
-The Socket number in combination with the `Source` <br>
+The socket number in combination with the `Source`.
+
 Allowed values dLive:
 * Mixrack: 1-64
 * Surface: 1-8
@@ -71,105 +78,120 @@ Allowed values dLive:
 * IO 3: 1-128
 
 Allowed values Avantis:
+
 * Surface: 1-12
 * SLink: 1-128
 * IO 1: 1-128
 * IO 2: 1-128
 
-#### Gain: (Only Director CSV Import) <br>
+#### Gain (only Director CSV Import)
 
-* "-" - Don´t care. Ignore the cell. <br>
-* +5 to +60 - the gain value
+* "-" — Don't care. Ignore the cell.
+* +5 to +60 — the gain value
 
-#### Pad: (Only Director CSV Import) <br>
-* yes - to activate PAD <br>
-* no - to deactivate PAD. <br>
-* "-" - Don´t care. Ignore the cell. <br>
+#### Pad (only Director CSV Import)
 
-Empty cells are interpreted as **Don´t care**.
+* yes — activate PAD
+* no — deactivate PAD
+* "-" — Don't care. Ignore the cell.
 
-#### Phantom: (Only Director CSV Import) <br>
-* yes - to activate Phantom Power (48V) <br>
-* no - to deactivate Phantom Power (48V). <br>
-* "-" - Don´t care. Ignore the cell. <br>
+Empty cells are interpreted as **Don't care**.
 
-Empty cells are interpreted as **Don´t care**.
+#### Phantom (only Director CSV Import)
 
+* yes — activate Phantom Power (48V)
+* no — deactivate Phantom Power (48V)
+* "-" — Don't care. Ignore the cell.
 
-#### Mute: <br>
-* yes - to mute <br>
-* no - to unmute. <br>
-* "-" - Don´t care. Ignore the cell. <br>
+Empty cells are interpreted as **Don't care**.
 
-Empty cells are interpreted as **Don´t care**.
+#### Mute
 
-#### Fader Level: <br>
-Dropdown list with predefined fader level values. (-99 = -inf) <br>
-"-" - Don´t care. Ignore the cell. <br>
+* yes — mute
+* no — unmute
+* "-" — Don't care. Ignore the cell.
 
-Empty cells are interpreted as **Don´t care**.
+Empty cells are interpreted as **Don't care**.
 
-#### HPF On (Only dLive)
-* yes - to activate the Highpass Filter <br>
-* no - to deactivate the Highpass Filter <br>
-* "-" - Don´t care. Ignore the cell. <br>
+#### Fader Level
 
-Empty cells are interpreted as **Don´t care**.
+Dropdown list with predefined fader level values. (-99 = -inf)
 
-#### HPF Value (Only dLive)
-20-2000Hz - to set the Highpass Filter value
+"-" — Don't care. Ignore the cell.
 
-Empty cells are interpreted as **Don´t care**.
+Empty cells are interpreted as **Don't care**.
+
+#### HPF On (dLive only)
+
+* yes — activate the Highpass Filter
+* no — deactivate the Highpass Filter
+* "-" — Don't care. Ignore the cell.
+
+Empty cells are interpreted as **Don't care**.
+
+#### HPF Value (dLive only)
+
+20–2000 Hz — sets the Highpass Filter frequency.
+
+Empty cells are interpreted as **Don't care**.
 
 #### Main Mix Assignment
-yes - Assigns the channel to Main-Mix <br>
-no - Removes the assignment from Main Mix <br>
-"-" - Don´t care. Ignore the cell. <br>
 
-Empty cells are interpreted as **Don´t care**.
+* yes — assigns the channel to Main Mix
+* no — removes the assignment from Main Mix
+* "-" — Don't care. Ignore the cell.
+
+Empty cells are interpreted as **Don't care**.
 
 
 #### Channel to Group Assignments
-> **_NOTE:_** Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. To avoid this, I recommend using a "-" by default for all routings, and then an "x" or a " " where routing is required.
 
-##### Channel to Mono Group Assignment - Grp1-12 (Only dLive)
-By putting an "x" into the relevant cell, the channel will be assigned to the particular Mono Group.
+> **_NOTE:_** Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. Use "-" by default for all routings and put an "x" only where routing is actually required.
 
-Empty cells are interpreted as not being assigned.
+##### Channel to Mono Group Assignment — Grp1-12 (dLive only)
 
-"-" - Don´t care. Ignore the cell. <br>
+Put an "x" in the relevant cell to assign the channel to that Mono Group.
 
-##### Channel to Stereo Group Assignment - StGrp1-12 (Only dLive)
-By putting an "x" into the relevant cell, the channel will be assigned to the particular Stereo Group.
+Empty cells are interpreted as not assigned.
 
-Empty cells are interpreted as not being assigned.
+"-" — Don't care. Ignore the cell.
 
-"-" - Don´t care. Ignore the cell. <br>
+##### Channel to Stereo Group Assignment — StGrp1-12 (dLive only)
+
+Put an "x" in the relevant cell to assign the channel to that Stereo Group.
+
+Empty cells are interpreted as not assigned.
+
+"-" — Don't care. Ignore the cell.
 
 #### Recording
-yes - Channel is taken into account for DAW Recording Session <br>
-no - Channel will not be part the DAW Recoding session.
 
-Empty cells are interpreted as **no**
+* yes — channel is included in the DAW recording session
+* no — channel is excluded from the DAW recording session
+
+Empty cells are interpreted as **no**.
 
 #### Record Arm
-yes - The Record Button is armed / activated <br>
-no - The Record Button is not active
 
-Empty cells are interpreted as **no**
+* yes — Record button is armed / activated
+* no — Record button is not active
+
+Empty cells are interpreted as **no**.
 
 #### DCA1-24 (dLive) / DCA1-16 (Avantis)
-By putting an "x" into the relevant cell, the channel will be assigned to the particular DCA Group.
 
-Empty cells are interpreted as not being assigned.
+Put an "x" in the relevant cell to assign the channel to that DCA Group.
 
-"-" - Don´t care. Ignore the cell. <br>
+Empty cells are interpreted as not assigned.
 
-#### Mute1-8 (Only dLive)
-By putting an "x" into the relevant cell, the channel will be assigned to the particular Mute Group.
+"-" — Don't care. Ignore the cell.
 
-Empty cells are interpreted as not being assigned.
+#### Mute1-8 (dLive only)
 
-"-" - Don´t care. Ignore the cell. <br>
+Put an "x" in the relevant cell to assign the channel to that Mute Group.
+
+Empty cells are interpreted as not assigned.
+
+"-" — Don't care. Ignore the cell.
 
 [back](../../README.md)

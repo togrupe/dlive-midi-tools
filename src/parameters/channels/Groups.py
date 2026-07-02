@@ -40,13 +40,13 @@ def assign_group_to_channel(context, item, bus_type):
 
     channel = item.get_channel_console()
 
-    if bus_type == "mono" and console == "dLive":
+    if bus_type == "mono" and console == dliveConstants.console_drop_down_dlive:
         amount_of_groups = SpreadsheetConstants.dlive_mono_group_max
-    elif bus_type == "stereo" and console == "dLive":
+    elif bus_type == "stereo" and console == dliveConstants.console_drop_down_dlive:
         amount_of_groups = SpreadsheetConstants.dlive_stereo_group_max
-    elif bus_type == "mono" and console == "Avantis":
+    elif bus_type == "mono" and console == dliveConstants.console_drop_down_avantis:
         amount_of_groups = SpreadsheetConstants.avantis_mono_group_max
-    elif bus_type == "stereo" and console == "Avantis":
+    elif bus_type == "stereo" and console == dliveConstants.console_drop_down_avantis:
         amount_of_groups = SpreadsheetConstants.avantis_stereo_group_max
 
     if bus_type == "mono":

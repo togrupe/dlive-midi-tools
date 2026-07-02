@@ -1,12 +1,14 @@
-#### Dca/Aux/Grp/Mtx/FX/UFX Names <br>
-Channel-Name, Keep in mind that names longer than 8 characters are going to be trimmed automatically to 8 characters.
+# Groups
 
-Special characters like "äöüéß" are not allowed, otherwise you will get an Error Message.
+#### DCA / Aux / Grp / Mtx / FX / UFX Names
 
-Keep in mind that for each type of bus, the maximum count of possible busses are available.
-Please use only the cells which fits to your current Mixrack Configuration.
+Bus name. Names longer than 8 characters are trimmed automatically to 8 characters.
 
-#### Dca/Aux/Grp/Mtx/FX/UFX Color: <br>
+Special characters like "äöüéß" are not allowed — you will get an error message if they are used.
+
+Use only the cells that correspond to your current Mixrack Configuration — the maximum count of available buses depends on the mixer config.
+
+#### DCA / Aux / Grp / Mtx / FX / UFX Color
 
 The following colors are allowed:
 * blue
@@ -18,7 +20,7 @@ The following colors are allowed:
 * black
 * white
 
-If the given color does not match, the default color black is used instead.
+If the given color does not match, the validator will report an error and processing will be aborted.
 
 
 [back](../../README.md)

@@ -157,6 +157,7 @@ SLINK_SOCKET_COUNT_MAX = 128
 
 DLIVE_MAX_CHANNELS = 128
 AVANTIS_MAX_CHANNELS = 64
+MIXING_STATION_MAX_CHANNELS = 99
 
 # Strings Midi Channel Selector
 midi_channel_drop_down_string_1 = "1 to 5"
@@ -177,8 +178,25 @@ midi_channel_drop_down_string_default = midi_channel_drop_down_string_12
 # Strings Console Selector
 console_drop_down_avantis = "Avantis"
 console_drop_down_dlive = "dLive"
+console_drop_down_mixing_station = "Mixing Station"
+console_drop_down_sq_mixing_station = "SQ"
+console_drop_down_dm7_mixing_station = "DM7"
+console_drop_down_wing_mixing_station = "Wing"
+console_drop_down_m32_mixing_station = "M32/X32"
+console_drop_down_qu16_mixing_station = "QU"
+
+MIXING_STATION_CONSOLES = frozenset({
+    console_drop_down_sq_mixing_station,
+    console_drop_down_dm7_mixing_station,
+    console_drop_down_wing_mixing_station,
+    console_drop_down_m32_mixing_station,
+    console_drop_down_qu16_mixing_station,
+})
 
 console_drop_down_default = console_drop_down_dlive
+
+# Mixing Station REST API default port
+mixing_station_default_port = 8080
 
 # if no dlive system is available, you can simulate the outgoing midi calls, by setting the next parameter to False
 allow_network_communication = True

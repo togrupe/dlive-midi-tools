@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Make sure a venv directory is available, pip install pyinstaller & pip install -r dependencies has been started
+#Make sure a venv directory is available, pip install pyinstaller & pip install -r requirements.txt has been started
 latest_tag=`/usr/bin/git describe --tags --abbrev=0`
 replaced_tag=${latest_tag//./_}
 basename=dmt-${replaced_tag}-macos-$1
@@ -13,6 +13,8 @@ cp dLiveChannelList.xlsx out
 cp dLiveChannelList.ods out
 cp AvantisChannelList.xlsx out
 cp AvantisChannelList.ods out
+cp MixingStationChannelList.xlsx out
+cp MixingStationChannelList.ods out
 if [ "$2" == "test" ]; then
   cp testing/dLiveChannelListTesting.xlsx out
   cp testing/dLiveChannelListTesting.ods out

@@ -1,25 +1,33 @@
-> **Note** <br> The following settings are for the corresponding **sockets** and **NOT** for channels.
+# Sockets
 
-The following columns are grouped by **Ports**
+> **Note:** The following settings apply to the corresponding **sockets**, not to channels.
 
-#### Local-/DX1-/DX3-/Slink Phantom
-yes - activates the 48V Phantom Power <br>
-no - to switch phantom power off. <br>
-"-" - Don´t care. Ignores the phantom power value. <br>
+The columns are grouped by **Ports**.
 
-Empty cells are interpreted as **Don`t Care**
+#### Local / DX1 / DX3 / SLink Phantom
 
-#### Local-/DX1-/DX3-/Slink Pad
-yes - to activate the PAD for the socket. <br>
-no - to switch the pad off for socket. <br>
-"-" - Don´t care. Ignores the pad value. <br>
+* yes — activate 48V Phantom Power
+* no — switch phantom power off
+* "-" — Don't care. Ignore the phantom power value.
 
-Empty cells are interpreted as **Don`t Care**
+Empty cells are interpreted as **Don't care**.
 
-#### Local-/DX1-/DX3-/Slink Gain
-Dropdown list with predefined gain values (5-60dB). <br>
-"-" - Don´t care. Ignores the gain value. <br>
+> **_NOTE:_** The **SLink** columns apply to **dLive only**. Avantis SLink preamp control (Pad, Phantom, Gain) is not supported.
 
-Empty cells are interpreted as **Don`t Care**
+#### Local / DX1 / DX3 / SLink Pad
+
+* yes — activate PAD for the socket
+* no — switch PAD off for the socket
+* "-" — Don't care. Ignore the pad value.
+
+Empty cells are interpreted as **Don't care**.
+
+#### Local / DX1 / DX3 / SLink Gain
+
+Dropdown list with predefined gain values (5–60 dB).
+
+"-" — Don't care. Ignore the gain value.
+
+Empty cells are interpreted as **Don't care**.
 
 [back](../../README.md)

@@ -5,7 +5,7 @@
 # Author: Tobias Grupe
 #
 ####################################################
-
+import dliveConstants
 from model.ChannelListEntry import ChannelListEntry
 from model.DcaConfig import DcaConfig
 from model.GroupSetup import GroupSetup
@@ -24,10 +24,10 @@ def create_channel_list_content(sheet_channels, context):
     channel_list_entries = []
     index = 0
 
-    if console == "Avantis":
+    if console == dliveConstants.console_drop_down_avantis:
         console_mono_group_max = SpreadsheetConstants.avantis_mono_group_max
         console_stereo_group_max = SpreadsheetConstants.avantis_stereo_group_max
-    elif console == "dLive":
+    else:
         console_mono_group_max = SpreadsheetConstants.dlive_mono_group_max
         console_stereo_group_max = SpreadsheetConstants.dlive_stereo_group_max
 

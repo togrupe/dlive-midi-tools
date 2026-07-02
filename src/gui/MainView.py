@@ -31,6 +31,8 @@ class MainView:
 
         self.var_midi_channel = StringVar(self.root)
         self.var_console = StringVar(self.root)
+        self.var_ms_console = StringVar(self.root)
+        self.var_ms_console.set(dliveConstants.console_drop_down_sq_mixing_station)
 
         self.reaper_output_dir = ""
         self.reaper_file_prefix = ""
@@ -150,13 +152,33 @@ class MainView:
         single_row = ctk.CTkFrame(config_frame, fg_color="transparent")
         single_row.grid(row=1, column=0, sticky="W", padx=5, pady=3)
 
-        ctk.CTkLabel(single_row, text="Audio Console:", width=120, anchor="w").pack(side="left")
-        ctk.CTkOptionMenu(single_row, variable=self.var_console,
+        console_section = ctk.CTkFrame(single_row, fg_color="transparent")
+        ctk.CTkLabel(console_section, text="Audio Console:", width=120, anchor="w").pack(side="left")
+        ctk.CTkOptionMenu(console_section, variable=self.var_console,
                           values=[dliveConstants.console_drop_down_dlive,
-                                  dliveConstants.console_drop_down_avantis]).pack(side="left", padx=(0, 20))
+                                  dliveConstants.console_drop_down_avantis,
+                                  dliveConstants.console_drop_down_mixing_station,
+                                  ]).pack(side="left", padx=(0, 5))
+
+        self._ms_console_selector = ctk.CTkFrame(console_section, fg_color="transparent")
+        ctk.CTkLabel(self._ms_console_selector, text="Type:", width=40, anchor="w").pack(
+            side="left", padx=(8, 0))
+        self._ms_console_menu = ctk.CTkOptionMenu(
+            self._ms_console_selector,
+            variable=self.var_ms_console,
+            values=[
+                dliveConstants.console_drop_down_sq_mixing_station,
+                dliveConstants.console_drop_down_dm7_mixing_station,
+                dliveConstants.console_drop_down_wing_mixing_station,
+                dliveConstants.console_drop_down_m32_mixing_station,
+                dliveConstants.console_drop_down_qu16_mixing_station,
+            ])
+        self._ms_console_menu.pack(side="left")
+
+        console_section.pack(side="left", padx=(0, 20))
 
         ctk.CTkLabel(single_row, text="MIDI Channel:", width=100, anchor="w").pack(side="left")
-        ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,
+        self._midi_channel_menu = ctk.CTkOptionMenu(single_row, variable=self.var_midi_channel,
                           values=[
                               dliveConstants.midi_channel_drop_down_string_1,
                               dliveConstants.midi_channel_drop_down_string_2,
@@ -170,7 +192,8 @@ class MainView:
                               dliveConstants.midi_channel_drop_down_string_10,
                               dliveConstants.midi_channel_drop_down_string_11,
                               dliveConstants.midi_channel_drop_down_string_12,
-                          ]).pack(side="left", padx=(0, 20))
+                          ])
+        self._midi_channel_menu.pack(side="left", padx=(0, 20))
 
         self.label_ip_address_text = ctk.CTkLabel(single_row, text="", width=120, anchor="w")
         self.label_ip_address_text.pack(side="left")
@@ -188,6 +211,14 @@ class MainView:
         self.ip_byte2.grid(row=0, column=4, padx=2)
         ctk.CTkLabel(ip_field, text=".").grid(row=0, column=5)
         self.ip_byte3.grid(row=0, column=6, padx=2)
+
+        self._ms_port_frame = ctk.CTkFrame(ip_field, fg_color="transparent")
+        ctk.CTkLabel(self._ms_port_frame, text=":").pack(side="left", padx=(5, 0))
+        self.entry_ms_port = ctk.CTkEntry(self._ms_port_frame, width=65)
+        self.entry_ms_port.insert(0, str(dliveConstants.mixing_station_default_port))
+        self.entry_ms_port.pack(side="left", padx=(2, 0))
+        self._ms_port_frame.grid(row=0, column=7, padx=(5, 0))
+        self._ms_port_frame.grid_remove()
 
         self.btn_save = ctk.CTkButton(ip_field, text='Save', width=70)
         self.btn_save.grid(row=0, column=8, padx=5)
@@ -521,11 +552,44 @@ class MainView:
         self.btn_phantom_off_all.grid(row=1, column=0, padx=10, pady=8)
         preamp_frame.pack(side="top", fill="x", padx=10, pady=8)
 
+        export_frame = self._section(self.tab3, "Export / Print")
+        export_frame.configure(border_width=1, border_color="white")
+
+        btn_row = ctk.CTkFrame(export_frame, fg_color="transparent")
+        self.btn_export_pdf = ctk.CTkButton(
+            btn_row,
+            text='Export Channel List as PDF',
+            fg_color="#8E44AD", hover_color="#6C3483")
+        self.btn_export_pdf.pack(side="left", padx=5)
+        self.btn_print_channels = ctk.CTkButton(
+            btn_row,
+            text='Print Channel List',
+            fg_color="#8E44AD", hover_color="#6C3483")
+        self.btn_print_channels.pack(side="left", padx=5)
+        btn_row.grid(row=1, column=0, padx=10, pady=8)
+        export_frame.pack(side="top", fill="x", padx=10, pady=8)
+
     def disable_helpers_avantis(self):
         self.btn_reset_mute_groups.configure(state='disabled')
 
     def enable_helpers_avantis(self):
         self.btn_reset_mute_groups.configure(state='normal')
+
+    def disable_utilities(self):
+        for btn in (self.btn_reset_dca, self.btn_reset_mute_groups, self.btn_reset_main_mix,
+                    self.btn_mute_all_inputs, self.btn_mute_all_outputs,
+                    self.btn_unmute_all_inputs, self.btn_unmute_all_outputs,
+                    self.btn_fader_all_to_zero, self.btn_fader_all_to_minus_inf,
+                    self.btn_phantom_off_all):
+            btn.configure(state='disabled')
+
+    def enable_utilities(self):
+        for btn in (self.btn_reset_dca, self.btn_reset_mute_groups, self.btn_reset_main_mix,
+                    self.btn_mute_all_inputs, self.btn_mute_all_outputs,
+                    self.btn_unmute_all_inputs, self.btn_unmute_all_outputs,
+                    self.btn_fader_all_to_zero, self.btn_fader_all_to_minus_inf,
+                    self.btn_phantom_off_all):
+            btn.configure(state='normal')
 
     # ------------------------------------------------------------------
     # Status Area
@@ -666,6 +730,50 @@ class MainView:
         for checkbox in self.grid.checkboxes:
             checkbox.configure(state="normal")
 
+    _MS_SUPPORTED_PARAMS = {
+        GuiConstants.TEXT_NAME,
+        GuiConstants.TEXT_COLOR,
+        GuiConstants.TEXT_MUTE,
+        GuiConstants.TEXT_FADER_LEVEL,
+    }
+
+    def disable_mixing_station_checkboxes(self):
+        for checkbox in self.grid.checkboxes:
+            text = checkbox.cget("text")
+            if text not in self._MS_SUPPORTED_PARAMS:
+                self._remove_tick(text)
+                checkbox.configure(state="disabled")
+
+    def show_ms_port(self):
+        self._ms_port_frame.grid()
+
+    def hide_ms_port(self):
+        self._ms_port_frame.grid_remove()
+
+    def show_ms_console_selector(self):
+        self._ms_console_selector.pack(side="left", padx=(5, 0))
+
+    def hide_ms_console_selector(self):
+        self._ms_console_selector.pack_forget()
+
+    def get_effective_console(self):
+        if self.var_console.get() == dliveConstants.console_drop_down_mixing_station:
+            return self.var_ms_console.get()
+        return self.var_console.get()
+
+    def get_ms_port(self):
+        return self.entry_ms_port.get()
+
+    def set_ms_port(self, port):
+        self.entry_ms_port.delete(0, 'end')
+        self.entry_ms_port.insert(0, str(port))
+
+    def enable_midi_channel(self):
+        self._midi_channel_menu.configure(state="normal")
+
+    def disable_midi_channel(self):
+        self._midi_channel_menu.configure(state="disabled")
+
     def _remove_tick(self, var_name):
         for var in self.grid.vars:
             if var._name == var_name:
@@ -673,6 +781,13 @@ class MainView:
 
     def set_end_channel(self, n):
         self.combobox_end.set(str(n))
+
+    def set_console_to_daw_max_channel(self, max_ch):
+        values = [f"{i}" for i in range(1, max_ch + 1)]
+        self.combobox_end.configure(values=values)
+        current = int(self.var_current_console_endChannel.get())
+        if current > max_ch:
+            self.combobox_end.set(str(max_ch))
         self.root.update()
 
     def set_start_channel(self, n):

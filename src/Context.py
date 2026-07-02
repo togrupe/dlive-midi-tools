@@ -6,6 +6,7 @@ class Context:
         self.network_connection_allowed = network_connection_allowed
         self.config_file = config_file
         self.csv_patching_hint_already_seen = csv_patching_hint_already_seen
+        self.ms_client = None
 
     def get_logger(self):
         return self.logger
@@ -33,3 +34,9 @@ class Context:
 
     def set_csv_patching_hint_already_seen(self, value):
         self.csv_patching_hint_already_seen = value
+
+    def get_ms_client(self):
+        return self.ms_client
+
+    def set_ms_client(self, client):
+        self.ms_client = client

@@ -51,6 +51,10 @@ from parameters.channels.Helpers import (
     set_all_input_faders_to_zero, set_all_input_faders_to_minus_inf,
     phantom_power_off_all_sockets,
 )
+from mixingstation.MixingStationClient import MixingStationClient
+from mixingstation.MixingStationHandler import handle_ms_channels, get_channel_data as ms_get_channel_data
+from export import PdfExporter
+from persistence.Persistence import read_persisted_ms_port
 
 
 class MainController:
@@ -74,15 +78,32 @@ class MainController:
         self.context.get_app_data().set_appearance_mode(appearance_mode)
         self.view.var_dark_mode.set(appearance_mode == "dark")
 
-        self.view.var_console.set(read_persisted_console(self.context))
+        persisted_console = read_persisted_console(self.context)
+        if persisted_console in dliveConstants.MIXING_STATION_CONSOLES:
+            self.view.var_console.set(dliveConstants.console_drop_down_mixing_station)
+            self.view.var_ms_console.set(persisted_console)
+        else:
+            self.view.var_console.set(persisted_console)
         self.view.var_midi_channel.set(read_persisted_midi_port(self.context))
 
         ip = read_persisted_ip(self.context)
         self.view.set_ip(ip)
 
-        # Set the IP-label text based on the persisted console type
-        if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
+        ms_port = read_persisted_ms_port(self.context)
+        self.view.set_ms_port(ms_port)
+        self.context.get_app_data().set_mixing_station_port(ms_port)
+
+        console = self.view.get_effective_console()
+        if console == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
+        elif console in dliveConstants.MIXING_STATION_CONSOLES:
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
+            self.view.show_ms_port()
+            self.view.show_ms_console_selector()
+            self.view.disable_midi_channel()
+            self.view.disable_mixing_station_checkboxes()
+            self.view.disable_utilities()
+            self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
         else:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
         self.view.root.update()
@@ -92,7 +113,8 @@ class MainController:
         self.view.disable_console_to_daw_prefix()
         self.view.disable_console_to_daw_mastertracks()
 
-        if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
+        if (console == dliveConstants.console_drop_down_avantis or
+                console in dliveConstants.MIXING_STATION_CONSOLES):
             self.view.disable_helpers_avantis()
 
     def _bind_commands(self):
@@ -121,8 +143,10 @@ class MainController:
         self.view.btn_clear_all.configure(command=self.view.clear_all_checkboxes)
         self.view.btn_open_spreadsheet.configure(command=self.on_browse_files_thread)
 
-        # Tab 2 action button
+        # Tab 2 action buttons
         self.view.btn_console_to_daw.configure(command=self.on_console_to_daw_thread)
+        self.view.btn_export_pdf.configure(command=self.on_export_pdf_thread)
+        self.view.btn_print_channels.configure(command=self.on_print_channels_thread)
 
         # Tab 3 utility buttons
         self.view.btn_reset_dca.configure(
@@ -148,6 +172,7 @@ class MainController:
 
         # Variable traces
         self.view.var_console.trace("w", self.on_console_selected)
+        self.view.var_ms_console.trace("w", self.on_ms_console_selected)
         self.view.var_current_console_endChannel.trace("w", self.on_endchannel_selected)
         self.view.var_current_console_startChannel.trace("w", self.on_startchannel_selected)
 
@@ -161,9 +186,10 @@ class MainController:
         ctk.set_appearance_mode(mode)
         self.context.get_app_data().set_appearance_mode(mode)
         self.context.get_app_data().set_console(
-            self._determine_console_id(self.view.var_console.get()))
+            self._determine_console_id(self.view.get_effective_console()))
         self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
         self.context.get_app_data().set_current_ip(self.view.get_ip())
+        self.context.get_app_data().set_mixing_station_port(self.view.get_ms_port())
         persist_current_ui_settings(self.context)
 
     def on_open_documentation(self):
@@ -188,9 +214,10 @@ class MainController:
     def on_save_settings(self):
         current_ip = self.view.get_ip()
         self.context.get_app_data().set_console(
-            self._determine_console_id(self.view.var_console.get()))
+            self._determine_console_id(self.view.get_effective_console()))
         self.context.get_app_data().set_midi_channel(self.view.var_midi_channel.get())
         self.context.get_app_data().set_current_ip(current_ip)
+        self.context.get_app_data().set_mixing_station_port(self.view.get_ms_port())
         persist_current_ui_settings(self.context)
 
     def on_reset_ip(self):
@@ -206,6 +233,20 @@ class MainController:
     def on_test_connection(self):
         self.view.reset_status()
         test_ip = self.view.get_ip()
+
+        if self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES:
+            ms_port = self.view.get_ms_port()
+            logging.info("Test Mixing Station connection to " + test_ip + ":" + ms_port)
+            try:
+                client = MixingStationClient(test_ip, int(ms_port))
+                client.test_connection()
+                showinfo(message="Connection Test successful")
+            except Exception as e:
+                action = "Connection Test failed: " + str(e)
+                logging.error(action)
+                self.view.set_status("Connection Test failed")
+                showerror(message="Connection Test failed.\nIs Mixing Station running and the REST API enabled?")
+            return
 
         if not is_valid_ip_address(test_ip):
             error_message = "Invalid IP-Address"
@@ -226,11 +267,16 @@ class MainController:
             showerror(message=action)
 
     def on_console_selected(self, *args):
-        self.context.get_app_data().set_console(self.view.var_console.get())
+        effective = self.view.get_effective_console()
+        self.context.get_app_data().set_console(effective)
         self.log.info("The selected console is: " + self.view.var_console.get())
 
         if self.view.var_console.get() == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
+            self.view.hide_ms_port()
+            self.view.hide_ms_console_selector()
+            self.view.enable_midi_channel()
+            self.view.reactivate_avantis_checkboxes()
             self.view.root.update()
 
             if self.view.tab_control.get() == "Spreadsheet to Console / DAW":
@@ -244,15 +290,40 @@ class MainController:
 
             self.view.disable_avantis_checkboxes()
             self.view.disable_helpers_avantis()
+            self.view.enable_utilities()
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+            self.view.set_console_to_daw_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
+            self.view.hide_ms_port()
+            self.view.hide_ms_console_selector()
+            self.view.enable_midi_channel()
             self.view.reactivate_avantis_checkboxes()
             self.view.enable_helpers_avantis()
+            self.view.enable_utilities()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.set_console_to_daw_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
+
+        elif self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
+            self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
+            self.view.show_ms_port()
+            self.view.show_ms_console_selector()
+            self.view.disable_midi_channel()
+            self.view.reactivate_avantis_checkboxes()
+            self.view.disable_mixing_station_checkboxes()
+            self.view.disable_helpers_avantis()
+            self.view.disable_utilities()
+            self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
+            self.view.root.update()
+
+    def on_ms_console_selected(self, *args):
+        effective = self.view.get_effective_console()
+        self.context.get_app_data().set_console(effective)
+        self.log.info("The selected Mixing Station console is: " + effective)
 
     def on_reaper_write_changed(self):
         if self.view.var_write_reaper.get() or self.view.var_write_trackslive.get():
@@ -298,6 +369,14 @@ class MainController:
         bg_thread = threading.Thread(target=self._get_data_from_console)
         bg_thread.start()
 
+    def on_export_pdf_thread(self):
+        bg_thread = threading.Thread(target=lambda: self._read_and_export_pdf(print_mode=False))
+        bg_thread.start()
+
+    def on_print_channels_thread(self):
+        bg_thread = threading.Thread(target=lambda: self._read_and_export_pdf(print_mode=True))
+        bg_thread.start()
+
     # ------------------------------------------------------------------
     # Business logic – Console to DAW
     # ------------------------------------------------------------------
@@ -333,7 +412,35 @@ class MainController:
             if directory_path.__len__() == 0:
                 return
 
-            if self.context.get_network_connection_allowed():
+            start_channel = int(self.view.var_current_console_startChannel.get()) - 1
+            end_channel = int(self.view.var_current_console_endChannel.get())
+
+            if start_channel > end_channel:
+                error_msg = ("Start Channel: " + str(start_channel + 1) +
+                             " is greater than End Channel: " + str(end_channel))
+                self.log.error(error_msg)
+                showerror(message=error_msg)
+                return
+
+            use_mixing_station = self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES
+
+            if use_mixing_station:
+                try:
+                    ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
+                    self.context.set_ms_client(ms_client)
+                    self.view.set_status("Reading channel data from Mixing Station...")
+                    self.view.advance_progress(actions)
+                    self.view.advance_progress(actions)
+                    self.view.root.update()
+                    data_fin = ms_get_channel_data(ms_client, start_channel, end_channel,
+                                                   self.view.get_effective_console())
+                except Exception as e:
+                    error_msg = f"Failed to read from Mixing Station: {e}"
+                    self.log.error(error_msg)
+                    self.view.set_status(error_msg)
+                    showerror(message=error_msg)
+                    return
+            elif self.context.get_network_connection_allowed():
                 ip_address = self.view.get_ip()
                 if not is_valid_ip_address(ip_address):
                     error_message = "Invalid IP-Address"
@@ -343,15 +450,6 @@ class MainController:
 
                 self.context.set_output(self._connect_to_console(ip_address))
                 output = self.context.get_output()
-                start_channel = int(self.view.var_current_console_startChannel.get()) - 1
-                end_channel = int(self.view.var_current_console_endChannel.get())
-
-                if start_channel > end_channel:
-                    error_msg = ("Start Channel: " + str(start_channel + 1) +
-                                 " is greater than End Channel: " + str(end_channel))
-                    self.log.error(error_msg)
-                    showerror(message=error_msg)
-                    return
 
                 self.view.set_status("Reading channel color from console")
                 self.view.advance_progress(actions)
@@ -362,59 +460,151 @@ class MainController:
                 self.view.advance_progress(actions)
                 self.view.root.update()
                 data_fin = get_name_channel(self.context, data_color, start_channel, end_channel)
-
-                sheet = Sheet()
-                sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
-
-                try:
-                    if self.view.var_console_to_daw_reaper.get():
-                        self.view.set_status("Generating Reaper Session...")
-                        self.view.advance_progress(actions)
-                        self.view.root.update()
-                        ReaperSessionCreator.create_session(
-                            sheet, directory_path, "current-console",
-                            self.view.var_console_to_daw_disable_track_numbering_daw.get(),
-                            self.view.var_console_to_daw_reaper_additional_prefix.get(),
-                            self.view.entry_console_to_daw_additional_track_prefix.get(),
-                            self.view.var_console_to_daw_additional_master_tracks.get(),
-                            self.view.var_console_to_daw_master_recording_patch.get(),
-                            self.view.var_console_to_daw_disable_track_coloring_daw.get())
-                        text = "Reaper Recording Session Template created"
-                        self.view.set_status(text)
-                        self.log.info(text)
-
-                    if self.view.var_console_to_daw_trackslive.get():
-                        self.view.set_status("Generating Tracks Live Template...")
-                        self.view.advance_progress(actions)
-                        self.view.root.update()
-                        TracksLiveSessionCreator.create_session(
-                            sheet, directory_path, "current-console",
-                            self.view.var_console_to_daw_disable_track_numbering_daw.get(),
-                            self.view.var_console_to_daw_reaper_additional_prefix.get(),
-                            self.view.entry_console_to_daw_additional_track_prefix.get(),
-                            self.view.var_console_to_daw_additional_master_tracks.get(),
-                            self.view.var_console_to_daw_master_recording_patch.get(),
-                            self.view.var_console_to_daw_disable_track_coloring_daw.get())
-                        text = "Tracks Live Recording Session Template created"
-                        self.view.set_status(text)
-                        self.log.info(text)
-
-                    output.close()
-                    self.view.advance_progress_connection()
-
-                except OSError:
-                    error = ("Some thing went wrong during store, please choose a folder "
-                             "where you have write rights.")
-                    self.log.error(error)
-                    self.view.set_status(error)
-                    showerror(message=error)
-                    return
-
-                showinfo(message='Reading from console done, session(s) created!')
             else:
-                pass  # network not allowed; nothing to do
+                return
+
+            sheet = Sheet()
+            sheet.set_channel_model(create_channel_list_content_from_console(data_fin))
+
+            try:
+                if self.view.var_console_to_daw_reaper.get():
+                    self.view.set_status("Generating Reaper Session...")
+                    self.view.advance_progress(actions)
+                    self.view.root.update()
+                    ReaperSessionCreator.create_session(
+                        sheet, directory_path, "current-console",
+                        self.view.var_console_to_daw_disable_track_numbering_daw.get(),
+                        self.view.var_console_to_daw_reaper_additional_prefix.get(),
+                        self.view.entry_console_to_daw_additional_track_prefix.get(),
+                        self.view.var_console_to_daw_additional_master_tracks.get(),
+                        self.view.var_console_to_daw_master_recording_patch.get(),
+                        self.view.var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Reaper Recording Session Template created"
+                    self.view.set_status(text)
+                    self.log.info(text)
+
+                if self.view.var_console_to_daw_trackslive.get():
+                    self.view.set_status("Generating Tracks Live Template...")
+                    self.view.advance_progress(actions)
+                    self.view.root.update()
+                    TracksLiveSessionCreator.create_session(
+                        sheet, directory_path, "current-console",
+                        self.view.var_console_to_daw_disable_track_numbering_daw.get(),
+                        self.view.var_console_to_daw_reaper_additional_prefix.get(),
+                        self.view.entry_console_to_daw_additional_track_prefix.get(),
+                        self.view.var_console_to_daw_additional_master_tracks.get(),
+                        self.view.var_console_to_daw_master_recording_patch.get(),
+                        self.view.var_console_to_daw_disable_track_coloring_daw.get())
+                    text = "Tracks Live Recording Session Template created"
+                    self.view.set_status(text)
+                    self.log.info(text)
+
+                if not use_mixing_station:
+                    output.close()
+                self.view.advance_progress_connection()
+
+            except OSError:
+                error = ("Some thing went wrong during store, please choose a folder "
+                         "where you have write rights.")
+                self.log.error(error)
+                self.view.set_status(error)
+                showerror(message=error)
+                return
+
+            showinfo(message='Reading from console done, session(s) created!')
         else:
             showerror(message="Nothing to do, please select at least one output option.")
+
+    # ------------------------------------------------------------------
+    # Business logic – Print / Export Channel List as PDF
+    # ------------------------------------------------------------------
+
+    def _read_and_export_pdf(self, print_mode=False):
+        app_data = self.context.get_app_data()
+        app_data.set_midi_channel(
+            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
+        self.context.set_app_data(app_data)
+
+        start_channel = int(self.view.var_current_console_startChannel.get()) - 1
+        end_channel = int(self.view.var_current_console_endChannel.get())
+
+        if start_channel >= end_channel:
+            error_msg = (f"Start Channel {start_channel + 1} must be less than "
+                         f"End Channel {end_channel}.")
+            showerror(message=error_msg)
+            return
+
+        use_mixing_station = self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES
+        console_type = self.view.get_effective_console()
+
+        self.view.reset_status()
+        self.view.reset_progress()
+        self.view.advance_progress_connection()
+        self.view.root.update()
+
+        try:
+            if use_mixing_station:
+                ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
+                self.context.set_ms_client(ms_client)
+                self.view.set_status("Reading channel data from Mixing Station...")
+                self.view.root.update()
+                channel_data = ms_get_channel_data(ms_client, start_channel, end_channel, console_type)
+            elif self.context.get_network_connection_allowed():
+                ip_address = self.view.get_ip()
+                if not is_valid_ip_address(ip_address):
+                    showerror(message="Invalid IP-Address")
+                    return
+                self.context.set_output(self._connect_to_console(ip_address))
+                self.view.set_status("Reading channel colors from console...")
+                self.view.root.update()
+                data_color = get_color_channel(self.context, start_channel, end_channel)
+                self.view.set_status("Reading channel names from console...")
+                self.view.root.update()
+                channel_data = get_name_channel(self.context, data_color, start_channel, end_channel)
+                self.context.get_output().close()
+            else:
+                return
+        except Exception as e:
+            error_msg = f"Failed to read channel data: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        if print_mode:
+            filepath = PdfExporter.make_temp_path()
+        else:
+            self.view.set_status("Choose a file location...")
+            filepath = filedialog.asksaveasfilename(
+                title="Save Channel List PDF",
+                defaultextension=".pdf",
+                filetypes=[("PDF files", "*.pdf")],
+                initialfile=f"channel-list-{console_type.lower().replace('/', '-')}.pdf",
+            )
+            if not filepath:
+                self.view.set_status("Export cancelled.")
+                return
+
+        try:
+            self.view.set_status("Generating PDF...")
+            self.view.root.update()
+            PdfExporter.export_pdf(filepath, channel_data, console_type)
+        except Exception as e:
+            error_msg = f"Failed to generate PDF: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        self.view.advance_progress_connection()
+
+        if print_mode:
+            self.view.set_status("Opening for print...")
+            PdfExporter.open_file(filepath)
+            showinfo(message="Channel list opened for printing.")
+        else:
+            self.view.set_status(f"PDF saved: {os.path.basename(filepath)}")
+            showinfo(message=f"Channel list exported to:\n{filepath}")
 
     # ------------------------------------------------------------------
     # Business logic – Spreadsheet to Console / DAW
@@ -492,7 +682,7 @@ class MainController:
             showerror(message=error_msg)
             return self.view.root.quit()
 
-        self.context.get_app_data().set_console(self.view.var_console.get())
+        self.context.get_app_data().set_console(self.view.get_effective_console())
 
         sheet.set_channel_model(
             create_channel_list_content(
@@ -508,8 +698,12 @@ class MainController:
         app_data.set_midi_channel(
             self._determine_technical_midi_port(self.view.var_midi_channel.get()))
 
-        if self.context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis:
+        console = self.context.get_app_data().get_console()
+        if console == dliveConstants.console_drop_down_avantis:
             self.view.disable_avantis_checkboxes()
+            self.view.root.update()
+        elif console in dliveConstants.MIXING_STATION_CONSOLES:
+            self.view.disable_mixing_station_checkboxes()
             self.view.root.update()
 
         validation_errors = validate(sheet, self.context.get_app_data().get_console())
@@ -552,15 +746,22 @@ class MainController:
         self.view.set_status(action)
 
         current_ip = self.view.get_ip()
+        console = self.context.get_app_data().get_console()
+        is_ms = console in dliveConstants.MIXING_STATION_CONSOLES
 
         if (self.context.get_network_connection_allowed() and
                 self.context.get_app_data().get_output_write_to_console()):
-            if not is_valid_ip_address(current_ip):
-                error_message = "Invalid IP-Address"
-                self.view.set_status(error_message)
-                showerror(message=error_message)
-                return
-            self.context.set_output(self._connect_to_console(current_ip))
+            if is_ms:
+                ms_port = self.view.get_ms_port()
+                self.context.set_ms_client(MixingStationClient(current_ip, int(ms_port)))
+                self.context.set_output(None)
+            else:
+                if not is_valid_ip_address(current_ip):
+                    error_message = "Invalid IP-Address"
+                    self.view.set_status(error_message)
+                    showerror(message=error_message)
+                    return
+                self.context.set_output(self._connect_to_console(current_ip))
         else:
             self.context.set_output(None)
 
@@ -568,12 +769,12 @@ class MainController:
         self.view.root.update()
 
         if self.context.get_app_data().get_output_write_to_console():
-            if not self.context.get_csv_patching_hint_already_seen():
+            if not is_ms and not self.context.get_csv_patching_hint_already_seen():
                 showinfo(
                     message='Hint: Input patching (Source, Socket) can be applied by using Director´s CSV Import function.')
                 self.context.set_csv_patching_hint_already_seen(True)
 
-            if self.context.get_output() is None:
+            if not is_ms and self.context.get_output() is None:
                 self.view.reset_progress()
                 self.view.root.update()
                 return
@@ -671,22 +872,29 @@ class MainController:
         self.view.root.update()
 
     def _process_actions(self, action_list, actions, sheet):
+        console = self.context.get_app_data().get_console()
+        is_ms = console in dliveConstants.MIXING_STATION_CONSOLES
+
         for action in action_list:
             action_message = action.get_message()
             if action.get_sheet_tab() == "channels":
                 self.view.set_status(action_message)
-                if handle_channels_parameter(action_message, self.context,
-                                             sheet.get_channel_model(),
-                                             action.get_action()) == 1:
-                    self.view.reset_status()
-                    self.view.reset_progress()
-                    exit(1)
-            elif action.get_sheet_tab() == "sockets":
+                if is_ms:
+                    handle_ms_channels(self.log, self.context.get_ms_client(),
+                                       sheet.get_channel_model(), action.get_action(), console)
+                else:
+                    if handle_channels_parameter(action_message, self.context,
+                                                 sheet.get_channel_model(),
+                                                 action.get_action()) == 1:
+                        self.view.reset_status()
+                        self.view.reset_progress()
+                        exit(1)
+            elif action.get_sheet_tab() == "sockets" and not is_ms:
                 self.view.set_status(action_message)
                 handle_sockets_parameter(action_message, self.context,
                                          sheet.get_socket_model(),
                                          action.get_action())
-            elif action.get_sheet_tab() == "groups":
+            elif action.get_sheet_tab() == "groups" and not is_ms:
                 self.view.set_status(action_message)
                 if handle_groups_parameter(action_message, self.context,
                                            sheet.get_group_model(),
@@ -834,6 +1042,8 @@ class MainController:
 
     @staticmethod
     def _determine_console_id(selected_console_as_string):
+        if selected_console_as_string in dliveConstants.MIXING_STATION_CONSOLES:
+            return selected_console_as_string
         switcher = {
             dliveConstants.console_drop_down_dlive: dliveConstants.console_drop_down_dlive,
             dliveConstants.console_drop_down_avantis: dliveConstants.console_drop_down_avantis,

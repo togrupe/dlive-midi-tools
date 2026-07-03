@@ -18,7 +18,6 @@ Feature Release
   - No spreadsheet required; uses the channel Start / End range selectors in the Console to DAW tab
 
 ### Improvements
-- PDF generation migrated from reportlab to **fpdf2** (MIT license)
 
 ### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.

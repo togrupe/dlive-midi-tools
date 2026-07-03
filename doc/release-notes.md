@@ -5,12 +5,11 @@
 Feature Release
 
 ### New Features
-- **Mixing Station support** via REST API (HTTP port 8080):
-  - Spreadsheet → Mixing Station: Name, Color, Mute, Fader Level
-  - Console to DAW from Mixing Station: reads channel names and colors (up to 99 channels)
-  - Select `Mixing Station` in the console dropdown to activate; enter host IP and port in the connection bar
-  - Supported console sub-types: SQ, DM7, Wing, M32/X32, QU — each with its own color mapping
-  - Utilities tab is automatically disabled when Mixing Station is selected
+- **Extended console support — SQ, DM7, Wing, M32/X32, QU** via Mixing Station REST API (HTTP port 8080):
+  - Spreadsheet → Console: Name, Color, Mute, Fader Level
+  - Console to DAW: reads channel names and colors (up to 99 channels)
+  - Select the desired console type in the console dropdown; enter Mixing Station host IP and port in the connection bar
+  - Each console type uses its own color mapping
   - Spreadsheet template [MixingStationChannelList.xlsx](../MixingStationChannelList.xlsx) added
 - **Print / Export Channel List as PDF** — available in the **Utilities** tab:
   - `Export Channel List as PDF` — reads current channel list from the console or Mixing Station and saves a formatted PDF to a chosen location

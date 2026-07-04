@@ -157,7 +157,7 @@ surface work required.
 ### Prerequisites & Setup
 
 1. Install and start **Mixing Station** on a device that is on the same network as your console.
-2. In Mixing Station, connect to your console and enable the **REST API** (Settings → Remote Control → HTTP API). Note the host IP and port (default: 8080).
+2. In Mixing Station, connect to your console and enable the **REST API** (Global Settings → API: HTTP REST). Note the host IP and port (default: 8080).
 3. In dmt Connection Settings, select **Mixing Station** as the console, choose the console sub-type (SQ / DM7 / Wing / M32/X32 / QU) from the Type dropdown, and enter the Mixing Station host IP and port.
 4. Use **Test Connection** to verify that dmt can reach the Mixing Station REST API before starting the write process.
 

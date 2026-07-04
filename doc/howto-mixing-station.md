@@ -11,7 +11,7 @@ Supported console types: **SQ, DM7, Wing, M32/X32, QU**
 ## Prerequisites
 
 - [Mixing Station Desktop](https://mixingstation.app) installed and running on the same machine as dmt
-- HTTP REST API enabled in Mixing Station: **Global Settings → HTTP API** (without Pro license the API stops after 15 minutes)
+- HTTP REST API enabled in Mixing Station: **Global Settings → API: HTTP REST** (without Pro license the API stops after 15 minutes)
 - The console reachable from that machine over the local network
 
 ---

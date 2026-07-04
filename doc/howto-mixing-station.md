@@ -65,4 +65,4 @@ In the **Utilities** tab, click **Export Channel List as PDF** or **Print Channe
 
 ---
 
-← [Usage Guide](usage.md)
+← [back](../README.md)

@@ -73,6 +73,8 @@ For a detailed architectural overview including component diagram, data flows, a
 
 For flowcharts and step-by-step descriptions of all workflows, see [Workflows & Overview](doc/workflows.md).
 
+For a step-by-step guide on using dmt with Mixing Station, see [How-To: Mixing Station Integration](doc/howto-mixing-station.md).
+
 | # | Workflow | Input | Output |
 |---|----------|-------|--------|
 | A | Spreadsheet → Console / DAW | .xlsx / .ods | dLive / Avantis + DAW |

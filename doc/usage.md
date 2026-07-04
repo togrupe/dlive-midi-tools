@@ -32,7 +32,7 @@ Enter your password and click:
 
 ![Open Anyway](open-anyway.png)
 
-Continue with [Step 4](#step-4).
+Continue with [Step 4](#step-4--launch).
 
 **B: Build from source**
 
@@ -63,7 +63,7 @@ B3.2 Create a one-file binary (works for Windows and macOS):
 pyinstaller -y --onefile -w ./src/Main.py
 ```
 
-## Step 4 — Launch {#step-4}
+## Step 4 — Launch
 
 The following window appears after launch. This can take a couple of seconds.
 
@@ -90,7 +90,7 @@ The menu bar at the top of the window provides the following options:
 
 1. Select the console: `dLive`, `Avantis`, or `Mixing Station`
 
-2. Check the IP address. For dLive / Avantis also check the MIDI Port. For Mixing Station, select the console type (SQ, DM7, Wing, M32/X32, QU), then enter the host IP and port (default: 8080).
+2. Check the IP address. For dLive / Avantis also check the MIDI Port. For Mixing Station, select the console type (SQ, DM7, Wing, M32/X32, QU), then enter the host IP and port (default: 8080). See [How-To: Mixing Station Integration](howto-mixing-station.md) for a step-by-step guide.
 
 3. `Save` — persists the current settings (console, IP, MIDI port) for the next start of the tool.
 
@@ -99,6 +99,12 @@ The menu bar at the top of the window provides the following options:
 5. `Default` — sets the IP back to the default: 192.168.1.70.
 
 6. `Test Connection` — tries to establish a test connection to the console. You will be informed by a pop-up in both cases (successful / failed).
+
+## Console Settings (Mixing Station)
+
+For a full step-by-step guide on setting up and using Mixing Station with dmt, see:
+
+**→ [How-To: Mixing Station Integration](howto-mixing-station.md)**
 
 ## Console Settings (dLive / Avantis)
 

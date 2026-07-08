@@ -26,8 +26,9 @@ You've got the channel list in Excel — but the console still needs programming
 
 ## Who Is It For?
 
-- **Live Sound engineers, touring & festival crews** who want fast, reliable and reproducible channel-list deployment across shows
-- **Recording engineers** syncing console and DAW for virtual soundchecks
+- **Live sound engineers, touring & festival crews** who want fast, reliable, reproducible channel-list deployment across shows, plus synced DAW sessions for virtual soundchecks
+- **Recording engineers** who want console and DAW in sync for live recordings
+- **Studio engineers** prepping DAW sessions (w/o consoles usage) ahead of recording sessions
 
 **[⬇ Download the latest version](#download)**
 

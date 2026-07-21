@@ -103,6 +103,7 @@ class MainView:
         self._create_tab1_content()
         self._create_tab2_content()
         self._create_tab3_content()
+        self._create_tab4_content()
         self._create_status_area()
         self._finalize_layout()
 
@@ -140,6 +141,7 @@ class MainView:
         self.tab1 = self.tab_control.add("Spreadsheet to Console / DAW")
         self.tab2 = self.tab_control.add("Console to DAW")
         self.tab3 = self.tab_control.add("Utilities")
+        self.tab4 = self.tab_control.add("Export")
 
     # ------------------------------------------------------------------
     # Connection Settings
@@ -568,6 +570,81 @@ class MainView:
         self.btn_print_channels.pack(side="left", padx=5)
         btn_row.grid(row=1, column=0, padx=10, pady=8)
         export_frame.pack(side="top", fill="x", padx=10, pady=8)
+
+    # ------------------------------------------------------------------
+    # Tab 4 – Export
+    # ------------------------------------------------------------------
+
+    def _create_tab4_content(self):
+        outer = ctk.CTkFrame(self.tab4, fg_color="transparent")
+        outer.pack(fill="both", expand=True, padx=5, pady=3)
+
+        export_settings_lf = self._section(outer, "Settings")
+        export_settings_lf.configure(border_width=1, border_color="white")
+        export_settings_lf.pack(side="top", fill="x", padx=5, pady=5)
+
+        source_frame = ctk.CTkFrame(export_settings_lf, fg_color="transparent")
+        ctk.CTkLabel(source_frame, text="Read Channel Names From", anchor="w").grid(
+            row=0, column=0, padx=5, sticky="w")
+
+        self.var_export_source = StringVar(value=GuiConstants.TEXT_EXPORT_SOURCE_CONSOLE)
+        ctk.CTkRadioButton(source_frame, text=GuiConstants.TEXT_EXPORT_SOURCE_CONSOLE,
+                          variable=self.var_export_source,
+                          value=GuiConstants.TEXT_EXPORT_SOURCE_CONSOLE).grid(
+            row=0, column=1, padx=5)
+        ctk.CTkRadioButton(source_frame, text=GuiConstants.TEXT_EXPORT_SOURCE_SPREADSHEET,
+                          variable=self.var_export_source,
+                          value=GuiConstants.TEXT_EXPORT_SOURCE_SPREADSHEET).grid(
+            row=0, column=2, padx=5)
+        source_frame.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+
+        start_end_channel_frame = ctk.CTkFrame(export_settings_lf, fg_color="transparent")
+
+        values_start = [f"{i}" for i in range(1, 129)]
+        self.var_export_startChannel = StringVar()
+        self.combobox_export_start = ctk.CTkComboBox(start_end_channel_frame,
+                                                     variable=self.var_export_startChannel,
+                                                     values=values_start, width=70)
+        self.combobox_export_start.set("1")
+
+        ctk.CTkLabel(start_end_channel_frame, text="Channel Start", anchor="w").grid(row=0, column=0, padx=5, sticky="w")
+        self.combobox_export_start.grid(row=0, column=1, padx=5)
+
+        values_end = [f"{i}" for i in range(1, 129)]
+        self.var_export_endChannel = StringVar()
+        self.combobox_export_end = ctk.CTkComboBox(start_end_channel_frame,
+                                                    variable=self.var_export_endChannel,
+                                                    values=values_end, width=70)
+        self.combobox_export_end.set("128")
+        ctk.CTkLabel(start_end_channel_frame, text="End", anchor="w").grid(row=0, column=2, padx=5)
+        self.combobox_export_end.grid(row=0, column=3, padx=5)
+        start_end_channel_frame.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+
+        export_json_lf = self._section(outer, "Export")
+        export_json_lf.configure(border_width=1, border_color="white")
+
+        btn_row = ctk.CTkFrame(export_json_lf, fg_color="transparent")
+        self.btn_export_json = ctk.CTkButton(
+            btn_row,
+            text='Export Channel List as JSON (Dante Config Editor Labels)',
+            fg_color="#8E44AD", hover_color="#6C3483")
+        self.btn_export_json.pack(side="left", padx=5)
+        btn_row.grid(row=1, column=0, padx=10, pady=8)
+        export_json_lf.pack(side="top", fill="x", padx=5, pady=5)
+
+    def set_export_max_channel(self, max_ch):
+        values = [f"{i}" for i in range(1, max_ch + 1)]
+        self.combobox_export_end.configure(values=values)
+        current = int(self.var_export_endChannel.get())
+        if current > max_ch:
+            self.combobox_export_end.set(str(max_ch))
+        self.root.update()
+
+    def set_export_start_channel(self, n):
+        self.combobox_export_start.set(str(n))
+
+    def set_export_end_channel(self, n):
+        self.combobox_export_end.set(str(n))
 
     def disable_helpers_avantis(self):
         self.btn_reset_mute_groups.configure(state='disabled')

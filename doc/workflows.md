@@ -376,6 +376,57 @@ path (MIDI SysEx for dLive / Avantis; REST GET for Mixing Station).
 
 ---
 
+## Channel List Dante Label Export (JSON / CSV)
+
+Export the channel list as a Dante channel-label file, compatible with
+[Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 — either
+straight from the console/Mixing Station, or from a dmt spreadsheet, no console connection
+required for the latter.
+
+### Idea & Background
+
+Dante-networked consoles and I/O boxes are commonly configured and labeled with Audinate's
+Dante Controller. Re-typing every channel label a second time in that tool is exactly the
+kind of duplicate work dmt aims to eliminate. This feature reuses Mamat79's open-source
+`DanteConfigEditorV3` file format so channel names entered once in dmt (or already live on the
+console) can be imported straight into Dante Config Editor.
+
+Two file formats are available, both found in the **Export** tab:
+
+| Button | Behaviour |
+|--------|-----------|
+| **Export Channel List as JSON (Dante Config Editor Labels)** | Writes a `dante-config-editor-channel-labels` JSON file |
+| **Export Channel List as CSV (Dante Config Editor Labels)** | Writes a CSV file with columns `format_version, source_app, source_version, device, direction, channel, dante_id, label` |
+
+### Data Source
+
+Unlike the PDF export, channel names for this feature can come from either of two sources,
+selected in the **Export** tab:
+
+| Source | Behaviour |
+|--------|-----------|
+| **Console / Mixing Station** | Reads the live channel list from the console or Mixing Station — same read path as Workflows D and E |
+| **DMT Spreadsheet** | Reads channel names from the `Channels` sheet of a dmt Channel List spreadsheet (`.xlsx`) — no console connection required |
+
+The `device` field in the exported file is taken from the currently selected console /
+Mixing Station type.
+
+### Step Sequence
+
+| Step | Action |
+|------|--------|
+| 1 | Switch to the **Export** tab |
+| 2 | Choose the **Channel Start / End** range |
+| 3 | Choose the data source: **Console / Mixing Station** or **DMT Spreadsheet** |
+| 4a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as JSON** or **... as CSV** |
+| 4b | *or* DMT Spreadsheet: click the export button, then pick the `.xlsx` file when prompted |
+| 5 | Choose a save location — the file is written |
+
+**Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station) when
+reading from the console; a valid dmt Channel List spreadsheet when reading from a spreadsheet.
+
+---
+
 ## Workflow Summary
 
 | # | Workflow | Source | Target | Connection |
@@ -386,6 +437,7 @@ path (MIDI SysEx for dLive / Avantis; REST GET for Mixing Station).
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
 | — | Console → PDF (Print / Export) | dLive / Avantis or Mixing Station | PDF file / printer | MIDI over TCP or HTTP REST |
+| — | Console or Spreadsheet → Dante Labels (JSON / CSV) | dLive / Avantis / Mixing Station or .xlsx | Dante Config Editor JSON/CSV | MIDI over TCP, HTTP REST, or spreadsheet |
 
 ---
 

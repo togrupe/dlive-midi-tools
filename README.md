@@ -113,9 +113,6 @@ Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
 | v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2120) | 861622a542446db242c93d00ea3cf99a |
 |         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip)  |                                    | cc6fd1f297b123158d2591841b7d5898 |
 |         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip)      |                                    | 2b09f614d9b6c517e33be5b4d5fe7a6e |
-| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
-|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)  |                                    | c8f1e8b8ebd2183cfed8868aa504a7bb |
-|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)      |                                    | 970930d359582cea6266cd304265dfbc |
 Older versions see [archive](doc/download-archive.md)
 
 (*) For Apple Silicon Macs, prefer the native **arm64** build. The x86_64 (Intel) build also runs via Rosetta 2, which newer versions of macOS have installed by default — but the native build is recommended.

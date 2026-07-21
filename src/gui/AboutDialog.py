@@ -28,6 +28,9 @@ ABOUT_CONTENT = [
     {"type": "spacer"},
     {"type": "multirow", "label": "Used Python Modules:", "values": ["numpy", "mido", "pandas", "xlrd", "openpyxl", "odfpy", "reathon", "customtkinter", "pyinstaller"]},
     {"type": "spacer"},
+    {"type": "row",      "label": "JSON/CSV Export Format:", "value": "Compatible with Dante Config Editor V3"},
+    {"type": "row",      "label": "Credit:",                 "value": "https://github.com/Mamat79/DanteConfigEditorV3"},
+    {"type": "spacer"},
     {"type": "multirow",      "label": "Contact/Feedback:",   "values": ["dmt@liveworks-vt.de", "https://github.com/togrupe/dlive-midi-tools/discussions"]},
 ]
 

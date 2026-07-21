@@ -125,6 +125,7 @@ The tool has the following modes — choose which one you want to use:
 * **Spreadsheet to Console / DAW** — reads from a spreadsheet and writes to a console or DAW session.
 * **Console to DAW** — reads from the console and writes a DAW session.
 * **Utilities** — direct console operations without a spreadsheet.
+* **Export** — writes the channel list to a Dante Config Editor compatible JSON or CSV file.
 
 <img alt="tabs" src="tabs.png" width="300"/>
 
@@ -246,6 +247,24 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 |--------|-------------|-----------------|
 | Phantom Power OFF (all Sockets) | Switches 48V phantom power off on all sockets (Local, DX1, DX3 for dLive; Local, SLink for Avantis) — use before changing microphones | dLive & Avantis |
 
+## Export Channel List as JSON / CSV
+
+14. Available in the **Export** tab. Writes the channel list to a file format compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79, so channel labels can be imported directly into Dante Config Editor for Dante routing/naming.
+
+   | Button | Behaviour |
+   |--------|-----------|
+   | `Export Channel List as JSON (Dante Config Editor Labels)` | Asks for a save location and writes a `.json` file in the `dante-config-editor-channel-labels` format |
+   | `Export Channel List as CSV (Dante Config Editor Labels)` | Asks for a save location and writes a `.csv` file with columns `format_version, source_app, source_version, device, direction, channel, dante_id, label` |
+
+   Choose the **Channel Start / End** range, then pick where the channel names should be read from:
+
+   | Source | Behaviour |
+   |--------|-----------|
+   | `Console / Mixing Station` | Reads the current channel list live from the connected console or Mixing Station — no spreadsheet required |
+   | `DMT Spreadsheet` | Prompts for a dmt Channel List spreadsheet (`.xlsx`) and reads the channel names from its `Channels` sheet — no console connection required |
+
+   The `device` field in the exported file is taken from the currently selected console / Mixing Station type.
+
 ## DAW Recording Sessions
 
 ### Reaper
@@ -268,4 +287,4 @@ Click on `Open Template` and select the generated file.
 
 ## Logs
 
-14. If something goes wrong, please check the Python console or the `main.log`
+15. If something goes wrong, please check the Python console or the `main.log`

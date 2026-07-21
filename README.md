@@ -20,6 +20,7 @@ You've got the channel list in Excel — but the console still needs programming
 - **Multi-console, multi-platform.** dLive, Avantis, or Mixing Station (SQ, DM7, Wing, M32/X32, QU) — covered.
 - **FOH, monitors, broadcast — one push.** Deploy the same channel list to all consoles. No copy-paste between desks, no name mismatches between positions.
 - **PDF channel lists on demand.** Pull the current console state and export a print-ready PDF instantly — no re-typing, no formatting.
+- **Dante channel labels without retyping.** Export the channel list as JSON or CSV, compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 — from the console/Mixing Station or straight from the spreadsheet.
 
 
 ---
@@ -231,3 +232,6 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * pyinstaller - Binary creator
 
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
+
+## Credits
+* The Channel Label JSON/CSV export (Export tab) uses a file format compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79

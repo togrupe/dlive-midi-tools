@@ -1,5 +1,31 @@
 # Release Notes
 
+## v2.14.0
+
+Feature Release
+
+### New Features
+- **Export Channel List as JSON / CSV** — available in the new **Export** tab:
+  - `Export Channel List as JSON (Dante Config Editor Labels)` — writes a `dante-config-editor-channel-labels` compatible JSON file, ready for import into Dante Config Editor
+  - `Export Channel List as CSV (Dante Config Editor Labels)` — writes the equivalent CSV format (`format_version,source_app,source_version,device,direction,channel,dante_id,label`)
+  - Channel names can be read from either source:
+    - **Console / Mixing Station** — reads the current channel list live from the connected console or Mixing Station, using the Start / End channel range selectors
+    - **DMT Spreadsheet** — reads channel names directly from a dmt Channel List spreadsheet (`.xlsx`), no console connection required
+  - Device name in the exported file is taken from the currently selected console / Mixing Station type
+  - File format credit: [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79
+
+### Improvements
+
+### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+
+### Issues Fixed
+
+### Known Issues
+
+---
+
 ## v2.13.0
 
 Feature Release

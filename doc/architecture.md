@@ -112,6 +112,8 @@ graph TD
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
 | PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using fpdf2; `open_file()` sends it to the OS default PDF viewer for printing |
+| JSON Exporter | `src/export/JsonExporter.py` | Generate a `dante-config-editor-channel-labels` JSON file, compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 |
+| CSV Exporter | `src/export/CsvExporter.py` | Generate the equivalent Dante Config Editor CSV format (`format_version,source_app,source_version,device,direction,channel,dante_id,label`) |
 | Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions |
 | Helper | `src/helper/Networking.py` | IP address validation utilities |
 
@@ -204,6 +206,28 @@ Mixing Station App (HTTP REST API · port 8080)
     → PdfExporter.export_pdf   (channel list as table, color cells)
     → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
 ```
+
+### Export Tab → JSON / CSV (Console / Mixing Station source)
+
+```
+Console (MIDI over TCP) or Mixing Station App (HTTP REST API · port 8080)
+    → Color.get_color_channel + Name.get_name_channel   (dLive / Avantis)
+      or MixingStationHandler.get_channel_data          (Mixing Station)
+    → JsonExporter.export_json  or  CsvExporter.export_csv
+    → .json / .csv file  →  Dante Config Editor import
+```
+
+### Export Tab → JSON / CSV (Spreadsheet source)
+
+```
+Spreadsheet (.xlsx)
+    → Spreadsheet Parser (pandas) — Channels sheet only
+    → Data Models (ChannelListEntry)
+    → JsonExporter.export_json  or  CsvExporter.export_csv
+    → .json / .csv file  →  Dante Config Editor import
+```
+
+> No console or Mixing Station connection is required for the spreadsheet source.
 
 ### Utilities Tab → Console
 
@@ -346,6 +370,7 @@ color mapping used for REST API calls.
 | Fader Level | Yes | Yes | Yes |
 | Console to DAW (read name + color) | Yes | Yes | Yes |
 | Export / Print as PDF | Yes | Yes | Yes |
+| Export as JSON / CSV (Dante Labels) | Yes | Yes | Yes |
 | Phantom / Pad / Gain (Local) | Yes | Yes | No |
 | Phantom / Pad / Gain (DX1/DX3) | Yes | Yes | No |
 | Phantom / Pad / Gain (SLink/DX2) | Yes | No | No |

@@ -629,6 +629,11 @@ class MainView:
             text='Export Channel List as JSON (Dante Config Editor Labels)',
             fg_color="#8E44AD", hover_color="#6C3483")
         self.btn_export_json.pack(side="left", padx=5)
+        self.btn_export_csv = ctk.CTkButton(
+            btn_row,
+            text='Export Channel List as CSV (Dante Config Editor Labels)',
+            fg_color="#8E44AD", hover_color="#6C3483")
+        self.btn_export_csv.pack(side="left", padx=5)
         btn_row.grid(row=1, column=0, padx=10, pady=8)
         export_json_lf.pack(side="top", fill="x", padx=5, pady=5)
 

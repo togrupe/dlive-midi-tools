@@ -53,7 +53,7 @@ from parameters.channels.Helpers import (
 )
 from mixingstation.MixingStationClient import MixingStationClient
 from mixingstation.MixingStationHandler import handle_ms_channels, get_channel_data as ms_get_channel_data
-from export import PdfExporter, JsonExporter
+from export import PdfExporter, JsonExporter, CsvExporter
 from persistence.Persistence import read_persisted_ms_port
 
 
@@ -151,6 +151,7 @@ class MainController:
 
         # Tab 4 action buttons
         self.view.btn_export_json.configure(command=self.on_export_json_thread)
+        self.view.btn_export_csv.configure(command=self.on_export_csv_thread)
 
         # Tab 3 utility buttons
         self.view.btn_reset_dca.configure(
@@ -408,6 +409,10 @@ class MainController:
         bg_thread = threading.Thread(target=self._read_and_export_json)
         bg_thread.start()
 
+    def on_export_csv_thread(self):
+        bg_thread = threading.Thread(target=self._read_and_export_csv)
+        bg_thread.start()
+
     # ------------------------------------------------------------------
     # Business logic – Console to DAW
     # ------------------------------------------------------------------
@@ -642,33 +647,7 @@ class MainController:
     # ------------------------------------------------------------------
 
     def _read_and_export_json(self):
-        app_data = self.context.get_app_data()
-        app_data.set_midi_channel(
-            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
-        self.context.set_app_data(app_data)
-
-        start_channel = int(self.view.var_export_startChannel.get()) - 1
-        end_channel = int(self.view.var_export_endChannel.get())
-
-        if start_channel >= end_channel:
-            error_msg = (f"Start Channel {start_channel + 1} must be less than "
-                         f"End Channel {end_channel}.")
-            showerror(message=error_msg)
-            return
-
-        console_type = self.view.get_effective_console()
-        self.context.get_app_data().set_console(console_type)
-
-        self.view.reset_status()
-        self.view.reset_progress()
-        self.view.advance_progress_connection()
-        self.view.root.update()
-
-        if self.view.var_export_source.get() == GuiConstants.TEXT_EXPORT_SOURCE_SPREADSHEET:
-            channel_data = self._read_channel_data_from_spreadsheet(start_channel, end_channel)
-        else:
-            channel_data = self._read_channel_data_from_console(start_channel, end_channel, console_type)
-
+        channel_data, console_type = self._gather_export_channel_data()
         if channel_data is None:
             return
 
@@ -697,6 +676,73 @@ class MainController:
         self.view.advance_progress_connection()
         self.view.set_status(f"JSON saved: {os.path.basename(filepath)}")
         showinfo(message=f"Channel list exported to:\n{filepath}")
+
+    def _read_and_export_csv(self):
+        channel_data, console_type = self._gather_export_channel_data()
+        if channel_data is None:
+            return
+
+        self.view.set_status("Choose a file location...")
+        filepath = filedialog.asksaveasfilename(
+            title="Save Channel List CSV",
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv")],
+            initialfile=f"channel-list-{console_type.lower().replace('/', '-')}.csv",
+        )
+        if not filepath:
+            self.view.set_status("Export cancelled.")
+            return
+
+        try:
+            self.view.set_status("Generating CSV...")
+            self.view.root.update()
+            CsvExporter.export_csv(filepath, channel_data, console_type)
+        except Exception as e:
+            error_msg = f"Failed to generate CSV: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        self.view.advance_progress_connection()
+        self.view.set_status(f"CSV saved: {os.path.basename(filepath)}")
+        showinfo(message=f"Channel list exported to:\n{filepath}")
+
+    def _gather_export_channel_data(self):
+        """Validate the export channel range and read channel data from the
+        selected source. Returns (channel_data, console_type) or (None, None)
+        if the range is invalid, reading failed, or the user cancelled."""
+        app_data = self.context.get_app_data()
+        app_data.set_midi_channel(
+            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
+        self.context.set_app_data(app_data)
+
+        start_channel = int(self.view.var_export_startChannel.get()) - 1
+        end_channel = int(self.view.var_export_endChannel.get())
+
+        if start_channel >= end_channel:
+            error_msg = (f"Start Channel {start_channel + 1} must be less than "
+                         f"End Channel {end_channel}.")
+            showerror(message=error_msg)
+            return None, None
+
+        console_type = self.view.get_effective_console()
+        self.context.get_app_data().set_console(console_type)
+
+        self.view.reset_status()
+        self.view.reset_progress()
+        self.view.advance_progress_connection()
+        self.view.root.update()
+
+        if self.view.var_export_source.get() == GuiConstants.TEXT_EXPORT_SOURCE_SPREADSHEET:
+            channel_data = self._read_channel_data_from_spreadsheet(start_channel, end_channel)
+        else:
+            channel_data = self._read_channel_data_from_console(start_channel, end_channel, console_type)
+
+        if channel_data is None:
+            return None, None
+
+        return channel_data, console_type
 
     def _read_channel_data_from_console(self, start_channel, end_channel, console_type):
         use_mixing_station = console_type in dliveConstants.MIXING_STATION_CONSOLES

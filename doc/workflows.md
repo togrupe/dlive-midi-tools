@@ -461,6 +461,8 @@ flowchart LR
         REAPER_G["Reaper Session Creator"]
         TL_G["Tracks Live Creator"]
         CSV_G["Director CSV Creator"]
+        JSON_G["JSON/CSV Exporter\n(Dante Config Editor)"]
+        PDF_G["PDF Exporter"]
         PERSIST["Persistence\nconfig.json"]
     end
 
@@ -469,6 +471,8 @@ flowchart LR
         DIR["Director\nCSV import"]
         MS_W["Mixing Station\nwrite via HTTP"]
         DAW["Recording Tools\nReaper / Tracks Live"]
+        DCE["Dante Config Editor\nJSON/CSV import"]
+        PDF_OUT["PDF file\nsave to disk / print"]
     end
 
     TMPL --> PARSER --> VALIDATOR
@@ -479,6 +483,12 @@ flowchart LR
     VALIDATOR --> TL_G --> DAW
     CON_R --> MIDI_H
     MS_R --> MS_H
+    PARSER -.->|"Channels sheet only\n(no validation)"| JSON_G
+    PARSER -.->|"Channels sheet only\n(no validation)"| PDF_G
+    CON_R --> JSON_G --> DCE
+    MS_R --> JSON_G
+    CON_R --> PDF_G --> PDF_OUT
+    MS_R --> PDF_G
     PERSIST -.->|"load / save settings"| dmt
 ```
 

@@ -84,6 +84,7 @@ For a step-by-step guide on using dmt with Mixing Station, see [How-To: Mixing S
 | C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station |
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live |
+| F | Console or Spreadsheet → Dante Config Editor | dLive / Avantis / Mixing Station or .xlsx / .ods | Dante Config Editor JSON/CSV |
 
 More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
 

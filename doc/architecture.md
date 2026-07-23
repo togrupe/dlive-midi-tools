@@ -188,25 +188,6 @@ Mixing Station App (HTTP REST API · port 8080)
     → .rpp / .template file
 ```
 
-### Console → PDF (dLive / Avantis)
-
-```
-Console (MIDI over TCP)
-    → Color.get_color_channel  (SysEx GET per channel)
-    → Name.get_name_channel    (SysEx GET per channel)
-    → PdfExporter.export_pdf   (channel list as table, color cells)
-    → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
-```
-
-### Console → PDF (Mixing Station)
-
-```
-Mixing Station App (HTTP REST API · port 8080)
-    → MixingStationHandler.get_channel_data  (name · color per channel)
-    → PdfExporter.export_pdf   (channel list as table, color cells)
-    → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
-```
-
 ### Export Tab → JSON / CSV (Console / Mixing Station source)
 
 ```
@@ -225,6 +206,28 @@ Spreadsheet (.xlsx)
     → Data Models (ChannelListEntry)
     → JsonExporter.export_json  or  CsvExporter.export_csv
     → .json / .csv file  →  Dante Config Editor import
+```
+
+> No console or Mixing Station connection is required for the spreadsheet source.
+
+### Export Tab → PDF / Print (Console / Mixing Station source)
+
+```
+Console (MIDI over TCP) or Mixing Station App (HTTP REST API · port 8080)
+    → Color.get_color_channel + Name.get_name_channel   (dLive / Avantis)
+      or MixingStationHandler.get_channel_data          (Mixing Station)
+    → PdfExporter.export_pdf   (channel list as table, color cells)
+    → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
+```
+
+### Export Tab → PDF / Print (Spreadsheet source)
+
+```
+Spreadsheet (.xlsx)
+    → Spreadsheet Parser (pandas) — Channels sheet only
+    → Data Models (ChannelListEntry)
+    → PdfExporter.export_pdf   (channel list as table, color cells)
+    → .pdf file  →  save to disk  or  open in system PDF viewer (Print)
 ```
 
 > No console or Mixing Station connection is required for the spreadsheet source.

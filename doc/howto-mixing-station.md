@@ -50,7 +50,7 @@ Switch to the **Console to DAW** tab, set Start/End channel, and click **Generat
 
 ## PDF Export
 
-In the **Utilities** tab, click **Export Channel List as PDF** or **Print Channel List**. Channel range from the Console to DAW tab applies.
+In the **Export** tab, select **Console / Mixing Station** as the source and set the Channel Start/End range, then click **Export Channel List as PDF** or **Print Channel List** in the **Export / Print PDF** box.
 
 ---
 

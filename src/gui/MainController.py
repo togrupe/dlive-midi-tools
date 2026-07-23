@@ -556,55 +556,8 @@ class MainController:
     # ------------------------------------------------------------------
 
     def _read_and_export_pdf(self, print_mode=False):
-        app_data = self.context.get_app_data()
-        app_data.set_midi_channel(
-            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
-        self.context.set_app_data(app_data)
-
-        start_channel = int(self.view.var_current_console_startChannel.get()) - 1
-        end_channel = int(self.view.var_current_console_endChannel.get())
-
-        if start_channel >= end_channel:
-            error_msg = (f"Start Channel {start_channel + 1} must be less than "
-                         f"End Channel {end_channel}.")
-            showerror(message=error_msg)
-            return
-
-        use_mixing_station = self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES
-        console_type = self.view.get_effective_console()
-
-        self.view.reset_status()
-        self.view.reset_progress()
-        self.view.advance_progress_connection()
-        self.view.root.update()
-
-        try:
-            if use_mixing_station:
-                ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
-                self.context.set_ms_client(ms_client)
-                self.view.set_status("Reading channel data from Mixing Station...")
-                self.view.root.update()
-                channel_data = ms_get_channel_data(ms_client, start_channel, end_channel, console_type)
-            elif self.context.get_network_connection_allowed():
-                ip_address = self.view.get_ip()
-                if not is_valid_ip_address(ip_address):
-                    showerror(message="Invalid IP-Address")
-                    return
-                self.context.set_output(self._connect_to_console(ip_address))
-                self.view.set_status("Reading channel colors from console...")
-                self.view.root.update()
-                data_color = get_color_channel(self.context, start_channel, end_channel)
-                self.view.set_status("Reading channel names from console...")
-                self.view.root.update()
-                channel_data = get_name_channel(self.context, data_color, start_channel, end_channel)
-                self.context.get_output().close()
-            else:
-                return
-        except Exception as e:
-            error_msg = f"Failed to read channel data: {e}"
-            self.log.error(error_msg)
-            self.view.set_status(error_msg)
-            showerror(message=error_msg)
+        channel_data, console_type = self._gather_export_channel_data()
+        if channel_data is None:
             return
 
         if print_mode:
@@ -806,7 +759,7 @@ class MainController:
             return None
 
         return [
-            {"dliveChannel": entry.get_channel(), "name": entry.get_name()}
+            {"dliveChannel": entry.get_channel(), "name": entry.get_name(), "color": entry.get_color()}
             for entry in channel_entries
             if start_channel < entry.get_channel() <= end_channel
         ]

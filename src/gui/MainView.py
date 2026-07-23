@@ -554,23 +554,6 @@ class MainView:
         self.btn_phantom_off_all.grid(row=1, column=0, padx=10, pady=8)
         preamp_frame.pack(side="top", fill="x", padx=10, pady=8)
 
-        export_frame = self._section(self.tab3, "Export / Print")
-        export_frame.configure(border_width=1, border_color="white")
-
-        btn_row = ctk.CTkFrame(export_frame, fg_color="transparent")
-        self.btn_export_pdf = ctk.CTkButton(
-            btn_row,
-            text='Export Channel List as PDF',
-            fg_color="#8E44AD", hover_color="#6C3483")
-        self.btn_export_pdf.pack(side="left", padx=5)
-        self.btn_print_channels = ctk.CTkButton(
-            btn_row,
-            text='Print Channel List',
-            fg_color="#8E44AD", hover_color="#6C3483")
-        self.btn_print_channels.pack(side="left", padx=5)
-        btn_row.grid(row=1, column=0, padx=10, pady=8)
-        export_frame.pack(side="top", fill="x", padx=10, pady=8)
-
     # ------------------------------------------------------------------
     # Tab 4 – Export
     # ------------------------------------------------------------------
@@ -620,22 +603,41 @@ class MainView:
         self.combobox_export_end.grid(row=0, column=3, padx=5)
         start_end_channel_frame.grid(row=2, column=0, sticky="w", padx=10, pady=5)
 
-        export_json_lf = self._section(outer, "Export")
+        export_json_lf = self._section(outer, "Export to Dante Config Editor")
         export_json_lf.configure(border_width=1, border_color="white")
 
         btn_row = ctk.CTkFrame(export_json_lf, fg_color="transparent")
         self.btn_export_json = ctk.CTkButton(
             btn_row,
-            text='Export Channel List as JSON (Dante Config Editor Labels)',
+            text='Export Channel List as JSON',
             fg_color="#8E44AD", hover_color="#6C3483")
         self.btn_export_json.pack(side="left", padx=5)
         self.btn_export_csv = ctk.CTkButton(
             btn_row,
-            text='Export Channel List as CSV (Dante Config Editor Labels)',
+            text='Export Channel List as CSV',
             fg_color="#8E44AD", hover_color="#6C3483")
         self.btn_export_csv.pack(side="left", padx=5)
         btn_row.grid(row=1, column=0, padx=10, pady=8)
+
         export_json_lf.pack(side="top", fill="x", padx=5, pady=5)
+
+        export_pdf_lf = self._section(outer, "Export / Print PDF")
+        export_pdf_lf.configure(border_width=1, border_color="white")
+
+        btn_row2 = ctk.CTkFrame(export_pdf_lf, fg_color="transparent")
+        self.btn_export_pdf = ctk.CTkButton(
+            btn_row2,
+            text='Export Channel List as PDF',
+            fg_color="#2980B9", hover_color="#21618C")
+        self.btn_export_pdf.pack(side="left", padx=5)
+        self.btn_print_channels = ctk.CTkButton(
+            btn_row2,
+            text='Print Channel List',
+            fg_color="#2980B9", hover_color="#21618C")
+        self.btn_print_channels.pack(side="left", padx=5)
+        btn_row2.grid(row=1, column=0, padx=10, pady=8)
+
+        export_pdf_lf.pack(side="top", fill="x", padx=5, pady=5)
 
     def set_export_max_channel(self, max_ch):
         values = [f"{i}" for i in range(1, max_ch + 1)]

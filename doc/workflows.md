@@ -328,7 +328,7 @@ flowchart TD
 
 ---
 
-## Channel List Dante Label Export (JSON / CSV)
+## Workflow F – Console or Spreadsheet → Dante Config Editor
 
 Export the channel list as a Dante channel-label file, compatible with
 [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 — either
@@ -369,19 +369,19 @@ shared with the PDF export below.
 
 | Step | Action |
 |------|--------|
-| 1 | Switch to the **Export** tab |
-| 2 | Choose the **Channel Start / End** range |
-| 3 | Choose the data source: **Console / Mixing Station** or **DMT Spreadsheet** |
-| 4a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as JSON** or **... as CSV** |
-| 4b | *or* DMT Spreadsheet: click the export button, then pick the `.xlsx` file when prompted |
-| 5 | Choose a save location — the file is written |
+| F1 | Switch to the **Export** tab |
+| F2 | Choose the **Channel Start / End** range |
+| F3 | Choose the data source: **Console / Mixing Station** or **DMT Spreadsheet** |
+| F4a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as JSON** or **... as CSV** |
+| F4b | *or* DMT Spreadsheet: click the export button, then pick the `.xlsx` file when prompted |
+| F5 | Choose a save location — the file is written |
 
 **Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station) when
 reading from the console; a valid dmt Channel List spreadsheet when reading from a spreadsheet.
 
 ---
 
-## Channel List Print & Export (PDF)
+## Workflow G – Console or Spreadsheet → PDF (Print / Export)
 
 Print or export the current channel list as a PDF file.
 
@@ -416,11 +416,11 @@ The PDF contains a table with one row per channel:
 
 | Step | Action |
 |------|--------|
-| 1 | Switch to the **Export** tab |
-| 2 | Choose the **Channel Start / End** range and the data source |
-| 3a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as PDF** → choose a save location → PDF is written |
-| 3b | *or* DMT Spreadsheet: click **Export Channel List as PDF**, pick the `.xlsx` file when prompted → choose a save location → PDF is written |
-| 3c | *or* Click **Print Channel List** (either source) → PDF opens in the system PDF viewer → print from there |
+| G1 | Switch to the **Export** tab |
+| G2 | Choose the **Channel Start / End** range and the data source |
+| G3a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as PDF** → choose a save location → PDF is written |
+| G3b | *or* DMT Spreadsheet: click **Export Channel List as PDF**, pick the `.xlsx` file when prompted → choose a save location → PDF is written |
+| G3c | *or* Click **Print Channel List** (either source) → PDF opens in the system PDF viewer → print from there |
 
 **Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station) when
 reading from the console; a valid dmt Channel List spreadsheet when reading from a spreadsheet.
@@ -436,8 +436,8 @@ reading from the console; a valid dmt Channel List spreadsheet when reading from
 | C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
-| — | Console or Spreadsheet → Dante Labels (JSON / CSV) | dLive / Avantis / Mixing Station or .xlsx | Dante Config Editor JSON/CSV | MIDI over TCP, HTTP REST, or spreadsheet |
-| — | Console or Spreadsheet → PDF (Print / Export) | dLive / Avantis / Mixing Station or .xlsx | PDF file / printer | MIDI over TCP, HTTP REST, or spreadsheet |
+| F | Console or Spreadsheet → Dante Config Editor | dLive / Avantis / Mixing Station or .xlsx / .ods | Dante Config Editor JSON/CSV | MIDI over TCP, HTTP REST, or spreadsheet |
+| G | Console or Spreadsheet → PDF (Print / Export) | dLive / Avantis / Mixing Station or .xlsx / .ods | PDF file / printer | MIDI over TCP, HTTP REST, or spreadsheet |
 
 ---
 

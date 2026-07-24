@@ -82,6 +82,7 @@ The menu bar at the top of the window provides the following options:
 
 **Help**
 - `Documentation` — opens the online documentation in your browser
+- `Check for Updates` — fetches the latest release info and shows whether a newer version is available, with a direct download link if so
 - `Support Project ☕` — opens the donation page
 - `About` — shows version information
 - `Close` — exits the application

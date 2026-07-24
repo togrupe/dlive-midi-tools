@@ -24,7 +24,10 @@ from directorcsv import CsvCreator
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from gui.DonateDialog import DonateDialog
+from gui.UpdateDialog import UpdateDialog
+from helper import UpdateChecker
 from helper.Networking import is_valid_ip_address
+import Toolinfo
 from model.Action import Action
 from model.Sheet import Sheet
 from parameters.channels.ChannelsCommon import handle_channels_parameter
@@ -122,8 +125,9 @@ class MainController:
         # Menu
         self.view.var_dark_mode.trace("w", self.on_appearance_mode_changed)
         self.view.file_menu.entryconfig(0, command=self.on_open_documentation)
-        self.view.file_menu.entryconfig(1, command=self.on_donate)
-        self.view.file_menu.entryconfig(3, command=self.on_about)
+        self.view.file_menu.entryconfig(1, command=self.on_check_for_updates_thread)
+        self.view.file_menu.entryconfig(3, command=self.on_donate)
+        self.view.file_menu.entryconfig(5, command=self.on_about)
         self.view.btn_donate.configure(command=self.on_donate)
 
         # Connection buttons
@@ -218,6 +222,28 @@ class MainController:
     def on_donate(self):
         donate = DonateDialog(self.view.root)
         donate.mainloop()
+
+    def on_check_for_updates_thread(self):
+        bg_thread = threading.Thread(target=self._check_for_updates)
+        bg_thread.start()
+
+    def _check_for_updates(self):
+        try:
+            info = UpdateChecker.fetch_latest_release_info()
+        except Exception as e:
+            error_msg = f"Could not check for updates: {e}"
+            self.log.error(error_msg)
+            showerror(message=error_msg)
+            return
+
+        latest_version = info.get("version", "")
+        current_version = Toolinfo.version
+        download_url = None
+        if UpdateChecker.is_update_available(latest_version, current_version):
+            download_url = UpdateChecker.get_download_url_for_platform(info.get("downloads", {}))
+
+        update = UpdateDialog(self.view.root, current_version, latest_version, download_url)
+        update.mainloop()
 
     def on_save_settings(self):
         current_ip = self.view.get_ip()

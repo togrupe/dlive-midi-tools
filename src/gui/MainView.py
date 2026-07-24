@@ -122,10 +122,12 @@ class MainView:
         menu_bar.add_cascade(label="Settings", menu=self.settings_menu)
 
         self.file_menu = Menu(menu_bar, tearoff=0)
-        self.file_menu.add_command(label="Documentation")  # index 0
-        self.file_menu.add_command(label="Support Project ☕")  # index 1
+        self.file_menu.add_command(label="Documentation")     # index 0
+        self.file_menu.add_command(label="Check for Updates")  # index 1
         self.file_menu.add_separator()
-        self.file_menu.add_command(label="About")          # index 3
+        self.file_menu.add_command(label="Support Project ☕")  # index 3
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="About")              # index 5
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Close", command=self.root.destroy)
 

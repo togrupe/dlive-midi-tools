@@ -233,7 +233,7 @@ class MainController:
         except Exception as e:
             error_msg = f"Could not check for updates: {e}"
             self.log.error(error_msg)
-            showerror(message=error_msg)
+            self.view.root.after(0, lambda: showerror(message=error_msg))
             return
 
         latest_version = info.get("version", "")
@@ -242,6 +242,10 @@ class MainController:
         if UpdateChecker.is_update_available(latest_version, current_version):
             download_url = UpdateChecker.get_download_url_for_platform(info.get("downloads", {}))
 
+        self.view.root.after(
+            0, lambda: self._show_update_dialog(current_version, latest_version, download_url))
+
+    def _show_update_dialog(self, current_version, latest_version, download_url):
         update = UpdateDialog(self.view.root, current_version, latest_version, download_url)
         update.mainloop()
 

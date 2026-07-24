@@ -82,9 +82,11 @@ The menu bar at the top of the window provides the following options:
 
 **Help**
 - `Documentation` — opens the online documentation in your browser
-- `Donate ☕` — opens the donation page
+- `Support Project ☕` — opens the donation page
 - `About` — shows version information
 - `Close` — exits the application
+
+The same `☕ Support Project` action is also available as a button at the bottom of the main window, next to `Close`.
 
 ## Console Selection & Connection Settings
 

@@ -123,7 +123,7 @@ class MainView:
 
         self.file_menu = Menu(menu_bar, tearoff=0)
         self.file_menu.add_command(label="Documentation")  # index 0
-        self.file_menu.add_command(label="Donate ☕")      # index 1
+        self.file_menu.add_command(label="Support Project ☕")  # index 1
         self.file_menu.add_separator()
         self.file_menu.add_command(label="About")          # index 3
         self.file_menu.add_separator()
@@ -681,7 +681,13 @@ class MainView:
 
     def _create_status_area(self):
         bottom4_frame = ctk.CTkFrame(self.root, fg_color="transparent")
-        ctk.CTkButton(bottom4_frame, text='Close', command=self.root.destroy, width=80).pack(pady=8)
+        btn_row = ctk.CTkFrame(bottom4_frame, fg_color="transparent")
+        self.btn_donate = ctk.CTkButton(btn_row, text='☕ Support Project', width=140,
+                                        fg_color="transparent", border_width=1,
+                                        text_color=("gray10", "gray90"))
+        self.btn_donate.pack(side="left", padx=5)
+        ctk.CTkButton(btn_row, text='Close', command=self.root.destroy, width=80).pack(side="left", padx=5)
+        btn_row.pack(pady=8)
         bottom4_frame.pack(side="bottom")
 
         bottom3_frame = ctk.CTkFrame(self.root, border_width=1, border_color="white")

@@ -124,6 +124,7 @@ class MainController:
         self.view.file_menu.entryconfig(0, command=self.on_open_documentation)
         self.view.file_menu.entryconfig(1, command=self.on_donate)
         self.view.file_menu.entryconfig(3, command=self.on_about)
+        self.view.btn_donate.configure(command=self.on_donate)
 
         # Connection buttons
         self.view.btn_save.configure(command=self.on_save_settings)

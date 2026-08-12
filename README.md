@@ -20,6 +20,7 @@ You've got the channel list in Excel — but the console still needs programming
 - **Multi-console, multi-platform.** dLive, Avantis, or Mixing Station (SQ, DM7, Wing, M32/X32, QU) — covered.
 - **FOH, monitors, broadcast — one push.** Deploy the same channel list to all consoles. No copy-paste between desks, no name mismatches between positions.
 - **PDF channel lists on demand.** Pull the current console state and export a print-ready PDF instantly — no re-typing, no formatting.
+- **Dante channel labels without retyping.** Export the channel list as JSON or CSV, compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 — from the console/Mixing Station or straight from the spreadsheet.
 
 
 ---
@@ -83,6 +84,8 @@ For a step-by-step guide on using dmt with Mixing Station, see [How-To: Mixing S
 | C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station |
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live |
+| F | Console or Spreadsheet → Dante Config Editor | dLive / Avantis / Mixing Station or .xlsx / .ods | Dante Config Editor JSON/CSV |
+| G | Console or Spreadsheet → PDF (Print / Export) | dLive / Avantis / Mixing Station or .xlsx / .ods | PDF file / printer |
 
 More information about past and future releases can be found in the [Release Notes](doc/release-notes.md).
 
@@ -101,17 +104,17 @@ Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
 
 ## Download
 
-| Version | Date       | OS                            | Download                                                                                          | Release Notes                      | MD5 Checksum                     |
-|---------|------------|-------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------|----------------------------------|
+| Version | Date       | OS                            | Download                                                                                       | Release Notes                      | MD5 Checksum                     |
+|---------|------------|-------------------------------|------------------------------------------------------------------------------------------------|------------------------------------|----------------------------------|
+| v2.14.0 | 12.08.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_0/dmt-v2_14_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2140) | 936b88444e6410314e67530fef1a8881|
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_0/dmt-v2_14_0-macos-arm64.zip) |                                    | c52de6c7e392b0bc8a2bc1115efc30c7                              |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_0/dmt-v2_14_0-windows.zip)     |                                    | b0702b11b51f31c7d5261299c22ea526|
 | v2.13.0 | 02.07.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2130) | e4e3174327cb6465b85ac80bc60d5686 |
-|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-arm64.zip)  |                                    | 5a22048f6ef3d6d7cc0b458905ccf29e |
-|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-windows.zip)      |                                    | da2cd33e6f2a3f0d7a04dfb19cf3c222 |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-arm64.zip) |                                    | 5a22048f6ef3d6d7cc0b458905ccf29e |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-windows.zip)     |                                    | da2cd33e6f2a3f0d7a04dfb19cf3c222 |
 | v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2120) | 861622a542446db242c93d00ea3cf99a |
-|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip)  |                                    | cc6fd1f297b123158d2591841b7d5898 |
-|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip)      |                                    | 2b09f614d9b6c517e33be5b4d5fe7a6e |
-| v2.11.0 | 24.02.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2110) | 710b3b0bc640f17a969fc931d1baf3a0 |
-|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-macos-arm64.zip)  |                                    | c8f1e8b8ebd2183cfed8868aa504a7bb |
-|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_11_0/dmt-v2_11_0-windows.zip)      |                                    | 970930d359582cea6266cd304265dfbc |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip) |                                    | cc6fd1f297b123158d2591841b7d5898 |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip)     |                                    | 2b09f614d9b6c517e33be5b4d5fe7a6e |
 Older versions see [archive](doc/download-archive.md)
 
 (*) For Apple Silicon Macs, prefer the native **arm64** build. The x86_64 (Intel) build also runs via Rosetta 2, which newer versions of macOS have installed by default — but the native build is recommended.
@@ -231,3 +234,6 @@ By using this software, you acknowledge and agree that you do so at your own ris
 * pyinstaller - Binary creator
 
 see [3rd Party Licenses](ThirdParty-Licenses.txt)
+
+## Credits
+* The Channel Label JSON/CSV export (Export tab) uses a file format compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79

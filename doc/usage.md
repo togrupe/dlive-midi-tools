@@ -82,9 +82,12 @@ The menu bar at the top of the window provides the following options:
 
 **Help**
 - `Documentation` — opens the online documentation in your browser
-- `Donate ☕` — opens the donation page
+- `Check for Updates` — fetches the latest release info and shows whether a newer version is available, with a direct download link if so
+- `Support Project ☕` — opens the donation page
 - `About` — shows version information
 - `Close` — exits the application
+
+The same `☕ Support Project` action is also available as a button at the bottom of the main window, next to `Close`.
 
 ## Console Selection & Connection Settings
 
@@ -125,6 +128,7 @@ The tool has the following modes — choose which one you want to use:
 * **Spreadsheet to Console / DAW** — reads from a spreadsheet and writes to a console or DAW session.
 * **Console to DAW** — reads from the console and writes a DAW session.
 * **Utilities** — direct console operations without a spreadsheet.
+* **Export** — writes the channel list to a Dante Config Editor compatible JSON or CSV file, or exports/prints it as a PDF.
 
 <img alt="tabs" src="tabs.png" width="300"/>
 
@@ -189,28 +193,9 @@ Options:
 
 Click `Generate DAW Session(s) from Current Console Settings`.
 
-## Print / Export Channel List as PDF
-
-12. Available in the **Utilities** tab. Reads the current channel list directly from the console or Mixing Station and produces a formatted PDF — no spreadsheet required.
-
-   | Button | Behaviour |
-   |--------|-----------|
-   | `Export Channel List as PDF` | Asks for a save location and writes a PDF file |
-   | `Print Channel List` | Generates a PDF to a temporary file and opens it in the system's default PDF viewer for printing |
-
-   The channel range (Start / End) configured in the Console to DAW tab applies to both buttons.
-
-   **Columns in the PDF:**
-
-   | Column | dLive / Avantis | Mixing Station |
-   |--------|-----------------|----------------|
-   | Ch | Yes | Yes |
-   | Name | Yes | Yes |
-   | Color | Yes — colored cell | Yes — colored cell |
-
 ## Utilities
 
-13. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
+12. The `Utilities` tab provides direct console operations without requiring a spreadsheet. IP address, MIDI port, and console type from the connection settings apply here as well.
 
 > **_NOTE:_** Utilities are not available when Mixing Station is selected — all buttons are disabled in that case.
 
@@ -246,6 +231,43 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 |--------|-------------|-----------------|
 | Phantom Power OFF (all Sockets) | Switches 48V phantom power off on all sockets (Local, DX1, DX3 for dLive; Local, SLink for Avantis) — use before changing microphones | dLive & Avantis |
 
+## Export Tab
+
+13. The **Export** tab's **Settings** box lets you choose the **Channel Start / End** range and pick where the channel names should be read from, before using either export box below.
+
+   | Source | Behaviour |
+   |--------|-----------|
+   | `Console / Mixing Station` | Reads the current channel list live from the connected console or Mixing Station — no spreadsheet required |
+   | `DMT Spreadsheet` | Prompts for a dmt Channel List spreadsheet (`.xlsx`) and reads the channel names from its `Channels` sheet — no console connection required |
+
+### Export to Dante Config Editor
+
+Writes the channel list to a file format compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79, so channel labels can be imported directly into Dante Config Editor for Dante routing/naming.
+
+   | Button | Behaviour |
+   |--------|-----------|
+   | `Export Channel List as JSON` | Asks for a save location and writes a `.json` file in the `dante-config-editor-channel-labels` format |
+   | `Export Channel List as CSV` | Asks for a save location and writes a `.csv` file with columns `format_version, source_app, source_version, device, direction, channel, dante_id, label` |
+
+   The `device` field in the exported file is taken from the currently selected console / Mixing Station type.
+
+### Export / Print PDF
+
+14. Produces a formatted PDF of the channel list, using the same **Channel Start / End** range and channel-name source as the **Export to Dante Config Editor** box above.
+
+   | Button | Behaviour |
+   |--------|-----------|
+   | `Export Channel List as PDF` | Asks for a save location and writes a PDF file |
+   | `Print Channel List` | Generates a PDF to a temporary file and opens it in the system's default PDF viewer for printing |
+
+   **Columns in the PDF:**
+
+   | Column | Console / Mixing Station | DMT Spreadsheet |
+   |--------|---------------------------|------------------|
+   | Ch | Yes | Yes |
+   | Name | Yes | Yes |
+   | Color | Yes — colored cell | Yes — colored cell |
+
 ## DAW Recording Sessions
 
 ### Reaper
@@ -268,4 +290,4 @@ Click on `Open Template` and select the generated file.
 
 ## Logs
 
-14. If something goes wrong, please check the Python console or the `main.log`
+15. If something goes wrong, please check the Python console or the `main.log`

@@ -24,7 +24,10 @@ from directorcsv import CsvCreator
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from gui.DonateDialog import DonateDialog
+from gui.UpdateDialog import UpdateDialog
+from helper import UpdateChecker
 from helper.Networking import is_valid_ip_address
+import Toolinfo
 from model.Action import Action
 from model.Sheet import Sheet
 from parameters.channels.ChannelsCommon import handle_channels_parameter
@@ -53,7 +56,7 @@ from parameters.channels.Helpers import (
 )
 from mixingstation.MixingStationClient import MixingStationClient
 from mixingstation.MixingStationHandler import handle_ms_channels, get_channel_data as ms_get_channel_data
-from export import PdfExporter
+from export import PdfExporter, JsonExporter, CsvExporter
 from persistence.Persistence import read_persisted_ms_port
 
 
@@ -104,6 +107,7 @@ class MainController:
             self.view.disable_mixing_station_checkboxes()
             self.view.disable_utilities()
             self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
+            self.view.set_export_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
         else:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
         self.view.root.update()
@@ -121,8 +125,10 @@ class MainController:
         # Menu
         self.view.var_dark_mode.trace("w", self.on_appearance_mode_changed)
         self.view.file_menu.entryconfig(0, command=self.on_open_documentation)
-        self.view.file_menu.entryconfig(1, command=self.on_donate)
-        self.view.file_menu.entryconfig(3, command=self.on_about)
+        self.view.file_menu.entryconfig(1, command=self.on_check_for_updates_thread)
+        self.view.file_menu.entryconfig(3, command=self.on_donate)
+        self.view.file_menu.entryconfig(5, command=self.on_about)
+        self.view.btn_donate.configure(command=self.on_donate)
 
         # Connection buttons
         self.view.btn_save.configure(command=self.on_save_settings)
@@ -147,6 +153,10 @@ class MainController:
         self.view.btn_console_to_daw.configure(command=self.on_console_to_daw_thread)
         self.view.btn_export_pdf.configure(command=self.on_export_pdf_thread)
         self.view.btn_print_channels.configure(command=self.on_print_channels_thread)
+
+        # Tab 4 action buttons
+        self.view.btn_export_json.configure(command=self.on_export_json_thread)
+        self.view.btn_export_csv.configure(command=self.on_export_csv_thread)
 
         # Tab 3 utility buttons
         self.view.btn_reset_dca.configure(
@@ -175,6 +185,8 @@ class MainController:
         self.view.var_ms_console.trace("w", self.on_ms_console_selected)
         self.view.var_current_console_endChannel.trace("w", self.on_endchannel_selected)
         self.view.var_current_console_startChannel.trace("w", self.on_startchannel_selected)
+        self.view.var_export_endChannel.trace("w", self.on_export_endchannel_selected)
+        self.view.var_export_startChannel.trace("w", self.on_export_startchannel_selected)
 
     # ------------------------------------------------------------------
     # Event handlers
@@ -210,6 +222,32 @@ class MainController:
     def on_donate(self):
         donate = DonateDialog(self.view.root)
         donate.mainloop()
+
+    def on_check_for_updates_thread(self):
+        bg_thread = threading.Thread(target=self._check_for_updates)
+        bg_thread.start()
+
+    def _check_for_updates(self):
+        try:
+            info = UpdateChecker.fetch_latest_release_info()
+        except Exception as e:
+            error_msg = f"Could not check for updates: {e}"
+            self.log.error(error_msg)
+            self.view.root.after(0, lambda: showerror(message=error_msg))
+            return
+
+        latest_version = info.get("version", "")
+        current_version = Toolinfo.version
+        download_url = None
+        if UpdateChecker.is_update_available(latest_version, current_version):
+            download_url = UpdateChecker.get_download_url_for_platform(info.get("downloads", {}))
+
+        self.view.root.after(
+            0, lambda: self._show_update_dialog(current_version, latest_version, download_url))
+
+    def _show_update_dialog(self, current_version, latest_version, download_url):
+        update = UpdateDialog(self.view.root, current_version, latest_version, download_url)
+        update.mainloop()
 
     def on_save_settings(self):
         current_ip = self.view.get_ip()
@@ -293,6 +331,7 @@ class MainController:
             self.view.enable_utilities()
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+            self.view.set_export_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
@@ -305,6 +344,7 @@ class MainController:
             self.view.enable_utilities()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.set_export_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
@@ -318,6 +358,7 @@ class MainController:
             self.view.disable_utilities()
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
+            self.view.set_export_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
             self.view.root.update()
 
     def on_ms_console_selected(self, *args):
@@ -361,6 +402,24 @@ class MainController:
             showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
             self.view.set_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
 
+    def on_export_endchannel_selected(self, *args):
+        val = self.view.var_export_endChannel.get()
+        if not val.strip().isdigit():
+            return
+        if (self.view.var_console.get() == dliveConstants.console_drop_down_avantis and
+                int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
+            showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+            self.view.set_export_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+    def on_export_startchannel_selected(self, *args):
+        val = self.view.var_export_startChannel.get()
+        if not val.strip().isdigit():
+            return
+        if (self.view.var_console.get() == dliveConstants.console_drop_down_avantis and
+                int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
+            showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+            self.view.set_export_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
     def on_browse_files_thread(self):
         bg_thread = threading.Thread(target=self._browse_files)
         bg_thread.start()
@@ -375,6 +434,14 @@ class MainController:
 
     def on_print_channels_thread(self):
         bg_thread = threading.Thread(target=lambda: self._read_and_export_pdf(print_mode=True))
+        bg_thread.start()
+
+    def on_export_json_thread(self):
+        bg_thread = threading.Thread(target=self._read_and_export_json)
+        bg_thread.start()
+
+    def on_export_csv_thread(self):
+        bg_thread = threading.Thread(target=self._read_and_export_csv)
         bg_thread.start()
 
     # ------------------------------------------------------------------
@@ -520,55 +587,8 @@ class MainController:
     # ------------------------------------------------------------------
 
     def _read_and_export_pdf(self, print_mode=False):
-        app_data = self.context.get_app_data()
-        app_data.set_midi_channel(
-            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
-        self.context.set_app_data(app_data)
-
-        start_channel = int(self.view.var_current_console_startChannel.get()) - 1
-        end_channel = int(self.view.var_current_console_endChannel.get())
-
-        if start_channel >= end_channel:
-            error_msg = (f"Start Channel {start_channel + 1} must be less than "
-                         f"End Channel {end_channel}.")
-            showerror(message=error_msg)
-            return
-
-        use_mixing_station = self.view.get_effective_console() in dliveConstants.MIXING_STATION_CONSOLES
-        console_type = self.view.get_effective_console()
-
-        self.view.reset_status()
-        self.view.reset_progress()
-        self.view.advance_progress_connection()
-        self.view.root.update()
-
-        try:
-            if use_mixing_station:
-                ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
-                self.context.set_ms_client(ms_client)
-                self.view.set_status("Reading channel data from Mixing Station...")
-                self.view.root.update()
-                channel_data = ms_get_channel_data(ms_client, start_channel, end_channel, console_type)
-            elif self.context.get_network_connection_allowed():
-                ip_address = self.view.get_ip()
-                if not is_valid_ip_address(ip_address):
-                    showerror(message="Invalid IP-Address")
-                    return
-                self.context.set_output(self._connect_to_console(ip_address))
-                self.view.set_status("Reading channel colors from console...")
-                self.view.root.update()
-                data_color = get_color_channel(self.context, start_channel, end_channel)
-                self.view.set_status("Reading channel names from console...")
-                self.view.root.update()
-                channel_data = get_name_channel(self.context, data_color, start_channel, end_channel)
-                self.context.get_output().close()
-            else:
-                return
-        except Exception as e:
-            error_msg = f"Failed to read channel data: {e}"
-            self.log.error(error_msg)
-            self.view.set_status(error_msg)
-            showerror(message=error_msg)
+        channel_data, console_type = self._gather_export_channel_data()
+        if channel_data is None:
             return
 
         if print_mode:
@@ -605,6 +625,175 @@ class MainController:
         else:
             self.view.set_status(f"PDF saved: {os.path.basename(filepath)}")
             showinfo(message=f"Channel list exported to:\n{filepath}")
+
+    # ------------------------------------------------------------------
+    # Business logic – Export Channel List as JSON (Dante Config Editor)
+    # ------------------------------------------------------------------
+
+    def _read_and_export_json(self):
+        channel_data, console_type = self._gather_export_channel_data()
+        if channel_data is None:
+            return
+
+        self.view.set_status("Choose a file location...")
+        filepath = filedialog.asksaveasfilename(
+            title="Save Channel List JSON",
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json")],
+            initialfile=f"channel-list-{console_type.lower().replace('/', '-')}.json",
+        )
+        if not filepath:
+            self.view.set_status("Export cancelled.")
+            return
+
+        try:
+            self.view.set_status("Generating JSON...")
+            self.view.root.update()
+            JsonExporter.export_json(filepath, channel_data, console_type)
+        except Exception as e:
+            error_msg = f"Failed to generate JSON: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        self.view.advance_progress_connection()
+        self.view.set_status(f"JSON saved: {os.path.basename(filepath)}")
+        showinfo(message=f"Channel list exported to:\n{filepath}")
+
+    def _read_and_export_csv(self):
+        channel_data, console_type = self._gather_export_channel_data()
+        if channel_data is None:
+            return
+
+        self.view.set_status("Choose a file location...")
+        filepath = filedialog.asksaveasfilename(
+            title="Save Channel List CSV",
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv")],
+            initialfile=f"channel-list-{console_type.lower().replace('/', '-')}.csv",
+        )
+        if not filepath:
+            self.view.set_status("Export cancelled.")
+            return
+
+        try:
+            self.view.set_status("Generating CSV...")
+            self.view.root.update()
+            CsvExporter.export_csv(filepath, channel_data, console_type)
+        except Exception as e:
+            error_msg = f"Failed to generate CSV: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return
+
+        self.view.advance_progress_connection()
+        self.view.set_status(f"CSV saved: {os.path.basename(filepath)}")
+        showinfo(message=f"Channel list exported to:\n{filepath}")
+
+    def _gather_export_channel_data(self):
+        """Validate the export channel range and read channel data from the
+        selected source. Returns (channel_data, console_type) or (None, None)
+        if the range is invalid, reading failed, or the user cancelled."""
+        app_data = self.context.get_app_data()
+        app_data.set_midi_channel(
+            self._determine_technical_midi_port(self.view.var_midi_channel.get()))
+        self.context.set_app_data(app_data)
+
+        start_channel = int(self.view.var_export_startChannel.get()) - 1
+        end_channel = int(self.view.var_export_endChannel.get())
+
+        if start_channel >= end_channel:
+            error_msg = (f"Start Channel {start_channel + 1} must be less than "
+                         f"End Channel {end_channel}.")
+            showerror(message=error_msg)
+            return None, None
+
+        console_type = self.view.get_effective_console()
+        self.context.get_app_data().set_console(console_type)
+
+        self.view.reset_status()
+        self.view.reset_progress()
+        self.view.advance_progress_connection()
+        self.view.root.update()
+
+        if self.view.var_export_source.get() == GuiConstants.TEXT_EXPORT_SOURCE_SPREADSHEET:
+            channel_data = self._read_channel_data_from_spreadsheet(start_channel, end_channel)
+        else:
+            channel_data = self._read_channel_data_from_console(start_channel, end_channel, console_type)
+
+        if channel_data is None:
+            return None, None
+
+        return channel_data, console_type
+
+    def _read_channel_data_from_console(self, start_channel, end_channel, console_type):
+        use_mixing_station = console_type in dliveConstants.MIXING_STATION_CONSOLES
+        try:
+            if use_mixing_station:
+                ms_client = MixingStationClient(self.view.get_ip(), int(self.view.get_ms_port()))
+                self.context.set_ms_client(ms_client)
+                self.view.set_status("Reading channel data from Mixing Station...")
+                self.view.root.update()
+                return ms_get_channel_data(ms_client, start_channel, end_channel, console_type)
+            elif self.context.get_network_connection_allowed():
+                ip_address = self.view.get_ip()
+                if not is_valid_ip_address(ip_address):
+                    showerror(message="Invalid IP-Address")
+                    return None
+                self.context.set_output(self._connect_to_console(ip_address))
+                self.view.set_status("Reading channel colors from console...")
+                self.view.root.update()
+                data_color = get_color_channel(self.context, start_channel, end_channel)
+                self.view.set_status("Reading channel names from console...")
+                self.view.root.update()
+                channel_data = get_name_channel(self.context, data_color, start_channel, end_channel)
+                self.context.get_output().close()
+                return channel_data
+            else:
+                return None
+        except Exception as e:
+            error_msg = f"Failed to read channel data: {e}"
+            self.log.error(error_msg)
+            self.view.set_status(error_msg)
+            showerror(message=error_msg)
+            return None
+
+    def _read_channel_data_from_spreadsheet(self, start_channel, end_channel):
+        self.view.set_status("Choose channel list spreadsheet...")
+        input_file_path = filedialog.askopenfilename(
+            title="Select Channel List Spreadsheet",
+            filetypes=[("Excel files", "*.xlsx")])
+        if not input_file_path:
+            self.view.set_status("Export cancelled.")
+            return None
+
+        try:
+            misc = create_misc_content(pd.read_excel(input_file_path, sheet_name="Misc"))
+            latest_spreadsheet_version = '14'
+            if misc.get_version() != latest_spreadsheet_version:
+                error_msg = ("Given spreadsheet version: " + str(misc.get_version()) +
+                             " is not compatible. Please use the latest spreadsheet "
+                             "(Version " + latest_spreadsheet_version + ").")
+                showerror(message=error_msg)
+                return None
+
+            self.view.set_status("Reading channel names from spreadsheet...")
+            self.view.root.update()
+            sheet_channels = pd.read_excel(input_file_path, sheet_name="Channels", dtype=str)
+            channel_entries = create_channel_list_content(sheet_channels, self.context)
+        except Exception as e:
+            error_msg = f"Failed to read spreadsheet: {e}"
+            self.log.error(error_msg)
+            showerror(message=error_msg)
+            return None
+
+        return [
+            {"dliveChannel": entry.get_channel(), "name": entry.get_name(), "color": entry.get_color()}
+            for entry in channel_entries
+            if start_channel < entry.get_channel() <= end_channel
+        ]
 
     # ------------------------------------------------------------------
     # Business logic – Spreadsheet to Console / DAW

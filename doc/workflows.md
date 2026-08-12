@@ -328,51 +328,102 @@ flowchart TD
 
 ---
 
-## Channel List Print & Export
+## Workflow F – Console or Spreadsheet → Dante Config Editor
 
-Print or export the current channel list as a PDF file directly from the console or Mixing
-Station — no spreadsheet required.
+Export the channel list as a Dante channel-label file, compatible with
+[Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 — either
+straight from the console/Mixing Station, or from a dmt spreadsheet, no console connection
+required for the latter.
+
+### Idea & Background
+
+Dante-networked consoles and I/O boxes are commonly configured and labeled with Audinate's
+Dante Controller. Re-typing every channel label a second time in that tool is exactly the
+kind of duplicate work dmt aims to eliminate. This feature reuses Mamat79's open-source
+`DanteConfigEditorV3` file format so channel names entered once in dmt (or already live on the
+console) can be imported straight into Dante Config Editor.
+
+Two file formats are available, in the **Export to Dante Config Editor** box on the
+**Export** tab:
+
+| Button | Behaviour |
+|--------|-----------|
+| **Export Channel List as JSON** | Writes a `dante-config-editor-channel-labels` JSON file |
+| **Export Channel List as CSV** | Writes a CSV file with columns `format_version, source_app, source_version, device, direction, channel, dante_id, label` |
+
+### Data Source
+
+Channel names for this feature can come from either of two sources, selected in the
+**Settings** box at the top of the **Export** tab:
+
+| Source | Behaviour |
+|--------|-----------|
+| **Console / Mixing Station** | Reads the live channel list from the console or Mixing Station — same read path as Workflows D and E |
+| **DMT Spreadsheet** | Reads channel names from the `Channels` sheet of a dmt Channel List spreadsheet (`.xlsx`) — no console connection required |
+
+The `device` field in the exported file is taken from the currently selected console /
+Mixing Station type. The same **Settings** box (source + Channel Start / End range) is
+shared with the PDF export below.
+
+### Step Sequence
+
+| Step | Action |
+|------|--------|
+| F1 | Switch to the **Export** tab |
+| F2 | Choose the **Channel Start / End** range |
+| F3 | Choose the data source: **Console / Mixing Station** or **DMT Spreadsheet** |
+| F4a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as JSON** or **... as CSV** |
+| F4b | *or* DMT Spreadsheet: click the export button, then pick the `.xlsx` file when prompted |
+| F5 | Choose a save location — the file is written |
+
+**Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station) when
+reading from the console; a valid dmt Channel List spreadsheet when reading from a spreadsheet.
+
+---
+
+## Workflow G – Console or Spreadsheet → PDF (Print / Export)
+
+Print or export the current channel list as a PDF file.
 
 ### Idea & Background
 
 After a show is set up on the console, it is often useful to have a printed or archived copy
 of the channel list — for documentation, for the monitor engineer, or as a reference during
-setup. This feature reads the live channel list directly from the console (the same read path
-as Workflows D and E) and produces a formatted, printable PDF.
+setup. This feature reads the channel list from the same source as the Dante label export
+above and produces a formatted, printable PDF.
 
-Two variants are available:
+Two variants are available, in the **Export / Print PDF** box on the **Export** tab:
 
 | Button | Behaviour |
 |--------|-----------|
 | **Export Channel List as PDF** | Asks for a save location and writes the PDF to disk |
 | **Print Channel List** | Saves the PDF to a temporary file and opens it in the system's default PDF viewer for direct printing |
 
-Both buttons are found in the **Utilities** tab. The channel Start / End range selectors
-in the Console to DAW tab control which channels are included.
+Both buttons use the same **Settings** box (source + Channel Start / End range) as the
+Dante Config Editor export above — **Console / Mixing Station** or **DMT Spreadsheet**.
 
 ### PDF Content
 
-The PDF contains a table with one row per channel. Columns depend on the console type:
+The PDF contains a table with one row per channel:
 
-| Column | dLive / Avantis | Mixing Station |
-|--------|-----------------|----------------|
+| Column | Console / Mixing Station | DMT Spreadsheet |
+|--------|---------------------------|------------------|
 | Ch | Yes | Yes |
 | Name | Yes | Yes |
 | Color | Yes — colored cell background | Yes — colored cell background |
-
-Both console paths read name and color only — the same data available via the read-back
-path (MIDI SysEx for dLive / Avantis; REST GET for Mixing Station).
 
 ### Step Sequence
 
 | Step | Action |
 |------|--------|
-| 1 | Ensure the console or Mixing Station is reachable (use **Test Connection** if unsure) |
-| 2 | Switch to the **Utilities** tab |
-| 3a | Click **Export Channel List as PDF** → choose a save location → PDF is written |
-| 3b | *or* Click **Print Channel List** → PDF opens in the system PDF viewer → print from there |
+| G1 | Switch to the **Export** tab |
+| G2 | Choose the **Channel Start / End** range and the data source |
+| G3a | Console / Mixing Station: ensure it is reachable (use **Test Connection** if unsure), then click **Export Channel List as PDF** → choose a save location → PDF is written |
+| G3b | *or* DMT Spreadsheet: click **Export Channel List as PDF**, pick the `.xlsx` file when prompted → choose a save location → PDF is written |
+| G3c | *or* Click **Print Channel List** (either source) → PDF opens in the system PDF viewer → print from there |
 
-**Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station).
+**Prerequisites:** Same as Workflow D (dLive / Avantis) or Workflow E (Mixing Station) when
+reading from the console; a valid dmt Channel List spreadsheet when reading from a spreadsheet.
 
 ---
 
@@ -385,7 +436,8 @@ path (MIDI SysEx for dLive / Avantis; REST GET for Mixing Station).
 | C | Spreadsheet → Mixing Station → Console | .xlsx / .ods | Console via Mixing Station | HTTP REST |
 | D | Console → DAW | dLive / Avantis | Reaper / Tracks Live | MIDI over TCP |
 | E | Console → Mixing Station → DAW | Mixing Station | Reaper / Tracks Live | HTTP REST |
-| — | Console → PDF (Print / Export) | dLive / Avantis or Mixing Station | PDF file / printer | MIDI over TCP or HTTP REST |
+| F | Console or Spreadsheet → Dante Config Editor | dLive / Avantis / Mixing Station or .xlsx / .ods | Dante Config Editor JSON/CSV | MIDI over TCP, HTTP REST, or spreadsheet |
+| G | Console or Spreadsheet → PDF (Print / Export) | dLive / Avantis / Mixing Station or .xlsx / .ods | PDF file / printer | MIDI over TCP, HTTP REST, or spreadsheet |
 
 ---
 
@@ -409,6 +461,8 @@ flowchart LR
         REAPER_G["Reaper Session Creator"]
         TL_G["Tracks Live Creator"]
         CSV_G["Director CSV Creator"]
+        JSON_G["JSON/CSV Exporter\n(Dante Config Editor)"]
+        PDF_G["PDF Exporter"]
         PERSIST["Persistence\nconfig.json"]
     end
 
@@ -417,6 +471,8 @@ flowchart LR
         DIR["Director\nCSV import"]
         MS_W["Mixing Station\nwrite via HTTP"]
         DAW["Recording Tools\nReaper / Tracks Live"]
+        DCE["Dante Config Editor\nJSON/CSV import"]
+        PDF_OUT["PDF file\nsave to disk / print"]
     end
 
     TMPL --> PARSER --> VALIDATOR
@@ -427,6 +483,12 @@ flowchart LR
     VALIDATOR --> TL_G --> DAW
     CON_R --> MIDI_H
     MS_R --> MS_H
+    PARSER -.->|"Channels sheet only\n(no validation)"| JSON_G
+    PARSER -.->|"Channels sheet only\n(no validation)"| PDF_G
+    CON_R --> JSON_G --> DCE
+    MS_R --> JSON_G
+    CON_R --> PDF_G --> PDF_OUT
+    MS_R --> PDF_G
     PERSIST -.->|"load / save settings"| dmt
 ```
 

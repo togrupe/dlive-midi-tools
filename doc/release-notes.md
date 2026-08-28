@@ -13,7 +13,7 @@ Feature Release
   - `Export Channel List as JSON` — writes a `dante-config-editor-channel-labels` compatible JSON file, ready for import into Dante Config Editor
   - `Export Channel List as CSV` — writes the equivalent CSV format (`format_version,source_app,source_version,device,direction,channel,dante_id,label`)
   - Device name in the exported file is taken from the currently selected console / Mixing Station type
-  - File format credit: [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79
+  - File format credit: [Dante Config Editor](https://github.com/Mamat79/Dante-Config-Editor) by Mamat79
 - **Export / Print PDF** box — moved here from the Utilities tab (see v2.13.0):
   - Now also supports the **DMT Spreadsheet** source, not just a live console/Mixing Station read
   - `Export Channel List as PDF` and `Print Channel List` now use the same Start / End range and source selector as the Dante Config Editor export

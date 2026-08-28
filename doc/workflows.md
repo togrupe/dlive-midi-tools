@@ -331,7 +331,7 @@ flowchart TD
 ## Workflow F – Console or Spreadsheet → Dante Config Editor
 
 Export the channel list as a Dante channel-label file, compatible with
-[Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 — either
+[Dante Config Editor](https://github.com/Mamat79/Dante-Config-Editor) by Mamat79 — either
 straight from the console/Mixing Station, or from a dmt spreadsheet, no console connection
 required for the latter.
 
@@ -340,7 +340,7 @@ required for the latter.
 Dante-networked consoles and I/O boxes are commonly configured and labeled with Audinate's
 Dante Controller. Re-typing every channel label a second time in that tool is exactly the
 kind of duplicate work dmt aims to eliminate. This feature reuses Mamat79's open-source
-`DanteConfigEditorV3` file format so channel names entered once in dmt (or already live on the
+`Dante-Config-Editor` file format so channel names entered once in dmt (or already live on the
 console) can be imported straight into Dante Config Editor.
 
 Two file formats are available, in the **Export to Dante Config Editor** box on the

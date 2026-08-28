@@ -242,7 +242,7 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 
 ### Export to Dante Config Editor
 
-Writes the channel list to a file format compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79, so channel labels can be imported directly into Dante Config Editor for Dante routing/naming.
+Writes the channel list to a file format compatible with [Dante Config Editor](https://github.com/Mamat79/Dante-Config-Editor) by Mamat79, so channel labels can be imported directly into Dante Config Editor for Dante routing/naming.
 
    | Button | Behaviour |
    |--------|-----------|

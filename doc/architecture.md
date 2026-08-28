@@ -112,7 +112,7 @@ graph TD
 | Tracks Live Creator | `src/dawsession/TracksLiveSessionCreator.py` | Generate Tracks Live `.template` session files |
 | CSV Creator | `src/directorcsv/CsvCreator.py` | Generate Director-compatible CSV exports |
 | PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using fpdf2; `open_file()` sends it to the OS default PDF viewer for printing |
-| JSON Exporter | `src/export/JsonExporter.py` | Generate a `dante-config-editor-channel-labels` JSON file, compatible with [Dante Config Editor V3](https://github.com/Mamat79/DanteConfigEditorV3) by Mamat79 |
+| JSON Exporter | `src/export/JsonExporter.py` | Generate a `dante-config-editor-channel-labels` JSON file, compatible with [Dante Config Editor](https://github.com/Mamat79/Dante-Config-Editor) by Mamat79 |
 | CSV Exporter | `src/export/CsvExporter.py` | Generate the equivalent Dante Config Editor CSV format (`format_version,source_app,source_version,device,direction,channel,dante_id,label`) |
 | Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions |
 | Helper | `src/helper/Networking.py` | IP address validation utilities |

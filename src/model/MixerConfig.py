@@ -15,15 +15,16 @@ MIXER_CONFIG_ROWS = ["Group", "FX", "Aux", "Matrix"]
 
 # Highest (mono, stereo) amount which can be entered per console.
 # dLive: the MIDI protocol (V1.9) addresses Aux/Group/Matrix up to 62 mono / 31 stereo
-# and FX Sends up to 16 / 16.
+# and FX Sends up to 16 / 16, so the pool without LR & PAFL (60 mono / 30 stereo)
+# is the practical limit.
 # Avantis: freely configurable pool of 42 buses and 12 FX racks; the MIDI protocol
 # addresses Aux/Group/Matrix up to 54 mono / 27 stereo and FX Sends up to 12 / 12,
-# so the pool (42 mono / 21 stereo) is the practical limit.
+# so the pool without LR & PAFL (38 mono / 19 stereo) is the practical limit.
 MIXER_CONFIG_MAXIMA = {
     dliveConstants.console_drop_down_dlive: {
-        "Group": (62, 31), "FX": (16, 16), "Aux": (62, 31), "Matrix": (62, 31)},
+        "Group": (60, 30), "FX": (16, 16), "Aux": (60, 30), "Matrix": (60, 30)},
     dliveConstants.console_drop_down_avantis: {
-        "Group": (42, 21), "FX": (12, 12), "Aux": (42, 21), "Matrix": (42, 21)},
+        "Group": (38, 19), "FX": (12, 12), "Aux": (38, 19), "Matrix": (38, 19)},
 }
 
 

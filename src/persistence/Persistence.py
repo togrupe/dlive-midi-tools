@@ -10,6 +10,10 @@ import json
 import os
 
 import dliveConstants
+from model.MixerConfig import MIXER_CONFIG_ROWS
+
+# v1: initial, v2: appearance-mode, v3: mixer-config
+CONFIG_VERSION = 3
 
 
 def read_persisted_midi_port(context):
@@ -88,20 +92,67 @@ def read_persisted_ip(context):
     return ip_ret
 
 
+def _sanitize_mixer_config_rows(rows):
+    """Returns the mixer config rows in the format {"Group": [mono, stereo], ...} with
+    every amount being an int >= 0 or None (not limited), or None if rows is unusable."""
+    if not isinstance(rows, dict):
+        return None
+
+    def to_count(value):
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
+            return None
+        return int(value)
+
+    sanitized = {}
+    for label in MIXER_CONFIG_ROWS:
+        values = rows.get(label)
+        if not isinstance(values, (list, tuple)) or len(values) != 2:
+            values = [None, None]
+        sanitized[label] = [to_count(values[0]), to_count(values[1])]
+    return sanitized
+
+
 def migrate_config_if_needed(context):
-    """Migrates config from v1 to v2 by adding appearance-mode default."""
+    """Migrates config step by step to CONFIG_VERSION.
+    v1 -> v2: adds appearance-mode default.
+    v2 -> v3: adds the (per console) mixer-config section. Entries already present
+    (e.g. written by a development build) are sanitized, unusable ones are dropped.
+    Older tool versions ignore the additional key."""
     log = context.get_logger()
     filename = context.get_config_file()
     if not os.path.exists(filename):
         return
     with open(filename, 'r') as file:
-        data = json.load(file)
-    if data.get('version', 1) < 2:
-        data['version'] = 2
+        try:
+            data = json.load(file)
+        except json.JSONDecodeError:
+            log.warning("Config file " + str(filename) + " is not valid JSON, skipping migration.")
+            return
+    version = data.get('version', 1)
+    if version >= CONFIG_VERSION:
+        return
+
+    if version < 2:
         data.setdefault('appearance-mode', 'dark')
-        with open(filename, 'w') as file:
-            json.dump(data, file)
         log.info("Config migrated from v1 to v2.")
+
+    if version < 3:
+        mixer_configs = data.get('mixer-config')
+        if not isinstance(mixer_configs, dict):
+            mixer_configs = {}
+        migrated = {}
+        for console, rows in mixer_configs.items():
+            sanitized = _sanitize_mixer_config_rows(rows)
+            if sanitized is None:
+                log.warning("Dropping invalid mixer config for console " + str(console) + ": " + str(rows))
+                continue
+            migrated[console] = sanitized
+        data['mixer-config'] = migrated
+        log.info("Config migrated from v2 to v3.")
+
+    data['version'] = CONFIG_VERSION
+    with open(filename, 'w') as file:
+        json.dump(data, file)
 
 
 def read_persisted_appearance_mode(context):
@@ -134,6 +185,42 @@ def read_persisted_ms_port(context):
     return str(dliveConstants.mixing_station_default_port)
 
 
+def _read_config(filename):
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                pass
+    return {}
+
+
+def read_persisted_mixer_config(context, console):
+    """Returns the saved mixer config rows for the given console as
+    {"Group": [mono, stereo], "FX": [...], ...} or None if nothing was saved."""
+    log = context.get_logger()
+    mixer_configs = _read_config(context.get_config_file()).get('mixer-config')
+    rows = _sanitize_mixer_config_rows(mixer_configs.get(console)) if isinstance(mixer_configs, dict) else None
+    if rows is None:
+        log.info("No saved mixer config found for console: " + str(console))
+    else:
+        log.info("Recalled mixer config for console " + str(console) + ": " + str(rows))
+    return rows
+
+
+def persist_mixer_config(context, console, rows):
+    log = context.get_logger()
+    filename = context.get_config_file()
+    data = _read_config(filename)
+    if not isinstance(data.get('mixer-config'), dict):
+        data['mixer-config'] = {}
+    data['mixer-config'][console] = rows
+    data['version'] = CONFIG_VERSION
+    with open(filename, 'w') as file:
+        json.dump(data, file)
+    log.info("Mixer config for console " + str(console) + " has been persisted: " + str(rows))
+
+
 def persist_current_ui_settings(context):
     log = context.get_logger()
     filename = context.get_config_file()
@@ -143,14 +230,16 @@ def persist_current_ui_settings(context):
     appearance_mode = context.get_app_data().get_appearance_mode()
     ms_port = context.get_app_data().get_mixing_station_port()
 
-    data = {
-        'version': 2,
+    # Keep keys not managed here (e.g. the saved mixer configs).
+    data = _read_config(filename)
+    data.update({
+        'version': CONFIG_VERSION,
         'ip': str(current_ip),
         'console': console,
         'midi-port': midi_channel,
         'appearance-mode': appearance_mode,
         'ms-port': ms_port,
-    }
+    })
 
     json_str = json.dumps(data)
 

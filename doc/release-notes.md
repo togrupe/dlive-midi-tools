@@ -1,5 +1,36 @@
 # Release Notes
 
+## v2.14.1
+
+Feature Release
+
+### New Features
+- **Mixer Config** — `Settings → Mixer Config...` lets you enter the amount of mono / stereo Group, FX, Aux and Matrix buses configured on the console. The tool does not write beyond these buses:
+  - `Channels` tab: Mono / Stereo Group assignments
+  - `Groups` tab: Aux, Group, Matrix and FX Send names and colors
+  - Utilities: `MUTE all Outputs` / `UNMUTE all Outputs` switch exactly the configured buses
+- Mixer configs can be saved and recalled per console (dLive / Avantis) and are loaded automatically on start and when switching the console
+- The active mixer config is shown next to `Open Spreadsheet and Start Writing Process`; click it to edit
+- If no mixer config is saved yet, the dialog opens before the first write to the console
+- **Bus count check:** entered buses are counted (stereo counts twice) against the available buses — dLive 60, Avantis 38 (bus pool 64 / 42 minus Main LR and PAFL). Fields turn red and `Save` / `OK` are disabled if exceeded
+
+See [Mixer Config](usage.md#mixer-config) for details.
+
+### Improvements
+- dLive: `MUTE all Outputs` / `UNMUTE all Outputs` now cover 16 mono / 8 stereo FX Sends and 16 FX Returns
+- `config.json` is migrated to version 3 (adds the saved mixer configs). Older tool versions can still read it, but saving settings with an older version removes the saved mixer configs
+
+### Technical Limitations
+- DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
+- HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+- The mixer config is not available for Mixing Station.
+
+### Issues Fixed
+
+### Known Issues
+
+---
+
 ## v2.14.0
 
 Feature Release

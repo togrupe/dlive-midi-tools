@@ -79,6 +79,7 @@ The menu bar at the top of the window provides the following options:
 
 **Settings**
 - `Dark Mode` — toggles between dark and light appearance. The selected mode is persisted across restarts.
+- `Mixer Config...` — opens the mixer config dialog, see [Mixer Config](#mixer-config). Disabled when Mixing Station is selected.
 
 **Help**
 - `Documentation` — opens the online documentation in your browser
@@ -114,6 +115,58 @@ For a full step-by-step guide on setting up and using Mixing Station with dmt, s
 The `MIDI Channel` setting on dLive under `Utils/Shows → Control → MIDI` should be set to `12 to 16`, which is the default.
 
 If you want to change the preconfigured MIDI port, you can change it in the GUI according to your dLive settings.
+
+## Mixer Config
+
+The mixer config tells the tool how many buses are configured on your console (Mixrack / Avantis mixer configuration). The tool uses these amounts as boundaries and does not write beyond them, so no data is sent to buses which do not exist in the current configuration.
+
+Open it via `Settings → Mixer Config...` or by clicking the mixer config summary next to `Open Spreadsheet and Start Writing Process`.
+
+| Field | Meaning |
+|-------|---------|
+| Group / FX / Aux / Matrix — Mono | Amount of mono buses of this type |
+| Group / FX / Aux / Matrix — Stereo | Amount of stereo buses of this type |
+
+* Enter the amounts exactly as configured on the console. Leave a field empty to use the console maximum for this bus type.
+* The highest value per field is shown next to it:
+
+  | Console | Group / Aux / Matrix | FX |
+  |---------|----------------------|----|
+  | dLive | 60 / 30 | 16 / 16 |
+  | Avantis | 38 / 19 | 12 / 12 |
+
+* **Bus count check:** the dialog adds up all entered buses (a stereo bus counts twice) and compares the sum with the buses available on the console. 4 buses are always in use for Main LR (2) and PAFL (2) and are already subtracted:
+
+  | Console | Bus pool | Available for Group / FX / Aux / Matrix |
+  |---------|----------|-----------------------------------------|
+  | dLive | 64 | 60 |
+  | Avantis | 42 | 38 |
+
+  If more buses are entered than available, or a field contains an invalid value, the affected fields turn red and `Save` / `OK` are disabled until the values are corrected.
+
+| Button | Behaviour |
+|--------|-----------|
+| `Recall` | Loads the saved mixer config of the selected console |
+| `Save` | Saves the entered mixer config for the selected console (dLive and Avantis are saved separately) |
+| `Reset` | Clears all fields (console maximum for every bus type) |
+| `OK` | Uses the entered mixer config for this session |
+| `Cancel` | Closes the dialog without changes |
+
+On start and when switching the console, the saved mixer config of the selected console is loaded automatically. The active mixer config is shown next to `Open Spreadsheet and Start Writing Process`, e.g. `Mixer Config: Group 8/4, FX 8/4, Aux 12/6, Matrix 4/max`.
+
+The mixer config is applied to:
+
+| Feature | Boundary |
+|---------|----------|
+| `Channels` tab — Mono / Stereo Group Assignment | Only groups within the configured amount are assigned (dLive only) |
+| `Groups` tab — Aux, Group, Matrix, FX Send names and colors | Rows beyond the configured amount are skipped (see log) |
+| Utilities — `MUTE all Outputs` / `UNMUTE all Outputs` | Exactly the configured Aux, Group, Matrix and FX Send buses are switched |
+
+DCA, FX Returns and UFX Sends / Returns are not part of the mixer config and are not limited.
+
+> **_NOTE:_** The `Mixer Config` tab in the spreadsheet is only a report of the buses used in the spreadsheet. The boundaries are taken from the mixer config in the tool.
+
+> **_NOTE:_** The mixer config is not available for Mixing Station.
 
 ## Default IP Address
 
@@ -157,6 +210,8 @@ The tool has the following modes — choose which one you want to use:
 > **_NOTE:_** This feature uses the columns Name, Color, Source, Socket, Gain, Pad, Phantom from the `Channels` tab.
 
 10. Click `Open Spreadsheet and Start Writing Process` to select the spreadsheet. The selected action(s) start automatically.
+
+   If no mixer config has been saved for the selected console yet, the [Mixer Config](#mixer-config) dialog opens first when writing to the console. Enter the amount of buses configured on the console and confirm with `OK` — the mixer config is saved and used from now on. `Cancel` aborts the writing process.
 
    Before processing, the tool automatically validates the spreadsheet. The validator checks:
    - Channel and group **names** for invalid characters
@@ -217,6 +272,8 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 | UNMUTE all Outputs | Unmutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
 
 > **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
+
+> **_NOTE:_** `MUTE all Outputs` / `UNMUTE all Outputs` switch exactly the Aux, Group, Matrix and FX Send buses set in the [Mixer Config](#mixer-config). Without a saved mixer config, a conservative default amount per bus type is used.
 
 ### Fader
 

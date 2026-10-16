@@ -17,13 +17,13 @@ graph TD
     end
 
     subgraph DomainModels["Domain Models"]
-        Models["ChannelListEntry · SocketListEntry\nGroupsListEntry · DcaConfig\nMuteGroupConfig · GroupSetup"]
+        Models["ChannelListEntry · SocketListEntry\nGroupsListEntry · DcaConfig\nMuteGroupConfig · GroupSetup\nMixerConfig"]
     end
 
     subgraph Input["Input"]
         Spreadsheet["Spreadsheet Parser\n(pandas / openpyxl / odfpy)"]
         Validator["Validator\n(Name chars · Color · Fader\nHPF range · Channel range)"]
-        Persistence["Persistence\n(config.json)"]
+        Persistence["Persistence\n(config.json incl. Mixer Config)"]
     end
 
     subgraph MIDIHandlers["MIDI Parameter Handlers"]
@@ -97,9 +97,10 @@ graph TD
 | Entry Point | `src/Main.py` | Initialize context, models, view, and controller; start Tkinter event loop |
 | MainView | `src/gui/MainView.py` | Tkinter GUI layout, widgets, tabs, checkboxes, progress bars |
 | MainController | `src/gui/MainController.py` | Event handlers, threading for long operations, business logic orchestration |
+| Mixer Config Dialog | `src/gui/MixerConfigDialog.py` | Modal dialog to enter, save and recall the mixer config (Group / FX / Aux / Matrix, mono / stereo); live bus count check against the console's bus pool |
 | AppData | `src/AppData.py` | Runtime state: console type, IP address, MIDI channel, output flags |
 | Context | `src/Context.py` | Global context passed throughout: logger, MIDI output, AppData reference, network flag, config path, CSV hint flag, MixingStationClient reference |
-| Domain Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations |
+| Domain Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations; `MixerConfig` holds the configured bus amounts plus the per-console maxima and bus pool |
 | Spreadsheet | `src/spreadsheet/Spreadsheet.py` | Parse `.xlsx` / `.ods` templates into model objects via pandas |
 | Validator | `src/spreadsheet/Validator.py` | Validate parsed models: allowed name characters, color values, fader levels, HPF range, channel range, yes/no fields |
 | Channel Params | `src/parameters/channels/` | Generate SysEx, CC, and NRPN MIDI messages for channel parameters |
@@ -114,7 +115,7 @@ graph TD
 | PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using fpdf2; `open_file()` sends it to the OS default PDF viewer for printing |
 | JSON Exporter | `src/export/JsonExporter.py` | Generate a `dante-config-editor-channel-labels` JSON file, compatible with [Dante Config Editor](https://github.com/Mamat79/Dante-Config-Editor) by Mamat79 |
 | CSV Exporter | `src/export/CsvExporter.py` | Generate the equivalent Dante Config Editor CSV format (`format_version,source_app,source_version,device,direction,channel,dante_id,label`) |
-| Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions |
+| Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions, including the saved mixer config per console (`mixer-config`); migrates older config versions step by step (current version: 3) |
 | Helper | `src/helper/Networking.py` | IP address validation utilities |
 
 ## Data Flow
@@ -129,9 +130,12 @@ Spreadsheet (.xlsx/.ods)
         ↳ Errors → shown to user; processing stops
         ↳ Valid  → continue
     → Parameter Handlers (generate MIDI messages)
+        ↳ limited by the active Mixer Config (Group assignment, Aux/Group/Matrix/FX Send names & colors)
     → mido Library
     → Console / Director (MIDI over TCP)
 ```
+
+> Before the first write to a console without a saved mixer config, the Mixer Config dialog is shown. The entered config is saved to `config.json` and used as write boundary from then on.
 
 ### Spreadsheet → Mixing Station
 
@@ -239,8 +243,8 @@ User (Utilities tab button)
     → MainController (threaded)
     → Parameter Helpers:
         Reset:   reset_all_dca / reset_all_mute_groups / reset_all_main_mix
-        Mute:    mute_all_inputs / mute_all_outputs
-        Unmute:  unmute_all_inputs / unmute_all_outputs
+        Mute:    mute_all_inputs / mute_all_outputs      (outputs: amounts from Mixer Config)
+        Unmute:  unmute_all_inputs / unmute_all_outputs  (outputs: amounts from Mixer Config)
         Fader:   set_all_input_faders_to_zero / set_all_input_faders_to_minus_inf
         Preamp:  phantom_power_off_all_sockets
     → MIDI messages (SysEx / CC / NRPN / Note)

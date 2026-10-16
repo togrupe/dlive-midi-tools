@@ -171,6 +171,8 @@ More details about the `Groups` columns can be found [here](doc/groups/README.md
 ### Mixer Config
 This is a report of used buses. It does not change the "Mixer Config". Please have a look at the yellow box — it can help you set the "Mixer Config" properly.
 
+The boundaries for writing are set in the tool under `Settings → Mixer Config...` — nothing is written beyond the buses configured there. See [Mixer Config](doc/usage.md#mixer-config).
+
 ![mixerconfig](doc/mixerconfig/excel_mixerconfig.png)
 
 ---

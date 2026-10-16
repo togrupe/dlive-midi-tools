@@ -401,8 +401,12 @@ class MainController:
         and becomes the active write boundary. Returns False if the user cancelled."""
         console_type = self.view.get_effective_console()
         if (not self.view.var_write_to_console.get() or
-                console_type in dliveConstants.MIXING_STATION_CONSOLES or
-                self._recall_mixer_config(console_type) is not None):
+                console_type in dliveConstants.MIXING_STATION_CONSOLES):
+            return True
+        saved_config = self._recall_mixer_config(console_type)
+        if saved_config is not None:
+            if self.mixer_config is None:
+                self._set_mixer_config(saved_config)
             return True
 
         dialog = MixerConfigDialog(self.view.root, console_type,

@@ -127,7 +127,7 @@ Open it via `Settings → Mixer Config...` or by clicking the mixer config summa
 | Group / FX / Aux / Matrix — Mono | Amount of mono buses of this type |
 | Group / FX / Aux / Matrix — Stereo | Amount of stereo buses of this type |
 
-* Enter the amounts exactly as configured on the console. Leave a field empty to not limit this bus type — then all rows of the spreadsheet are written and the Utilities use their default amounts.
+* Enter the amounts exactly as configured on the console. All 8 fields are required — enter `0` for bus types which are not used. As long as a field is empty, `Save as Preset...` / `OK` are disabled.
 * Mono buses are configured in pairs on the console, so only **even** mono amounts are allowed (0, 2, 4, …). Stereo amounts can be odd.
 * The highest value per field is shown next to it:
 
@@ -147,7 +147,7 @@ Open it via `Settings → Mixer Config...` or by clicking the mixer config summa
 
 | Button | Behaviour |
 |--------|-----------|
-| `Reset` | Clears all fields (no limit for every bus type) |
+| `Reset` | Clears all fields |
 | `OK` | Saves the entered mixer config as the active mixer config of the selected console and uses it from now on |
 | `Cancel` | Closes the dialog without changes |
 
@@ -159,7 +159,7 @@ Open it via `Settings → Mixer Config...` or by clicking the mixer config summa
 | `Save as Preset...` | Asks for a name (1–40 characters) and stores the entered values as preset. An existing preset with the same name is overwritten after confirmation. |
 | `Delete Preset` | Deletes the selected preset after confirmation |
 
-On start and when switching the console, the active mixer config of the selected console is loaded automatically. If it matches a preset, the preset is preselected when opening the dialog. The active mixer config is shown next to `Open Spreadsheet and Start Writing Process`, e.g. `Mixer Config: Group 8/4, FX 8/4, Aux 12/6, Matrix 4/max` (`max` = field left empty).
+On start and when switching the console, the active mixer config of the selected console is loaded automatically. If it matches a preset, the preset is preselected when opening the dialog. The active mixer config is shown next to `Open Spreadsheet and Start Writing Process`, e.g. `Mixer Config: Group 8/4, FX 8/4, Aux 12/6, Matrix 4/0`. Without a mixer config, `Mixer Config: not set (no limits)` is shown — then all rows of the spreadsheet are written and the Utilities use their default amounts.
 
 The active mixer config and the presets are stored in `config.json` together with the other settings. The file is located in the directory the tool is started from.
 
@@ -282,7 +282,7 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 
 > **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
 
-> **_NOTE:_** `MUTE all Outputs` / `UNMUTE all Outputs` switch exactly the Aux, Group, Matrix and FX Send buses set in the [Mixer Config](#mixer-config). For empty fields or without a saved mixer config, a conservative default amount per bus type is used.
+> **_NOTE:_** `MUTE all Outputs` / `UNMUTE all Outputs` switch exactly the Aux, Group, Matrix and FX Send buses set in the [Mixer Config](#mixer-config). Without a saved mixer config, a conservative default amount per bus type is used.
 
 ### Fader
 

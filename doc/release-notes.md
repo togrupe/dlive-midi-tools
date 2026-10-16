@@ -15,6 +15,7 @@ Feature Release
 - If no mixer config is saved yet, the dialog opens before the first write to the console
 - **Bus count check:** entered buses are counted (stereo counts twice) against the available buses — dLive 60, Avantis 38 (bus pool 64 / 42 minus Main LR and PAFL). Fields turn red and `Save as Preset...` / `OK` are disabled if exceeded
 - Only even mono amounts are accepted (mono buses are configured in pairs); invalid fields turn red and the reason is shown in the dialog
+- All 8 fields are required (`0` for unused bus types), so an empty mixer config cannot be confirmed by accident
 
 See [Mixer Config](usage.md#mixer-config) for details.
 

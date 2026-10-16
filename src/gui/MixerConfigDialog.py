@@ -23,7 +23,7 @@ COLOR_TEXT_INVALID = "#C0392B"
 HINT_TEXT = ("Enter the amount of buses as configured on the mixer.\n"
              "Buses beyond these amounts are not written to the console.\n"
              "Mono buses are configured in pairs, so only even amounts are allowed.\n"
-             "Leave a field empty to use the console maximum.")
+             "All fields are required, enter 0 for bus types which are not used.")
 
 
 FIRST_WRITE_INTRO_TEXT = ("No mixer config saved for this console yet.\n"
@@ -31,6 +31,8 @@ FIRST_WRITE_INTRO_TEXT = ("No mixer config saved for this console yet.\n"
                           "it will be saved for the next writing process.")
 
 PRESET_NAME_MAX_LENGTH = 40
+
+EMPTY_FIELDS_TEXT = "Please fill in all fields (0 if a bus type is not used)."
 
 
 def mixer_config_to_rows(mixer_config):
@@ -49,10 +51,10 @@ def mixer_config_from_rows(rows):
 
 def mixer_config_summary(mixer_config):
     if mixer_config is None:
-        return "Mixer Config: console maximum"
+        return "Mixer Config: not set (no limits)"
 
     def fmt(value):
-        return "max" if value is None else str(value)
+        return "–" if value is None else str(value)
 
     rows = mixer_config_to_rows(mixer_config)
     return "Mixer Config: " + ", ".join(
@@ -161,13 +163,13 @@ class MixerConfigDialog(tk.Toplevel):
         self._check_plausibility()
 
     def _field_value(self, label, kind, var, maximum):
-        """(value, error) of an entry field. Empty is valid with value None (not limited).
-        Mono amounts must be even, as mono buses are configured in pairs."""
+        """(value, error) of an entry field. An empty field returns (None, None), the caller
+        decides how to handle it. Mono amounts must be even, as mono buses are configured in pairs."""
         text = var.get().strip()
         if text == "":
             return None, None
         if not text.isdigit() or int(text) > maximum:
-            return None, f"{label} {kind}: please enter a number between 0 and {maximum} or leave the field empty."
+            return None, f"{label} {kind}: please enter a number between 0 and {maximum}."
         if kind == "Mono" and int(text) % 2 != 0:
             return None, f"{label} Mono: only even amounts are allowed (mono buses are configured in pairs)."
         return int(text), None
@@ -177,10 +179,12 @@ class MixerConfigDialog(tk.Toplevel):
 
     def _check_plausibility(self):
         """Marks invalid fields red. If more buses than the console provides are entered,
-        all filled fields turn red. In both cases "Save as Preset" and OK are disabled."""
+        all filled fields turn red. In both cases, and as long as a field is empty,
+        "Save as Preset" and OK are disabled."""
         rows = {}
         invalid_fields = []
         errors = []
+        empty_fields = 0
         for label in MIXER_CONFIG_ROWS:
             values = []
             for var, entry, maximum, kind in zip(self.vars[label], self.entries[label], self.maxima[label],
@@ -189,8 +193,12 @@ class MixerConfigDialog(tk.Toplevel):
                 if error is not None:
                     invalid_fields.append(entry)
                     errors.append(error)
+                elif value is None:
+                    empty_fields += 1
                 values.append(value)
             rows[label] = tuple(values)
+        if empty_fields:
+            errors.append(EMPTY_FIELDS_TEXT)
         self.error_label.configure(text="\n".join(errors))
 
         bus_count = count_buses(rows)
@@ -212,18 +220,20 @@ class MixerConfigDialog(tk.Toplevel):
             self.bus_count_label.configure(text=text,
                                            fg=COLOR_TEXT_INVALID if pool_exceeded else self.default_label_fg)
 
-        state = "disabled" if invalid_fields or pool_exceeded else "normal"
+        state = "disabled" if invalid_fields or empty_fields or pool_exceeded else "normal"
         self.btn_save_preset.configure(state=state)
         self.btn_ok.configure(state=state)
 
     def _parse(self):
-        """Returns the entered MixerConfig or None (after showing an error) if invalid.
-        Empty fields mean "not limited"."""
+        """Returns the entered MixerConfig or None (after showing an error) if invalid
+        or a field is empty."""
         rows = {}
         for label in MIXER_CONFIG_ROWS:
             values = []
             for var, maximum, kind in zip(self.vars[label], self.maxima[label], ("Mono", "Stereo")):
                 value, error = self._field_value(label, kind, var, maximum)
+                if error is None and value is None:
+                    error = EMPTY_FIELDS_TEXT
                 if error is not None:
                     showerror(parent=self, message=error)
                     return None

@@ -407,7 +407,7 @@ class MainController:
 
         dialog = MixerConfigDialog(self.view.root, console_type,
                                    self._mixer_config_maxima(console_type),
-                                   available_buses(console_type), None,
+                                   available_buses(console_type), self.mixer_config,
                                    lambda mixer_config: self._persist_mixer_config(console_type, mixer_config),
                                    lambda: self._recall_mixer_config(console_type),
                                    intro=FIRST_WRITE_INTRO_TEXT)

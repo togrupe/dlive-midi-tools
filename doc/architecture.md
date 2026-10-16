@@ -97,7 +97,7 @@ graph TD
 | Entry Point | `src/Main.py` | Initialize context, models, view, and controller; start Tkinter event loop |
 | MainView | `src/gui/MainView.py` | Tkinter GUI layout, widgets, tabs, checkboxes, progress bars |
 | MainController | `src/gui/MainController.py` | Event handlers, threading for long operations, business logic orchestration |
-| Mixer Config Dialog | `src/gui/MixerConfigDialog.py` | Modal dialog to enter, save and recall the mixer config (Group / FX / Aux / Matrix, mono / stereo); live bus count check against the console's bus pool |
+| Mixer Config Dialog | `src/gui/MixerConfigDialog.py` | Modal dialog to enter the mixer config (Group / FX / Aux / Matrix, mono / stereo) and to manage named presets per console; live bus count check against the console's bus pool |
 | AppData | `src/AppData.py` | Runtime state: console type, IP address, MIDI channel, output flags |
 | Context | `src/Context.py` | Global context passed throughout: logger, MIDI output, AppData reference, network flag, config path, CSV hint flag, MixingStationClient reference |
 | Domain Models | `src/model/` | Typed data containers for channel, socket, group, and DCA configurations; `MixerConfig` holds the configured bus amounts plus the per-console maxima and bus pool |
@@ -115,7 +115,7 @@ graph TD
 | PDF Exporter | `src/export/PdfExporter.py` | Generate a formatted channel-list PDF using fpdf2; `open_file()` sends it to the OS default PDF viewer for printing |
 | JSON Exporter | `src/export/JsonExporter.py` | Generate a `dante-config-editor-channel-labels` JSON file, compatible with [Dante Config Editor](https://github.com/Mamat79/Dante-Config-Editor) by Mamat79 |
 | CSV Exporter | `src/export/CsvExporter.py` | Generate the equivalent Dante Config Editor CSV format (`format_version,source_app,source_version,device,direction,channel,dante_id,label`) |
-| Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions, including the saved mixer config per console (`mixer-config`); migrates older config versions step by step (current version: 3) |
+| Persistence | `src/persistence/Persistence.py` | Read/write `config.json` for user settings between sessions, including the active mixer config per console (`mixer-config`) and named presets (`mixer-config-presets`); migrates older config versions step by step (current version: 3) |
 | Helper | `src/helper/Networking.py` | IP address validation utilities |
 
 ## Data Flow

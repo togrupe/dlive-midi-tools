@@ -46,6 +46,9 @@ from persistence.Persistence import (persist_current_ui_settings,
                                      read_persisted_appearance_mode,
                                      read_persisted_mixer_config,
                                      persist_mixer_config,
+                                     read_mixer_config_presets,
+                                     persist_mixer_config_preset,
+                                     delete_mixer_config_preset,
                                      migrate_config_if_needed)
 from spreadsheet.Spreadsheet import (create_channel_list_content,
                                      create_socket_list_content,
@@ -64,6 +67,36 @@ from mixingstation.MixingStationClient import MixingStationClient
 from mixingstation.MixingStationHandler import handle_ms_channels, get_channel_data as ms_get_channel_data
 from export import PdfExporter, JsonExporter, CsvExporter
 from persistence.Persistence import read_persisted_ms_port
+
+
+def _mixer_config_from_persisted_rows(rows):
+    if rows is None:
+        return None
+    return mixer_config_from_rows(
+        {label: tuple(rows.get(label, (None, None))) for label in MIXER_CONFIG_ROWS})
+
+
+class _MixerConfigPresets:
+    """Named mixer config presets of one console, as used by the MixerConfigDialog."""
+
+    def __init__(self, context, console_type):
+        self.context = context
+        self.console_type = console_type
+
+    def names(self):
+        return list(read_mixer_config_presets(self.context, self.console_type).keys())
+
+    def get(self, name):
+        return _mixer_config_from_persisted_rows(
+            read_mixer_config_presets(self.context, self.console_type).get(name))
+
+    def save(self, name, mixer_config):
+        rows = mixer_config_to_rows(mixer_config)
+        persist_mixer_config_preset(self.context, self.console_type, name,
+                                    {label: list(rows[label]) for label in MIXER_CONFIG_ROWS})
+
+    def delete(self, name):
+        delete_mixer_config_preset(self.context, self.console_type, name)
 
 
 class MainController:
@@ -389,10 +422,10 @@ class MainController:
         dialog = MixerConfigDialog(self.view.root, console_type,
                                    self._mixer_config_maxima(console_type),
                                    available_buses(console_type), self.mixer_config,
-                                   lambda mixer_config: self._persist_mixer_config(console_type, mixer_config),
-                                   lambda: self._recall_mixer_config(console_type))
+                                   _MixerConfigPresets(self.context, console_type))
         self.view.root.wait_window(dialog)
         if dialog.result is not None:
+            self._persist_mixer_config(console_type, dialog.result)
             self._set_mixer_config(dialog.result)
 
     def _ensure_mixer_config_for_writing(self):
@@ -412,8 +445,7 @@ class MainController:
         dialog = MixerConfigDialog(self.view.root, console_type,
                                    self._mixer_config_maxima(console_type),
                                    available_buses(console_type), self.mixer_config,
-                                   lambda mixer_config: self._persist_mixer_config(console_type, mixer_config),
-                                   lambda: self._recall_mixer_config(console_type),
+                                   _MixerConfigPresets(self.context, console_type),
                                    intro=FIRST_WRITE_INTRO_TEXT)
         self.view.root.wait_window(dialog)
         if dialog.result is None:
@@ -432,11 +464,7 @@ class MainController:
                                        MIXER_CONFIG_MAXIMA[dliveConstants.console_drop_down_dlive])
 
     def _recall_mixer_config(self, console_type):
-        rows = read_persisted_mixer_config(self.context, console_type)
-        if rows is None:
-            return None
-        return mixer_config_from_rows(
-            {label: tuple(rows.get(label, (None, None))) for label in MIXER_CONFIG_ROWS})
+        return _mixer_config_from_persisted_rows(read_persisted_mixer_config(self.context, console_type))
 
     def _set_mixer_config(self, mixer_config):
         self.mixer_config = mixer_config

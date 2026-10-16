@@ -221,6 +221,48 @@ def persist_mixer_config(context, console, rows):
     log.info("Mixer config for console " + str(console) + " has been persisted: " + str(rows))
 
 
+def _write_mixer_config_presets(context, console, presets):
+    filename = context.get_config_file()
+    data = _read_config(filename)
+    if not isinstance(data.get('mixer-config-presets'), dict):
+        data['mixer-config-presets'] = {}
+    data['mixer-config-presets'][console] = presets
+    data['version'] = CONFIG_VERSION
+    with open(filename, 'w') as file:
+        json.dump(data, file)
+
+
+def read_mixer_config_presets(context, console):
+    """Returns the named mixer config presets of the given console as
+    {name: {"Group": [mono, stereo], ...}, ...}. Unusable entries are skipped."""
+    all_presets = _read_config(context.get_config_file()).get('mixer-config-presets')
+    presets = all_presets.get(console) if isinstance(all_presets, dict) else None
+    if not isinstance(presets, dict):
+        return {}
+    sanitized = {}
+    for name, rows in presets.items():
+        rows = _sanitize_mixer_config_rows(rows)
+        if isinstance(name, str) and name.strip() != "" and rows is not None:
+            sanitized[name] = rows
+    return sanitized
+
+
+def persist_mixer_config_preset(context, console, name, rows):
+    presets = read_mixer_config_presets(context, console)
+    presets[name] = rows
+    _write_mixer_config_presets(context, console, presets)
+    context.get_logger().info("Mixer config preset \"" + name + "\" for console " + str(console) +
+                              " has been persisted: " + str(rows))
+
+
+def delete_mixer_config_preset(context, console, name):
+    presets = read_mixer_config_presets(context, console)
+    if presets.pop(name, None) is not None:
+        _write_mixer_config_presets(context, console, presets)
+        context.get_logger().info("Mixer config preset \"" + name + "\" for console " + str(console) +
+                                  " has been deleted.")
+
+
 def persist_current_ui_settings(context):
     log = context.get_logger()
     filename = context.get_config_file()

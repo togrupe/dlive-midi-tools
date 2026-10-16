@@ -4,14 +4,16 @@
 # Lets the user type in the mixer config (amount of
 # mono/stereo buses configured on the console).
 # Buses beyond these amounts are not written.
+# Configs can be stored as named presets per console.
 #
 # Author: Tobias Grupe
 #
 ####################################################
 import tkinter as tk
 from tkinter import BOTTOM, TOP
-from tkinter.messagebox import showerror, showinfo
-from tkinter.ttk import Frame, Button
+from tkinter.messagebox import showerror, askyesno
+from tkinter.simpledialog import askstring
+from tkinter.ttk import Frame, Button, Combobox
 
 from model.MixerConfig import MixerConfig, MIXER_CONFIG_ROWS, MIXER_CONFIG_RESERVED_BUSES, count_buses
 
@@ -20,12 +22,15 @@ COLOR_TEXT_INVALID = "#C0392B"
 
 HINT_TEXT = ("Enter the amount of buses as configured on the mixer.\n"
              "Buses beyond these amounts are not written to the console.\n"
+             "Mono buses are configured in pairs, so only even amounts are allowed.\n"
              "Leave a field empty to use the console maximum.")
 
 
 FIRST_WRITE_INTRO_TEXT = ("No mixer config saved for this console yet.\n"
                           "Please enter the amount of buses before writing,\n"
                           "it will be saved for the next writing process.")
+
+PRESET_NAME_MAX_LENGTH = 40
 
 
 def mixer_config_to_rows(mixer_config):
@@ -56,16 +61,18 @@ def mixer_config_summary(mixer_config):
 
 class MixerConfigDialog(tk.Toplevel):
     """Modal dialog. After wait_window() returns, `result` holds the entered MixerConfig,
-    or None if the user cancelled."""
+    or None if the user cancelled.
 
-    def __init__(self, parent, console_type, maxima, bus_pool, current, on_save, on_recall, intro=None):
+    `presets` gives access to the named presets of the console and provides
+    names() -> [str], get(name) -> MixerConfig, save(name, MixerConfig) and delete(name)."""
+
+    def __init__(self, parent, console_type, maxima, bus_pool, current, presets, intro=None):
         super().__init__(parent)
         self.title("Mixer Config - " + str(console_type))
         self.resizable(False, False)
         self.maxima = maxima
         self.bus_pool = bus_pool
-        self.on_save = on_save
-        self.on_recall = on_recall
+        self.presets = presets
         self.result = None
         self.vars = {}
         self.entries = {}
@@ -73,6 +80,7 @@ class MixerConfigDialog(tk.Toplevel):
         self._create_widgets()
         if current is not None:
             self._fill(current)
+            self._select_matching_preset(current)
         self.update_idletasks()
         self.geometry(f"{self.winfo_reqwidth() + 40}x{self.winfo_reqheight() + 20}")
 
@@ -92,11 +100,23 @@ class MixerConfigDialog(tk.Toplevel):
             tk.Label(content_frame, text=self.intro, justify=tk.LEFT, fg="#C0392B").grid(
                 row=1, column=0, columnspan=4, padx=5, pady=(0, 8), sticky=tk.W)
 
-        tk.Label(content_frame, text="Mono", font=("", 0, "bold")).grid(row=2, column=1, padx=5)
-        tk.Label(content_frame, text="Stereo", font=("", 0, "bold")).grid(row=2, column=2, padx=5)
+        preset_frame = Frame(content_frame)
+        tk.Label(preset_frame, text="Preset", font=("", 0, "bold")).pack(side=tk.LEFT, padx=(0, 5))
+        self.var_preset = tk.StringVar()
+        self.combobox_preset = Combobox(preset_frame, textvariable=self.var_preset, state="readonly", width=24)
+        self.combobox_preset.bind("<<ComboboxSelected>>", self._on_preset_selected)
+        self.combobox_preset.pack(side=tk.LEFT, padx=5)
+        self.btn_save_preset = Button(preset_frame, text="Save as Preset...", command=self._on_save_preset)
+        self.btn_save_preset.pack(side=tk.LEFT, padx=5)
+        self.btn_delete_preset = Button(preset_frame, text="Delete Preset", command=self._on_delete_preset)
+        self.btn_delete_preset.pack(side=tk.LEFT, padx=5)
+        preset_frame.grid(row=2, column=0, columnspan=4, padx=5, pady=(0, 10), sticky=tk.W)
+
+        tk.Label(content_frame, text="Mono", font=("", 0, "bold")).grid(row=3, column=1, padx=5)
+        tk.Label(content_frame, text="Stereo", font=("", 0, "bold")).grid(row=3, column=2, padx=5)
 
         for index, label in enumerate(MIXER_CONFIG_ROWS):
-            row = index + 3
+            row = index + 4
             mono_max, stereo_max = self.maxima[label]
             tk.Label(content_frame, text=label, font=("", 0, "bold")).grid(
                 row=row, column=0, padx=5, pady=2, sticky=tk.W)
@@ -117,52 +137,61 @@ class MixerConfigDialog(tk.Toplevel):
         self.default_entry_fg = mono_entry.cget("foreground")
 
         self.bus_count_label = tk.Label(content_frame, font=("", 0, "bold"))
-        self.bus_count_label.grid(row=len(MIXER_CONFIG_ROWS) + 3, column=0, columnspan=4,
+        self.bus_count_label.grid(row=len(MIXER_CONFIG_ROWS) + 4, column=0, columnspan=4,
                                   padx=5, pady=(8, 0), sticky=tk.W)
         self.default_label_fg = self.bus_count_label.cget("foreground")
 
+        self.error_label = tk.Label(content_frame, justify=tk.LEFT, fg=COLOR_TEXT_INVALID)
+        self.error_label.grid(row=len(MIXER_CONFIG_ROWS) + 5, column=0, columnspan=4,
+                              padx=5, sticky=tk.W)
+
         tk.Label(content_frame, text=HINT_TEXT, justify=tk.LEFT).grid(
-            row=len(MIXER_CONFIG_ROWS) + 4, column=0, columnspan=4, padx=5, pady=(10, 0), sticky=tk.W)
+            row=len(MIXER_CONFIG_ROWS) + 6, column=0, columnspan=4, padx=5, pady=(10, 0), sticky=tk.W)
 
         content_frame.pack(side=TOP, padx=10)
 
         bottom_frame = Frame(self)
-        Button(bottom_frame, text="Recall", command=self._on_recall).pack(side=tk.LEFT, padx=5)
-        self.btn_save = Button(bottom_frame, text="Save", command=self._on_save)
-        self.btn_save.pack(side=tk.LEFT, padx=5)
         Button(bottom_frame, text="Reset", command=self._on_reset).pack(side=tk.LEFT, padx=5)
         self.btn_ok = Button(bottom_frame, text="OK", command=self._on_ok)
         self.btn_ok.pack(side=tk.LEFT, padx=(20, 5))
         Button(bottom_frame, text="Cancel", command=self._on_cancel).pack(side=tk.LEFT, padx=5)
         bottom_frame.pack(side=BOTTOM, pady=10)
 
+        self._refresh_presets()
         self._check_plausibility()
 
-    def _field_value(self, var, maximum):
-        """(value, valid) of an entry field. Empty is valid with value None."""
+    def _field_value(self, label, kind, var, maximum):
+        """(value, error) of an entry field. Empty is valid with value None (not limited).
+        Mono amounts must be even, as mono buses are configured in pairs."""
         text = var.get().strip()
         if text == "":
-            return None, True
+            return None, None
         if not text.isdigit() or int(text) > maximum:
-            return None, False
-        return int(text), True
+            return None, f"{label} {kind}: please enter a number between 0 and {maximum} or leave the field empty."
+        if kind == "Mono" and int(text) % 2 != 0:
+            return None, f"{label} Mono: only even amounts are allowed (mono buses are configured in pairs)."
+        return int(text), None
 
     def _on_value_changed(self, *args):
         self._check_plausibility()
 
     def _check_plausibility(self):
         """Marks invalid fields red. If more buses than the console provides are entered,
-        all filled fields turn red. In both cases Save and OK are disabled."""
+        all filled fields turn red. In both cases "Save as Preset" and OK are disabled."""
         rows = {}
         invalid_fields = []
+        errors = []
         for label in MIXER_CONFIG_ROWS:
             values = []
-            for var, entry, maximum in zip(self.vars[label], self.entries[label], self.maxima[label]):
-                value, valid = self._field_value(var, maximum)
-                if not valid:
+            for var, entry, maximum, kind in zip(self.vars[label], self.entries[label], self.maxima[label],
+                                                 ("Mono", "Stereo")):
+                value, error = self._field_value(label, kind, var, maximum)
+                if error is not None:
                     invalid_fields.append(entry)
+                    errors.append(error)
                 values.append(value)
             rows[label] = tuple(values)
+        self.error_label.configure(text="\n".join(errors))
 
         bus_count = count_buses(rows)
         pool_exceeded = self.bus_pool is not None and bus_count > self.bus_pool
@@ -184,7 +213,7 @@ class MixerConfigDialog(tk.Toplevel):
                                            fg=COLOR_TEXT_INVALID if pool_exceeded else self.default_label_fg)
 
         state = "disabled" if invalid_fields or pool_exceeded else "normal"
-        self.btn_save.configure(state=state)
+        self.btn_save_preset.configure(state=state)
         self.btn_ok.configure(state=state)
 
     def _parse(self):
@@ -194,15 +223,11 @@ class MixerConfigDialog(tk.Toplevel):
         for label in MIXER_CONFIG_ROWS:
             values = []
             for var, maximum, kind in zip(self.vars[label], self.maxima[label], ("Mono", "Stereo")):
-                text = var.get().strip()
-                if text == "":
-                    values.append(None)
-                    continue
-                if not text.isdigit() or int(text) > maximum:
-                    showerror(parent=self, message=f"{label} {kind}: please enter a number between 0 and {maximum}"
-                                                   f" or leave the field empty.")
+                value, error = self._field_value(label, kind, var, maximum)
+                if error is not None:
+                    showerror(parent=self, message=error)
                     return None
-                values.append(int(text))
+                values.append(value)
             rows[label] = tuple(values)
         if self.bus_pool is not None and count_buses(rows) > self.bus_pool:
             showerror(parent=self, message=f"{count_buses(rows)} buses entered, the console provides "
@@ -217,19 +242,51 @@ class MixerConfigDialog(tk.Toplevel):
             for var, value in zip(self.vars[label], rows[label]):
                 var.set("" if value is None else str(value))
 
-    def _on_recall(self):
-        mixer_config = self.on_recall()
-        if mixer_config is None:
-            showinfo(parent=self, message="No saved mixer config found for this console.")
-            return
-        self._fill(mixer_config)
+    def _refresh_presets(self, selected=""):
+        names = sorted(self.presets.names(), key=str.lower)
+        self.combobox_preset.configure(values=names)
+        self.var_preset.set(selected if selected in names else "")
+        self.combobox_preset.configure(state="readonly" if names else "disabled")
+        self.btn_delete_preset.configure(state="normal" if self.var_preset.get() else "disabled")
 
-    def _on_save(self):
+    def _select_matching_preset(self, mixer_config):
+        rows = mixer_config_to_rows(mixer_config)
+        for name in sorted(self.presets.names(), key=str.lower):
+            preset = self.presets.get(name)
+            if preset is not None and mixer_config_to_rows(preset) == rows:
+                self._refresh_presets(selected=name)
+                return
+
+    def _on_preset_selected(self, *args):
+        name = self.var_preset.get()
+        mixer_config = self.presets.get(name)
+        if mixer_config is not None:
+            self._fill(mixer_config)
+        self.btn_delete_preset.configure(state="normal" if name else "disabled")
+
+    def _on_save_preset(self):
         mixer_config = self._parse()
         if mixer_config is None:
             return
-        self.on_save(mixer_config)
-        showinfo(parent=self, message="Mixer config saved.")
+        name = askstring("Save as Preset", "Preset name:", parent=self, initialvalue=self.var_preset.get())
+        if name is None:
+            return
+        name = name.strip()
+        if name == "" or len(name) > PRESET_NAME_MAX_LENGTH:
+            showerror(parent=self, message=f"Please enter a preset name with 1 to {PRESET_NAME_MAX_LENGTH} characters.")
+            return
+        if name in self.presets.names() and not askyesno(
+                parent=self, message=f"Preset \"{name}\" already exists. Overwrite it?"):
+            return
+        self.presets.save(name, mixer_config)
+        self._refresh_presets(selected=name)
+
+    def _on_delete_preset(self):
+        name = self.var_preset.get()
+        if not name or not askyesno(parent=self, message=f"Delete preset \"{name}\"?"):
+            return
+        self.presets.delete(name)
+        self._refresh_presets()
 
     def _on_reset(self):
         for mono_var, stereo_var in self.vars.values():

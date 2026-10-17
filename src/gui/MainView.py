@@ -119,6 +119,9 @@ class MainView:
         self.settings_menu.add_checkbutton(label="Dark Mode",
                                            variable=self.var_dark_mode,
                                            onvalue=True, offvalue=False)
+        self.settings_menu.add_separator()
+        self.settings_menu.add_command(label="Mixer Config...")
+        self.mixer_config_menu_index = self.settings_menu.index("end")
         menu_bar.add_cascade(label="Settings", menu=self.settings_menu)
 
         self.file_menu = Menu(menu_bar, tearoff=0)
@@ -380,6 +383,9 @@ class MainView:
             text='Open Spreadsheet and Start Writing Process',
             height=38, font=ctk.CTkFont(size=13))
         self.btn_open_spreadsheet.grid(row=0, column=0, padx=10, pady=6)
+        # Active write boundaries (Settings > Mixer Config...), click to edit
+        self.label_mixer_config = ctk.CTkLabel(bottom_frame, text="", anchor="w", cursor="hand2")
+        self.label_mixer_config.grid(row=0, column=1, padx=10, pady=6, sticky="w")
 
         # Grid layout on outer: CheckboxGrid row gets all extra space (weight=1),
         # the rest are fixed-height so they are always fully visible.
@@ -847,6 +853,15 @@ class MainView:
 
     def hide_ms_console_selector(self):
         self._ms_console_selector.pack_forget()
+
+    def set_mixer_config_summary(self, text):
+        self.label_mixer_config.configure(text=text)
+
+    def enable_mixer_config(self):
+        self.settings_menu.entryconfig(self.mixer_config_menu_index, state='normal')
+
+    def disable_mixer_config(self):
+        self.settings_menu.entryconfig(self.mixer_config_menu_index, state='disabled')
 
     def get_effective_console(self):
         if self.var_console.get() == dliveConstants.console_drop_down_mixing_station:

@@ -9,6 +9,7 @@ Feature Release
   - `Channels` tab: Mono / Stereo Group assignments
   - `Groups` tab: Aux, Group, Matrix and FX Send names and colors
   - Utilities: `MUTE all Outputs` / `UNMUTE all Outputs` switch exactly the configured buses
+- **Note:** the mixer config dialog does **not** change the mixer config of the console. The fields only serve as boundaries for the tool and must match the configuration on the console
 - The active mixer config is saved per console (dLive / Avantis) and loaded automatically on start and when switching the console
 - **Named presets:** mixer configs can be stored under a name (e.g. per show or venue), selected from a list and deleted — per console
 - The active mixer config is shown next to `Open Spreadsheet and Start Writing Process`; click it to edit
@@ -26,6 +27,7 @@ See [Mixer Config](usage.md#mixer-config) for details.
 ### Technical Limitations
 - DX2 (Pad/Phantom/Gain) for Avantis via SLink is currently not possible due to technical limitations on API.
 - HPF on, HPF value, Group Assignments and Mute Groups for Avantis are currently not possible due to technical limitations on API.
+- The mixer config cannot be read out from the console via the API, so it has to be entered manually.
 - The mixer config is not available for Mixing Station.
 
 ### Issues Fixed

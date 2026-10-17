@@ -20,7 +20,9 @@ from model.MixerConfig import MixerConfig, MIXER_CONFIG_ROWS, MIXER_CONFIG_RESER
 COLOR_INVALID = "#F1948A"
 COLOR_TEXT_INVALID = "#C0392B"
 
-HINT_TEXT = ("Enter the amount of buses as configured on the mixer.\n"
+HINT_TEXT = ("This does not change the mixer config of the console, the amounts only\n"
+             "serve as boundaries for the tool (the mixer config cannot be read out).\n"
+             "Enter the amount of buses as configured on the mixer.\n"
              "Buses beyond these amounts are not written to the console.\n"
              "Mono buses are configured in pairs, so only even amounts are allowed.\n"
              "All fields are required, enter 0 for bus types which are not used.")

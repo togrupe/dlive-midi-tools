@@ -120,6 +120,8 @@ If you want to change the preconfigured MIDI port, you can change it in the GUI 
 
 The mixer config tells the tool how many buses are configured on your console (Mixrack / Avantis mixer configuration). The tool uses these amounts as boundaries and does not write beyond them, so no data is sent to buses which do not exist in the current configuration.
 
+> **Note:** The mixer config dialog does **not** change the mixer config of the console — the fields only serve as boundaries for the tool. Unfortunately, the mixer config cannot be read out from the console via the API either, so the amounts have to be entered manually and kept in sync with the console.
+
 Open it via `Settings → Mixer Config...` or by clicking the mixer config summary next to `Open Spreadsheet and Start Writing Process`.
 
 | Field | Meaning |

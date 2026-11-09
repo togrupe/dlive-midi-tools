@@ -26,7 +26,7 @@ ABOUT_CONTENT = [
     {"type": "spacer"},
     {"type": "full",     "text": "Powered by Open Source"},
     {"type": "spacer"},
-    {"type": "multirow", "label": "Used Python Modules:", "values": ["numpy", "mido", "pandas", "xlrd", "openpyxl", "odfpy", "reathon", "customtkinter", "pyinstaller"]},
+    {"type": "multirow", "label": "Used Python Modules:", "values": ["numpy", "mido", "pandas", "xlrd", "openpyxl", "odfpy", "fpdf", "reathon", "customtkinter", "pyinstaller"]},
     {"type": "spacer"},
     {"type": "row",      "label": "JSON/CSV Export Format:", "value": "Compatible with Dante Config Editor"},
     {"type": "row",      "label": "Credit:",                 "value": "https://github.com/Mamat79/Dante-Config-Editor"},

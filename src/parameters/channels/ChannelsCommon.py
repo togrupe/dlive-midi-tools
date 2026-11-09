@@ -18,7 +18,7 @@ from parameters.channels.Mutegroup import mg_channel
 from parameters.channels.Name import name_channel
 
 
-def handle_channels_parameter(message, context, channel_list_entries, action):
+def handle_channels_parameter(message, context, channel_list_entries, action, mixer_config=None):
     logging = context.get_logger()
 
     logging.info(message)
@@ -60,6 +60,6 @@ def handle_channels_parameter(message, context, channel_list_entries, action):
         elif action == "assign_main_mix":
             assign_mainmix_channel(context, item)
         elif action == "assign_mono_group":
-            assign_group_to_channel(context, item, "mono")
+            assign_group_to_channel(context, item, "mono", mixer_config)
         elif action == "assign_stereo_group":
-            assign_group_to_channel(context, item, "stereo")
+            assign_group_to_channel(context, item, "stereo", mixer_config)

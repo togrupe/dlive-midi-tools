@@ -106,15 +106,15 @@ Every contribution, no matter how small, is deeply appreciated. Thank you! ♥
 
 | Version | Date       | OS                            | Download                                                                                       | Release Notes                      | MD5 Checksum                     |
 |---------|------------|-------------------------------|------------------------------------------------------------------------------------------------|------------------------------------|----------------------------------|
+| v2.14.1 | TODO       | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_1-RC2/dmt-v2_14_1-RC2-macos-x86_64.zip) | [Link](doc/release-notes.md#v2141) | TODO                             |
+|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_1-RC2/dmt-v2_14_1-RC2-macos-arm64.zip) |                                    | TODO                             |
+|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_1-RC2/dmt-v2_14_1-RC2-windows.zip)     |                                    | TODO                             |
 | v2.14.0 | 12.08.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_0/dmt-v2_14_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2140) | 936b88444e6410314e67530fef1a8881|
 |         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_0/dmt-v2_14_0-macos-arm64.zip) |                                    | c52de6c7e392b0bc8a2bc1115efc30c7                              |
 |         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_14_0/dmt-v2_14_0-windows.zip)     |                                    | b0702b11b51f31c7d5261299c22ea526|
 | v2.13.0 | 02.07.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2130) | e4e3174327cb6465b85ac80bc60d5686 |
 |         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-macos-arm64.zip) |                                    | 5a22048f6ef3d6d7cc0b458905ccf29e |
 |         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_13_0/dmt-v2_13_0-windows.zip)     |                                    | da2cd33e6f2a3f0d7a04dfb19cf3c222 |
-| v2.12.0 | 24.05.2026 | macOS (x86_64 - Intel*)       | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-x86_64.zip) | [Link](doc/release-notes.md#v2120) | 861622a542446db242c93d00ea3cf99a |
-|         |            | macOS (arm64 - Apple-Silicon) | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-macos-arm64.zip) |                                    | cc6fd1f297b123158d2591841b7d5898 |
-|         |            | Windows (x86_64)              | [Link](https://liveworks-vt.de/downloads/dlive-midi-tools/v2_12_0/dmt-v2_12_0-windows.zip)     |                                    | 2b09f614d9b6c517e33be5b4d5fe7a6e |
 Older versions see [archive](doc/download-archive.md)
 
 (*) For Apple Silicon Macs, prefer the native **arm64** build. The x86_64 (Intel) build also runs via Rosetta 2, which newer versions of macOS have installed by default — but the native build is recommended.
@@ -170,6 +170,8 @@ More details about the `Groups` columns can be found [here](doc/groups/README.md
 
 ### Mixer Config
 This is a report of used buses. It does not change the "Mixer Config". Please have a look at the yellow box — it can help you set the "Mixer Config" properly.
+
+The boundaries for writing are set in the tool under `Settings → Mixer Config...` — nothing is written beyond the buses configured there. See [Mixer Config](doc/usage.md#mixer-config).
 
 ![mixerconfig](doc/mixerconfig/excel_mixerconfig.png)
 

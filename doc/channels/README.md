@@ -146,7 +146,7 @@ Empty cells are interpreted as **Don't care**.
 
 #### Channel to Group Assignments
 
-> **_NOTE:_** Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. Use "-" by default for all routings and put an "x" only where routing is actually required.
+> **_NOTE:_** Writing beyond the buses defined in the mixer configuration can lead to internal errors, which can cause strange routings in MGrp1. Set the [Mixer Config](../usage.md#mixer-config) in the tool to match the console — group assignments beyond the configured groups are then not written. Use "-" by default for all routings and put an "x" only where routing is actually required.
 
 ##### Channel to Mono Group Assignment — Grp1-12 (dLive only)
 

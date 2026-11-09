@@ -26,7 +26,7 @@ flowchart TD
     ERR["Errors shown to user\nProcessing stops"]
 
     subgraph console_out["Console Output (optional)"]
-        MIDI["Write Parameters\nMIDI over TCP · port 51325"]
+        MIDI["Write Parameters\nMIDI over TCP · port 51325\nlimited by Mixer Config"]
     end
 
     subgraph daw_out["DAW Session Output (optional)"]
@@ -69,7 +69,7 @@ flowchart TD
 | A2 | *(Optional)* Pre-configure names in dLive / Avantis Director offline first |
 | A3 | Channel List Manager parses the spreadsheet |
 | A4 | Validator checks names, colors, fader levels, HPF values, channel range |
-| A5a | Write channel parameters to FOH console via MIDI/TCP |
+| A5a | Write channel parameters to FOH console via MIDI/TCP — group assignments and Aux / Group / Matrix / FX Send names & colors only within the [Mixer Config](usage.md#mixer-config) (the dialog opens before the first write if none is saved yet) |
 | A5b | *(Optional)* Write to additional console (Monitor / Broadcast) |
 | A6a | *(Optional)* Generate Reaper recording session (.rpp) |
 | A6b | *(Optional)* Generate Tracks Live template (.template) |

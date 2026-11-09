@@ -24,11 +24,15 @@ from directorcsv import CsvCreator
 from dawsession import ReaperSessionCreator, TracksLiveSessionCreator
 from gui.AboutDialog import AboutDialog
 from gui.DonateDialog import DonateDialog
+from gui.MixerConfigDialog import (MixerConfigDialog, MIXER_CONFIG_ROWS,
+                                   mixer_config_to_rows, mixer_config_from_rows,
+                                   mixer_config_summary, FIRST_WRITE_INTRO_TEXT)
 from gui.UpdateDialog import UpdateDialog
 from helper import UpdateChecker
 from helper.Networking import is_valid_ip_address
 import Toolinfo
 from model.Action import Action
+from model.MixerConfig import MIXER_CONFIG_MAXIMA, available_buses
 from model.Sheet import Sheet
 from parameters.channels.ChannelsCommon import handle_channels_parameter
 from parameters.channels.Color import get_color_channel
@@ -40,6 +44,11 @@ from persistence.Persistence import (persist_current_ui_settings,
                                      read_persisted_midi_port,
                                      read_persisted_ip,
                                      read_persisted_appearance_mode,
+                                     read_persisted_mixer_config,
+                                     persist_mixer_config,
+                                     read_mixer_config_presets,
+                                     persist_mixer_config_preset,
+                                     delete_mixer_config_preset,
                                      migrate_config_if_needed)
 from spreadsheet.Spreadsheet import (create_channel_list_content,
                                      create_socket_list_content,
@@ -60,11 +69,42 @@ from export import PdfExporter, JsonExporter, CsvExporter
 from persistence.Persistence import read_persisted_ms_port
 
 
+def _mixer_config_from_persisted_rows(rows):
+    if rows is None:
+        return None
+    return mixer_config_from_rows(
+        {label: tuple(rows.get(label, (None, None))) for label in MIXER_CONFIG_ROWS})
+
+
+class _MixerConfigPresets:
+    """Named mixer config presets of one console, as used by the MixerConfigDialog."""
+
+    def __init__(self, context, console_type):
+        self.context = context
+        self.console_type = console_type
+
+    def names(self):
+        return list(read_mixer_config_presets(self.context, self.console_type).keys())
+
+    def get(self, name):
+        return _mixer_config_from_persisted_rows(
+            read_mixer_config_presets(self.context, self.console_type).get(name))
+
+    def save(self, name, mixer_config):
+        rows = mixer_config_to_rows(mixer_config)
+        persist_mixer_config_preset(self.context, self.console_type, name,
+                                    {label: list(rows[label]) for label in MIXER_CONFIG_ROWS})
+
+    def delete(self, name):
+        delete_mixer_config_preset(self.context, self.console_type, name)
+
+
 class MainController:
     def __init__(self, view, context):
         self.view = view
         self.context = context
         self.log = context.get_logger()
+        self.mixer_config = None
 
         self._load_persisted_settings()
         self._bind_commands()
@@ -121,9 +161,13 @@ class MainController:
                 console in dliveConstants.MIXING_STATION_CONSOLES):
             self.view.disable_helpers_avantis()
 
+        self._apply_mixer_config_for_console(console)
+
     def _bind_commands(self):
         # Menu
         self.view.var_dark_mode.trace("w", self.on_appearance_mode_changed)
+        self.view.settings_menu.entryconfig(self.view.mixer_config_menu_index, command=self.on_mixer_config)
+        self.view.label_mixer_config.bind("<Button-1>", lambda event: self.on_mixer_config())
         self.view.file_menu.entryconfig(0, command=self.on_open_documentation)
         self.view.file_menu.entryconfig(1, command=self.on_check_for_updates_thread)
         self.view.file_menu.entryconfig(3, command=self.on_donate)
@@ -168,11 +212,13 @@ class MainController:
         self.view.btn_mute_all_inputs.configure(
             command=lambda: self._on_helper_thread(mute_all_inputs, "Muting all Inputs..."))
         self.view.btn_mute_all_outputs.configure(
-            command=lambda: self._on_helper_thread(mute_all_outputs, "Muting all Outputs..."))
+            command=lambda: self._on_helper_thread(
+                lambda context: mute_all_outputs(context, self.mixer_config), "Muting all Outputs..."))
         self.view.btn_unmute_all_inputs.configure(
             command=lambda: self._on_helper_thread(unmute_all_inputs, "Unmuting all Inputs..."))
         self.view.btn_unmute_all_outputs.configure(
-            command=lambda: self._on_helper_thread(unmute_all_outputs, "Unmuting all Outputs..."))
+            command=lambda: self._on_helper_thread(
+                lambda context: unmute_all_outputs(context, self.mixer_config), "Unmuting all Outputs..."))
         self.view.btn_fader_all_to_zero.configure(
             command=lambda: self._on_helper_thread(set_all_input_faders_to_zero, "Setting all Input Faders to 0 dB..."))
         self.view.btn_fader_all_to_minus_inf.configure(
@@ -361,10 +407,81 @@ class MainController:
             self.view.set_export_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
             self.view.root.update()
 
+        self._apply_mixer_config_for_console(effective)
+
     def on_ms_console_selected(self, *args):
         effective = self.view.get_effective_console()
         self.context.get_app_data().set_console(effective)
         self.log.info("The selected Mixing Station console is: " + effective)
+
+    def on_mixer_config(self):
+        console_type = self.view.get_effective_console()
+        if console_type in dliveConstants.MIXING_STATION_CONSOLES:
+            return
+
+        dialog = MixerConfigDialog(self.view.root, console_type,
+                                   self._mixer_config_maxima(console_type),
+                                   available_buses(console_type), self.mixer_config,
+                                   _MixerConfigPresets(self.context, console_type))
+        self.view.root.wait_window(dialog)
+        if dialog.result is not None:
+            self._persist_mixer_config(console_type, dialog.result)
+            self._set_mixer_config(dialog.result)
+
+    def _ensure_mixer_config_for_writing(self):
+        """Before the first write to a console without a saved mixer config, the user is
+        asked to enter it. The entered config is saved
+        and becomes the active write boundary. Returns False if the user cancelled."""
+        console_type = self.view.get_effective_console()
+        if (not self.view.var_write_to_console.get() or
+                console_type in dliveConstants.MIXING_STATION_CONSOLES):
+            return True
+        saved_config = self._recall_mixer_config(console_type)
+        if saved_config is not None:
+            if self.mixer_config is None:
+                self._set_mixer_config(saved_config)
+            return True
+
+        dialog = MixerConfigDialog(self.view.root, console_type,
+                                   self._mixer_config_maxima(console_type),
+                                   available_buses(console_type), self.mixer_config,
+                                   _MixerConfigPresets(self.context, console_type),
+                                   intro=FIRST_WRITE_INTRO_TEXT)
+        self.view.root.wait_window(dialog)
+        if dialog.result is None:
+            return False
+        self._persist_mixer_config(console_type, dialog.result)
+        self._set_mixer_config(dialog.result)
+        return True
+
+    def _persist_mixer_config(self, console_type, mixer_config):
+        rows = mixer_config_to_rows(mixer_config)
+        persist_mixer_config(self.context, console_type,
+                             {label: list(rows[label]) for label in MIXER_CONFIG_ROWS})
+
+    def _mixer_config_maxima(self, console_type):
+        return MIXER_CONFIG_MAXIMA.get(console_type,
+                                       MIXER_CONFIG_MAXIMA[dliveConstants.console_drop_down_dlive])
+
+    def _recall_mixer_config(self, console_type):
+        return _mixer_config_from_persisted_rows(read_persisted_mixer_config(self.context, console_type))
+
+    def _set_mixer_config(self, mixer_config):
+        self.mixer_config = mixer_config
+        summary = mixer_config_summary(mixer_config)
+        self.log.info(summary)
+        self.view.set_mixer_config_summary(summary)
+
+    def _apply_mixer_config_for_console(self, console_type):
+        """The saved mixer config of the console becomes the active write boundary.
+        Mixing Station consoles are not limited."""
+        if console_type in dliveConstants.MIXING_STATION_CONSOLES:
+            self.view.disable_mixer_config()
+            self.mixer_config = None
+            self.view.set_mixer_config_summary("")
+            return
+        self.view.enable_mixer_config()
+        self._set_mixer_config(self._recall_mixer_config(console_type))
 
     def on_reaper_write_changed(self):
         if self.view.var_write_reaper.get() or self.view.var_write_trackslive.get():
@@ -421,6 +538,11 @@ class MainController:
             self.view.set_export_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
 
     def on_browse_files_thread(self):
+        # Runs on the main thread (button callback), so the modal dialog is shown here,
+        # before the writing process is handed over to the worker thread.
+        if not self._ensure_mixer_config_for_writing():
+            self.view.set_status("Writing cancelled, no mixer config entered.")
+            return
         bg_thread = threading.Thread(target=self._browse_files)
         bg_thread.start()
 
@@ -1064,6 +1186,9 @@ class MainController:
         console = self.context.get_app_data().get_console()
         is_ms = console in dliveConstants.MIXING_STATION_CONSOLES
 
+        if not is_ms:
+            self.log.info("Write boundaries - " + mixer_config_summary(self.mixer_config))
+
         for action in action_list:
             action_message = action.get_message()
             if action.get_sheet_tab() == "channels":
@@ -1074,7 +1199,8 @@ class MainController:
                 else:
                     if handle_channels_parameter(action_message, self.context,
                                                  sheet.get_channel_model(),
-                                                 action.get_action()) == 1:
+                                                 action.get_action(),
+                                                 self.mixer_config) == 1:
                         self.view.reset_status()
                         self.view.reset_progress()
                         exit(1)
@@ -1088,7 +1214,8 @@ class MainController:
                 if handle_groups_parameter(action_message, self.context,
                                            sheet.get_group_model(),
                                            action.get_action(),
-                                           action.get_bus_type()) == 1:
+                                           action.get_bus_type(),
+                                           self.mixer_config) == 1:
                     self.view.reset_status()
                     self.view.reset_progress()
                     exit(1)

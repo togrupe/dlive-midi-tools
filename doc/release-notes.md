@@ -31,6 +31,7 @@ See [Mixer Config](usage.md#mixer-config) for details.
 - The mixer config is not available for Mixing Station.
 
 ### Issues Fixed
+- fpdf2 library patched to 2.8.8
 
 ### Known Issues
 

@@ -265,24 +265,28 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 
 > **_NOTE:_** Utilities are not available when Mixing Station is selected — all buttons are disabled in that case.
 
+### Input Channel Range
+
+`Channel Start` and `End` limit the input-channel utilities (Reset, `MUTE Inputs` / `UNMUTE Inputs`, Fader) to the selected channels. By default the full channel range of the selected console is used (dLive 1–128, Avantis 1–64). If Start is set above End, End is pulled along (and vice versa), so the range is always valid. `MUTE all Outputs` / `UNMUTE all Outputs` and `Phantom Power OFF (all Sockets)` are not affected by the range.
+
 ### Reset
 
 | Button | Description | Console Support |
 |--------|-------------|-----------------|
-| RESET all DCA Assignments | Removes all DCA assignments from every channel | dLive & Avantis |
-| RESET all Mute Group Assignments | Removes all Mute Group assignments from every channel | dLive only |
-| RESET all Main Assignments | Removes all Main Mix assignments from every channel | dLive & Avantis |
+| RESET DCA Assignments | Removes all DCA assignments from the channels in the selected range | dLive & Avantis |
+| RESET Mute Group Assignments | Removes all Mute Group assignments from the channels in the selected range | dLive only |
+| RESET Main Assignments | Removes the Main Mix assignment from the channels in the selected range | dLive & Avantis |
 
 ### Mute
 
 | Button | Description | Console Support |
 |--------|-------------|-----------------|
-| MUTE all Inputs | Mutes all input channels | dLive & Avantis |
+| MUTE Inputs | Mutes the input channels in the selected range | dLive & Avantis |
 | MUTE all Outputs | Mutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
-| UNMUTE all Inputs | Unmutes all input channels | dLive & Avantis |
+| UNMUTE Inputs | Unmutes the input channels in the selected range | dLive & Avantis |
 | UNMUTE all Outputs | Unmutes all output channels (Aux, Groups, Matrices, FX Sends/Returns, UFX Sends/Returns) | dLive & Avantis |
 
-> **_NOTE:_** `RESET all Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
+> **_NOTE:_** `RESET Mute Group Assignments` is disabled when Avantis is selected, as Mute Groups are not available on that console.
 
 > **_NOTE:_** `MUTE all Outputs` / `UNMUTE all Outputs` switch exactly the Aux, Group, Matrix and FX Send buses set in the [Mixer Config](#mixer-config). Without a saved mixer config, a conservative default amount per bus type is used.
 
@@ -290,8 +294,8 @@ Click `Generate DAW Session(s) from Current Console Settings`.
 
 | Button | Description | Console Support |
 |--------|-------------|-----------------|
-| Set all Input Faders to 0 dB | Sets all input channel faders to unity gain (0 dB) — useful as a soundcheck starting point | dLive & Avantis |
-| Set all Input Faders to -inf | Sets all input channel faders to minimum (-inf) — useful for a silent start | dLive & Avantis |
+| Set Input Faders to 0 dB | Sets the input channel faders in the selected range to unity gain (0 dB) — useful as a soundcheck starting point | dLive & Avantis |
+| Set Input Faders to -inf | Sets the input channel faders in the selected range to minimum (-inf) — useful for a silent start | dLive & Avantis |
 
 ### Preamp Safety
 

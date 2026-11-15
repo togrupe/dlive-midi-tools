@@ -511,14 +511,39 @@ class MainView:
     # ------------------------------------------------------------------
 
     def _create_tab3_content(self):
+        range_frame = self._section(self.tab3, "Input Channel Range")
+        range_frame.configure(border_width=1, border_color="white")
+
+        range_inner = ctk.CTkFrame(range_frame, fg_color="transparent")
+        self.var_utilities_startChannel = StringVar()
+        self.combobox_utilities_start = ctk.CTkComboBox(range_inner,
+                                                        variable=self.var_utilities_startChannel,
+                                                        values=[f"{i}" for i in range(1, 129)], width=70)
+        self.combobox_utilities_start.set("1")
+        ctk.CTkLabel(range_inner, text="Channel Start", anchor="w").grid(row=0, column=0, padx=5, sticky="w")
+        self.combobox_utilities_start.grid(row=0, column=1, padx=5)
+
+        self.var_utilities_endChannel = StringVar()
+        self.combobox_utilities_end = ctk.CTkComboBox(range_inner,
+                                                      variable=self.var_utilities_endChannel,
+                                                      values=[f"{i}" for i in range(1, 129)], width=70)
+        self.combobox_utilities_end.set("128")
+        ctk.CTkLabel(range_inner, text="End", anchor="w").grid(row=0, column=2, padx=5)
+        self.combobox_utilities_end.grid(row=0, column=3, padx=5)
+        ctk.CTkLabel(range_inner,
+                     text="(applies to Reset, Mute/Unmute Inputs and Fader; not to Outputs and Phantom Power)",
+                     text_color="gray60", anchor="w").grid(row=0, column=4, padx=10, sticky="w")
+        range_inner.grid(row=1, column=0, sticky="w", padx=10, pady=8)
+        range_frame.pack(side="top", fill="x", padx=10, pady=8)
+
         reset_frame = self._section(self.tab3, "Reset")
         reset_frame.configure(border_width=1, border_color="white")
 
-        self.btn_reset_dca = ctk.CTkButton(reset_frame, text='RESET all DCA Assignments', width=260,
+        self.btn_reset_dca = ctk.CTkButton(reset_frame, text='RESET DCA Assignments', width=260,
                                            fg_color="#C0392B", hover_color="#922B21")
-        self.btn_reset_mute_groups = ctk.CTkButton(reset_frame, text='RESET all Mute Group Assignments', width=280,
+        self.btn_reset_mute_groups = ctk.CTkButton(reset_frame, text='RESET Mute Group Assignments', width=280,
                                                    fg_color="#C0392B", hover_color="#922B21")
-        self.btn_reset_main_mix = ctk.CTkButton(reset_frame, text='RESET all Main Assignments', width=260,
+        self.btn_reset_main_mix = ctk.CTkButton(reset_frame, text='RESET Main Assignments', width=260,
                                                 fg_color="#C0392B", hover_color="#922B21")
 
         self.btn_reset_dca.grid(row=1, column=0, padx=10, pady=8)
@@ -529,11 +554,11 @@ class MainView:
         mute_frame = self._section(self.tab3, "Mute")
         mute_frame.configure(border_width=1, border_color="white")
 
-        self.btn_mute_all_inputs = ctk.CTkButton(mute_frame, text='MUTE all Inputs', width=260,
+        self.btn_mute_all_inputs = ctk.CTkButton(mute_frame, text='MUTE Inputs', width=260,
                                                  fg_color="#E67E22", hover_color="#CA6F1E")
         self.btn_mute_all_outputs = ctk.CTkButton(mute_frame, text='MUTE all Outputs', width=260,
                                                   fg_color="#E67E22", hover_color="#CA6F1E")
-        self.btn_unmute_all_inputs = ctk.CTkButton(mute_frame, text='UNMUTE all Inputs', width=260,
+        self.btn_unmute_all_inputs = ctk.CTkButton(mute_frame, text='UNMUTE Inputs', width=260,
                                                    fg_color="#27AE60", hover_color="#1E8449")
         self.btn_unmute_all_outputs = ctk.CTkButton(mute_frame, text='UNMUTE all Outputs', width=260,
                                                     fg_color="#27AE60", hover_color="#1E8449")
@@ -547,8 +572,8 @@ class MainView:
         fader_frame = self._section(self.tab3, "Fader")
         fader_frame.configure(border_width=1, border_color="white")
 
-        self.btn_fader_all_to_zero = ctk.CTkButton(fader_frame, text='Set all Input Faders to 0 dB', width=260)
-        self.btn_fader_all_to_minus_inf = ctk.CTkButton(fader_frame, text='Set all Input Faders to -inf', width=260)
+        self.btn_fader_all_to_zero = ctk.CTkButton(fader_frame, text='Set Input Faders to 0 dB', width=260)
+        self.btn_fader_all_to_minus_inf = ctk.CTkButton(fader_frame, text='Set Input Faders to -inf', width=260)
 
         self.btn_fader_all_to_zero.grid(row=1, column=0, padx=10, pady=8)
         self.btn_fader_all_to_minus_inf.grid(row=1, column=1, padx=10, pady=8)
@@ -661,6 +686,27 @@ class MainView:
     def set_export_end_channel(self, n):
         self.combobox_export_end.set(str(n))
 
+    def set_utilities_max_channel(self, max_ch):
+        values = [f"{i}" for i in range(1, max_ch + 1)]
+        self.combobox_utilities_start.configure(values=values)
+        self.combobox_utilities_end.configure(values=values)
+        start = self.var_utilities_startChannel.get().strip()
+        if not start.isdigit() or int(start) > max_ch:
+            self.combobox_utilities_start.set("1")
+        self.combobox_utilities_end.set(str(max_ch))
+        self.root.update()
+
+    def get_utilities_channel_range(self):
+        """Returns (start, end) as 1-based inclusive ints, or None if the input is invalid."""
+        start = self.var_utilities_startChannel.get().strip()
+        end = self.var_utilities_endChannel.get().strip()
+        if not start.isdigit() or not end.isdigit():
+            return None
+        start, end = int(start), int(end)
+        if start < 1 or start > end:
+            return None
+        return start, end
+
     def disable_helpers_avantis(self):
         self.btn_reset_mute_groups.configure(state='disabled')
 
@@ -672,7 +718,8 @@ class MainView:
                     self.btn_mute_all_inputs, self.btn_mute_all_outputs,
                     self.btn_unmute_all_inputs, self.btn_unmute_all_outputs,
                     self.btn_fader_all_to_zero, self.btn_fader_all_to_minus_inf,
-                    self.btn_phantom_off_all):
+                    self.btn_phantom_off_all, self.combobox_utilities_start,
+                    self.combobox_utilities_end):
             btn.configure(state='disabled')
 
     def enable_utilities(self):
@@ -680,7 +727,8 @@ class MainView:
                     self.btn_mute_all_inputs, self.btn_mute_all_outputs,
                     self.btn_unmute_all_inputs, self.btn_unmute_all_outputs,
                     self.btn_fader_all_to_zero, self.btn_fader_all_to_minus_inf,
-                    self.btn_phantom_off_all):
+                    self.btn_phantom_off_all, self.combobox_utilities_start,
+                    self.combobox_utilities_end):
             btn.configure(state='normal')
 
     # ------------------------------------------------------------------

@@ -42,58 +42,60 @@ def _is_avantis(context):
     return context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis
 
 
+def _channel_range(context, start=None, end=None):
+    """0-based range of input channels to process. start/end are 1-based and inclusive;
+    None means the first/last channel of the selected console. Values are clamped
+    to the console's channel count."""
+    max_ch = dliveConstants.AVANTIS_MAX_CHANNELS if _is_avantis(context) else dliveConstants.DLIVE_MAX_CHANNELS
+    first = 1 if start is None else max(1, min(int(start), max_ch))
+    last = max_ch if end is None else max(1, min(int(end), max_ch))
+    return range(first - 1, last)
+
+
 def _send_mute(output, midi_channel, note, velocity):
     output.send(mido.Message('note_on', channel=midi_channel, note=note, velocity=velocity))
     output.send(mido.Message('note_on', channel=midi_channel, note=note, velocity=dliveConstants.note_off))
     time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def reset_all_dca(context):
-    avantis = _is_avantis(context)
-    max_ch    = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
-    dca_count = _AVANTIS_DCA_COUNT if avantis else _DLIVE_DCA_COUNT
-    for ch in range(max_ch):
+def reset_all_dca(context, start=None, end=None):
+    dca_count = _AVANTIS_DCA_COUNT if _is_avantis(context) else _DLIVE_DCA_COUNT
+    for ch in _channel_range(context, start, end):
         for i in range(dca_count):
             assign_dca(context, ch, dliveConstants.dca_off_base_address + i)
 
 
-def reset_all_mute_groups(context):
+def reset_all_mute_groups(context, start=None, end=None):
     # dLive only – caller must ensure this is not invoked for Avantis
-    for ch in range(dliveConstants.DLIVE_MAX_CHANNELS):
+    for ch in _channel_range(context, start, end):
         for i in range(_MG_COUNT):
             assign_mg(context, ch, dliveConstants.mg_off_base_address + i)
 
 
-def reset_all_main_mix(context):
-    avantis = _is_avantis(context)
-    max_ch = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
-    for ch in range(max_ch):
+def reset_all_main_mix(context, start=None, end=None):
+    for ch in _channel_range(context, start, end):
         assign_mainmix(context, ch, dliveConstants.assign_off)
 
 
 
-def mute_all_inputs(context):
+def mute_all_inputs(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis  = _is_avantis(context)
-    max_ch   = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output   = context.get_output()
     midi_ch  = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_mute(output,
                    midi_ch + dliveConstants.midi_channel_offset_channels,
                    dliveConstants.channel_offset_channels + ch,
                    dliveConstants.mute_on)
 
 
-def unmute_all_inputs(context):
+def unmute_all_inputs(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    max_ch  = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_mute(output,
                    midi_ch + dliveConstants.midi_channel_offset_channels,
                    dliveConstants.channel_offset_channels + ch,
@@ -171,26 +173,22 @@ def _send_fader(output, midi_channel, channel, fader_value):
     time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def set_all_input_faders_to_zero(context):
+def set_all_input_faders_to_zero(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    max_ch  = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_fader(output, midi_ch + dliveConstants.midi_channel_offset_channels,
                     ch, dliveConstants.fader_level_zero)
 
 
-def set_all_input_faders_to_minus_inf(context):
+def set_all_input_faders_to_minus_inf(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    max_ch  = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_fader(output, midi_ch + dliveConstants.midi_channel_offset_channels,
                     ch, dliveConstants.fader_level_minus_inf)
 

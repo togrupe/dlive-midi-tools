@@ -139,6 +139,7 @@ class MainController:
         console = self.view.get_effective_console()
         if console == dliveConstants.console_drop_down_avantis:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_AVANTIS)
+            self.view.set_utilities_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
         elif console in dliveConstants.MIXING_STATION_CONSOLES:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_MIXING_STATION)
             self.view.show_ms_port()
@@ -150,6 +151,7 @@ class MainController:
             self.view.set_export_max_channel(dliveConstants.MIXING_STATION_MAX_CHANNELS)
         else:
             self.view.label_ip_address_text.configure(text=GuiConstants.LABEL_IPADDRESS_DLIVE)
+            self.view.set_utilities_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
         self.view.root.update()
         self.view.root.focus()
 
@@ -204,25 +206,32 @@ class MainController:
 
         # Tab 3 utility buttons
         self.view.btn_reset_dca.configure(
-            command=lambda: self._on_helper_thread(reset_all_dca, "Resetting all DCA Assignments..."))
+            command=lambda: self._on_helper_thread(reset_all_dca, "Resetting DCA Assignments...",
+                                                   use_channel_range=True))
         self.view.btn_reset_mute_groups.configure(
-            command=lambda: self._on_helper_thread(reset_all_mute_groups, "Resetting all Mute Group Assignments..."))
+            command=lambda: self._on_helper_thread(reset_all_mute_groups, "Resetting Mute Group Assignments...",
+                                                   use_channel_range=True))
         self.view.btn_reset_main_mix.configure(
-            command=lambda: self._on_helper_thread(reset_all_main_mix, "Resetting all Main Mix Assignments..."))
+            command=lambda: self._on_helper_thread(reset_all_main_mix, "Resetting Main Mix Assignments...",
+                                                   use_channel_range=True))
         self.view.btn_mute_all_inputs.configure(
-            command=lambda: self._on_helper_thread(mute_all_inputs, "Muting all Inputs..."))
+            command=lambda: self._on_helper_thread(mute_all_inputs, "Muting Inputs...",
+                                                   use_channel_range=True))
         self.view.btn_mute_all_outputs.configure(
             command=lambda: self._on_helper_thread(
                 lambda context: mute_all_outputs(context, self.mixer_config), "Muting all Outputs..."))
         self.view.btn_unmute_all_inputs.configure(
-            command=lambda: self._on_helper_thread(unmute_all_inputs, "Unmuting all Inputs..."))
+            command=lambda: self._on_helper_thread(unmute_all_inputs, "Unmuting Inputs...",
+                                                   use_channel_range=True))
         self.view.btn_unmute_all_outputs.configure(
             command=lambda: self._on_helper_thread(
                 lambda context: unmute_all_outputs(context, self.mixer_config), "Unmuting all Outputs..."))
         self.view.btn_fader_all_to_zero.configure(
-            command=lambda: self._on_helper_thread(set_all_input_faders_to_zero, "Setting all Input Faders to 0 dB..."))
+            command=lambda: self._on_helper_thread(set_all_input_faders_to_zero, "Setting Input Faders to 0 dB...",
+                                                   use_channel_range=True))
         self.view.btn_fader_all_to_minus_inf.configure(
-            command=lambda: self._on_helper_thread(set_all_input_faders_to_minus_inf, "Setting all Input Faders to -inf..."))
+            command=lambda: self._on_helper_thread(set_all_input_faders_to_minus_inf, "Setting Input Faders to -inf...",
+                                                   use_channel_range=True))
         self.view.btn_phantom_off_all.configure(
             command=lambda: self._on_helper_thread(phantom_power_off_all_sockets, "Switching Phantom Power OFF for all Sockets..."))
 
@@ -233,6 +242,13 @@ class MainController:
         self.view.var_current_console_startChannel.trace("w", self.on_startchannel_selected)
         self.view.var_export_endChannel.trace("w", self.on_export_endchannel_selected)
         self.view.var_export_startChannel.trace("w", self.on_export_startchannel_selected)
+        self.view.var_utilities_endChannel.trace("w", self.on_utilities_endchannel_selected)
+        for changed, combobox in (("start", self.view.combobox_utilities_start),
+                                  ("end", self.view.combobox_utilities_end)):
+            combobox.configure(command=lambda _value, c=changed: self._sync_utilities_range(c))
+            combobox.bind("<Return>", lambda _event, c=changed: self._sync_utilities_range(c))
+            combobox.bind("<FocusOut>", lambda _event, c=changed: self._sync_utilities_range(c))
+        self.view.var_utilities_startChannel.trace("w", self.on_utilities_startchannel_selected)
 
     # ------------------------------------------------------------------
     # Event handlers
@@ -378,6 +394,7 @@ class MainController:
             self.view.set_end_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.set_export_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+            self.view.set_utilities_max_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_dlive:
@@ -391,6 +408,7 @@ class MainController:
             self.view.set_end_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_console_to_daw_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.set_export_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
+            self.view.set_utilities_max_channel(dliveConstants.DLIVE_MAX_CHANNELS)
             self.view.root.update()
 
         elif self.view.var_console.get() == dliveConstants.console_drop_down_mixing_station:
@@ -536,6 +554,39 @@ class MainController:
                 int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
             showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
             self.view.set_export_start_channel(dliveConstants.AVANTIS_MAX_CHANNELS)
+
+    def _sync_utilities_range(self, changed):
+        """Keeps Start <= End: if the changed field crosses the other one, the other
+        field is pulled along. Runs on dropdown selection, Enter and focus-out, not
+        on every keystroke, so typing multi-digit values is not interrupted."""
+        start = self.view.var_utilities_startChannel.get().strip()
+        end = self.view.var_utilities_endChannel.get().strip()
+        if not start.isdigit() or not end.isdigit() or int(start) <= int(end):
+            return
+        if changed == "start":
+            self.view.combobox_utilities_end.set(start)
+        else:
+            self.view.combobox_utilities_start.set(end)
+
+    def on_utilities_endchannel_selected(self, *args):
+        val = self.view.var_utilities_endChannel.get()
+        if not val.strip().isdigit():
+            return
+        if (self.view.var_console.get() == dliveConstants.console_drop_down_avantis and
+                int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
+            showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+            self.view.combobox_utilities_end.set(str(dliveConstants.AVANTIS_MAX_CHANNELS))
+            return
+
+    def on_utilities_startchannel_selected(self, *args):
+        val = self.view.var_utilities_startChannel.get()
+        if not val.strip().isdigit():
+            return
+        if (self.view.var_console.get() == dliveConstants.console_drop_down_avantis and
+                int(val) > dliveConstants.AVANTIS_MAX_CHANNELS):
+            showerror(message="Avantis supports up to " + str(dliveConstants.AVANTIS_MAX_CHANNELS) + " Channels")
+            self.view.combobox_utilities_start.set(str(dliveConstants.AVANTIS_MAX_CHANNELS))
+            return
 
     def on_browse_files_thread(self):
         # Runs on the main thread (button callback), so the modal dialog is shown here,
@@ -1279,7 +1330,16 @@ class MainController:
     # Business logic – Helpers
     # ------------------------------------------------------------------
 
-    def _on_helper_thread(self, helper_fn, status_msg):
+    def _on_helper_thread(self, helper_fn, status_msg, use_channel_range=False):
+        if use_channel_range:
+            channel_range = self.view.get_utilities_channel_range()
+            if channel_range is None:
+                showerror(message="Invalid channel range: Start must be less than or equal to End.")
+                return
+            start, end = channel_range
+            fn = helper_fn
+            helper_fn = lambda context: fn(context, start=start, end=end)
+            status_msg = status_msg.rstrip(".") + f" (Channel {start}-{end})..."
         threading.Thread(target=self._run_helper, args=(helper_fn, status_msg), daemon=True).start()
 
     def _run_helper(self, helper_fn, status_msg):

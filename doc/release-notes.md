@@ -20,6 +20,8 @@ Feature Release
 
 See [Mixer Config](usage.md#mixer-config) for details.
 
+- **Utilities: Input Channel Range** — `Channel Start` / `End` limit Reset, `MUTE Inputs` / `UNMUTE Inputs` and Fader to the selected channels (default: all). Outputs and Phantom Power are not affected. See [Utilities](usage.md#utilities)
+
 ### Improvements
 - dLive: `MUTE all Outputs` / `UNMUTE all Outputs` now cover 16 mono / 8 stereo FX Sends and 16 FX Returns
 - `config.json` is migrated to version 3 (adds the active mixer configs and the presets). Older tool versions can still read it, but saving settings with an older version removes the saved mixer configs and presets

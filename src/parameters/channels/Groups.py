@@ -34,20 +34,30 @@ def assign_group(context, channel, value, send_channel, bus_type):
 
 
 
-def assign_group_to_channel(context, item, bus_type):
+def _console_group_max(console, bus_type):
+    if console == dliveConstants.console_drop_down_avantis:
+        return SpreadsheetConstants.avantis_mono_group_max if bus_type == "mono" \
+            else SpreadsheetConstants.avantis_stereo_group_max
+    return SpreadsheetConstants.dlive_mono_group_max if bus_type == "mono" \
+        else SpreadsheetConstants.dlive_stereo_group_max
 
-    console = context.get_app_data().get_console()
+
+def get_group_write_boundary(context, bus_type, mixer_config=None):
+    """Amount of mono/stereo groups which may be written. The console maximum, further
+    limited by the group count of the mixer config if one is set."""
+    boundary = _console_group_max(context.get_app_data().get_console(), bus_type)
+
+    if mixer_config is not None:
+        boundary = mixer_config.limit("group_" + bus_type, boundary)
+
+    return boundary
+
+
+def assign_group_to_channel(context, item, bus_type, mixer_config=None):
 
     channel = item.get_channel_console()
 
-    if bus_type == "mono" and console == dliveConstants.console_drop_down_dlive:
-        amount_of_groups = SpreadsheetConstants.dlive_mono_group_max
-    elif bus_type == "stereo" and console == dliveConstants.console_drop_down_dlive:
-        amount_of_groups = SpreadsheetConstants.dlive_stereo_group_max
-    elif bus_type == "mono" and console == dliveConstants.console_drop_down_avantis:
-        amount_of_groups = SpreadsheetConstants.avantis_mono_group_max
-    elif bus_type == "stereo" and console == dliveConstants.console_drop_down_avantis:
-        amount_of_groups = SpreadsheetConstants.avantis_stereo_group_max
+    amount_of_groups = get_group_write_boundary(context, bus_type, mixer_config)
 
     if bus_type == "mono":
         group_array = item.get_mono_group_config().get_mono_group_array()

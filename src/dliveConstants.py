@@ -179,9 +179,9 @@ midi_channel_drop_down_string_default = midi_channel_drop_down_string_12
 console_drop_down_avantis = "Avantis"
 console_drop_down_dlive = "dLive"
 console_drop_down_mixing_station = "Mixing Station"
-console_drop_down_sq_mixing_station = "SQ"
+console_drop_down_sq_mixing_station = "SQ/SQ+"
 console_drop_down_dm7_mixing_station = "DM7"
-console_drop_down_wing_mixing_station = "Wing"
+console_drop_down_wing_mixing_station = "Wing/Wing Compact"
 console_drop_down_m32_mixing_station = "M32/X32"
 console_drop_down_qu16_mixing_station = "QU"
 

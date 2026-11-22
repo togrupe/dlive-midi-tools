@@ -5,6 +5,6 @@
 # Author: Tobias Grupe
 #
 ####################################################
-tool_name = "Channel List Manager for Allen & Heath dLive, Avantis & SQ"
-version = "2.14.1-RC4"
+tool_name = "Channel List Manager for Allen & Heath dLive, Avantis & SQ/SQ+"
+version = "2.14.1-RC5"
 build_date = "November 2026"

@@ -6,7 +6,7 @@ Bus name. Names longer than 8 characters are trimmed automatically to 8 characte
 
 Special characters like "äöüéß" are not allowed — you will get an error message if they are used.
 
-Use only the cells that correspond to your current Mixrack Configuration — the maximum count of available buses depends on the mixer config.
+Use only the cells that correspond to your current Mixrack Configuration — the maximum count of available buses depends on the mixer config. Aux, Group, Matrix and FX Send rows beyond the [Mixer Config](../usage.md#mixer-config) set in the tool are skipped.
 
 #### DCA / Aux / Grp / Mtx / FX / UFX Color
 

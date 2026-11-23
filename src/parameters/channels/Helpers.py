@@ -19,9 +19,9 @@ _DLIVE_GROUP_MONO_MAX      = 24
 _DLIVE_GROUP_STEREO_MAX    = 12
 _DLIVE_MATRIX_MONO_MAX     = 12
 _DLIVE_MATRIX_STEREO_MAX   = 8
-_DLIVE_FX_SEND_MONO_MAX    = 8
-_DLIVE_FX_SEND_STEREO_MAX  = 4
-_DLIVE_FX_RETURN_MAX       = 8
+_DLIVE_FX_SEND_MONO_MAX    = 16
+_DLIVE_FX_SEND_STEREO_MAX  = 8
+_DLIVE_FX_RETURN_MAX       = 16
 _DLIVE_UFX_SEND_MAX        = 8
 _DLIVE_UFX_RETURN_MAX      = 8
 
@@ -42,69 +42,71 @@ def _is_avantis(context):
     return context.get_app_data().get_console() == dliveConstants.console_drop_down_avantis
 
 
+def _channel_range(context, start=None, end=None):
+    """0-based range of input channels to process. start/end are 1-based and inclusive;
+    None means the first/last channel of the selected console. Values are clamped
+    to the console's channel count."""
+    max_ch = dliveConstants.AVANTIS_MAX_CHANNELS if _is_avantis(context) else dliveConstants.DLIVE_MAX_CHANNELS
+    first = 1 if start is None else max(1, min(int(start), max_ch))
+    last = max_ch if end is None else max(1, min(int(end), max_ch))
+    return range(first - 1, last)
+
+
 def _send_mute(output, midi_channel, note, velocity):
     output.send(mido.Message('note_on', channel=midi_channel, note=note, velocity=velocity))
     output.send(mido.Message('note_on', channel=midi_channel, note=note, velocity=dliveConstants.note_off))
     time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def reset_all_dca(context):
-    avantis = _is_avantis(context)
-    max_ch    = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
-    dca_count = _AVANTIS_DCA_COUNT if avantis else _DLIVE_DCA_COUNT
-    for ch in range(max_ch):
+def reset_all_dca(context, start=None, end=None):
+    dca_count = _AVANTIS_DCA_COUNT if _is_avantis(context) else _DLIVE_DCA_COUNT
+    for ch in _channel_range(context, start, end):
         for i in range(dca_count):
             assign_dca(context, ch, dliveConstants.dca_off_base_address + i)
 
 
-def reset_all_mute_groups(context):
+def reset_all_mute_groups(context, start=None, end=None):
     # dLive only – caller must ensure this is not invoked for Avantis
-    for ch in range(dliveConstants.DLIVE_MAX_CHANNELS):
+    for ch in _channel_range(context, start, end):
         for i in range(_MG_COUNT):
             assign_mg(context, ch, dliveConstants.mg_off_base_address + i)
 
 
-def reset_all_main_mix(context):
-    avantis = _is_avantis(context)
-    max_ch = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
-    for ch in range(max_ch):
+def reset_all_main_mix(context, start=None, end=None):
+    for ch in _channel_range(context, start, end):
         assign_mainmix(context, ch, dliveConstants.assign_off)
 
 
 
-def mute_all_inputs(context):
+def mute_all_inputs(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis  = _is_avantis(context)
-    max_ch   = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output   = context.get_output()
     midi_ch  = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_mute(output,
                    midi_ch + dliveConstants.midi_channel_offset_channels,
                    dliveConstants.channel_offset_channels + ch,
                    dliveConstants.mute_on)
 
 
-def unmute_all_inputs(context):
+def unmute_all_inputs(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    max_ch  = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_mute(output,
                    midi_ch + dliveConstants.midi_channel_offset_channels,
                    dliveConstants.channel_offset_channels + ch,
                    dliveConstants.mute_off)
 
 
-def unmute_all_outputs(context):
-    if not context.get_network_connection_allowed():
-        return
+def _output_bus_specs(context, mixer_config=None):
+    """(midi channel, channel offset, count) of every output bus for the mute sweep.
+    Aux, Group, Matrix and FX Send counts are taken from the mixer config, if given,
+    so exactly the buses configured on the console are switched."""
     avantis = _is_avantis(context)
-    output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
 
     ch_groups   = midi_ch + dliveConstants.midi_channel_offset_groups
@@ -114,80 +116,51 @@ def unmute_all_outputs(context):
 
     if avantis:
         specs = [
-            (ch_auxes,    dliveConstants.channel_offset_auxes_mono,      _AVANTIS_AUX_MONO_MAX),
-            (ch_auxes,    dliveConstants.channel_offset_auxes_stereo,    _AVANTIS_AUX_STEREO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_mono,     _AVANTIS_GROUP_MONO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_stereo,   _AVANTIS_GROUP_STEREO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_mono,   _AVANTIS_MATRIX_MONO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_stereo, _AVANTIS_MATRIX_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_mono,    _AVANTIS_FX_SEND_MONO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_stereo,  _AVANTIS_FX_SEND_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_return,       _AVANTIS_FX_RETURN_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_send,        _AVANTIS_UFX_SEND_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_return,      _AVANTIS_UFX_RETURN_MAX),
+            ("aux_mono",       ch_auxes,    dliveConstants.channel_offset_auxes_mono,      _AVANTIS_AUX_MONO_MAX),
+            ("aux_stereo",     ch_auxes,    dliveConstants.channel_offset_auxes_stereo,    _AVANTIS_AUX_STEREO_MAX),
+            ("group_mono",     ch_groups,   dliveConstants.channel_offset_groups_mono,     _AVANTIS_GROUP_MONO_MAX),
+            ("group_stereo",   ch_groups,   dliveConstants.channel_offset_groups_stereo,   _AVANTIS_GROUP_STEREO_MAX),
+            ("matrix_mono",    ch_matrices, dliveConstants.channel_offset_matrices_mono,   _AVANTIS_MATRIX_MONO_MAX),
+            ("matrix_stereo",  ch_matrices, dliveConstants.channel_offset_matrices_stereo, _AVANTIS_MATRIX_STEREO_MAX),
+            ("fx_send_mono",   ch_fx,       dliveConstants.channel_offset_fx_send_mono,    _AVANTIS_FX_SEND_MONO_MAX),
+            ("fx_send_stereo", ch_fx,       dliveConstants.channel_offset_fx_send_stereo,  _AVANTIS_FX_SEND_STEREO_MAX),
+            ("fx_return",      ch_fx,       dliveConstants.channel_offset_fx_return,       _AVANTIS_FX_RETURN_MAX),
+            ("ufx_send",       ch_fx,       dliveConstants.channel_offset_ufx_send,        _AVANTIS_UFX_SEND_MAX),
+            ("ufx_return",     ch_fx,       dliveConstants.channel_offset_ufx_return,      _AVANTIS_UFX_RETURN_MAX),
         ]
     else:
         specs = [
-            (ch_auxes,    dliveConstants.channel_offset_auxes_mono,      _DLIVE_AUX_MONO_MAX),
-            (ch_auxes,    dliveConstants.channel_offset_auxes_stereo,    _DLIVE_AUX_STEREO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_mono,     _DLIVE_GROUP_MONO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_stereo,   _DLIVE_GROUP_STEREO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_mono,   _DLIVE_MATRIX_MONO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_stereo, _DLIVE_MATRIX_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_mono,    _DLIVE_FX_SEND_MONO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_stereo,  _DLIVE_FX_SEND_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_return,       _DLIVE_FX_RETURN_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_send,        _DLIVE_UFX_SEND_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_return,      _DLIVE_UFX_RETURN_MAX),
+            ("aux_mono",       ch_auxes,    dliveConstants.channel_offset_auxes_mono,      _DLIVE_AUX_MONO_MAX),
+            ("aux_stereo",     ch_auxes,    dliveConstants.channel_offset_auxes_stereo,    _DLIVE_AUX_STEREO_MAX),
+            ("group_mono",     ch_groups,   dliveConstants.channel_offset_groups_mono,     _DLIVE_GROUP_MONO_MAX),
+            ("group_stereo",   ch_groups,   dliveConstants.channel_offset_groups_stereo,   _DLIVE_GROUP_STEREO_MAX),
+            ("matrix_mono",    ch_matrices, dliveConstants.channel_offset_matrices_mono,   _DLIVE_MATRIX_MONO_MAX),
+            ("matrix_stereo",  ch_matrices, dliveConstants.channel_offset_matrices_stereo, _DLIVE_MATRIX_STEREO_MAX),
+            ("fx_send_mono",   ch_fx,       dliveConstants.channel_offset_fx_send_mono,    _DLIVE_FX_SEND_MONO_MAX),
+            ("fx_send_stereo", ch_fx,       dliveConstants.channel_offset_fx_send_stereo,  _DLIVE_FX_SEND_STEREO_MAX),
+            ("fx_return",      ch_fx,       dliveConstants.channel_offset_fx_return,       _DLIVE_FX_RETURN_MAX),
+            ("ufx_send",       ch_fx,       dliveConstants.channel_offset_ufx_send,        _DLIVE_UFX_SEND_MAX),
+            ("ufx_return",     ch_fx,       dliveConstants.channel_offset_ufx_return,      _DLIVE_UFX_RETURN_MAX),
         ]
 
-    for midi_channel, offset, count in specs:
+    return [(midi_channel, offset, count if mixer_config is None else mixer_config.apply(key, count))
+            for key, midi_channel, offset, count in specs]
+
+
+def unmute_all_outputs(context, mixer_config=None):
+    if not context.get_network_connection_allowed():
+        return
+    output = context.get_output()
+    for midi_channel, offset, count in _output_bus_specs(context, mixer_config):
         for i in range(count):
             _send_mute(output, midi_channel, offset + i, dliveConstants.mute_off)
 
 
-def mute_all_outputs(context):
+def mute_all_outputs(context, mixer_config=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    output  = context.get_output()
-    midi_ch = context.get_app_data().get_midi_channel()
-
-    ch_groups   = midi_ch + dliveConstants.midi_channel_offset_groups
-    ch_auxes    = midi_ch + dliveConstants.midi_channel_offset_auxes
-    ch_matrices = midi_ch + dliveConstants.midi_channel_offset_matrices
-    ch_fx       = midi_ch + dliveConstants.midi_channel_offset_fx_send_mono
-
-    if avantis:
-        specs = [
-            (ch_auxes,    dliveConstants.channel_offset_auxes_mono,      _AVANTIS_AUX_MONO_MAX),
-            (ch_auxes,    dliveConstants.channel_offset_auxes_stereo,    _AVANTIS_AUX_STEREO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_mono,     _AVANTIS_GROUP_MONO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_stereo,   _AVANTIS_GROUP_STEREO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_mono,   _AVANTIS_MATRIX_MONO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_stereo, _AVANTIS_MATRIX_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_mono,    _AVANTIS_FX_SEND_MONO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_stereo,  _AVANTIS_FX_SEND_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_return,       _AVANTIS_FX_RETURN_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_send,        _AVANTIS_UFX_SEND_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_return,      _AVANTIS_UFX_RETURN_MAX),
-        ]
-    else:
-        specs = [
-            (ch_auxes,    dliveConstants.channel_offset_auxes_mono,      _DLIVE_AUX_MONO_MAX),
-            (ch_auxes,    dliveConstants.channel_offset_auxes_stereo,    _DLIVE_AUX_STEREO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_mono,     _DLIVE_GROUP_MONO_MAX),
-            (ch_groups,   dliveConstants.channel_offset_groups_stereo,   _DLIVE_GROUP_STEREO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_mono,   _DLIVE_MATRIX_MONO_MAX),
-            (ch_matrices, dliveConstants.channel_offset_matrices_stereo, _DLIVE_MATRIX_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_mono,    _DLIVE_FX_SEND_MONO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_send_stereo,  _DLIVE_FX_SEND_STEREO_MAX),
-            (ch_fx,       dliveConstants.channel_offset_fx_return,       _DLIVE_FX_RETURN_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_send,        _DLIVE_UFX_SEND_MAX),
-            (ch_fx,       dliveConstants.channel_offset_ufx_return,      _DLIVE_UFX_RETURN_MAX),
-        ]
-
-    for midi_channel, offset, count in specs:
+    output = context.get_output()
+    for midi_channel, offset, count in _output_bus_specs(context, mixer_config):
         for i in range(count):
             _send_mute(output, midi_channel, offset + i, dliveConstants.mute_on)
 
@@ -200,26 +173,22 @@ def _send_fader(output, midi_channel, channel, fader_value):
     time.sleep(dliveConstants.DEFAULT_SLEEP_AFTER_MIDI_COMMAND)
 
 
-def set_all_input_faders_to_zero(context):
+def set_all_input_faders_to_zero(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    max_ch  = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_fader(output, midi_ch + dliveConstants.midi_channel_offset_channels,
                     ch, dliveConstants.fader_level_zero)
 
 
-def set_all_input_faders_to_minus_inf(context):
+def set_all_input_faders_to_minus_inf(context, start=None, end=None):
     if not context.get_network_connection_allowed():
         return
-    avantis = _is_avantis(context)
-    max_ch  = dliveConstants.AVANTIS_MAX_CHANNELS if avantis else dliveConstants.DLIVE_MAX_CHANNELS
     output  = context.get_output()
     midi_ch = context.get_app_data().get_midi_channel()
-    for ch in range(max_ch):
+    for ch in _channel_range(context, start, end):
         _send_fader(output, midi_ch + dliveConstants.midi_channel_offset_channels,
                     ch, dliveConstants.fader_level_minus_inf)
 
